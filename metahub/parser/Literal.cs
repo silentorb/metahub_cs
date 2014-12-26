@@ -8,14 +8,16 @@ public class Literal : Pattern {
     this.text = text;
   }
 
-  override Result __test__ (Position start, int depth) {
+  override protected Result __test__(Position start, int depth)
+  {
     if (start.context.text.substr(start.get_offset(), text.Count) == text)
       return success(start, text.Count);
 
     return failure(start, start);
   }
 
-  override object get_data (Match match) {
+  override protected object get_data(Match match)
+  {
     return text;
   }
 }

@@ -1,15 +1,20 @@
 using System;
-
+using System.Collections.Generic;
+using System.Linq;
+using metahub.logic.schema;
 using metahub.meta.types;
 using metahub.schema;
+using Constraint = metahub.meta.types.Constraint;
 
 
 namespace metahub.meta {
-struct Conditions_Source {
-	string type,
-	List<object> conditions,
-	string mode
+class Conditions_Source
+{
+    public string type;
+    public List<object> conditions;
+    public string mode;
 }
+
 public class Coder {
   Railway railway;
 
@@ -76,14 +81,14 @@ public class Coder {
 		var reference = convert_expression(source.reference, null, scope);
 		Node back_reference = null;
 		var operator_name = source.op;
-		if (["+=", "-=", "*=", "/="].Contains(operator_name)) {
+		if (new List<string>{"+=", "-=", "*=", "/="}.Contains(operator_name)) {
 			//operator_name = operator_name.substring(0, operator_name.Count - 7);
 			back_reference = reference;
 		}
 		var expression = Parse.resolve(convert_expression(source.expression, null, scope));
 
 		return new Constraint(reference, expression, operator_name,
-			source.lambda != null ? create_lambda(source.lambda, scope, [ reference, expression ]) : null
+			source.lambda != null ? create_lambda(source.lambda, scope, new List<Node> {reference, expression }) : null
 		);
 		
 		
@@ -128,14 +133,14 @@ public class Coder {
     //return new metahub.code.expressions.Function_Call(name, info, inputs, hub);
   }
 
-	List<string> extract_path (object path) {
-		List<string> result = new List<string>();
-		foreach (var i in 1...path.Count) {
-			result.Add(path[i]);
-		}
+    //List<string> extract_path (object path) {
+    //    List<string> result = new List<string>();
+    //    for (var i = 1; i < path) {
+    //        result.Add(path[i]);
+    //    }
 
-		return result;
-	}
+    //    return result;
+    //}
 
   Node create_path (object source, Node previous, Scope scope) {
 		Rail rail = scope.rail;
@@ -156,7 +161,9 @@ public class Coder {
 					previous = new Function_Call(item.name, previous, railway);
 					//var info = Function_Call.get_function_info(item.name, hub);
 					//children.Add(new metahub.code.expressions.Function_Call(item.name, info, [], hub));
-				case "reference":
+                    break;
+                
+                case "reference":
 					var variable = scope.find(item.name);
 					if (variable != null) {
 						previous = new Variable(item.name);
@@ -170,16 +177,15 @@ public class Coder {
 						if (tie.other_rail != null)
 							rail = tie.other_rail;
 					}
+			        break;
+
 				case "array":
 					List<object> items = item.expressions;
 					Node token = null;
-					var sub_array = [];
-					foreach (var item in items) {
-						var token = convert_expression(item, token, scope);
-						sub_array.Add(token);
-					}
-					previous = new Array_Expression(sub_array);
-
+					var sub_array = items.Select(i => convert_expression(i, token, scope)).ToList();
+			        previous = new Array_Expression(sub_array);
+                    break;
+                
 				default:
 					throw new Exception("Invalid path token type: " + item.type);
 			}
@@ -190,21 +196,23 @@ public class Coder {
   }
 
   static Signature get_type (object value) {
-    if (value.GetType() == typeof(int)) {
-      return new Signature {
-					type = Kind.unknown,
-					is_numeric = 1
-			}
-		}
+    if (value is int)
+    {
+        return new Signature
+            {
+                type = Kind.unknown,
+                is_numeric = 1
+            };
+    }
 
-    if (Std.is(value, float))
-      return { type: Kind.Float };
+    if (value is float)
+      return new Signature(Kind.Float );
 
-    if (Std.is(value, bool))
-      return { type: Kind.Bool };
+    if (value is bool)
+      return new Signature(Kind.Bool);
 
-    if (Std.is(value, string))
-      return { type: Kind.String };
+    if (value is string)
+        return new Signature(Kind.String);
 
     throw new Exception("Could not find type.");
   }
@@ -219,7 +227,7 @@ public class Coder {
 		if (path.Count == 1 && path[0] == "new") {
 			//new_scope_definition.only_new = true;
 			expression = convert_statement(source.expression, new_scope);
-			return new Scope_Expression(new_scope, [expression]);
+			return new Scope_Expression(new_scope,new List<Node> {expression});
 			//return new Scope_Expression(Node, new_scope_definition);
 		}
 
@@ -230,7 +238,7 @@ public class Coder {
 			new_scope.rail = rail;
 			expression = convert_statement(source.expression, new_scope);
 			//return new Scope_Expression(Node, new_scope_definition);
-			return new Scope_Expression(new_scope, [expression]);
+            return new Scope_Expression(new_scope, new List<Node> { expression });
 		//}
 		//else {
 			//throw new Exception("Not implemented.");
@@ -270,10 +278,10 @@ public class Coder {
 
   Node function_scope (object source, Scope scope) {
 		var expression = convert_expression(source.expression, null, scope);
-		Reference_Path path = expression;
+		var path = (Reference_Path)expression;
 		var token = path.children[path.children.Count - 2];
 		return new Function_Scope(expression,
-			create_lambda(source.lambda, scope, [ token, token ])
+			create_lambda(source.lambda, scope, new List<Node>{ token, token })
 		);
   }
 

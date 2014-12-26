@@ -9,11 +9,12 @@ class Group_Source
     public List<object> patterns;
 }
 
-class Pattern_Source
+public class Pattern_Source
 {
     public string type;
     public bool backtrack;
 }
+
 public class Definition {
   public List<Pattern> patterns = new List<Pattern>();
   public Dictionary<string, Pattern> pattern_keys = new Dictionary<string, Pattern>();

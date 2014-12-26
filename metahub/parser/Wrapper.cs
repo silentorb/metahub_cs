@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+
 namespace metahub.parser
 {
 public class Wrapper : Pattern {
@@ -8,17 +10,18 @@ public class Wrapper : Pattern {
     this.action = action;
   }
 
-  override Result __test__ (Position start, int depth) {
+  override protected Result __test__ (Position start, int depth) {
     var result = pattern.test(start, depth);
     if (!result.success)
-      return failure(start, start, [ result ]);
+      return failure(start, start, new List<Result> {result });
 
-    Match match = result;
+    var match = (Match)result;
 
-    return success(start, match.Count, [ result ], [ match ]);
+    return success(start, match.length, new List<Result> { result }, new List<Match> { match });
   }
 
-  override object get_data (Match match) {
+  override public object get_data(Match match)
+  {
     return match.matches[0].get_data();
   }
 }

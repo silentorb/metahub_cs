@@ -1,13 +1,8 @@
 using System;
 using metahub.logic.schema;
-using metahub.logic.schema.Railway;
-using metahub.logic.schema.Signature;
 
 namespace metahub.meta.types {
-/**
- * ...
- * @author Christopher W. Johnson
- */
+
 public class Function_Call : Node {
 	public string name;
 	public Node input;

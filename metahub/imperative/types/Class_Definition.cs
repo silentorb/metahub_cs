@@ -4,7 +4,6 @@ using metahub.meta.types;
 
 namespace metahub.imperative.types
 {
-using metahub.logic.schema.Rail;
 
 /**
  * @author Christopher W. Johnson

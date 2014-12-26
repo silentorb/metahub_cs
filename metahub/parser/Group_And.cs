@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+
 namespace metahub.parser
 {
 public class Group_And : Group {
@@ -6,7 +8,7 @@ public class Group_And : Group {
 
 	}
 
-  override Result __test__ (Position start, int depth) {
+  override protected Result __test__ (Position start, int depth) {
     int length = 0;
     var position = start, end = position;
     List<Result> info_items = new List<Result>();
@@ -32,7 +34,8 @@ public class Group_And : Group {
     return success(start, length, info_items, matches);
   }
 
-  override object get_data (Match match) {
+  override protected object get_data(Match match)
+  {
     List<object> result = new List<object>();
     foreach (var child in match.matches) {
       result.Add(child.get_data());

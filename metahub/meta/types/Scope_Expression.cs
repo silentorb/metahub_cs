@@ -1,16 +1,17 @@
-using metahub.meta.Scope;
+using System.Collections.Generic;
 
-namespace metahub.meta.types {
-/**
- * @author Christopher W. Johnson
- */
-public class Scope_Expression : Block
+namespace metahub.meta.types
 {
-	public Scope scope;
-	
-	public Scope_Expression(Scope scope, expressions)
-:base(expressions) {
-		this.type = Node_Type.scope;
-		this.scope = scope;
-	}
-}}
+
+    public class Scope_Expression : Block
+    {
+        public Scope scope;
+
+        public Scope_Expression(Scope scope, List<Node> expressions)
+            : base(expressions)
+        {
+            type = Node_Type.scope;
+            this.scope = scope;
+        }
+    }
+}

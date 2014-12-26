@@ -24,7 +24,7 @@ public class Dungeon
 	public Region region;
 	public Trellis trellis;
 	Dictionary<string, string> inserts;
-	Dictionary<string, List<metahub.imperative.types.Expression>> blocks = new Dictionary<string, List<metahub.imperative.types.Expression>>();
+	Dictionary<string, List<Expression>> blocks = new Dictionary<string, List<metahub.imperative.types.Expression>>();
 	List<Zone> zones = new List<Zone>();
 	public List<Function_Definition> functions = new List<Function_Definition>();
 	public Imp imp;
@@ -92,7 +92,8 @@ public class Dungeon
 		}
 	}
 
-	public void get_block (string path) {
+    public List<Expression> get_block(string path)
+    {
 		if (!blocks.ContainsKey(path)) {
 		}
 
@@ -138,24 +139,25 @@ public class Dungeon
 		var zone = create_zone(result.expressions);
 		var pre = zone.divide(tie.tie_name + "_set_pre");
 
-		var mid = zone.divide(null, [
+		var mid = zone.divide(null, new List<Expression> {
 			new Flow_Control("if", new Condition("==", new List<Expression> {
 					new Property_Expression(tie), new Variable("value")
             }),
-				[
+				new List<Expression>{
 					new Statement("return")
-			]),
+                }),
 			new Assignment(new Property_Expression(tie), "=", new Variable("value"))
-		]);
+		});
+
 		if (tie.type == Kind.reference && tie.other_tie != null) {
 			if (tie.other_tie.type == Kind.reference) {
 				mid.Add(new Property_Expression(tie,
-					new Function_Call("set_" + tie.other_tie.tie_name, [new Self()]))
-				);
+					new Function_Call("set_" + tie.other_tie.tie_name, new List<object> {new Self()})
+				));
 			}
 			else {
 				mid.Add(new Property_Expression(tie,
-					new Function_Call(tie.other_tie.tie_name + "_add", [new Self(), new Self()]))
+					new Function_Call(tie.other_tie.tie_name + "_add", new List<object>{ new Self(), new Self()}))
 				);
 			}
 		}
@@ -163,17 +165,16 @@ public class Dungeon
 		var post = zone.divide(tie.tie_name + "_set_post");
 
 		if (tie.has_set_post_hook) {
-			post.Add(new Function_Call(tie.get_setter_post_name(), [
+			post.Add(new Function_Call(tie.get_setter_post_name(), new List<object> {
 					new Variable("value")
-				]
-			));
+			}));
 		}
 
 		return result;
 	}
 
 	public Function_Definition generate_initialize () {
-		var block = [];
+		var block = new List<Expression>();
 		blocks["initialize"] = block;
 		if (rail.parent != null) {
 			block.Add(new Parent_Class(
@@ -181,7 +182,7 @@ public class Dungeon
 			));
 		}
 		
-		foreach (var lair in lairs) {
+		foreach (var lair in lairs.Values) {
 			lair.customize_initialize(block);
 		}
 
@@ -189,15 +190,14 @@ public class Dungeon
 			block.Add(new Function_Call("initialize_post"));
 		}
 
-		return new Function_Definition("initialize", this, [], block);
+		return new Function_Definition("initialize", this, new List<Parameter>(), block);
 	}
 	
 	public void post_analyze (Expression expression) {
 		switch(expression.type) {
 			
 			case Node_Type.space:
-				Namespace ns = expression;
-				post_analyze_many(ns.expressions);
+                post_analyze_many(((Namespace)expression).expressions);
 		        break;
 
 			case Node_Type.class_definition:
@@ -205,36 +205,33 @@ public class Dungeon
                 break;
 
 			case Node_Type.function_definition:
-				Function_Definition definition = expression;
-				post_analyze_many(definition.expressions);
+				post_analyze_many(((Function_Definition)expression).expressions);
                 break;
 
 			case Node_Type.flow_control:
-				Flow_Control definition = expression;
-				post_analyze_many(definition.condition.expressions);
-				post_analyze_many(definition.children);
+				post_analyze_many(((Flow_Control)expression).condition.expressions);
+                post_analyze_many(((Flow_Control)expression).children);
                 break;
 
 			case Node_Type.function_call:
-				Function_Call definition = expression;
+				var definition = (Function_Call)expression;
 				//trace("func", definition.name);
 				if (definition.is_platform_specific && !used_functions.ContainsKey(definition.name))
 					used_functions[definition.name] = new Used_Function(definition.name, definition.is_platform_specific);
 				
 				foreach (var arg in definition.args) {
-					if (arg.ContainsKey("type"))
-						post_analyze(arg);
+                    throw new Exception("Not implemented.");
+                    //if (arg.ContainsKey("type"))
+                    //    post_analyze(arg);
 				}
                 break;
 
 			case Node_Type.assignment:
-				Assignment definition = expression;
-				post_analyze(definition.expression);
+				post_analyze(((Assignment)expression).expression);
                 break;
 
 			case Node_Type.declare_variable:
-				Declare_Variable definition = expression;
-				post_analyze(definition.expression);
+				post_analyze(((Declare_Variable)expression).expression);
                 break;
 				
 			//case Expression_Type.property:

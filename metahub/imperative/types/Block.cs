@@ -1,12 +1,10 @@
+using System.Collections.Generic;
+
 namespace metahub.imperative.types
 {
-
-/**
- * @author Christopher W. Johnson
- */
-
-struct Block {
-	string type,
-	List<object> statements
-}
+    struct Block
+    {
+        public string type;
+        public List<object> statements;
+    }
 }

@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using metahub.meta.types;
 using metahub.schema;
 
 namespace metahub.logic.schema {
@@ -43,7 +44,7 @@ public class Railway {
 		}
 	}
 
-	public static string get_class_name (expression) {
+	public static string get_class_name (Node expression) {
 		return Type.getClassName(Type.getClass(expression)).split(".").pop();
 	}
 

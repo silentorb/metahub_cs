@@ -134,8 +134,6 @@
     <Compile Include="metahub\schema\Load_Settings.cs" />
     <Compile Include="metahub\schema\Namespace.cs" />
     <Compile Include="metahub\schema\Property.cs" />
-    <Compile Include="metahub\schema\Property_Chain_old.cs" />
-    <Compile Include="metahub\schema\Property_Port.cs" />
     <Compile Include="metahub\schema\Schema.cs" />
     <Compile Include="metahub\schema\Trellis.cs" />
     <Compile Include="metahub\Utility.cs" />

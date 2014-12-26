@@ -1,10 +1,7 @@
-using metahub.meta.Scope;
+using System.Collections.Generic;
 
 namespace metahub.meta.types {
-/**
- * ...
- * @author Christopher W. Johnson
- */
+
 public class Lambda : Node
 {
 	public List<Parameter> parameters;

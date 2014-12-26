@@ -1,3 +1,7 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+
 namespace metahub.parser
 {
 public class Pattern {
@@ -13,12 +17,9 @@ public class Pattern {
       List<string> messages = new List<string>();
       var new_position = previous.start.context.rewind(messages);
       previous.messages = previous.messages != null
-      ? previous.messages.concat(messages)
+      ? previous.messages.Union(messages).ToList()
       : messages;
-      if (new_position == null)
-        return result;
-
-      return __test__(new_position, depth);
+      return new_position == null ? result : __test__(new_position, depth);
     }
 
 		//if (match.Count == 0)
@@ -27,7 +28,7 @@ public class Pattern {
     return result;
   }
 
-  Result __test__ (Position position, int depth) {
+  protected virtual Result __test__ (Position position, int depth) {
     throw new Exception("__test__ is an abstract function");
   }
 
@@ -35,11 +36,11 @@ public class Pattern {
     return "";
   }
 
-  Failure failure (Position start, Position end, List<Result> children = null) {
+  protected Failure failure (Position start, Position end, List<Result> children = null) {
     return new Failure(this, start, end, children);
   }
 
-  Match success (Position position, int length, List<Result> children = null, List<Match> matches = null) {
+  protected Match success (Position position, int length, List<Result> children = null, List<Match> matches = null) {
     Match match = new Match(this, position, length, children, matches);
 		match.end = position.move(length);
 		return match;
@@ -55,7 +56,7 @@ public class Pattern {
 //    return previous.pattern.rewind(previous, messages);
 //  }
 
-  public object get_data (Match match) {
+  public virtual object get_data (Match match) {
     return null;
   }
 }

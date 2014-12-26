@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+
 namespace metahub.parser
 {
 public class Repetition : Pattern {
@@ -6,12 +8,13 @@ public class Repetition : Pattern {
   public Pattern pattern;
   public Pattern divider;
 
-  public Repetition(int min = 1, max = 0) {
+  public Repetition(int min = 1, int max = 0) {
     this.min = min;
     this.max = max;
   }
 
-  override Result __test__ (Position start, int depth) {
+  override protected Result __test__(Position start, int depth)
+  {
     var context = start.context;
     var position = start, end = position;
     int step = 0;
@@ -81,7 +84,8 @@ public class Repetition : Pattern {
 //    return previous.pattern.rewind(previous, messages);
 //  }
 
-  override object get_data (Match match) {
+  override protected object get_data(Match match)
+  {
     List<object> result = new List<object>();
     foreach (var child in match.matches) {
       result.Add(child.get_data());

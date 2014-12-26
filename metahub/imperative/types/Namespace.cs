@@ -3,11 +3,6 @@ using metahub.logic.schema;
 
 namespace metahub.imperative.types
 {
-using metahub.logic.schema.Region;
-
-/**
- * @author Christopher W. Johnson
- */
 public class Namespace : Expression {
 	public Region region;
 	public List<Expression> expressions;

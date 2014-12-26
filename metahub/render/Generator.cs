@@ -36,9 +36,9 @@ public class Generator {
 	}
 
 	public static List<string> get_namespace_path (Region region) {
-		var tokens = [];
+		var tokens = new List<string>();
 		while(region != null && region.name != "root") {
-			tokens.unshift(region.external_name != null ? region.external_name : region.name);
+			tokens.Insert(0, region.external_name ?? region.name);
 			region = region.parent;
 		}
 

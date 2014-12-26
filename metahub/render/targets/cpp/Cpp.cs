@@ -1,14 +1,11 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using metahub.imperative;
 using metahub.imperative.schema;
 using metahub.imperative.types;
 using metahub.logic.schema;
-using metahub.meta.types;
 using metahub.schema;
-using Function_Call = metahub.meta.types.Function_Call;
-using Parameter = metahub.meta.types.Parameter;
-using Variable = metahub.meta.types.Variable;
 
 namespace metahub.render.targets.cpp
 {
@@ -67,7 +64,8 @@ public class Cpp : Target{
 		}
 	}
 
-	override void generate_rail_code (Dungeon dungeon) {
+    override protected void generate_rail_code(Dungeon dungeon)
+    {
 		var rail = dungeon.rail;
 		var root = dungeon.get_block("/");
 		List<Tie> references = new List<Tie>();
@@ -79,11 +77,11 @@ public class Cpp : Target{
 				scalars.Add(tie);
 		}
 
-		Function_Definition func = new Function_Definition(rail.rail_name, dungeon, [],
-			references.map((tie)=> new Assignment(
+		Function_Definition func = new Function_Definition(rail.rail_name, dungeon, new List<imperative.types.Parameter>(), 
+			references.Select((tie)=> new Assignment(
 				new Property_Expression(tie), "=", new Null_Value())				
 			)
-			.concat(scalars.map((tie)=> new Assignment(
+			.Union(scalars.Select((tie)=> new Assignment(
 				new Property_Expression(tie), "=", new Literal(tie.get_default_value(), tie.get_signature())))
 			)
 		);
@@ -104,15 +102,15 @@ public class Cpp : Target{
 	}
 
 	void pop_scope () {
-		scopes.pop();
+		scopes.RemoveAt(scopes.Count - 1);
 		current_scope = scopes[scopes.Count - 1];
 	}
 
 	void create_header_file (Dungeon dungeon, string space, string dir) {
 		var rail = dungeon.rail;
-		List<External_Header> headers = [ new External_Header("stdafx") ];
+		List<External_Header> headers = new List<External_Header> { new External_Header("stdafx") };
 
-		foreach (var d in rail.dependencies) {
+		foreach (var d in rail.dependencies.Values) {
 			var dependency = d.rail;
 			if (!d.allow_ambient)
 				headers.Add(new External_Header(dependency.source_file));
@@ -122,23 +120,22 @@ public class Cpp : Target{
 		var result = line("#pragma once")
 		+ render_includes(headers) + newline()
 		+ render_outer_dependencies(rail)
-		+ render_region(rail.region, ()=> newline() + render_inner_dependencies(rail) + class_declaration(dungeon);
-		);
+		+ render_region(rail.region, ()=> newline() + render_inner_dependencies(rail) + class_declaration(dungeon));
 		Utility.create_file(dir + "/" + rail.name + ".h", result);
 	}
 
 	void create_class_file (Dungeon dungeon, string space, string dir) {
 		var rail = dungeon.rail;
-		scopes = [];
-		List<External_Header> headers = [ new External_Header("stdafx"), new External_Header(rail.source_file) ];
-		foreach (var d in rail.dependencies) {
+		scopes = new List<Dictionary<string, Signature>>();
+		List<External_Header> headers = new List<External_Header>{ new External_Header("stdafx"), new External_Header(rail.source_file) };
+		foreach (var d in rail.dependencies.Values) {
 			var dependency = d.rail;
 			if (dependency != rail.parent && dependency.source_file != null) {
 				headers.Add(new External_Header(dependency.source_file));
 			}
 		}
 		
-		foreach (var func in dungeon.used_functions) {
+		foreach (var func in dungeon.used_functions.Values) {
 			if (func.name == "rand" && func.is_platform_specific) {
 				if (!has_header(headers, "stdlib"))
 					headers.Add(new External_Header("stdlib", true));
@@ -357,14 +354,13 @@ public class Cpp : Target{
 	}
 
 	string render_function_declarations (Dungeon dungeon) {
-		var declarations = [ ]
-			.concat(dungeon.rail.stubs.map((s)=> line(s)));
+		var declarations = dungeon.rail.stubs.Select(line).ToList();
 
 		if (dungeon.rail.hooks.ContainsKey("initialize_post")) {
 			declarations.Add(line("void initialize_post(); // Externally defined."));
 		}
 
-		foreach (var tie in dungeon.rail.all_ties) {
+		foreach (var tie in dungeon.rail.all_ties.Values) {
 			if (tie.has_set_post_hook)
 				declarations.Add(line("void " + tie.get_setter_post_name() + "(" + get_property_type_string(tie, true) +  " value);"));
 		}
@@ -374,11 +370,9 @@ public class Cpp : Target{
 				//declarations.Add(line(render_signature_old("set_" + tie.tie_name, tie) + ";"));
 		//}
 
-		foreach (var func in dungeon.functions) {
-			declarations.Add(render_function_declaration(func));
-		}
+	    declarations.AddRange(dungeon.functions.Select(render_function_declaration));
 
-		return declarations.join("");
+	    return declarations.Join("");
 	}
 
 	//string render_initialize_definition (Rail rail) {
@@ -412,15 +406,12 @@ public class Cpp : Target{
 		return name;
 	}
 	
-	static bool has_header (List<External_Header> list , string name) {
-		foreach (var header in list) {
-			if (header.name == name)
-				return true;
-		}
-		return false;
+	static bool has_header (IEnumerable<External_Header> list, string name)
+	{
+	    return list.Any(header => header.name == name);
 	}
 
-	string get_property_type_string (Tie tie, bool is_parameter = false) {
+    string get_property_type_string (Tie tie, bool is_parameter = false) {
 		var other_rail = tie.other_rail;
 		if (other_rail == null)
 			return types[tie.property.type.ToString()];
@@ -440,15 +431,13 @@ public class Cpp : Target{
 	}
 
 	string render_includes (List<External_Header> headers) {
-		return headers.map((h)=>{
-			return line(h.is_standard
-				? "#include <" + h.name + ".h>"
-				: "#include "" + h.name + ".h""
-				); 
-		} ).join("");
+		return headers.Select((h)=> line(h.is_standard
+		    ? "#include <" + h.name + ".h>"
+		    : "#include \"" + h.name + ".h\""
+		)).Join("");
 	}
 
-	string render_signature_old (name, Tie tie) {
+	string render_signature_old (string name, Tie tie) {
 		var right = name + "(" + get_property_type_string(tie, true) + " value)";
 		return "void " + right;
 	}
@@ -457,7 +446,7 @@ public class Cpp : Target{
 		return line((definition.return_type != null ? "virtual " : "")
 		+ (definition.return_type != null ? render_signature(definition.return_type) + " " : "")
 		+ definition.name
-		+ "(" + definition.parameters.map(render_parameter).join(", ") + ");");
+		+ "(" + definition.parameters.Select(render_parameter).Join(", ") + ");");
 
 	}
 
@@ -465,7 +454,7 @@ public class Cpp : Target{
 		if (signature.rail == null) {
 			return signature.type == Kind.reference
 				? "void*"
-				: types[signature.type.to_string(]);
+				: types[signature.type.ToString()];
 		}
 
 		var name = get_rail_type_string(signature.rail);
@@ -479,7 +468,7 @@ public class Cpp : Target{
 		}
 	}
 
-	public string render_block (string command, string expression, action) {
+	public string render_block (string command, string expression, String_Delegate action) {
 		var result = line(command + " (" + expression + ") {");
 		indent();
 		result += action();
@@ -488,7 +477,8 @@ public class Cpp : Target{
 		return result;
 	}
 
-	public string render_scope (string intro, action) {
+    public string render_scope(string intro, String_Delegate action)
+    {
 		push_scope();
 		var result = line(intro + " {");
 		indent();
@@ -694,8 +684,8 @@ public class Cpp : Target{
 					return "push_back(" + dereference + first + ")";
 
 				case "rand":
-					float min = (expression.args[0], Literal).value;
-					float max = (expression.args[1], Literal).value;
+					float min = (expression.args[0]).value;
+					float max = ((Literal)expression.args[1]).value;
 					return "rand() % " + (max - min) + (min < 0 ? " - " + -min : " + " + min);						
 					
 				default:

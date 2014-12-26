@@ -1,0 +1,150 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{2A71DED0-DCAD-476B-B7EB-F832C352BFB5}</ProjectGuid>
+    <OutputType>Exe</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>metahub</RootNamespace>
+    <AssemblyName>metahub</AssemblyName>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
+    <PlatformTarget>x86</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
+    <PlatformTarget>x86</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="metahub\Hub.cs" />
+    <Compile Include="metahub\imperative\code\List.cs" />
+    <Compile Include="metahub\imperative\code\Parse.cs" />
+    <Compile Include="metahub\imperative\code\Reference.cs" />
+    <Compile Include="metahub\imperative\Imp.cs" />
+    <Compile Include="metahub\imperative\schema\Dependency.cs" />
+    <Compile Include="metahub\imperative\schema\Dungeon.cs" />
+    <Compile Include="metahub\imperative\schema\Lair.cs" />
+    <Compile Include="metahub\imperative\schema\Property_Addition.cs" />
+    <Compile Include="metahub\imperative\schema\Used_Function.cs" />
+    <Compile Include="metahub\imperative\schema\Zone.cs" />
+    <Compile Include="metahub\imperative\types\Anonymous_Function.cs" />
+    <Compile Include="metahub\imperative\types\Assignment.cs" />
+    <Compile Include="metahub\imperative\types\Block.cs" />
+    <Compile Include="metahub\imperative\types\Class_Definition.cs" />
+    <Compile Include="metahub\imperative\types\Condition.cs" />
+    <Compile Include="metahub\imperative\types\Create_Array.cs" />
+    <Compile Include="metahub\imperative\types\Declare_Variable.cs" />
+    <Compile Include="metahub\imperative\types\Expression.cs" />
+    <Compile Include="metahub\imperative\types\Expression_Type.cs" />
+    <Compile Include="metahub\imperative\types\Flow_Control.cs" />
+    <Compile Include="metahub\imperative\types\Function_Call.cs" />
+    <Compile Include="metahub\imperative\types\Function_Definition.cs" />
+    <Compile Include="metahub\imperative\types\Insert.cs" />
+    <Compile Include="metahub\imperative\types\Instantiate.cs" />
+    <Compile Include="metahub\imperative\types\Literal.cs" />
+    <Compile Include="metahub\imperative\types\Namespace.cs" />
+    <Compile Include="metahub\imperative\types\Null_Value.cs" />
+    <Compile Include="metahub\imperative\types\Parameter.cs" />
+    <Compile Include="metahub\imperative\types\Parent_Class.cs" />
+    <Compile Include="metahub\imperative\types\Path.cs" />
+    <Compile Include="metahub\imperative\types\Property_Expression.cs" />
+    <Compile Include="metahub\imperative\types\Scope.cs" />
+    <Compile Include="metahub\imperative\types\Self.cs" />
+    <Compile Include="metahub\imperative\types\Statement.cs" />
+    <Compile Include="metahub\imperative\types\Variable.cs" />
+    <Compile Include="metahub\logic\schema\Constraint.cs" />
+    <Compile Include="metahub\logic\schema\Function_Info.cs" />
+    <Compile Include="metahub\logic\schema\Function_Version.cs" />
+    <Compile Include="metahub\logic\schema\IRange.cs" />
+    <Compile Include="metahub\logic\schema\Rail.cs" />
+    <Compile Include="metahub\logic\schema\Railway.cs" />
+    <Compile Include="metahub\logic\schema\Range_Float.cs" />
+    <Compile Include="metahub\logic\schema\Region.cs" />
+    <Compile Include="metahub\logic\schema\Signature.cs" />
+    <Compile Include="metahub\logic\schema\Tie.cs" />
+    <Compile Include="metahub\Macros.cs" />
+    <Compile Include="metahub\Main.cs" />
+    <Compile Include="metahub\meta\Coder.cs" />
+    <Compile Include="metahub\meta\Scope.cs" />
+    <Compile Include="metahub\meta\types\Array_Expression.cs" />
+    <Compile Include="metahub\meta\types\Block.cs" />
+    <Compile Include="metahub\meta\types\Constraint.cs" />
+    <Compile Include="metahub\meta\types\Expression.cs" />
+    <Compile Include="metahub\meta\types\Expression_Type.cs" />
+    <Compile Include="metahub\meta\types\Function_Call.cs" />
+    <Compile Include="metahub\meta\types\Function_Scope.cs" />
+    <Compile Include="metahub\meta\types\Lambda.cs" />
+    <Compile Include="metahub\meta\types\Literal.cs" />
+    <Compile Include="metahub\meta\types\Parameter.cs" />
+    <Compile Include="metahub\meta\types\Path.cs" />
+    <Compile Include="metahub\meta\types\Property_Expression.cs" />
+    <Compile Include="metahub\meta\types\Scope_Expression.cs" />
+    <Compile Include="metahub\meta\types\Variable.cs" />
+    <Compile Include="metahub\parser\Bootstrap.cs" />
+    <Compile Include="metahub\parser\Context.cs" />
+    <Compile Include="metahub\parser\Definition.cs" />
+    <Compile Include="metahub\parser\Failure.cs" />
+    <Compile Include="metahub\parser\Group.cs" />
+    <Compile Include="metahub\parser\Group_And.cs" />
+    <Compile Include="metahub\parser\Group_Or.cs" />
+    <Compile Include="metahub\parser\Literal.cs" />
+    <Compile Include="metahub\parser\Match.cs" />
+    <Compile Include="metahub\parser\MetaHub_Context.cs" />
+    <Compile Include="metahub\parser\Pattern.cs" />
+    <Compile Include="metahub\parser\Position.cs" />
+    <Compile Include="metahub\parser\Regex.cs" />
+    <Compile Include="metahub\parser\Repetition.cs" />
+    <Compile Include="metahub\parser\Repetition_Match.cs" />
+    <Compile Include="metahub\parser\Result.cs" />
+    <Compile Include="metahub\parser\Wrapper.cs" />
+    <Compile Include="metahub\render\Generator.cs" />
+    <Compile Include="metahub\render\Renderer.cs" />
+    <Compile Include="metahub\render\Target.cs" />
+    <Compile Include="metahub\render\targets\cpp\Cpp.cs" />
+    <Compile Include="metahub\render\targets\haxe\Haxe_Target.cs" />
+    <Compile Include="metahub\schema\Kind.cs" />
+    <Compile Include="metahub\schema\Load_Settings.cs" />
+    <Compile Include="metahub\schema\Namespace.cs" />
+    <Compile Include="metahub\schema\Property.cs" />
+    <Compile Include="metahub\schema\Property_Chain_old.cs" />
+    <Compile Include="metahub\schema\Property_Port.cs" />
+    <Compile Include="metahub\schema\Schema.cs" />
+    <Compile Include="metahub\schema\Trellis.cs" />
+    <Compile Include="metahub\Utility.cs" />
+    <Compile Include="Program.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

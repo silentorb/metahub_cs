@@ -1,0 +1,267 @@
+using System;
+using System.Collections.Generic;
+
+namespace metahub.schema {
+    /*
+struct ITrellis_Source {
+  string name;
+  //Dictionary properties<string; Dictionary<string, object>>;
+  Object properties;
+  string parent;
+	string primary_key;
+    private bool is_value;
+}
+     */ 
+
+//struct Identity UInt;
+
+class Trellis {
+  public string name;
+  public Schema schema;
+  public List<Property> core_properties = new List<Property>();
+  List<Property> all_properties;
+	public Trellis parent;
+  public uint id;
+	public Property identity_property;
+	public Namespace space;
+  Dictionary<string, Property> property_keys = new Dictionary<string, Property>();
+	public List<Property> properties = new List<Property>();
+	public bool is_value = false;
+	public List<string> events;
+	public bool is_numeric = false;
+	List<Trellis> _tree = null;
+
+  public Trellis(string name, Schema schema, Namespace space) {
+    this.name = name;
+    this.schema = schema;
+		this.space = space;
+    space.trellises[name] = this;
+  }
+
+  public Property add_property (string name, Dictionary<string, object> source) {
+    Property property = new Property(name, source, this);
+    this.property_keys[name] = property;
+    property.id = 10000;
+    core_properties.Add(property);
+    return property;
+  }
+
+	public void copy_identity (Object source, Object target) {
+		var identity_key = identity_property.name;
+		Reflect.setField(target, identity_key, source[identity_key]);
+	}
+
+  public Dictionary<string, Property> get_all_properties () {
+		return property_keys;
+    //Dictionary<string, Property> result = new Dictionary<string, Property>();
+    //var tree = this.get_tree();
+		//int index = 0;
+    //foreach (var trellis in tree) {
+      //foreach (var property in trellis.core_properties) {
+        //result[property.name] = property;
+				//property.id = index++;
+      //}
+    //}
+    //return result;
+  }
+
+	public void get_identity (Object seed) {
+		if (identity_property == null)
+			throw new Exception("This trellis does not have an identity property set.");
+
+		return seed[identity_property.name];
+	}
+
+  public Property get_property (string name) {
+    return property_keys[name];
+  }
+
+	public Property get_property_or_error (string name) {
+    var properties = this.get_all_properties();
+    if (!properties.ContainsKey(name))
+      throw new Exception(this.name + " does not contain a property named " + name + ".");
+
+    return properties[name];
+  }
+
+	public Property get_property_or_null (string name) {
+    var properties = this.get_all_properties();
+    if (!properties.ContainsKey(name))
+      return null;
+
+    return properties[name];
+  }
+
+  //public Change get_value (int index, Context context) {
+		//return new Change(context.node.get_value(index));
+	//}
+
+  //public void set_value (int index, Change change, Context context, General_Port source = null) {
+		//if (!context.node.trellis.is_a(this))
+			//throw new Exception("Type mismatch: a " + context.node.trellis.name + " node was passed to trellis " + name + ".");
+//
+		//context.node.set_value(index, change.value, source);
+	//}
+//
+	 //public void set_external_value (int index, Object value, Context context, General_Port source) {
+		//#if trace
+			//context.hub.history.start_anchor();
+		//#end
+//
+		//var port = ports[index];
+		//foreach (var connection in port.connections) {
+			//if (connection == source)
+				//continue;
+//
+			//#if trace
+				//context.hub.history.back_to_anchor();
+			//#end
+//
+			//connection.set_node_value(new Change(value), context, port);
+		//}
+//
+		//#if trace
+			//context.hub.history.end_anchor();
+		//#end
+	//}
+//
+	//public void get_external_value (int index, Change change, Context context) {
+		//var port = ports[index];
+		//if (port.connections.Count() == 0)
+			//return null;
+//
+		//if (port.connections.Count() > 1)
+			//throw new Exception("Not yet supported.");
+//
+		//return port.connections[0].get_node_value(context);
+	//}
+
+  public List<Trellis> get_tree () {
+		if (_tree == null) {
+			var trellis = this;
+			_tree = new List<Trellis>();
+
+			do {
+				_tree.unshift(trellis);
+				trellis = trellis.parent;
+			}
+			while (trellis != null);
+		}
+
+    return _tree;
+  }
+
+  public bool is_a (Trellis trellis) {
+    var current = this;
+
+    do {
+      if (current == trellis)
+        return true;
+
+      current = current.parent;
+    }
+    while (current != null);
+
+    return false;
+  }
+
+  public void load_properties (ITrellis_Source source) {
+    foreach (var name in Reflect.fields(source.properties)) {
+      add_property(name, source.properties[name]);
+    }
+  }
+
+  public void initialize1 (ITrellis_Source source, Namespace namespace) {
+    //var trellises = this.schema.trellises;
+    if (source.parent != null) {
+      var trellis = this.schema.get_trellis(source.parent, namespace);
+      this.set_parent(trellis);
+    }
+		if (source.primary_key != null) {
+			var primary_key = source.primary_key;
+			if (property_keys.ContainsKey(primary_key)) {
+				identity_property = property_keys[primary_key];
+			}
+		}
+		else {
+			if (parent != null) {
+				identity_property = parent.identity_property;
+			}
+			else if (property_keys.ContainsKey("id")) {
+				identity_property = property_keys["id"];
+			}
+		}
+
+		var tree = this.get_tree();
+		int index = 0;
+    foreach (var trellis in tree) {
+      foreach (var property in trellis.core_properties) {
+				property.id = index++;
+        properties.Add(property);
+				property_keys[property.name] = property;
+			}
+    }
+
+		foreach (var j in Reflect.fields(source.properties)) {
+			Property property = this.get_property(j);
+			property.initialize_link1(source.properties[j]);
+		}
+  }
+
+	public void initialize2 (ITrellis_Source source) {
+		if (source.ContainsKey("is_value"))
+			is_value = source.is_value;
+		else if (parent != null) {
+			is_value = parent.is_value;
+		}
+
+    if (source.properties != null) {
+			 foreach (var j in Reflect.fields(source.properties)) {
+        Property property = this.get_property(j);
+        property.initialize_link2(source.properties[j]);
+      }
+    }
+
+		//get_all_properties();
+
+		is_numeric = true;
+		foreach (var p in properties) {
+			if (p.type != Kind.Float && p.type != Kind.Int) {
+				is_numeric = false;
+				break;
+			}
+		}
+	}
+
+  void set_parent (Trellis parent) {
+    this.parent = parent;
+
+//    if (!parent.identity)
+//      throw new Exception(new Error(parent.name + " needs a primary key when being inherited by " + this.name + "."));
+//
+//    this.identity = parent.identity.map((x) => x.clone(this))
+  }
+
+	//public General_Port get_port (int index) {
+		//return ports[index];
+	//}
+//
+	//public int get_port_count () {
+		//return ports.Count();
+	//}
+
+	public string to_string () {
+		return name;
+	}
+
+	//public Context resolve (Context context) {
+		//throw new Exception("Not implemented.");
+	//}
+//
+	//public void on_create_node (Context context) {
+		//foreach (var port in on_create_ports) {
+			//port.get_node_value(context);
+		//}
+	//}
+
+}}

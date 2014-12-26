@@ -1,0 +1,88 @@
+start = trim @(statement, newlines, 0, 0) final_trim
+
+none = /&*/
+ws = /\s+/
+trim = /\s*/
+final_trim = /\s*$/
+newlines = /(\s*\n)+\s*/
+comma_or_newline = /\s*((\s*\n)+|,)\s*/
+dot = "."
+path_function_separator = "." | "|"
+
+id = /[a-zA-Z0-9_]+/
+
+path = @(id, dot, 2, 0)
+
+path_or_id = @(id, dot, 1, 0)
+
+id_or_array = id | array
+
+reference = @(id_or_array, path_function_separator, 1, 0)
+
+method = "|" id
+
+statement =
+    create_symbol
+	| if
+  | constraint
+	| set_weight
+  | new_scope
+	| create_node
+	| function_scope
+
+create_symbol = "let" ws id trim "=" trim expression
+
+expression =
+    @(expression_part, operation_separator, 1, 0)
+
+operation_separator = trim operator trim
+
+expression_part =
+		value
+  | create_node
+  | reference
+	| long_block
+	| array
+
+string = ('"' /[^"]*/ '"') | ("'" /[^']*/ "'")
+bool = "true" | "false"
+int = /-?[0-9]+/
+float = /-?([0-9]*\.)?[0-9]+f?/
+operator = '+' | '-' | '/' | '*' | '%' | "|"
+constraint_operator = '=' | '<=' | '>=' | '<' | '>' | '+=' | '-=' | '*=' | '/=' | "in"
+
+value = string | bool | int | float
+
+dummy = "@&^%"
+
+optional_block = trim long_block
+
+create_node = "new" ws path_or_id @(optional_block, dummy, 0, 1)
+
+long_block = "{" trim @(statement, comma_or_newline, 0, 0) trim "}"
+
+new_scope = path_or_id trim long_block
+
+constraint = reference trim constraint_operator trim expression @(lambda, dummy, 0, 1)
+
+condition = expression trim constraint_operator trim expression
+
+condition_join_operators = "&&" | "||"
+
+condition_join = trim condition_join_operators trim
+
+conditions = @(condition, condition_join, 1, 0)
+
+condition_block = "(" trim conditions trim ")"
+
+if = "if" trim condition_block trim long_block
+
+set_weight = /[\d\.]+/ trim "$" ws statement
+
+array = "[" trim @(expression, comma_or_newline, 0, 0) trim "]"
+
+lambda = trim parameters trim long_block
+
+parameters = "[" trim @(id, comma_or_newline, 0, 0) trim "]"
+
+function_scope = expression lambda

@@ -1,0 +1,265 @@
+{
+  "start": {
+    "type": "repetition",
+    "action": "start",
+    "pattern": {
+      "type": "reference",
+      "name": "rule"
+    },
+    "divider": {
+      "type": "reference",
+      "name": "whitespace"
+    }
+  },
+
+  "id": {
+    "type": "regex",
+    "text": "[a-zA-Z0-9_]+"
+  },
+
+  "whitespace": {
+    "type": "regex",
+    "text": "\\s+"
+  },
+
+  "trim": {
+    "type": "regex",
+    "text": "\\s*"
+  },
+
+  "comma": {
+    "type": "regex",
+    "text": "[ \\r\\n]*,[ \\r\\n]*"
+  },
+
+  "semicolon": {
+    "type": "regex",
+    "text": "[ \\r\\n]*;[ \\r\\n]*"
+  },
+
+  "literal": {
+    "type": "and",
+    "action": "literal",
+    "patterns": [
+      "\"",
+      {
+        "type": "regex",
+        "text": "([^\"]|\\\\\")+"
+      },
+      "\""
+    ]
+  },
+
+  "literal_single_quote": {
+    "type": "and",
+    "action": "literal",
+    "patterns": [
+      "'",
+      {
+        "type": "regex",
+        "text": "([^']|\\\\')+"
+      },
+      "'"
+    ]
+  },
+
+  "regex": {
+    "type": "and",
+    "action": "regex",
+    "patterns": [
+      "/",
+      {
+        "type": "regex",
+        "text": "([^/]|\\\\/)+"
+      },
+      "/"
+    ]
+  },
+
+  "reference": {
+    "type": "reference",
+    "name": "id",
+    "action": "reference"
+  },
+
+  "repetition": {
+    "type": "and",
+    "action": "repetition",
+    "patterns": [
+      "@(",
+      {
+        "type": "repetition",
+        "pattern": {
+          "type": "reference",
+          "name": "id"
+        },
+        "divider": {
+          "type": "reference",
+          "name": "comma"
+        }
+      },
+      ")"
+    ]
+  },
+
+  "rule": {
+    "type": "and",
+    "action": "rule",
+    "backtrack": true,
+    "patterns": [
+      {
+        "type": "reference",
+        "name": "id"
+      },
+      {
+        "type": "reference",
+        "name": "trim"
+      },
+      "=",
+      {
+        "type": "reference",
+        "name": "trim"
+      },
+      {
+        "type": "reference",
+        "name": "patterns"
+      }
+    ]
+  },
+
+  "patterns": {
+    "type": "repetition",
+    "action": "pattern",
+    "pattern": {
+      "type": "reference",
+      "name": "pattern"
+    },
+    "divider": {
+      "type": "reference",
+      "name": "whitespace"
+    }
+  },
+
+  "pattern": {
+    "type": "or",
+    "patterns": [
+      {
+        "type": "reference",
+        "name": "or"
+      },
+      {
+        "type": "reference",
+        "name": "group"
+      },
+      {
+        "type": "reference",
+        "name": "repetition"
+      },
+      {
+        "type": "reference",
+        "name": "reference"
+      },
+      {
+        "type": "reference",
+        "name": "literal"
+      },
+      {
+        "type": "reference",
+        "name": "regex"
+      }
+    ]
+  },
+
+  "or_divider": {
+    "type": "and",
+    "patterns": [
+      {
+        "type": "reference",
+        "name": "trim"
+      },
+      "|",
+      {
+        "type": "reference",
+        "name": "trim"
+      }
+    ]
+  },
+
+  "or": {
+    "type": "repetition",
+    "action": "or",
+    "min": 2,
+    "pattern": {
+      "type": "reference",
+      "name": "sub_patterns"
+    },
+    "divider": {
+      "type": "reference",
+      "name": "or_divider"
+    }
+  },
+
+  "sub_patterns": {
+    "type": "repetition",
+    "action": "pattern",
+    "pattern": {
+      "type": "reference",
+      "name": "sub_pattern"
+    },
+    "divider": {
+      "type": "reference",
+      "name": "whitespace"
+    }
+  },
+
+  "sub_pattern": {
+    "type": "or",
+    "patterns": [
+      {
+        "type": "reference",
+        "name": "group"
+      },
+      {
+        "type": "reference",
+        "name": "repetition"
+      },
+      {
+        "type": "reference",
+        "name": "reference"
+      },
+      {
+        "type": "reference",
+        "name": "literal"
+      },
+      {
+        "type": "reference",
+        "name": "literal_single_quote"
+      },
+      {
+        "type": "reference",
+        "name": "regex"
+      }
+    ]
+  },
+
+  "group": {
+    "type": "and",
+    "action": "group",
+    "patterns": [
+      "(",
+      {
+        "type": "reference",
+        "name": "trim"
+      },
+      {
+        "type": "reference",
+        "name": "sub_patterns"
+      },
+      {
+        "type": "reference",
+        "name": "trim"
+      },
+      ")"
+    ]
+  }
+}

@@ -1,57 +1,40 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+
 namespace metahub.parser
 {
 //import metahub.code.functions.Functions;
 
-struct Assignment_Source {
-	string type,
-	List<string> path,
-	object expression,
-	string modifier
+class Assignment_Source
+{
+    public string type;
+    public List<string> path;
+    public object expression;
+    public string modifier;
 }
 
-struct Reference_Or_Function {
-	string type,
+class Reference_Or_Function
+{
+    public string type;
 	//List<string> path,
-	string name,
-	object expression,
-	List<object> inputs
+    public string name;
+    public object expression;
+    public List<object> inputs;
 }
 public class MetaHub_Context : Context {
 
 	//private static Map<string, Functions> function_Dictionary;
 
-  public MetaHub_Context(definition)
+  public MetaHub_Context(Definition definition)
 :base(definition) {
 
-		//if (function_map == null) {
-			//function_map = new Dictionary<string, Functions>();
-			//var map = {
-				//"+": Functions.add,
-				//"-": Functions.subtract,
-				//"*": Functions.multiply,
-				//"/": Functions.divide,
-//
-				//"+=": Functions.add_equals,
-				//"-=": Functions.subtract_equals,
-				//"*=": Functions.multiply_equals,
-				//"/=": Functions.divide_equals,
-//
-				//"=": Functions.equals,
-				//"<": Functions.lesser_than,
-				//">": Functions.greater_than,
-				//"<=": Functions.lesser_than_or_equal_to,
-				//">=": Functions.greater_than_or_equal_to,
-			//}
-//
-			//foreach (var i in map.Keys) {
-				//function_map[i] = map[i];
-			//}
-		//}
 	}
 
   public override object perform_action (string name, object data, Match match) {
-    var name = match.pattern.name;
-    switch(name) {
+    //var name = match.pattern.name;
+    switch (match.pattern.name)
+    {
       case "start":
         return start(data);
 
@@ -64,7 +47,7 @@ public class MetaHub_Context : Context {
       case "create_constraint":
         return create_constraint(data);
 
-      case "expression":
+      case "Node":
         return expression(data, match);
 
       case "method":
@@ -103,11 +86,11 @@ public class MetaHub_Context : Context {
       case "string":
         return data[1];
 
-			case "bool":
-				return data == "true" ? true : false;
+	case "bool":
+		return (string)data == "true";
 
       case "int":
-        return Std.parseInt(data);
+        return int.Parse((string)data);
 
       case "value":
         return value(data);
@@ -153,7 +136,7 @@ public class MetaHub_Context : Context {
   }
 
   static object expression (List<object> data, Match match) {
-    if (data.Count() < 2)
+    if (data.Count < 2)
       return data[0];
 
     Repetition_Match rep_match = match;
@@ -200,7 +183,7 @@ public class MetaHub_Context : Context {
 
 	static object conditions (object data, Match match) {
 		Repetition_Match rep_match = match;
-		if (data.Count() > 1) {
+		if (data.Count > 1) {
 			string symbol = rep_match.dividers[0].matches[1].get_data();
 			string divider = null;
 			switch(symbol) {
@@ -245,7 +228,7 @@ public class MetaHub_Context : Context {
 			trellis: data[2]
     };
 
-    if (data[3] != null && data[3].Count() > 0) {
+    if (data[3] != null && data[3].Count > 0) {
 			result.block = data[3][0];
       //result.set = data[4][0];
     }
@@ -254,9 +237,9 @@ public class MetaHub_Context : Context {
   }
 
   static object reference (object data, Repetition_Match match) {
-		var dividers = Lambda.array(Lambda.map(match.dividers, (d)=>{ return d.matches[0].get_data(); } ));
+		var dividers = match.dividers.Select((d)=>d.matches[0].get_data() );
 //
-		//if (data.Count() == 1) {
+		//if (data.Count == 1) {
 			//return {
 				//type: "reference",
 				//path: [ data[0] ]
@@ -272,7 +255,7 @@ public class MetaHub_Context : Context {
 			}			
 		];
 
-		foreach (var i in 1...data.Count()) {
+		foreach (var i in 1...data.Count) {
 			var token = data[i];
 			var divider = dividers[i - 1];
 			if (divider == ".") {
@@ -314,7 +297,7 @@ public class MetaHub_Context : Context {
 			expression: data[6],
 		};
 
-		if (data[4].Count() > 0)
+		if (data[4].Count > 0)
 			result.modifier = Std.string(data[4][0]);
 
 		return result;
@@ -339,7 +322,7 @@ public class MetaHub_Context : Context {
     return {
 			"type": "new_scope",
 			"path": data[0],
-			"expression": data[2]
+			"Node": data[2]
 		};
   }
 

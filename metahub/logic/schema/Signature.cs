@@ -11,4 +11,14 @@ public class Signature
     public Rail rail;
     public bool is_value;
     public int is_numeric;
+
+    public Signature()
+    {
+        
+    }
+
+    public Signature(Kind kind, Rail rail = null)
+    {
+        
+    }
 }}

@@ -13,7 +13,7 @@ public class Flow_Control : Expression {
 	public List<Expression> children;
 	
 	public Flow_Control(string name, Condition condition, List<Expression> children)
-:base(Expression_Type.flow_control) {
+:base(Node_Type.flow_control) {
 		this.name = name;
 		this.condition = condition;
 		this.children = children;

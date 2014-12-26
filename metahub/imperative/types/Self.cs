@@ -11,7 +11,7 @@ public class Self : Expression {
 
 	public Self(Expression child = null)
 
-:base(Expression_Type.self) {
+:base(Node_Type.self) {
 		this.child = child;
 	}
 	

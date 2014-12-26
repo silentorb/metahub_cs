@@ -1,5 +1,4 @@
 using metahub.logic.schema;
-using metahub.logic.schema.Signature;
 using metahub.meta.types;
 
 namespace metahub.imperative.types {
@@ -13,7 +12,7 @@ public class Literal : Expression {
 
 	public Literal(object value, Signature signature)
 
-:base(Expression_Type.literal) {
+:base(Node_Type.literal) {
 		this.value = value;
 		this.signature = signature;
 	}

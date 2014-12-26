@@ -110,7 +110,7 @@ public class Cpp : Target{
 		root.Add(func);
 		func = new Function_Definition("~" + rail.rail_name, dungeon, [],
 		[]	//references.map((tie)=> new Function_Call("SAFE_DELETE",
-				//[new Property_Expression(tie)])
+				//[new Property_Reference(tie)])
 			//)
 		);
 		func.return_type = null;
@@ -124,7 +124,7 @@ public class Cpp : Target{
 
 	void pop_scope () {
 		scopes.pop();
-		current_scope = scopes[scopes.Count() - 1];
+		current_scope = scopes[scopes.Count - 1];
 	}
 
 	void create_header_file (Dungeon dungeon, namespace, dir) {
@@ -250,7 +250,7 @@ public class Cpp : Target{
 			);
 		}
 
-		if (result.Count() > 0)
+		if (result.Count > 0)
 			result += newline();
 
 		return result;
@@ -267,7 +267,7 @@ public class Cpp : Target{
 			}
 		}
 
-		if (result.Count() > 0)
+		if (result.Count > 0)
 			result += newline();
 
 		return result;
@@ -278,7 +278,7 @@ public class Cpp : Target{
 		current_rail = rail;
 		var result = "";
 		var first = "class ";
-		if (rail.class_export.Count() > 0)
+		if (rail.class_export.Count > 0)
 			first += rail.class_export + " ";
 
 		first += rail.rail_name;
@@ -331,7 +331,7 @@ public class Cpp : Target{
 //
 		////foreach (var tie in rail.all_ties) {
 			////var definition = render_setter(tie);
-			////if (definition.Count() > 0)
+			////if (definition.Count > 0)
 				////definitions.Add(definition);
 		////}
 ////
@@ -432,7 +432,7 @@ public class Cpp : Target{
 		return false;
 	}
 
-	void get_property_type_string (Tie tie, is_parameter = false) {
+	void get_property_type_string (Tie tie, bool is_parameter = false) {
 		var other_rail = tie.other_rail;
 		if (other_rail == null)
 			return types[tie.property.type.to_string(]);
@@ -474,7 +474,7 @@ public class Cpp : Target{
 
 	}
 
-	string render_signature (Signature signature, is_parameter = false) {
+	string render_signature (Signature signature, bool is_parameter = false) {
 		if (signature.rail == null) {
 			return signature.type == Kind.reference
 				? "void*"
@@ -512,7 +512,7 @@ public class Cpp : Target{
 		return result;
 	}
 
-	public string render_scope2 (string intro, List<object> statements, minimal = false) {
+	public string render_scope2 (string intro, List<object> statements, bool minimal = false) {
 		indent();
 		var lines = line_count;
 		var block = render_statements(statements);
@@ -603,7 +603,7 @@ public class Cpp : Target{
 				result = current_rail.parent.rail_name;
 
 			default:
-				throw new Exception("Unsupported expression type: " + expression.type + ".");
+				throw new Exception("Unsupported Node type: " + expression.type + ".");
 		}
 
 		if (expression.child != null) {
@@ -633,7 +633,7 @@ public class Cpp : Target{
 				return Std.string(expression.value);
 			
 			case Kind.String:
-				return """ + Std.string(expression.value) + """;
+				return """ + Std.string(Node.value) + """;
 
 			case Kind.Bool:
 				bool boolean = expression.value;
@@ -649,7 +649,7 @@ public class Cpp : Target{
 				return render_rail_name(signature.rail) + "()";
 				
 			default:
-				throw new Exception("Invalid literal "" + expression.value + "" type "" + expression.signature.type + ".");
+				throw new Exception("Invalid literal "" + Node.value + "" type "" + Node.signature.type + ".");
 		}
 	}
 
@@ -664,7 +664,7 @@ public class Cpp : Target{
 				return property_expression.tie;
 
 			default:
-				throw new Exception("Determining pointer is not yet implemented for expression type: " + expression.type + ".");
+				throw new Exception("Determining pointer is not yet implemented for Node type: " + expression.type + ".");
 		}
 	}
 
@@ -682,7 +682,7 @@ public class Cpp : Target{
 	}
 
 	Signature find_variable (string name) {
-		var i = scopes.Count();
+		var i = scopes.Count;
 		while (--i >= 0) {
 			if (scopes[i].ContainsKey(name))
 				return scopes[i][name];
@@ -697,7 +697,7 @@ public class Cpp : Target{
 
 	string render_function_call (Function_Call expression, Expression parent) {
 		if (expression.is_platform_specific) {
-			//var args = expression.args.map((a)=> a).join(", ");
+			//var args = Node.args.map((a)=> a).join(", ");
 
 			switch (expression.name) {
 				case "count":
@@ -741,20 +741,20 @@ public class Cpp : Target{
 		return line(render_expression(statement.target) + " " + statement.op + " " + render_expression(statement.expression) + ";");
 	}
 
-	//public object render_expression (Expression expression, Scope scope) {
-		//var type = Railway.get_class_name(expression);
-		//trace("expression:", type);
+	//public object render_expression (Node Node, Scope scope) {
+		//var type = Railway.get_class_name(Node);
+		//trace("Node:", type);
 //
 		//switch(type) {
 			//case "Literal":
-				//return render_literal(expression);
+				//return render_literal(Node);
 		//}
 //
-		//throw new Exception("Cannot render expression " + type + ".");
+		//throw new Exception("Cannot render Node " + type + ".");
 	//}
 //
-	//string render_literal (Literal expression) {
-		//return expression.value;
+	//string render_literal (Literal Node) {
+		//return Node.value;
 	//}
 }
 }

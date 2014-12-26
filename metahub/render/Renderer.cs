@@ -19,15 +19,17 @@ public class Renderer{
 		return indentation + text + "\n";
 	}
 
-	public void indent () {
+    public Renderer indent()
+    {
 		++depth;
 		indentation += "\t";
 		return this;
 	}
 
-	public void unindent () {
+    public Renderer unindent()
+    {
 		--depth;
-		indentation = indentation.substring(0, indentation.Count() - 1);
+		indentation = indentation.Substring(0, indentation.Length - 1);
 		return this;
 	}
 
@@ -50,8 +52,9 @@ public class Renderer{
 		depth = 0;
 		indentation = "";
 	}
-	
-	public void pad (string content) {
+
+    public string pad(string content)
+    {
 		return content == ""
 		? content
 		: newline() + content;

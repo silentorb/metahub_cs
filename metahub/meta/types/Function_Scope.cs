@@ -5,13 +5,13 @@ namespace metahub.meta.types
      * ...
      * @author Christopher W. Johnson
      */
-public class Function_Scope : Expression
+public class Function_Scope : Node
     {
-        public Expression expression;
+        public Node expression;
         public Lambda lambda;
 
-        public Function_Scope(Expression expression, Lambda lambda)
-            : base(Expression_Type.function_scope)
+        public Function_Scope(Node expression, Lambda lambda)
+            : base(Node_Type.function_scope)
         {
             this.expression = expression;
             this.lambda = lambda;

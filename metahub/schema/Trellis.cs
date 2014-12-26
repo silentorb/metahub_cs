@@ -126,10 +126,10 @@ public class Trellis {
 //
 	//public void get_external_value (int index, Change change, Context context) {
 		//var port = ports[index];
-		//if (port.connections.Count() == 0)
+		//if (port.connections.Count == 0)
 			//return null;
 //
-		//if (port.connections.Count() > 1)
+		//if (port.connections.Count > 1)
 			//throw new Exception("Not yet supported.");
 //
 		//return port.connections[0].get_node_value(context);
@@ -250,7 +250,7 @@ public class Trellis {
 	//}
 //
 	//public int get_port_count () {
-		//return ports.Count();
+		//return ports.Count;
 	//}
 
 	public string to_string () {

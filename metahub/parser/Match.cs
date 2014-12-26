@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+
 namespace metahub.parser
 {
 public class Match : Result {
@@ -10,7 +12,7 @@ public class Match : Result {
                       List<Result> children = null, List<Match> matches = null) {
     this.pattern = pattern;
     this.start = start;
-    this.Count() = length;
+    this.Count = length;
     success = true;
 
     if (pattern.type == "regex" || pattern.type == "literal") {

@@ -12,7 +12,7 @@ struct Property_Chain List<Property>;
 public class Property_Chain_Helper {
 	public static Property_Chain flip (Property_Chain chain) {
 		Property_Chain result = new Property_Chain();
-		var i = chain.Count() - 1;
+		var i = chain.Count - 1;
 		while (i >= 0) {
 			if (chain[i].other_property != null)
 				result.Add(chain[i].other_property);
@@ -24,7 +24,7 @@ public class Property_Chain_Helper {
 
   public static Property_Chain from_string (List<string> path, Trellis trellis, int start_index = 0) {
     Property_Chain result = new Property_Chain();
-    foreach (var x in start_index...path.Count()) {
+    foreach (var x in start_index...path.Count) {
       var property = trellis.get_property(path[x]);
       result.Add(property);
       trellis = property.other_trellis;
@@ -43,7 +43,7 @@ public class Property_Chain_Helper {
 	//}
 /*
 	public static void perform (Property_Chain chain, Node node, Hub hub, action, int start = 0) {
-		foreach (var i in start...chain.Count()) {
+		foreach (var i in start...chain.Count) {
 			var link = chain[i];
 			if (link.type == Kind.list) {
 				throw new Exception("Property_Chain.perform is not implemented for lists.");

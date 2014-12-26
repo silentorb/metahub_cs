@@ -1,14 +1,10 @@
+using metahub.imperative;
+using metahub.imperative.schema;
+using metahub.logic.schema;
+
 namespace metahub.render
 {
-using metahub.imperative.Imp;
-using metahub.imperative.schema.Dungeon;
-using metahub.logic.schema.Railway;
-using metahub.render.Renderer;
 
-/**
- * ...
- * @author Christopher W. Johnson
- */
 public class Target{
 	Railway railway;
 	Renderer render = new Renderer();
@@ -33,11 +29,13 @@ public class Target{
 		return render.line(text);
 	}
 
-	public void indent () {
+    public Renderer indent()
+    {
 		return render.indent();
 	}
 
-	public void unindent () {
+    public Renderer unindent()
+    {
 		return render.unindent();
 	}
 
@@ -45,8 +43,9 @@ public class Target{
 		++line_count;
 		return render.newline(amount);
 	}
-	
-	public void pad (string content) {
+
+    public string pad(string content)
+    {
 		return content == ""
 		? content
 		: newline() + content;

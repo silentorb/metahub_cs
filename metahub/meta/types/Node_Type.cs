@@ -1,6 +1,6 @@
 namespace metahub.meta.types
 {
-    enum Expression_Type
+    public enum Node_Type
     {
         // Expressions
         literal = 1,

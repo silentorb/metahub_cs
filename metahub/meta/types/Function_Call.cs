@@ -8,13 +8,13 @@ namespace metahub.meta.types {
  * ...
  * @author Christopher W. Johnson
  */
-public class Function_Call : Expression {
+public class Function_Call : Node {
 	public string name;
-	public Expression input;
+	public Node input;
 	public Signature signature;
 
-	public Function_Call(string name, Expression input, Railway railway)
-        : base(Expression_Type.function_call)
+	public Function_Call(string name, Node input, Railway railway)
+        : base(Node_Type.function_call)
     {
 		;
 		this.name = name;

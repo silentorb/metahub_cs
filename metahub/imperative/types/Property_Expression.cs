@@ -12,7 +12,7 @@ public class Property_Expression : Expression
 	
 	public Property_Expression(Tie tie, Expression child = null)
 
-:base(Expression_Type.property) {
+:base(Node_Type.property) {
 		this.tie = tie;
 		this.child = child;
 	}

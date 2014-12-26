@@ -19,7 +19,7 @@ public class Assignment : Expression {
 //struct Assignment //{
 	//string type,
 	//string op,
-	//Expression target,
-	//Expression expression
+	//Node target,
+	//Node Node
 //}
 }

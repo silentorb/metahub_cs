@@ -104,11 +104,11 @@ public class Property {
       var other_properties = other_trellis.properties.Where((p)=> p.other_trellis == this.trellis);
 //        throw new Exception("Could not find other property for " + this.trellis.name + "." + this.name + ".");
 
-      if (other_properties.Count() > 1) {
+      if (other_properties.Count > 1) {
         throw new Exception("Multiple ambiguous other properties for " + this.trellis.name + "." + this.name + ".");
 //        var direct = Lambda.filter(other_properties, (p)=>{ return p.other_property})
       }
-      else if (other_properties.Count() == 1) {
+      else if (other_properties.Count == 1) {
         this.other_property = other_properties.First();
         this.other_property.other_trellis = this.trellis;
         this.other_property.other_property = this;

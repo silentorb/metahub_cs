@@ -2,19 +2,16 @@ using System.Collections.Generic;
 
 namespace metahub.meta.types
 {
-
-/**
- * @author Christopher W. Johnson
- */
-public class Block : Expression{
-	public List<object> children = new List<object>();
-
-	public Block(List<object> statements = null)
-        : base(Expression_Type.block)
+    public class Block : Node
     {
-		if (statements != null)
-			this.children = statements;
-        
-	}
-}
+        public List<Node> children = new List<Node>();
+
+        public Block(List<Node> statements = null)
+            : base(Node_Type.block)
+        {
+            if (statements != null)
+                children = statements;
+
+        }
+    }
 }

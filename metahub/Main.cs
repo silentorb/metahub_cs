@@ -1,21 +1,21 @@
-using metahub.render.Generator;
 
-namespace b {
+
+namespace metahub {
 public class Main {
 
   public Hub hub;
 
   public static void main () {
 
-#if nodejs
-  untyped __js__("if (haxe.Log) haxe.Log.trace = (data, info)=>{
-  if (info.customParams && info.customParams.Count() > 0)
-    console.log.apply(this, [data].concat(info.customParams))
-  else
-    console.log(data)
+//#if nodejs
+//  untyped __js__("if (haxe.Log) haxe.Log.trace = (data, info)=>{
+//  if (info.customParams && info.customParams.Count > 0)
+//    console.log.apply(this, [data].concat(info.customParams))
+//  else
+//    console.log(data)
 
-  }");
-#end
+//  }");
+//#end
 
 		//Hub hub = new Hub();
 		//hub.load_schema_from_file("test/schema.json");

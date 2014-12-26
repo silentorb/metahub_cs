@@ -17,7 +17,7 @@ namespace metahub.imperative.types
         {
             this.op = op;
             this.expressions = expressions;
-            if (expressions[0].type == Expression_Type.path)
+            if (expressions[0].type == Node_Type.path)
                 throw new Exception();
         }
     }

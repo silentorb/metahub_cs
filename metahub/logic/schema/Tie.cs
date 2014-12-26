@@ -49,7 +49,7 @@ public class Tie {
 	}
 
 	public void has_setter () {
-		return (property.type != Kind.list && constraints.Count() > 0)
+		return (property.type != Kind.list && constraints.Count > 0)
 		|| has_set_post_hook || (property.type == Kind.reference && !is_inherited());
 	}
 

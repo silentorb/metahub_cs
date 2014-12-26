@@ -15,7 +15,7 @@ public class Wrapper : Pattern {
 
     Match match = result;
 
-    return success(start, match.Count(), [ result ], [ match ]);
+    return success(start, match.Count, [ result ], [ match ]);
   }
 
   override object get_data (Match match) {

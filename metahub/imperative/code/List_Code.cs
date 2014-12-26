@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using metahub.imperative.types;
 using metahub.logic.schema;
 using metahub.meta.types;
@@ -28,11 +29,11 @@ public class List_Code
         }, new List<Expression>());
 
 		var zone = dungeon.create_zone(definition.expressions);
-		var mid = zone.divide(null, [
+		var mid = zone.divide(null, new List<Expression> {
 			new Property_Expression(tie,
-				new Function_Call("add", [ new Variable("item") ], true)
+				new Function_Call("add",new List<object>{ new Variable("item") }, true)
 			)
-		]);
+		});
 		var post = zone.divide(function_name + "_post");
 
 		if (tie.other_tie != null) {
@@ -47,22 +48,22 @@ public class List_Code
 	}
 
 	public static void generate_constraint (Constraint constraint, Imp imp) {
-		Path path = constraint.reference;
-		Property_Expression property_expression = path.children[0];
+		var path = (Reference_Path)constraint.reference;
+        var property_expression = (Property_Reference)path.children[0];
 		var reference = property_expression.tie;
-		//int amount = target.render_expression(constraint.expression, constraint.scope);
+		//int amount = target.render_expression(constraint.Node, constraint.scope);
 		var expression = constraint.expression;
 
-		//if (constraint.expression.type == metahub.meta.types.Expression_Type.function_call) {
-			//metahub.meta.types.Function_Call func = constraint.expression;
+		//if (constraint.Node.type == metahub.meta.types.Expression_Type.function_call) {
+			//metahub.meta.types.Function_Call func = constraint.Node;
 			//if (func.name == "map") {
-				//map(constraint, expression, imp);
+				//map(constraint, Node, imp);
 				//return;
 			//}
 		//}
 
 		var other_path = Parse.get_path(expression);
-		if (other_path.Count() > 0 && other_path[other_path.Count() - 1].type == Kind.list) {
+		if (other_path.Count > 0 && other_path[other_path.Count - 1].type == Kind.list) {
 			map(constraint, expression, imp);
 		}
 		else {
@@ -70,26 +71,26 @@ public class List_Code
 		}
 	}
 
-	public static void map (Constraint constraint, metahub expression.meta.types.Expression, Imp imp) {
-		var start = Parse.get_start_tie(constraint.reference);
+	public static void map (Constraint constraint, Node expression, Imp imp) {
+		var start = Parse.get_path(constraint.reference).First();
 		var end = Parse.get_end_tie(constraint.reference);
-		metahub.meta.types.Path path = constraint.expression;
+		var path = (Reference_Path)constraint.expression;
 
 		var a = Parse.get_path(constraint.reference);
 		var b = Parse.get_path(path);
 
-		link(a, b, Parse.reverse_path(b.slice(0, a.Count() - 1)), constraint.lambda, imp);
-		link(b, a, a.slice(0, a.Count() - 1), constraint.lambda, imp);
+		link(a, b, Parse.reverse_path(b.Take(a.Count - 1)), constraint.lambda, imp);
+		link(b, a, a.Take(a.Count - 1), constraint.lambda, imp);
 	}
 
-	public static void link (List<Tie> a, List<Tie> b, List<Tie> c, Lambda mapping, Imp imp) {
+	public static void link (List<Tie> a, List<Tie> b, IEnumerable<Tie> c, Lambda mapping, Imp imp) {
 		var a_start = a[0];
-		var a_end = a[a.Count() - 1];
+		var a_end = a[a.Count - 1];
 
 		var second_start = b[0];
-		var second_end = b[b.Count() - 1];
+		var second_end = b[b.Count - 1];
 
-		var item_name = second_end.rail.name.toLowerCase() + "_item";
+		var item_name = second_end.rail.name.ToLower() + "_item";
 
 		var creation_block = new List<Expression>();
 	    creation_block.Add(new Declare_Variable(item_name, second_end.get_other_signature(),
@@ -98,66 +99,65 @@ public class List_Code
 		if (mapping != null) {
 			var constraints = (List<metahub.meta.types.Constraint>) mapping.expressions;
 			foreach (var constraint in constraints) {
-				metahub.meta.types.Path first = constraint.first;
-				metahub.meta.types.Property_Expression first_tie = first.children[1];
-				metahub.meta.types.Path second = constraint.second;
-				metahub.meta.types.Property_Expression second_tie = second;
+				var first = constraint.first as Reference_Path;
+				var first_tie = first.children[1] as Property_Reference;
+				var second = constraint.second as Property_Reference;
+                //var second_tie = second.children[] as Property_Reference;
 				creation_block.Add(new Assignment(
 					new Variable(item_name, new Property_Expression(a_end.other_rail.get_tie_or_error(first_tie.tie.name))),
 					"=",
-					new Variable("item", new Property_Expression(second_end.other_rail.get_tie_or_error(second_tie.tie.name)))
+					new Variable("item", new Property_Expression(second_end.other_rail.get_tie_or_error(second.tie.name)))
 				));
 			}
 		}
 
-		creation_block = creation_block.concat([
+		creation_block = creation_block.Union(new List<Expression>{
 			new Variable(item_name, new Function_Call("initialize")),
-			new Property_Expression(c[0],
+			new Property_Expression(c.First(),
 				new Function_Call(second_end.tie_name + "_add",
-					[new Variable(item_name), new Self()])
-			)
-		]);
+				new List<object> { new Variable(item_name), new Self()}))
+		}).ToList();
 
-		List<Expression> block = [
-				new Flow_Control("if", new Condition("!=", [
-				new Variable("origin"), new Property_Expression(c[0])]), creation_block)
-		];
+		List<Expression> block = new List<Expression> {
+				new Flow_Control("if", new Condition("!=", new List<Expression> {
+				new Variable("origin"), new Property_Expression(c.First())}), creation_block)
+		};
 
 		if (a_start.other_tie.property.allow_null) {
-			block = [
+			block = new List<Expression> {
 				new Flow_Control("if",
-					new Condition("!=", [ new Property_Expression(a_start.other_tie),
-					new Null_Value() ]), block
+					new Condition("!=", new List<Expression> { new Property_Expression(a_start.other_tie),
+					new Null_Value() }), block
 				)
-			];
+			};
 		}
 		imp.get_dungeon(a_end.rail).concat_block(a_end.tie_name + "_add_post", block);
 	}
 
-	public static void size (Constraint constraint, metahub expression.meta.types.Expression, Imp imp) {
-		Path path = constraint.reference;
-		Property_Expression property_expression = path.children[0];
+	public static void size (Constraint constraint, Node expression, Imp imp) {
+		var path = (Reference_Path) constraint.reference;
+		var property_expression = (Property_Reference)path.children[0];
 		var reference = property_expression.tie;
 
 		var instance_name = reference.other_rail.rail_name;
 		var rail = reference.other_rail;
 		Rail local_rail = reference.rail;
-		var child = "child";
+		const string child = "child";
 		Flow_Control flow_control = new Flow_Control("while", new Condition("<",
-			[
+		new List<Expression>{
 				imp.translate(constraint.reference),
 				//{ type: "path", path: constraint.reference },
 				imp.translate(expression)
-			]),[
-			new Declare_Variable(child, {
-					type: Kind.reference,
-					rail: rail,
-					is_value: false
+        }),new List<Expression> {
+			new Declare_Variable(child,new Signature {
+					type = Kind.reference,
+					rail = rail,
+					is_value = false
 			}, new Instantiate(rail)),
 			new Variable(child, new Function_Call("initialize")),
 			new Function_Call(reference.tie_name + "_add",
-				[new Variable(child), new Null_Value()])
-	]);
+			new List<object> {new Variable(child), new Null_Value()})
+	});
 		imp.get_dungeon(local_rail).add_to_block("initialize", flow_control);
 	}
 

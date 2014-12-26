@@ -1,12 +1,12 @@
+using System.Collections.Generic;
+using System.Linq;
+using metahub.imperative.types;
+using metahub.logic.schema;
+using metahub.meta.types;
+using Constraint = metahub.logic.schema.Constraint;
+
 namespace metahub.imperative.code
 {
-using metahub.imperative.Imp;
-using metahub.logic.schema.Constraint;
-using metahub.logic.schema.Rail;
-using metahub.logic.schema.Railway;
-using metahub.imperative.types.*;
-using metahub.meta.Scope;
-using metahub.schema.Kind;
 
 /**
  * ...
@@ -14,86 +14,69 @@ using metahub.schema.Kind;
  */
 public class Reference
 {
-	public static var inverse_operators = {
-		">": "<=",
-		"<": ">=",
-		">=": "<",
-		"<=": ">"
-	}
+    public static Dictionary<string, string> inverse_operators = new Dictionary<string, string>
+        {
+            {">", "<="},
+            {"<", ">="},
+            {">=", "<"},
+            {"<=", ">"}
+        };
 
 	public static List<Expression> constraint (Constraint constraint, Imp imp) {
 		var op = constraint.op;
-		return [];
+        //return new List<Expression>();
 		var reference = imp.translate(constraint.reference);
 
 		if (op == "in") {
-			metahub.meta.types.Block args = constraint.expression;
-			return generate_constraint(reference, ">=", args.children[0])
-			.concat(
-				generate_constraint(reference, "<=", args.children[1])
-			);
+			var args = (metahub.meta.types.Block)constraint.expression;
+            return generate_constraint(reference, ">=", (Literal_Value)args.children[0])
+			.Union(
+                generate_constraint(reference, "<=", (Literal_Value)args.children[1])
+			).ToList();
 		}
 
-		return generate_constraint(reference, constraint.op, constraint.expression);
-		//var inverse = inverse_operators[op];
-		//Literal conversion = constraint.expression;
-		//float limit = conversion.value;
-//
-		//float min = 0.0001;
-		//float value = 0;
-		//switch(op) {
-			//case "<":
-				//value = limit - min;
-			//case ">":
-				//value = limit + min;
-			//case "<=":
-				//value = limit;
-			//case ">=":
-				//value = limit;
-		//}
-//
-		//return [ new Flow_Control("if",	new Condition(inverse,
-				//[
-					//imp.translate(constraint.reference),
-					//{ type: Expression_Type.literal, value: limit }
-				//]
-			//),
-			//[
-				//new Assignment(imp.translate(constraint.reference), "=", new Literal(value, { type: Kind.Float }))
-			//]
-		//)];
+		return generate_constraint(reference, constraint.op, (Literal_Value)constraint.expression);
+
 	}
 
-	static List<Expression> generate_constraint (Expression reference, op, Literal literal) {
+    static List<Expression> generate_constraint(Expression reference, string op, Literal_Value literal)
+    {
 		var inverse = inverse_operators[op];
-		float limit = literal.value;
+		float limit = (float)literal.value;
 
-		float min = 0.0001;
+		const float min = 0.0001f;
 		float value = 0;
 		switch(op) {
 			case "<":
 				value = limit - min;
+		        break;
+
 			case ">":
 				value = limit + min;
+                break;
+
 			case "<=":
 				value = limit;
+                break;
+
 			case ">=":
 				value = limit;
+                break;
 		}
 
-		return [ new Flow_Control("if",	new Condition(inverse,
-				[
+		return new List<Expression> { new Flow_Control("if",	new Condition(inverse,
+				new List<Expression> {
 					reference,
-					{ type: Expression_Type.literal, value: limit }
-				]
+				new Signature { type = Node_Type.literal, value= limit }
+        }
 			),
-			[
-				new Assignment(reference, "=", new Literal(value, { type: Kind.Float }))
-			]
-		)];
+		new List<Expression>{
+				new Assignment(reference, "=", new Literal(value, new Signature { type = Kind.Float }))
+    }
+		)};
 	}
 
-	//public static Expression convert_expression (metahub expression.meta.types.Expression, Scope scope) {
+	//public static Node convert_expression (metahub Node.meta.types.Node, Scope scope) {
 //
 		//
 //

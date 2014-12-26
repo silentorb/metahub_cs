@@ -1,10 +1,19 @@
+using System;
+using System.Collections.Generic;
+
 namespace metahub.parser
 {
 public class Bootstrap : Context {
 
 //  public Bootstrap() { }
 
-  public override object perform_action (string name, object data, Match match) {
+    public Bootstrap(Definition definition)
+        : base(definition)
+    {
+    }
+
+
+    public override object perform_action (string name, object data, Match match) {
     if (name == null)
       return data;
 
@@ -79,10 +88,10 @@ public class Bootstrap : Context {
 //    trace("pattern:", data);
 
     List<object> value = data;
-    var w = value.Count();
-    if (data.Count() == 0)
+    var w = value.Count;
+    if (data.Count == 0)
       return null;
-    else if (data.Count() == 1)
+    else if (data.Count == 1)
       return data[0];
     else
       return {
@@ -106,9 +115,9 @@ public class Bootstrap : Context {
 			}
     };
 
-    if (settings.Count() > 2) {
+    if (settings.Count > 2) {
       Reflect.setField(result, "min", Std.int(settings[2]));
-      if (settings.Count() > 3) {
+      if (settings.Count > 3) {
         Reflect.setField(result, "max", Std.int(settings[3]));
       }
     }
@@ -120,7 +129,7 @@ public class Bootstrap : Context {
     List<object> value = data[4];
     return {
     name: data[0],
-    value: value != null && value.Count() == 1 ? value[0] : value
+    value: value != null && value.Count == 1 ? value[0] : value
     };
   }
 

@@ -12,7 +12,7 @@ public class Statement : Expression {
 
 	public Statement(string name)
 
-:base(Expression_Type.statement) {
+:base(Node_Type.statement) {
 		this.name = name;
 	}
 	

@@ -7,17 +7,17 @@ namespace metahub.imperative.types
  * @author Christopher W. Johnson
  */
 public class Expression {
-	public Expression_Type type;
+	public Node_Type type;
 	public Expression child = null;
 	
-	protected Expression(Expression_Type type) {
+	protected Expression(Node_Type type) {
 		this.type = type;
 	}
 }
-//struct Expression {
+//struct Node {
 	//Expression_Type type,
 	//object value,
-	//Expression child,
+	//Node child,
 	//string name,
 	//List<object> args,
 	//List<object> path,

@@ -1,3 +1,7 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+
 namespace metahub.parser
 {
 public class Context {
@@ -15,18 +19,18 @@ public class Context {
 
   public Result parse (string text, bool silent = true) {
     this.text = text;
-		if (definition.patterns.Count() == 0)
+		if (definition.patterns.Count == 0)
 			throw new Exception("Unable to parse; definition does not have any patterns.");
 
     var result = definition.patterns[0].test(new Position(this), 0);
     if(result.success){
-      Match match = result;
-      var offset = match.start.move(match.Count());
-      if (offset.get_offset() < text.Count()) {
+      var match = (metahub.parser.Match)result;
+      var offset = match.start.move(match.length);
+      if (offset.get_offset() < text.Length) {
 				result.success = false;
 				if (!silent) {
 					throw new Exception("Could not find match at " + offset.get_coordinate_string()
-					+ " [" + text.substr(offset.get_offset()) + "]");
+					+ " [" + text.Substring(offset.get_offset()) + "]");
 				}
 			}
     }
@@ -34,11 +38,12 @@ public class Context {
     return result;
   }
 
-  public object perform_action (string name, object data, Match match) {
+  virtual public object perform_action (string name, object data, Match match) {
     return null;
   }
 
-  public void rewind (List<string> messages) {
+  public Position rewind(List<string> messages)
+  {
     var previous = last_success;
     if (previous == null) {
       messages.Add("Could not find previous text match.");
@@ -57,11 +62,11 @@ public class Context {
         throw new Exception("Infinite loop looking for previous repetition.");
     }
 
-    Repetition pattern = repetition.pattern;
-    if (repetition.matches.Count() > pattern.min) {
-      repetition.matches.pop();
+    var pattern = (Repetition)repetition.pattern;
+    if (repetition.matches.Count > pattern.min) {
+      repetition.matches.RemoveAt(repetition.matches.Count - 1);
       messages.Add("rewinding " + pattern.name + " " + previous.start.get_coordinate_string());
-      repetition.children.pop();
+      repetition.matches.RemoveAt(repetition.matches.Count - 1);
       return previous.start;
     }
 

@@ -11,7 +11,7 @@ public class Null_Value : Expression
 {
 	public Null_Value()
 
-:base(Expression_Type.null_value) {
+:base(Node_Type.null_value) {
 	}
 
 }

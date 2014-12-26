@@ -1,21 +1,17 @@
+using metahub.logic.schema;
+using metahub.meta.types;
+
 namespace metahub.imperative.types
 {
-using metahub.logic.schema.Rail;
+    public class Instantiate : Expression
+    {
+        public Rail rail;
 
-/**
- * @author Christopher W. Johnson
- */
-public class Instantiate : Expression {
-	public Rail rail;
-	
-	public Instantiate(Rail rail)
-:base(Expression_Type.instantiate) {
-		this.rail = rail;
-	}
-}
+        public Instantiate(Rail rail)
+            : base(Node_Type.instantiate)
+        {
+            this.rail = rail;
+        }
+    }
 
-//struct Instantiate //{
-	//string type,
-	//Rail rail
-//}
 }

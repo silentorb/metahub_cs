@@ -4,15 +4,15 @@ namespace metahub.meta.types
 /**
  * @author Christopher W. Johnson
  */
-public class Constraint : Expression
+public class Constraint : Node
 {
-	public Expression first;
-	public Expression second;
+	public Node first;
+	public Node second;
 	public string op;
 	public Lambda lambda;
 	
-	public Constraint(Expression first, Expression second, string op = "=", Lambda lambda = null)
-        : base(Expression_Type.constraint)
+	public Constraint(Node first, Node second, string op = "=", Lambda lambda = null)
+        : base(Node_Type.constraint)
     {
 		this.first = first;
 		this.second = second;

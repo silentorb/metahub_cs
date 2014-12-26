@@ -24,9 +24,9 @@ public class Group_And : Group {
 
       Match match = result;
       matches.Add(match);
-      position = position.move(match.Count());
+      position = position.move(match.Count);
 
-      length += match.Count();
+      length += match.Count;
     }
 
     return success(start, length, info_items, matches);

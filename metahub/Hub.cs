@@ -1,13 +1,24 @@
 
 
+using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Reflection;
+using metahub.imperative;
+using metahub.imperative.types;
+using metahub.logic.schema;
+using metahub.meta;
+using metahub.parser;
+using metahub.render;
 using metahub.schema;
+using Namespace = metahub.schema.Namespace;
+using Regex = System.Text.RegularExpressions.Regex;
 
 namespace metahub {
 public class Hub {
   public Schema schema;
   public metahub.parser.Definition parser_definition;
-	static var remove_comments = ~/#[^\n]*/g;
+	static Regex remove_comments = new Regex("/#[^\n]*");
 	public Namespace metahub_namespace;
 	public int max_steps = 100;
 
@@ -26,7 +37,7 @@ public class Hub {
   }
 
 	//public void add_change (INode node, int index, object value, Context context, General_Port source = null) {
-		//var i = queue.Count();
+		//var i = queue.Count;
 		//while (--i >= 0) {
 			//if (queue[i].node == node) {
 				//queue.splice(i, 1);
@@ -51,7 +62,7 @@ public class Hub {
 			//return;
 //
 		//int steps = 0;
-		//while (queue.Count() > 0) {
+		//while (queue.Count > 0) {
 			//var change = queue.shift();
 			//change.run();
 			//if (++steps > max_steps)
@@ -62,12 +73,13 @@ public class Hub {
 	//}
 
   private void load_parser () {
-    metahub.parser.Definition boot_definition = new metahub.parser.Definition();
+    Definition boot_definition = new Definition();
     boot_definition.load_parser_schema();
-    metahub.parser.Bootstrap context = new metahub.parser.Bootstrap(boot_definition);
-    var result = context.parse(metahub.Macros.insert_file_as_string("inserts/metahub.grammar"), false);
+    Bootstrap context = new Bootstrap(boot_definition);
+
+    var result = context.parse(Utility.get_string_resource("metahub.grammar"), false);
 		if (result.success) {
-			Match match = result;
+			var  match = (metahub.parser.Match)result;
 			parser_definition = new Definition();
 			parser_definition.load(match.get_data());
 		}
@@ -136,7 +148,7 @@ public class Hub {
 //
 	//public Node get_node (int id) {
 		//if (!nodes.ContainsKey(id))
-		////if (id < 1 || id >= nodes.Count())
+		////if (id < 1 || id >= nodes.Count)
 			//throw new Exception("There is no node with an id of " + id + ".");
 //
 		//return nodes[id];
@@ -206,18 +218,18 @@ public class Hub {
 		////return port;
   //}
 
-	public void parse_code (string code) {
+	public Result parse_code (string code) {
 		if (parser_definition == null) {
 			load_parser();
 		}
-		metahub.parser.MetaHub_Context context = new metahub.parser.MetaHub_Context(parser_definition);
-		var without_comments = remove_comments.replace(code, "");
+		MetaHub_Context context = new MetaHub_Context(parser_definition);
+		var without_comments = remove_comments.Replace(code, "");
 		//trace("without_comments", without_comments);
     return context.parse(without_comments);
 	}
 
   public void load_internal_trellises () {
-		var functions = Macros.insert_file_as_string("inserts/core_nodes.json");
+		var functions = Utility.get_string_resource("inserts/core_nodes.json");
     var data = haxe.Json.parse(functions);
     schema.load_trellises(data.trellises, new Load_Settings(metahub_namespace));
   }
@@ -303,13 +315,13 @@ public class Hub {
 		//}
 //
 		//if (depth == 0) {
-			//result = "Graphed " + used.Count() + " nodes:\n\n" + result;
+			//result = "Graphed " + used.Count + " nodes:\n\n" + result;
 		//}
 //
 		//return result;
 	//}
 //
-	//public static string graph_expressions (Expression expression, int depth = 0, List<Expression> used = null) {
+	//public static string graph_expressions (Node Node, int depth = 0, List<Node> used = null) {
 		//if (used == null)
 			//used = [];
 //
@@ -320,18 +332,18 @@ public class Hub {
 			//padding += tabbing;
 		//}
 //
-		//if (expression == null)
+		//if (Node == null)
 			//return padding + "null\n";
 //
-		//result += padding + expression.to_string() + "\n";
-		//used.Add(expression);
+		//result += padding + Node.to_string() + "\n";
+		//used.Add(Node);
 //
-		//foreach (var child in expression.children) {
+		//foreach (var child in Node.children) {
 			//result += graph_expressions(child, depth + 1, used);
 		//}
 //
 		//if (depth == 0) {
-			//result = "Graphed " + used.Count() + " expressions:\n\n" + result;
+			//result = "Graphed " + used.Count + " expressions:\n\n" + result;
 		//}
 //
 		//return result;

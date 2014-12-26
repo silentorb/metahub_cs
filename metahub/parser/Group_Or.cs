@@ -20,7 +20,7 @@ public class Group_Or : Group {
 //        match.children.Add(result);
 //        result = info;
         Match match = result;
-        return success(position, match.Count(), info_items, [ match ]);
+        return success(position, match.Count, info_items, [ match ]);
       }
     }
 

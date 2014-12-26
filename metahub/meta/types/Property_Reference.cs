@@ -1,17 +1,16 @@
-using metahub.logic.schema.Signature;
-using metahub.logic.schema.Tie;
+using metahub.logic.schema;
 
 namespace metahub.meta.types {
 /**
  * ...
  * @author Christopher W. Johnson
  */
-public class Property_Expression : Expression {
+public class Property_Reference : Node {
 	public Tie tie;
 	
-	public Property_Expression(Tie tie)
+	public Property_Reference(Tie tie)
 
-:base(Expression_Type.property) {
+:base(Node_Type.property) {
 		this.tie = tie;		
 	}
 	

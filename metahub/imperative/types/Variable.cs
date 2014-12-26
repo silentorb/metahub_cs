@@ -12,7 +12,7 @@ public class Variable : Expression {
 
 	public Variable(string name, Expression child = null)
 
-:base(Expression_Type.variable) {
+:base(Node_Type.variable) {
 		this.name = name;
 		this.child = child;
 	}

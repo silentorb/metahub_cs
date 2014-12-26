@@ -31,9 +31,9 @@ public class Repetition : Pattern {
           break;
       }
       Match match = result;
-      position = match.start.move(match.Count());
-//      match.Count() += last_divider_length;
-      length += match.Count() + last_divider_length;
+      position = match.start.move(match.Count);
+//      match.Count += last_divider_length;
+      length += match.Count + last_divider_length;
       matches.Add(match);
 
       ++step;
@@ -49,8 +49,8 @@ public class Repetition : Pattern {
 
       match = result;
       dividers.Add(match);
-      last_divider_length = match.Count();
-      position = position.move(match.Count());
+      last_divider_length = match.Count;
+      position = position.move(match.Count);
     }
     while (max < 1 || step < max);
 
@@ -64,7 +64,7 @@ public class Repetition : Pattern {
   }
 
 //  override Position rewind (Match match, List<string> messages) {
-//    if (match.matches.Count() > min) {
+//    if (match.matches.Count > min) {
 //      var previous = match.matches.pop();
 //      messages.Add("rewinding " + name + " " + previous.start.get_coordinate_string());
 //      match.children.pop();

@@ -194,27 +194,27 @@ public class Dungeon
 	public void post_analyze (Expression expression) {
 		switch(expression.type) {
 			
-			case Expression_Type.space:
+			case Node_Type.space:
 				Namespace ns = expression;
 				post_analyze_many(ns.expressions);
 		        break;
 
-			case Expression_Type.class_definition:
+			case Node_Type.class_definition:
 				post_analyze_many(((Class_Definition)expression).expressions);
                 break;
 
-			case Expression_Type.function_definition:
+			case Node_Type.function_definition:
 				Function_Definition definition = expression;
 				post_analyze_many(definition.expressions);
                 break;
 
-			case Expression_Type.flow_control:
+			case Node_Type.flow_control:
 				Flow_Control definition = expression;
 				post_analyze_many(definition.condition.expressions);
 				post_analyze_many(definition.children);
                 break;
 
-			case Expression_Type.function_call:
+			case Node_Type.function_call:
 				Function_Call definition = expression;
 				//trace("func", definition.name);
 				if (definition.is_platform_specific && !used_functions.ContainsKey(definition.name))
@@ -226,24 +226,24 @@ public class Dungeon
 				}
                 break;
 
-			case Expression_Type.assignment:
+			case Node_Type.assignment:
 				Assignment definition = expression;
 				post_analyze(definition.expression);
                 break;
 
-			case Expression_Type.declare_variable:
+			case Node_Type.declare_variable:
 				Declare_Variable definition = expression;
 				post_analyze(definition.expression);
                 break;
 				
 			//case Expression_Type.property:
-				//Property_Expression property_expression = expression;
+				//Property_Reference property_expression = Node;
 				//result = property_expression.tie.tie_name;
 
 			//case Expression_Type.instantiate:
 
 			default:
-				// Do nothing.  This is a gentler function than most MetaHub expression processors.
+				// Do nothing.  This is a gentler function than most MetaHub Node processors.
 		}
 	}
 	

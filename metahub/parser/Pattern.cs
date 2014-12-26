@@ -21,7 +21,7 @@ public class Pattern {
       return __test__(new_position, depth);
     }
 
-		//if (match.Count() == 0)
+		//if (match.Count == 0)
 			//throw new Exception("Match cannot be successful and have a length of 0");
 
     return result;

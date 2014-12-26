@@ -27,7 +27,7 @@ namespace metahub.imperative.schema
             foreach (var r in tie.ranges)
             {
                 Range_Float range = r;
-                var reference = create_reference(range.path.Count() > 0
+                var reference = create_reference(range.path.Count > 0
                                                      ? new Path(range.path.map((t) => new Property_Expression(t)))
                                                      : null
                     );

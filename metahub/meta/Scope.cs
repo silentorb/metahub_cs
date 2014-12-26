@@ -1,4 +1,5 @@
-using metahub.logic.schema.Rail;
+using System.Collections.Generic;
+using metahub.logic.schema;
 
 namespace metahub.meta {
 /**
@@ -8,7 +9,7 @@ namespace metahub.meta {
 public class Scope {
 	public Rail rail;
 	public Scope parent;
-	public Dictionary<string, metahub.logic.schema.Signature> variables = new Dictionary<string, metahub.logic.schema.Signature>();
+	public Dictionary<string, Signature> variables = new Dictionary<string, Signature>();
 
 	public Scope(Scope parent = null) {
 		this.parent = parent;
@@ -16,7 +17,7 @@ public class Scope {
 			rail = parent.rail;
 	}
 
-	public void find (string name) {
+	public object find (string name) {
 		if (variables.ContainsKey(name))
 			return variables[name];
 

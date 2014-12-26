@@ -51,41 +51,41 @@ public class Railway {
 	}
 	
 	
-	//public metahub.imperative.types.Expression translate (metahub expression.meta.types.Expression) {
-		//switch(expression.type) {
+	//public metahub.imperative.types.Node translate (metahub Node.meta.types.Node) {
+		//switch(Node.type) {
 			//case metahub.meta.types.Expression_Type.literal:
-				//metahub.meta.types.Literal literal = expression;
+				//metahub.meta.types.Literal literal = Node;
 				//return new metahub.imperative.types.Literal(literal.value);
 //
 			//case metahub.meta.types.Expression_Type.function_call:
-				//metahub.meta.types.Function_Call func = expression;
+				//metahub.meta.types.Function_Call func = Node;
 				//return new metahub.imperative.types.Function_Call(func.name, [translate(func.input)]);
 //
 			//case metahub.meta.types.Expression_Type.path:
-				//return convert_path(expression);
+				//return convert_path(Node);
 //
 			//case metahub.meta.types.Expression_Type.block:
-				//metahub.meta.types.Block array = expression;
+				//metahub.meta.types.Block array = Node;
 				//return new metahub.imperative.types.Create_Array(array.children.map((e)=> translate(e)));
 //
 			//default:
-				//throw new Exception("Cannot convert expression " + expression.type + ".");
+				//throw new Exception("Cannot convert Node " + Node.type + ".");
 		//}
 	//}
 //
-	//public metahub.imperative.types.Expression convert_path (metahub expression.meta.types.Path) {
-		//var path = expression.children;
-		//List<metahub.imperative.types.Expression> result = new List<metahub.imperative.types.Expression>();
-		//metahub.meta.types.Property_Expression first = path[0];
+	//public metahub.imperative.types.Node convert_path (metahub Node.meta.types.Reference_Path) {
+		//var path = Node.children;
+		//List<metahub.imperative.types.Node> result = new List<metahub.imperative.types.Node>();
+		//metahub.meta.types.Property_Reference first = path[0];
 		//Rail rail = first.property.get_abstract_rail();
 		//foreach (var token in path) {
 			//if (token.type == metahub.meta.types.Expression_Type.property) {
-				//metahub.meta.types.Property_Expression property_token = token;
+				//metahub.meta.types.Property_Reference property_token = token;
 				//var tie = rail.all_ties[property_token.property.name];
 				//if (tie == null)
 					//throw new Exception("tie is null: " + property_token.property.fullname());
 //
-				//result.Add(new metahub.imperative.types.Property_Expression(tie));
+				//result.Add(new metahub.imperative.types.Property_Reference(tie));
 				//rail = tie.other_rail;
 			//}
 			//else {
@@ -93,7 +93,7 @@ public class Railway {
 				//result.Add(new metahub.imperative.types.Function_Call(function_token.name, [], true));
 			//}
 		//}
-		//return new metahub.imperative.types.Path(result);
+		//return new metahub.imperative.types.Reference_Path(result);
 	//}
 	
 	public Rail resolve_rail_path (List<string> path) {

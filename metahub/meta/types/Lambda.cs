@@ -5,15 +5,15 @@ namespace metahub.meta.types {
  * ...
  * @author Christopher W. Johnson
  */
-public class Lambda : Expression
+public class Lambda : Node
 {
 	public List<Parameter> parameters;
-	public List<Expression> expressions;
+	public List<Node> expressions;
 	public Scope scope;
 
-	public Lambda(Scope scope, List<Parameter> parameters, List<Expression> expressions)
+	public Lambda(Scope scope, List<Parameter> parameters, List<Node> expressions)
 
-:base(Expression_Type.lambda) {
+:base(Node_Type.lambda) {
 		this.scope = scope;
 		this.parameters = parameters;
 		this.expressions = expressions;		

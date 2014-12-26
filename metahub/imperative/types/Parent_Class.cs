@@ -11,7 +11,7 @@ public class Parent_Class : Expression
 {
 	public Parent_Class(Expression child)
 
-:base(Expression_Type.parent_class) {
+:base(Node_Type.parent_class) {
 		this.child = child;
 	}
 	

@@ -14,7 +14,7 @@ public class Declare_Variable : Expression {
 	public Expression expression;
 	
 	public Declare_Variable(string name, Signature signature, Expression expression)
-:base(Expression_Type.declare_variable) {
+:base(Node_Type.declare_variable) {
 		this.name = name;
 		this.signature = signature;
 		this.expression = expression;
@@ -24,6 +24,6 @@ public class Declare_Variable : Expression {
 	//string type,
 	//string name,
 	//Signature signature,
-	//Expression expression
+	//Node Node
 //}
 }

@@ -1,22 +1,22 @@
-using metahub.logic.schema.Signature;
-using metahub.schema.Kind;
+using System.Collections.Generic;
+using metahub.logic.schema;
+using metahub.schema;
 
 namespace metahub.meta.types {
 /**
  * @author Christopher W. Johnson
  */
-public class Array_Expression : Expression{
-	public List<Expression> children;
+public class Array_Expression : Node{
+	public List<Node> children;
 
-	public Array_Expression(List<Expression> children = null) {
-		this.children = children != null
-		 ? children : [];
-		
-		base(Expression_Type.array);
+	public Array_Expression(List<Node> children = null)
+		:base(Node_Type.array)
+    {
+		this.children = children ?? new List<Node>();
 	}
 	
 	override public Signature get_signature ()
 	{
-		return { type: Kind.list, rail: null };
+		return new Signature { type = Kind.list, rail = null };
 	}
 }}

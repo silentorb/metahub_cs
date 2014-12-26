@@ -20,7 +20,7 @@ public class Regex : Pattern {
 
     var match = regex.matched(0);
 //    trace(Position.pad(depth) + "reg", text, match);
-    return success(start, match.Count());
+    return success(start, match.Count);
   }
 
   override object get_data (Match match) {

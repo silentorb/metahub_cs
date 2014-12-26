@@ -17,7 +17,7 @@ public class Coder {
     this.railway = railway;
   }
 
-  public Expression convert_expression (object source, Expression previous, Scope scope) {
+  public Node convert_expression (object source, Node previous, Scope scope) {
 
     switch(source.type) {
 			case "block":
@@ -47,7 +47,7 @@ public class Coder {
     throw new Exception("Invalid block: " + source.type);
   }
 
-	public Expression convert_statement (object source, Scope scope, Signature type = null) {
+	public Node convert_statement (object source, Scope scope, Signature type = null) {
 
     switch(source.type) {
       case "block":
@@ -71,13 +71,13 @@ public class Coder {
     throw new Exception("Invalid block: " + source.type);
   }
 
-  Expression constraint (object source, Scope scope) {
+  Node constraint (object source, Scope scope) {
 		//var reference = Reference.from_scope(source.path, scope);
 		var reference = convert_expression(source.reference, null, scope);
-		Expression back_reference = null;
+		Node back_reference = null;
 		var operator_name = source.op;
 		if (["+=", "-=", "*=", "/="].Contains(operator_name)) {
-			//operator_name = operator_name.substring(0, operator_name.Count() - 7);
+			//operator_name = operator_name.substring(0, operator_name.Count - 7);
 			back_reference = reference;
 		}
 		var expression = Parse.resolve(convert_expression(source.expression, null, scope));
@@ -89,8 +89,8 @@ public class Coder {
 		
   }
 
-  Expression create_block (object source, Scope scope) {
-		var count = source.expressions.Keys.Count();
+  Node create_block (object source, Scope scope) {
+		var count = source.expressions.Keys.Count;
     if (count == 0)
 			return new Block();
 
@@ -110,15 +110,15 @@ public class Coder {
     return block;
   }
 
-  Expression create_literal (object source, Scope scope) {
+  Node create_literal (object source, Scope scope) {
     var type = get_type(source.value);
     //return new metahub.code.expressions.Literal(source.value, type);
-		return new Literal(source.value);
+		return new Literal_Value(source.value);
   }
 
-  Expression function_expression (object source, Scope scope, string name, Expression previous) {
+  Node function_expression (object source, Scope scope, string name, Node previous) {
     List<object> expressions = source.inputs;
-		if (source.inputs.Count() > 0)
+		if (source.inputs.Count > 0)
 			throw new Exception("Not supported.");
 
     //var inputs = Lambda.array(Lambda.map(expressions, (e)=> convert_expression(e, scope)));
@@ -130,19 +130,19 @@ public class Coder {
 
 	List<string> extract_path (object path) {
 		List<string> result = new List<string>();
-		foreach (var i in 1...path.Count()) {
+		foreach (var i in 1...path.Count) {
 			result.Add(path[i]);
 		}
 
 		return result;
 	}
 
-  Expression create_path (object source, Expression previous, Scope scope) {
+  Node create_path (object source, Node previous, Scope scope) {
 		Rail rail = scope.rail;
-		Expression expression = null;
-		List<Expression> children = new List<Expression>();
+		Node expression = null;
+		List<Node> children = new List<Node>();
 		List<object> expressions = source.children;
-		if (expressions.Count() == 0)
+		if (expressions.Count == 0)
 			throw new Exception("Empty reference path.");
 
 		if (expressions[0].type == "reference" && rail.get_tie_or_null(expressions[0].name) == null
@@ -166,13 +166,13 @@ public class Coder {
 					}
 					else {
 						Tie tie = rail.get_tie_or_error(item.name);
-						previous = new Property_Expression(tie);
+						previous = new Property_Reference(tie);
 						if (tie.other_rail != null)
 							rail = tie.other_rail;
 					}
 				case "array":
 					List<object> items = item.expressions;
-					Expression token = null;
+					Node token = null;
 					var sub_array = [];
 					foreach (var item in items) {
 						var token = convert_expression(item, token, scope);
@@ -186,7 +186,7 @@ public class Coder {
 
 			children.Add(previous);
 		}
-		return new Path(children);
+		return new Reference_Path(children);
   }
 
   static Signature get_type (object value) {
@@ -209,27 +209,27 @@ public class Coder {
     throw new Exception("Could not find type.");
   }
 
-	Expression new_scope (object source, Scope scope) {
+	Node new_scope (object source, Scope scope) {
 		List<string> path = source.path;
-		if (path.Count() == 0)
+		if (path.Count == 0)
 			throw new Exception("Scope path is empty for node creation.");
 
-		Expression expression = null;
+		Node expression = null;
 		Scope new_scope = new Scope();
-		if (path.Count() == 1 && path[0] == "new") {
+		if (path.Count == 1 && path[0] == "new") {
 			//new_scope_definition.only_new = true;
 			expression = convert_statement(source.expression, new_scope);
 			return new Scope_Expression(new_scope, [expression]);
-			//return new Scope_Expression(expression, new_scope_definition);
+			//return new Scope_Expression(Node, new_scope_definition);
 		}
 
 		var rail = railway.resolve_rail_path(path);// hub.schema.root_namespace.get_namespace(path);
-		//var trellis = hub.schema.get_trellis(path[path.Count() - 1], namespace);
+		//var trellis = hub.schema.get_trellis(path[path.Count - 1], namespace);
 
 		//if (rail != null) {
 			new_scope.rail = rail;
 			expression = convert_statement(source.expression, new_scope);
-			//return new Scope_Expression(expression, new_scope_definition);
+			//return new Scope_Expression(Node, new_scope_definition);
 			return new Scope_Expression(new_scope, [expression]);
 		//}
 		//else {
@@ -237,21 +237,21 @@ public class Coder {
 			////var symbol = scope.find(source.path);
 			////new_scope_definition.symbol = symbol;
 			////new_scope_definition.trellis = symbol.get_trellis();
-			////expression = convert_statement(source.expression, new_scope_definition);
-			////return new Node_Scope(expression, new_scope_definition);
+			////Node = convert_statement(source.Node, new_scope_definition);
+			////return new Node_Scope(Node, new_scope_definition);
 		//}
 	}
 
-	//Expression weight (object source, Scope scope) {
+	//Node weight (object source, Scope scope) {
 		//return new Set_Weight(source.weight, convert_statement(source.statement, scope));
   //}
 
-  Expression create_array (object source, Scope scope) {
+  Node create_array (object source, Scope scope) {
 		List<object> expressions = source.expressions;
 		return new Block(expressions.map((e)=> convert_expression(e, null, scope)));
   }
 
-  Expression create_lambda (object source, Scope scope, List<Expression> constraint_expressions) {
+  Node create_lambda (object source, Scope scope, List<Node> constraint_expressions) {
 		List<object> expressions = source.expressions;
 		Scope new_scope = new Scope(scope);
 		List<string> parameters = source.parameters;
@@ -259,7 +259,7 @@ public class Coder {
 		foreach (var parameter in parameters) {
 			var expression = constraint_expressions[i];
 			var path = Parse.normalize_path(expression);
-			new_scope.variables[parameter] = path[path.Count() - 1].get_signature();
+			new_scope.variables[parameter] = path[path.Count - 1].get_signature();
 			++i;
 		}
 
@@ -268,10 +268,10 @@ public class Coder {
 		);
   }
 
-  Expression function_scope (object source, Scope scope) {
+  Node function_scope (object source, Scope scope) {
 		var expression = convert_expression(source.expression, null, scope);
-		Path path = expression;
-		var token = path.children[path.children.Count() - 2];
+		Reference_Path path = expression;
+		var token = path.children[path.children.Count - 2];
 		return new Function_Scope(expression,
 			create_lambda(source.lambda, scope, [ token, token ])
 		);

@@ -2,7 +2,6 @@
 using System;
 using System.Collections.Generic;
 using metahub.schema;
-using metahub.schema.Namespace;
 
 /**
  * ...

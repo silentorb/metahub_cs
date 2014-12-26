@@ -1,17 +1,16 @@
+using System.Collections.Generic;
+using System.Linq;
+
 namespace metahub.imperative.types
 {
+    public class Create_Array : Expression
+    {
+        public List<Expression> children;
 
-/**
- * ...
- * @author Christopher W. Johnson
- */
-public class Create_Array : Expression
-{
-	public List<Expression> children;
-	
-	public Create_Array(List<Expression> children)
-:base(Expression_Type.create_array) {
-		this.children = children;
-	}	
-}
+        public Create_Array(IEnumerable<Expression> children)
+            : base(Expression_Type.create_array)
+        {
+            this.children = children.ToList();
+        }
+    }
 }

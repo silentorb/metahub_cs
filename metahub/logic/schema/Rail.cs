@@ -1,11 +1,6 @@
 using System.Collections.Generic;
-using metahub.imperative.code.List;
 using metahub.imperative.schema;
-using metahub.imperative.schema.*;
 using metahub.schema;
-using metahub.schema.Trellis;
-using metahub.schema.Kind;
-using metahub.imperative.types.Expression_Type;
 
 /**
  * ...
@@ -42,7 +37,7 @@ namespace metahub.logic.schema
         public Region region;
         public Dictionary<string, object> hooks = new Dictionary<string, object>();
         public List<string> stubs = new List<string>();
-        public Dictionary<string, Property_Addition> property_additional = new Dictionary<string, Property_Addition>();
+        public Dictionary<string, Dictionary<string, object>> property_additional = new Dictionary<string, Dictionary<string, object>>();
         public string class_export = "";
         public object default_value = null;
 
@@ -70,23 +65,23 @@ namespace metahub.logic.schema
             Dictionary<string, object> map = region.trellis_additional[trellis.name];
 
             if (map.ContainsKey("is_external"))
-                is_external = map["is_external"];
+                is_external = (bool)map["is_external"];
 
             if (map.ContainsKey("name"))
-                rail_name = map["name"];
+                rail_name = (string)map["name"];
 
             if (map.ContainsKey("source_file"))
-                source_file = map["source_file"];
+                source_file = (string)map["source_file"];
 
             if (map.ContainsKey("class_export"))
-                class_export = map["class_export"];
+                class_export = (string)map["class_export"];
 
             if (map.ContainsKey("default_value")) // Should only be set if is_value is set to true
                 default_value = map["default_value"];
 
             if (map.ContainsKey("hooks"))
             {
-                var hook_source = map["hooks"];
+                var hook_source = (Dictionary<string, object>) map["hooks"];
                 foreach (var key in hook_source.Keys)
                 {
                     hooks[key] = hook_source[key];
@@ -95,7 +90,7 @@ namespace metahub.logic.schema
 
             if (map.ContainsKey("stubs"))
             {
-                var hook_source = map["stubs"];
+                var hook_source =(Dictionary<string, string>) map["stubs"];
                 foreach (var key in hook_source.Keys)
                 {
                     stubs.Add(hook_source[key]);
@@ -104,7 +99,7 @@ namespace metahub.logic.schema
 
             if (map.ContainsKey("properties"))
             {
-                var properties = map["properties"];
+                var properties = (Dictionary<string, object>) map["properties"];
                 foreach (var key in properties.Keys)
                 {
                     property_additional[key] = properties[key];
@@ -138,7 +133,7 @@ namespace metahub.logic.schema
 
         public void process2()
         {
-            foreach (var tie in all_ties)
+            foreach (var tie in all_ties.Values)
             {
                 tie.initialize_links();
             }

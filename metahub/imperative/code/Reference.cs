@@ -3,6 +3,7 @@ using System.Linq;
 using metahub.imperative.types;
 using metahub.logic.schema;
 using metahub.meta.types;
+using metahub.schema;
 using Constraint = metahub.logic.schema.Constraint;
 
 namespace metahub.imperative.code
@@ -67,7 +68,7 @@ public class Reference
 		return new List<Expression> { new Flow_Control("if",	new Condition(inverse,
 				new List<Expression> {
 					reference,
-				new Signature { type = Node_Type.literal, value= limit }
+				new Literal(limit, new Signature(Kind.Float))
         }
 			),
 		new List<Expression>{

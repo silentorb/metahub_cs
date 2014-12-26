@@ -17,6 +17,32 @@ namespace metahub
             }
             return result;
         }
+
+        public static void clear_folder(string url)
+        {
+            //var fs = Nodejs.fs;
+            //void walk (string dir) {
+            //    var children = Nodejs.fs.readdirSync(dir);
+            //    foreach (var child in children) {
+            //        var name = dir + "/" + child;
+            //        //trace(name);
+            //        var stat = fs.statSync(name);
+            //        if (stat != null && stat.isDirectory()) {
+            //            walk(name);
+            //            Nodejs.fs.rmdirSync(name);
+            //        }
+            //        else {
+            //            Nodejs.fs.unlinkSync(name);
+            //        }
+            //    }
+            //}
+            //walk(url);
+        }
+
+        public static void create_file(string url, string contents)
+        {
+            File.WriteAllText(url, contents);
+        }
     }
 }
 /*

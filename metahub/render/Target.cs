@@ -6,10 +6,10 @@ namespace metahub.render
 {
 
 public class Target{
-	Railway railway;
-	Renderer render = new Renderer();
-	int line_count = 0;
-	Imp imp;
+	protected Railway railway;
+	protected Renderer render = new Renderer();
+	protected int line_count = 0;
+	protected Imp imp;
 	
 	public Target(Railway railway, Imp imp) {
 		this.railway = railway;
@@ -20,7 +20,7 @@ public class Target{
 	
 	}
 	
-	public void run (string output_folder) {
+	public virtual void run (string output_folder) {
 
 	}
 	

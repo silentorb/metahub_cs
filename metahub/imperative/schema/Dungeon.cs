@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using metahub.imperative.code;
 using metahub.imperative.types;
 using metahub.logic.schema;
 using metahub.meta.types;
@@ -22,7 +23,7 @@ public class Dungeon
 	public List<Expression> code;
 	public Region region;
 	public Trellis trellis;
-	object inserts;
+	Dictionary<string, string> inserts;
 	Dictionary<string, List<metahub.imperative.types.Expression>> blocks = new Dictionary<string, List<metahub.imperative.types.Expression>>();
 	List<Zone> zones = new List<Zone>();
 	public List<Function_Definition> functions = new List<Function_Definition>();
@@ -49,20 +50,20 @@ public class Dungeon
 		if (!region.trellis_additional.ContainsKey(trellis.name))
 			return;	
 			
-		Rail_Additional map = region.trellis_additional[trellis.name];
+		var map = (Dictionary<string, object>)region.trellis_additional[trellis.name];
 
 		if (map.ContainsKey("inserts"))
-			inserts = map.inserts;
+			inserts = map["inserts"];
 	}
 	
 	public void generate_code1 () {
-		Class_Definition definition = new Class_Definition(rail, []);
+		Class_Definition definition = new Class_Definition(rail, new List<Expression>());
 		code = new List<Expression>();
 		var zone = create_zone(code);
 		zone.divide("..pre");
-		var mid = zone.divide(null, [
-			new Namespace(region, [ definition ])
-		]);
+		var mid = zone.divide(null, new List<Expression> {
+			new Namespace(region, new List<Expression> { definition })
+    });
 		zone.divide("..post");
 
 		blocks["/"] = definition.expressions;
@@ -72,9 +73,9 @@ public class Dungeon
 		var statements = blocks["/"];
 		statements.Add(generate_initialize());
 
-		foreach (var tie in rail.all_ties) {
+		foreach (var tie in rail.all_ties.Values) {
 			if (tie.type == Kind.list) {
-				List.common_functions(tie, imp);
+				List_Code.common_functions(tie, imp);
 			}
 			else {
 				var definition = generate_setter(tie);

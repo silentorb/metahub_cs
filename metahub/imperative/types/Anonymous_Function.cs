@@ -2,8 +2,6 @@ using System.Collections.Generic;
 using metahub.logic.schema;
 using metahub.meta.types;
 using metahub.schema;
-using metahub.schema.Kind;
-using metahub.logic.schema.Signature;
 
 namespace metahub.imperative.types {
 /**
@@ -20,9 +18,7 @@ public class Anonymous_Function : Expression
 	:base(Node_Type.function_definition) {
 		this.parameters = parameters;
 		this.expressions = expressions;
-		this.return_type = return_type == null
-		? { type: Kind.none }
-		: return_type;
+		this.return_type = return_type ?? new Signature(Kind.none);
 	}
 	
 }}

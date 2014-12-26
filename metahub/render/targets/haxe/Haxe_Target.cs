@@ -1,14 +1,9 @@
+using metahub.imperative;
+using metahub.logic.schema;
+
 namespace metahub.render.targets.haxe
 {
-using metahub.imperative.Imp;
-using metahub.logic.schema.Railway;
-using metahub.Hub;
-using metahub.schema.Namespace;
 
-/**
- * ...
- * @author Christopher W. Johnson
- */
 public class Haxe_Target : Target{
 
 	public Haxe_Target(Railway railway, Imp imp)
@@ -16,12 +11,12 @@ public class Haxe_Target : Target{
 	}
 
 	override public void run (string output_folder) {
-		foreach (var region in railway.regions){
-			foreach (var rail in region.rails) {
+		foreach (var region in railway.regions.Values){
+			foreach (var rail in region.rails.Values) {
 				var trellis = rail.trellis;
 				//trace(trellis.space.fullname);
-				var namespace = Generator.get_namespace_path(rail.region);
-				var dir = output_folder + "/" + space.join("/");
+				var space = Generator.get_namespace_path(rail.region);
+				var dir = output_folder + "/" + space.Join("/");
 				Utility.create_folder(dir);
 
 				var text = "package " + space.join(".")

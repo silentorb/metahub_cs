@@ -1,6 +1,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using metahub.schema;
 
 namespace metahub.logic.schema {
@@ -97,8 +98,8 @@ public class Railway {
 	//}
 	
 	public Rail resolve_rail_path (List<string> path) {
-		var tokens = path.copy();
-		var rail_name = tokens.pop();
+		var tokens = path.GetRange(0, path.Count - 2);
+		var rail_name = path.Last();
 		var region = root_region;
 		foreach (var token in tokens) {
 			if (!region.children.ContainsKey(token))
@@ -114,20 +115,20 @@ public class Railway {
 	}
 	
 	void initialize_root_functions () {
-		root_region.add_functions([
+		root_region.add_functions(new List<Function_Info> {
 		
-			new Function_Info("count", [
-				new Function_Version({ type: Kind.list, null rail }, { Kind type.Int })
-			]),
+			new Function_Info("count", new List<Function_Version> {
+				new Function_Version(new Signature(Kind.list), new Signature(Kind.Int))
+			}),
 			
-			new Function_Info("cross", [
-				new Function_Version({ type: Kind.list, null rail }, { Kind type.none })
-			]),
+			new Function_Info("cross", new List<Function_Version> {
+				new Function_Version(new Signature(Kind.list), new Signature(Kind.none))
+			}),
 			
-			new Function_Info("dist", [
-				new Function_Version({ type: Kind.list, null rail }, { Kind type.none })
-			]),
-		]);
+			new Function_Info("dist", new List<Function_Version> {
+				new Function_Version(new Signature(Kind.list), new Signature(Kind.none))
+			}),
+		});
 	}
 }
 }

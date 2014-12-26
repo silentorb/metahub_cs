@@ -1,19 +1,13 @@
+using System;
+using System.Collections.Generic;
+using metahub.imperative;
+using metahub.logic.schema;
+using metahub.render.targets.cpp;
+using metahub.render.targets.haxe;
+
 namespace metahub.render
 {
-using metahub.imperative.Imp;
-using metahub.render.targets.cpp.Cpp;
-using metahub.render.targets.haxe.Haxe_Target;
-using metahub.render.Target;
-using metahub.Hub;
-using metahub.logic.schema.Railway;
-using metahub.logic.schema.Region;
-using metahub.meta.types.Node;
-using metahub.schema.Namespace;
 
-/**
- * ...
- * @author Christopher W. Johnson
- */
 public class Generator {
 
 	Hub hub;

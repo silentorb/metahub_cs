@@ -1,7 +1,7 @@
+using metahub.logic.schema;
+
 namespace metahub.imperative.schema
 {
-using metahub.logic.schema.Rail;
-
 /**
  * ...
  * @author Christopher W. Johnson

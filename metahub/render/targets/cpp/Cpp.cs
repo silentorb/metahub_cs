@@ -1,37 +1,17 @@
+using System;
+using System.Collections.Generic;
+using metahub.imperative;
+using metahub.imperative.schema;
+using metahub.imperative.types;
+using metahub.logic.schema;
+using metahub.meta.types;
+using metahub.schema;
+using Function_Call = metahub.meta.types.Function_Call;
+using Parameter = metahub.meta.types.Parameter;
+using Variable = metahub.meta.types.Variable;
+
 namespace metahub.render.targets.cpp
 {
-using haxe.Timer;
-using metahub.imperative.Imp;
-using metahub.imperative.schema.Dungeon;
-using metahub.logic.schema.Rail;
-using metahub.logic.schema.Railway;
-using metahub.logic.schema.Region;
-using metahub.imperative.types.Insert;
-using metahub.imperative.types.Null_Value;
-using metahub.imperative.types.Path;
-using metahub.imperative.types.Variable;
-using metahub.imperative.types.Literal;
-using metahub.imperative.types.Property_Expression;
-using metahub.logic.schema.Tie;
-using metahub.Hub;
-using metahub.imperative.types.Assignment;
-using metahub.imperative.types.Block;
-using metahub.imperative.types.Condition;
-using metahub.imperative.types.Declare_Variable;
-using metahub.imperative.types.Expression;
-using metahub.imperative.types.Function_Call;
-using metahub.imperative.types.Function_Definition;
-using metahub.imperative.types.Flow_Control;
-using metahub.imperative.types.Instantiate;
-using metahub.imperative.types.Parameter;
-using metahub.imperative.types.Scope;
-using metahub.logic.schema.Signature;
-using metahub.imperative.types.Statement;
-using metahub.schema.Namespace;
-using metahub.schema.Property;
-using metahub.schema.Trellis;
-using metahub.schema.Kind;
-using metahub.imperative.types.Expression_Type;
 
 /**
  * ...
@@ -52,36 +32,37 @@ public class Cpp : Target{
 	Region current_region;
 	Rail current_rail;
 	List<Dictionary<string, Signature>> scopes = new List<Dictionary<string, Signature>>();
-	Map<string, Signature> current_scope;
+	Dictionary<string, Signature> current_scope;
 	Dungeon current_dungeon;
 
-	static var types = {
-		"string": "std::string",
-		"int": "int",
-		"bool": "bool",
-		"float": "float",
-		"none": "void"
-	}
+    private static Dictionary<string, string> types = new Dictionary<string, string>
+        {
+            {"string", "std,,string"},
+            {"int", "int"},
+            {"bool", "bool"},
+            {"float", "float"},
+            {"none", "void"}
+        };
 
 	public Cpp(Railway railway, Imp imp)
 :base(railway, imp) {
 	}
 
 	override public void run (string output_folder) {
-		foreach (var region in railway.regions){
-			foreach (var rail in region.rails) {
+		foreach (var region in railway.regions.Values){
+			foreach (var rail in region.rails.Values) {
 				if (rail.is_external)
 					continue;
 
 				//trace(rail.space.fullname);
-				var namespace = Generator.get_namespace_path(rail.region);
-				var dir = output_folder + "/" + space.join("/");
+				var space = Generator.get_namespace_path(rail.region);
+				var dir = output_folder + "/" + space.Join("/");
 				Utility.create_folder(dir);
 
 				line_count = 0;
 				var dungeon = imp.get_dungeon(rail);
-				create_header_file(dungeon, namespace, dir);
-				create_class_file(dungeon, namespace, dir);
+				create_header_file(dungeon, space, dir);
+				create_class_file(dungeon, space, dir);
 			}
 		}
 	}
@@ -108,8 +89,8 @@ public class Cpp : Target{
 		);
 		func.return_type = null;
 		root.Add(func);
-		func = new Function_Definition("~" + rail.rail_name, dungeon, [],
-		[]	//references.map((tie)=> new Function_Call("SAFE_DELETE",
+		func = new Function_Definition("~" + rail.rail_name, dungeon, new List<imperative.types.Parameter>(), 
+		new List<Expression>()	//references.map((tie)=> new Function_Call("SAFE_DELETE",
 				//[new Property_Reference(tie)])
 			//)
 		);
@@ -127,7 +108,7 @@ public class Cpp : Target{
 		current_scope = scopes[scopes.Count - 1];
 	}
 
-	void create_header_file (Dungeon dungeon, namespace, dir) {
+	void create_header_file (Dungeon dungeon, string space, string dir) {
 		var rail = dungeon.rail;
 		List<External_Header> headers = [ new External_Header("stdafx") ];
 
@@ -141,13 +122,12 @@ public class Cpp : Target{
 		var result = line("#pragma once")
 		+ render_includes(headers) + newline()
 		+ render_outer_dependencies(rail)
-		+ render_region(rail.region, ()=>{
-			return newline() + render_inner_dependencies(rail) + class_declaration(dungeon);
-		});
+		+ render_region(rail.region, ()=> newline() + render_inner_dependencies(rail) + class_declaration(dungeon);
+		);
 		Utility.create_file(dir + "/" + rail.name + ".h", result);
 	}
 
-	void create_class_file (Dungeon dungeon, namespace, dir) {
+	void create_class_file (Dungeon dungeon, string space, string dir) {
 		var rail = dungeon.rail;
 		scopes = [];
 		List<External_Header> headers = [ new External_Header("stdafx"), new External_Header(rail.source_file) ];
@@ -172,8 +152,8 @@ public class Cpp : Target{
 		Utility.create_file(dir + "/" + rail.name + ".cpp", result);
 	}
 
-	string render_statements (List<object> statements, glue = "") {
-		return statements.map((s)=> render_statement(s)).join(glue);
+	string render_statements (List<object> statements, string glue = "") {
+		return statements.Select((s)=> render_statement(s)).join(glue);
 	}
 
 	void render_statement (object statement) {
@@ -225,19 +205,27 @@ public class Cpp : Target{
 		return line(first + ";");
 	}
 
+    private class Temp
+    {
+        public Region region;
+        public List<Rail> dependencies;
+    }
+
 	string render_outer_dependencies (Rail rail) {
 		bool lines = false;
 		var result = "";
-		Dictionary<string, {Region region, List<Rail> dependencies}> regions = new Dictionary<string, {Region region, List<Rail> dependencies}>();
+		Dictionary<string, Temp> regions = new Dictionary<string, Temp>();
 
-		foreach (var d in rail.dependencies) {
+		foreach (var d in rail.dependencies.Values) {
 			var dependency = d.rail;
 			if (d.allow_ambient && dependency.region != rail.region) {
-				if (!regions.ContainsKey(dependency.region.name)) {
-					regions[dependency.region.name] = {
-						region: dependency.region,
-						dependencies: []
-					}
+				if (!regions.ContainsKey(dependency.region.name))
+				{
+				    regions[dependency.region.name] = new Temp
+				        {
+				            region = dependency.region,
+				            dependencies = new List<Rail>()
+				        };
 				}
 				regions[dependency.region.name].dependencies.Add(dependency);
 				lines = true;
@@ -246,11 +234,11 @@ public class Cpp : Target{
 
 		foreach (var r in regions) {
 			result += render_region(r.region, ()=> r.dependencies.map((d)=> line("class " + d.rail_name + ";"))
-					.join("")
+					.Join("")
 			);
 		}
 
-		if (result.Count > 0)
+		if (result.Length > 0)
 			result += newline();
 
 		return result;
@@ -259,7 +247,7 @@ public class Cpp : Target{
 	string render_inner_dependencies (Rail rail) {
 		bool lines = false;
 		var result = "";
-		foreach (var d in rail.dependencies) {
+		foreach (var d in rail.dependencies.Values) {
 			var dependency = d.rail;
 			if (d.allow_ambient && dependency.region == rail.region) {
 				result += line("class " + get_rail_type_string(dependency) + ";");
@@ -267,7 +255,7 @@ public class Cpp : Target{
 			}
 		}
 
-		if (result.Count > 0)
+		if (result.Length > 0)
 			result += newline();
 
 		return result;
@@ -278,7 +266,7 @@ public class Cpp : Target{
 		current_rail = rail;
 		var result = "";
 		var first = "class ";
-		if (rail.class_export.Count > 0)
+		if (rail.class_export.Length > 0)
 			first += rail.class_export + " ";
 
 		first += rail.rail_name;
@@ -313,9 +301,9 @@ public class Cpp : Target{
 		return result;
 	}
 
-	void render_region (Region region, action) {
-		var namespace = Generator.get_namespace_path(region);
-		var result = line("namespace " + space.join("::") + " {");
+	string render_region (Region region, String_Delegate action) {
+		var space = Generator.get_namespace_path(region);
+		var result = line("namespace " + space.Join("::") + " {");
 		current_region = region;
 		indent();
 		result += action()
@@ -347,14 +335,14 @@ public class Cpp : Target{
 
 	string render_region_name (Region region) {
 		var path = Generator.get_namespace_path(region);
-		return path.join("::");
+		return path.Join("::");
 	}
 
 	string render_function_definition (Function_Definition definition) {
 		var intro = (definition.return_type != null ? render_signature(definition.return_type) + " " : "")
 		+ current_rail.rail_name + "::" + definition.name
-		+ "(" + definition.parameters.map(render_parameter).join(", ") + ")";
-
+		+ "(" + definition.parameters.Select(render_parameter).join(", ") + ")";
+        
 		return render_scope(intro, ()=>{
 			foreach (var parameter in definition.parameters) {
 				current_scope[parameter.name] = parameter.signature;
@@ -432,15 +420,14 @@ public class Cpp : Target{
 		return false;
 	}
 
-	void get_property_type_string (Tie tie, bool is_parameter = false) {
+	string get_property_type_string (Tie tie, bool is_parameter = false) {
 		var other_rail = tie.other_rail;
 		if (other_rail == null)
-			return types[tie.property.type.to_string(]);
+			return types[tie.property.type.ToString()];
 
 		var other_name = get_rail_type_string(other_rail);
 		if (tie.property.type == Kind.reference) {
-			return
-			tie.is_value ? is_parameter ? other_name + "&" : other_name :
+			return tie.is_value ? is_parameter ? other_name + "&" : other_name :
 					other_name + "*";
 		}
 		else {
@@ -615,41 +602,39 @@ public class Cpp : Target{
 	
 	string render_literal (Literal expression) {
 		var signature = expression.signature;
-		if (signature == null)
-			return Std.string(expression.value);
-			
+	    if (signature == null)
+	        return expression.value.ToString();
 			
 		switch (signature.type) {
 			case Kind.unknown:
-				return Std.string(expression.value);
+				return expression.value.ToString();;
 			
 			case Kind.Float:
-				var result = Std.string(expression.value);
+				var result = expression.value.ToString();
 				return result.Contains(".")
 					? result + "f"
 					: result;
 				
 			case Kind.Int:
-				return Std.string(expression.value);
+				return expression.value.ToString();
 			
 			case Kind.String:
-				return """ + Std.string(Node.value) + """;
+				return "\"" + expression.value + "\"";
 
 			case Kind.Bool:
-				bool boolean = expression.value;
-				return boolean ? "true": "false";
+				return (bool)expression.value ? "true": "false";
 
 			case Kind.reference:
 				if (!signature.rail.trellis.is_value)
 					throw new Exception("Literal expressions must be scalar values.");
 					
 				if (expression.value != null)
-					return Std.string(expression.value);
+					return expression.value.ToString();
 					
 				return render_rail_name(signature.rail) + "()";
 				
 			default:
-				throw new Exception("Invalid literal "" + Node.value + "" type "" + Node.signature.type + ".");
+				throw new Exception("Invalid literal " + expression.value + " type " + expression.signature.type + ".");
 		}
 	}
 

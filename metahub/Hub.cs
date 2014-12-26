@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
+using Newtonsoft.Json;
 using metahub.imperative;
 using metahub.imperative.types;
 using metahub.logic.schema;
@@ -15,6 +16,9 @@ using Namespace = metahub.schema.Namespace;
 using Regex = System.Text.RegularExpressions.Regex;
 
 namespace metahub {
+
+    public delegate void Empty_Delegate();
+
 public class Hub {
   public Schema schema;
   public metahub.parser.Definition parser_definition;
@@ -29,7 +33,7 @@ public class Hub {
 		schema = new Schema();
 
 		metahub_namespace = schema.add_namespace("metahub");
-    load_internal_trellises();
+    //load_internal_trellises();
 
 		//Math_Library math_library = new Math_Library();
 		//metahub_namespace.children["Math"] = schema.add_namespace("Math", math_library);
@@ -228,11 +232,13 @@ public class Hub {
     return context.parse(without_comments);
 	}
 
-  public void load_internal_trellises () {
-		var functions = Utility.get_string_resource("inserts/core_nodes.json");
-    var data = haxe.Json.parse(functions);
-    schema.load_trellises(data.trellises, new Load_Settings(metahub_namespace));
-  }
+  //public void load_internal_trellises () {
+    //    var functions = Utility.get_string_resource("inserts/core_nodes.json");
+    //var data =JsonConvert.DeserializeObject<RootObject>(functions);
+    
+
+    //schema.load_trellises(data.trellises, new Load_Settings(metahub_namespace));
+  //}
 
 	public void generate (source, string target_name, string destination) {
 		Imp imp = new Imp(this, target_name);

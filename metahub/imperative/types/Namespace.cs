@@ -1,3 +1,6 @@
+using System.Collections.Generic;
+using metahub.logic.schema;
+
 namespace metahub.imperative.types
 {
 using metahub.logic.schema.Region;

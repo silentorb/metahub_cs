@@ -1,16 +1,20 @@
-package metahub.meta.types;
+using System.Collections.Generic;
+
+namespace metahub.meta.types
+{
 
 /**
  * @author Christopher W. Johnson
  */
+public class Block : Expression{
+	public List<object> children = new List<object>();
 
-class Block extends Expression{
-	public List<Object> children = new List<Object>();
-
-	public Block(List<Object> statements = null) {
+	public Block(List<object> statements = null)
+        : base(Expression_Type.block)
+    {
 		if (statements != null)
 			this.children = statements;
-
-		super(Expression_Type.block);
+        
 	}
+}
 }

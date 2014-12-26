@@ -1,11 +1,15 @@
-package metahub.logic.schema;
+using System.Collections.Generic;
+
+namespace metahub.logic.schema
+{
 
 /**
  * @author Christopher W. Johnson
  */
 
-interface IRange 
+public interface IRange 
 {
-  int type;
-	List<Tie> path;
+    int type { get; set; }
+	List<Tie> path { get; set; }
+}
 }

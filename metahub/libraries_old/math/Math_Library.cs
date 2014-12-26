@@ -11,7 +11,7 @@ namespace h {
  * ...
  * @author Christopher W. Johnson
  */
-class Math_Library implements Function_Library
+public class Math_Library implements Function_Library
 {
 	public string name;
 	public Dictionary<string, int> function_map = new Dictionary<string, int>();
@@ -46,10 +46,10 @@ class Math_Library implements Function_Library
 	}
 
 	public List<Array get_function_options (int func) < Type_Signature >> {
-		if (!signatures.ContainsKey(cast func))
+		if (!signatures.ContainsKey(func))
 			throw new Exception("Function " + func + " is not yet implemented.");
 
-		return signatures[cast func];
+		return signatures[func];
 	}
 
 }}

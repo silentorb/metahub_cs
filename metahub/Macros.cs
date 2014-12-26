@@ -6,7 +6,7 @@ namespace b {
  * ...
  * @author Christopher W. Johnson
  */
-class Macros {
+public class Macros {
 
 	macro static public Expr insert_file_as_string (string path) {
 		var full_path = haxe.macro.Context.resolvePath(path);

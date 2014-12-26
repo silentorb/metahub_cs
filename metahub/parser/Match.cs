@@ -1,6 +1,6 @@
-package metahub.parser;
-
-class Match extends Result {
+namespace metahub.parser
+{
+public class Match : Result {
   public int length;
   public List<Match> matches;
   public Match last_success;
@@ -37,7 +37,7 @@ class Match extends Result {
     return start.context.text.substr(start.get_offset(), length);
   }
 
-  public Object get_data () {
+  public object get_data () {
     var data = pattern.get_data(this);
     return start.context.perform_action(pattern.action, data, this);
   }
@@ -57,4 +57,5 @@ class Match extends Result {
   }
 
 
+}
 }

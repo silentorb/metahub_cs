@@ -1,13 +1,15 @@
-package metahub.imperative.schema ;
+namespace metahub.imperative.schema
+{
 
 /**
  * @author Christopher W. Johnson
  */
 
 struct Property_Hooks {
-	Object set_post;
+	object set_post;
 }
 
 struct Property_Addition {
 	Property_Hooks hooks;
+}
 }

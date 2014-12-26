@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 
 namespace metahub.schema {
-class Schema {
+public class Schema {
   //public List<Trellis> trellises = new List<Trellis>();
   public Namespace root_namespace = new Namespace("root", "root");
 	private uint trellis_counter = 1;

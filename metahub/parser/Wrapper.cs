@@ -1,6 +1,6 @@
-package metahub.parser;
-
-class Wrapper extends Pattern {
+namespace metahub.parser
+{
+public class Wrapper : Pattern {
   public Pattern pattern;
 
   public Wrapper(Pattern pattern, string action) {
@@ -13,12 +13,13 @@ class Wrapper extends Pattern {
     if (!result.success)
       return failure(start, start, [ result ]);
 
-    Match match = cast result;
+    Match match = result;
 
     return success(start, match.Count(), [ result ], [ match ]);
   }
 
-  override Object get_data (Match match) {
+  override object get_data (Match match) {
     return match.matches[0].get_data();
   }
+}
 }

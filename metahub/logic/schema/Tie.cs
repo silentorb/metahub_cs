@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using metahub.schema;
 
@@ -7,7 +8,7 @@ namespace metahub.logic.schema {
  * @author Christopher W. Johnson
  */
 
-class Tie {
+public class Tie {
 
 	public Rail rail;
 	public Property property;
@@ -72,10 +73,10 @@ class Tie {
 		? other_tie.type
 		: type == Kind.list ? Kind.reference : Kind.list;
 
-		return {
-			type: other_type,
-			rail: other_rail,
-			is_value: is_value
+		return new Signature {
+			type = other_type,
+			rail = other_rail,
+			is_value = is_value
 		};
 	}
 
@@ -109,15 +110,15 @@ class Tie {
 				};
 			}
 
-			if (constraint.operator == "in") {
-				metahub.meta.types.Block args = cast constraint.expression;
+			if (constraint.op == "in") {
+				metahub.meta.types.Block args = constraint.expression;
 				pairs[path_name].min = { expression: args.children[0] };
 				pairs[path_name].max = { expression: args.children[1] };
 			}
-			else if (constraint.operator == ">" || constraint.operator == ">=") {
+			else if (constraint.op == ">" || constraint.op == ">=") {
 				pairs[path_name].min = constraint;
 			}
-			else if (constraint.operator == "<" || constraint.operator == "<=") {
+			else if (constraint.op == "<" || constraint.op == "<=") {
 				pairs[path_name].max = constraint;
 			}
 		}
@@ -133,7 +134,7 @@ class Tie {
 	}
 
 	static float get_expression_float (Expression expression){
-		metahub.imperative.types.Literal conversion = cast expression;
+		metahub.imperative.types.Literal conversion = expression;
 		return conversion.value;
 	}
 
@@ -145,7 +146,7 @@ class Tie {
 		return rail.name + "." + name;
 	}
 
-	public Object get_default_value () {
+	public object get_default_value () {
 		if (other_rail != null && other_rail.default_value != null)
 			return other_rail.default_value;
 

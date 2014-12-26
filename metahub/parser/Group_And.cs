@@ -1,6 +1,6 @@
-package metahub.parser;
-
-class Group_And extends Group {
+namespace metahub.parser
+{
+public class Group_And : Group {
 
 	public Group_And() {
 
@@ -22,7 +22,7 @@ class Group_And extends Group {
       if (!result.success)
         return failure(start, end, info_items);
 
-      Match match = cast result;
+      Match match = result;
       matches.Add(match);
       position = position.move(match.Count());
 
@@ -32,11 +32,12 @@ class Group_And extends Group {
     return success(start, length, info_items, matches);
   }
 
-  override Object get_data (Match match) {
-    List<Object> result = new List<Object>();
+  override object get_data (Match match) {
+    List<object> result = new List<object>();
     foreach (var child in match.matches) {
       result.Add(child.get_data());
     }
     return result;
   }
+}
 }

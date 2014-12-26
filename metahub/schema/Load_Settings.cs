@@ -6,8 +6,7 @@ namespace metahub.schema
 /**
  * @author Christopher W. Johnson
  */
-
-class Load_Settings {
+public class Load_Settings {
 	public Namespace space;
 	public bool auto_identity;
 	

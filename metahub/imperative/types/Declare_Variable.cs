@@ -1,17 +1,20 @@
-package metahub.imperative.types ;
+using metahub.logic.schema;
+using metahub.meta.types;
+
+namespace metahub.imperative.types
+{
 using metahub.logic.schema.Signature;
 
 /**
  * @author Christopher W. Johnson
  */
-
-class Declare_Variable extends Expression {
+public class Declare_Variable : Expression {
 	public string name;
 	public Signature signature;
 	public Expression expression;
 	
-	public Declare_Variable(string name, Signature signature, Expression expression) {
-		super(Expression_Type.declare_variable);
+	public Declare_Variable(string name, Signature signature, Expression expression)
+:base(Expression_Type.declare_variable) {
 		this.name = name;
 		this.signature = signature;
 		this.expression = expression;
@@ -23,3 +26,4 @@ class Declare_Variable extends Expression {
 	//Signature signature,
 	//Expression expression
 //}
+}

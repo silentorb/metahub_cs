@@ -1,6 +1,6 @@
-package metahub.parser;
-
-class Group_Or extends Group {
+namespace metahub.parser
+{
+public class Group_Or : Group {
 
 	public Group_Or() {
 
@@ -19,7 +19,7 @@ class Group_Or extends Group {
       if (result.success) {
 //        match.children.Add(result);
 //        result = info;
-        Match match = cast result;
+        Match match = result;
         return success(position, match.Count(), info_items, [ match ]);
       }
     }
@@ -27,7 +27,8 @@ class Group_Or extends Group {
     return failure(position, end, info_items);
   }
 
-  override Object get_data (Match match) {
+  override object get_data (Match match) {
     return match.matches[0].get_data();
   }
+}
 }

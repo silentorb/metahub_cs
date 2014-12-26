@@ -6,8 +6,7 @@ namespace metahub.logic.schema {
  * ...
  * @author Christopher W. Johnson
  */
-
-class Function_Info
+public class Function_Info
 {
 	public string name;
 	public List<Function_Version> versions = new List<Function_Version>();

@@ -1,4 +1,5 @@
-package metahub.render ;
+namespace metahub.render
+{
 using metahub.imperative.Imp;
 using metahub.render.targets.cpp.Cpp;
 using metahub.render.targets.haxe.Haxe_Target;
@@ -13,7 +14,7 @@ using metahub.schema.Namespace;
  * ...
  * @author Christopher W. Johnson
  */
-class Generator {
+public class Generator {
 
 	Hub hub;
 
@@ -50,4 +51,5 @@ class Generator {
 		return tokens;
 	}
 
+}
 }

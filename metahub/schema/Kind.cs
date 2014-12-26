@@ -1,15 +1,15 @@
 
 namespace metahub.schema
 {
-    enum Kind
+    public enum Kind
     {
-        None,
+        none,
         Int,
         String,
-        Reference,
-        List,
+        reference,
+        list,
         Float,
         Bool,
-        Unknown
+        unknown
     }
 }

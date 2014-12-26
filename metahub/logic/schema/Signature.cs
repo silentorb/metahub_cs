@@ -1,14 +1,14 @@
-using metahub.schema.Kind;
-using metahub.logic.schema.Rail;
+using metahub.schema;
 
 namespace metahub.logic.schema {
 /**
  * @author Christopher W. Johnson
  */
 
-struct Signature {
-	Kind type,
-	Rail rail,
-	bool is_value,
-	int is_numeric
+public class Signature
+{
+    public Kind type;
+    public Rail rail;
+    public bool is_value;
+    public int is_numeric;
 }}

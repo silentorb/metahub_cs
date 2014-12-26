@@ -1,5 +1,6 @@
-package metahub.parser;
-
-class Repetition_Match extends Match {
+namespace metahub.parser
+{
+public class Repetition_Match : Match {
   public List<Match> dividers;
+}
 }

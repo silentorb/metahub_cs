@@ -1,10 +1,11 @@
-package metahub.render ;
+namespace metahub.render
+{
 
 /**
  * ...
  * @author Christopher W. Johnson
  */
-class Renderer{
+public class Renderer{
 
 	int depth = 0;
 	//string content = "";
@@ -56,4 +57,5 @@ class Renderer{
 		: newline() + content;
 	}
 
+}
 }

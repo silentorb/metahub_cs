@@ -1,13 +1,16 @@
-package metahub.imperative.types ;
-using metahub.logic.schema.Signature;
+using System.Collections.Generic;
+using metahub.logic.schema;
+
+namespace metahub.imperative.types
+{
 
 /**
  * @author Christopher W. Johnson
  */
-
-struct Scope {
+public class Scope {
 	//Expression_Type type,
-	Dictionary variables<string, Signature>,
-	//List<Scope> children,
-	//List<Object> statements
+    private Dictionary<string, Signature> variables = new Dictionary<string, Signature>();
+    //List<Scope> children,
+    //List<object> statements
+}
 }

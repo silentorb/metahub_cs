@@ -1,4 +1,5 @@
-package metahub.imperative.code ;
+namespace metahub.imperative.code
+{
 using metahub.imperative.Imp;
 using metahub.logic.schema.Constraint;
 using metahub.logic.schema.Rail;
@@ -11,7 +12,7 @@ using metahub.schema.Kind;
  * ...
  * @author Christopher W. Johnson
  */
-class Reference
+public class Reference
 {
 	public static var inverse_operators = {
 		">": "<=",
@@ -21,26 +22,26 @@ class Reference
 	}
 
 	public static List<Expression> constraint (Constraint constraint, Imp imp) {
-		var operator = constraint.operator;
+		var op = constraint.op;
 		return [];
 		var reference = imp.translate(constraint.reference);
 
-		if (operator == "in") {
-			metahub.meta.types.Block args = cast constraint.expression;
-			return generate_constraint(reference, ">=", cast args.children[0])
+		if (op == "in") {
+			metahub.meta.types.Block args = constraint.expression;
+			return generate_constraint(reference, ">=", args.children[0])
 			.concat(
-				generate_constraint(reference, "<=", cast args.children[1])
+				generate_constraint(reference, "<=", args.children[1])
 			);
 		}
 
-		return generate_constraint(reference, constraint.operator, cast constraint.expression);
-		//var inverse = inverse_operators[operator];
-		//Literal conversion = cast constraint.expression;
+		return generate_constraint(reference, constraint.op, constraint.expression);
+		//var inverse = inverse_operators[op];
+		//Literal conversion = constraint.expression;
 		//float limit = conversion.value;
 //
 		//float min = 0.0001;
 		//float value = 0;
-		//switch(operator) {
+		//switch(op) {
 			//case "<":
 				//value = limit - min;
 			//case ">":
@@ -63,13 +64,13 @@ class Reference
 		//)];
 	}
 
-	static List<Expression> generate_constraint (Expression reference, operator, Literal literal) {
-		var inverse = inverse_operators[operator];
+	static List<Expression> generate_constraint (Expression reference, op, Literal literal) {
+		var inverse = inverse_operators[op];
 		float limit = literal.value;
 
 		float min = 0.0001;
 		float value = 0;
-		switch(operator) {
+		switch(op) {
 			case "<":
 				value = limit - min;
 			case ">":
@@ -98,4 +99,5 @@ class Reference
 //
 	//}
 
+}
 }

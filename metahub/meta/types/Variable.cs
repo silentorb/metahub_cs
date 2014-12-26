@@ -1,16 +1,18 @@
-package metahub.meta.types;
+namespace metahub.meta.types
+{
 
 /**
  * ...
  * @author Christopher W. Johnson
  */
-class Variable extends Expression
+public class Variable : Expression
 {
 	public string name;
 	
-	public Variable(string name) {
-		super(Expression_Type.variable);
+	public Variable(string name)
+:base(Expression_Type.variable) {
 		this.name = name;
 	}
 	
+}
 }

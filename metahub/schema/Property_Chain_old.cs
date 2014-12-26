@@ -9,8 +9,7 @@ namespace metahub.schema {
  */
 
 struct Property_Chain List<Property>;
-
-class Property_Chain_Helper {
+public class Property_Chain_Helper {
 	public static Property_Chain flip (Property_Chain chain) {
 		Property_Chain result = new Property_Chain();
 		var i = chain.Count() - 1;
@@ -48,7 +47,7 @@ class Property_Chain_Helper {
 			var link = chain[i];
 			if (link.type == Kind.list) {
 				throw new Exception("Property_Chain.perform is not implemented for lists.");
-				//List_Port list_port = cast node.get_port(link.id);
+				//List_Port list_port = node.get_port(link.id);
 				//var array = list_port.get_array();
 				//foreach (var j in array) {
 					//perform(chain, hub.get_node(j), hub, action, i + 1);

@@ -1,10 +1,10 @@
-package metahub.parser;
-
-class Bootstrap extends Context {
+namespace metahub.parser
+{
+public class Bootstrap : Context {
 
 //  public Bootstrap() { }
 
-  public override Object perform_action (string name, Object data, Match match) {
+  public override object perform_action (string name, object data, Match match) {
     if (name == null)
       return data;
 
@@ -36,12 +36,12 @@ class Bootstrap extends Context {
     }
   }
 
-  Object literal (Object data) {
+  object literal (object data) {
 //    trace("data", data);
     return data[1];
   }
 
-  Object regex (Object data) {
+  object regex (object data) {
 //    trace("data", data);
     return {
     type: "regex",
@@ -49,36 +49,36 @@ class Bootstrap extends Context {
     };
   }
 
-  Object reference (Object data) {
+  object reference (object data) {
     return {
     type: "reference",
     name: data
     };
   }
 
-  Object and_group (Object data) {
+  object and_group (object data) {
     return {
     type: "and",
     patterns: data
     };
   }
 
-  Object group (Object data) {
+  object group (object data) {
 //  trace("group", data);
     return data[2];
   }
 
-  Object or_group (Object data) {
+  object or_group (object data) {
     return {
     type: "or",
     patterns: data
     };
   }
 
-  Object pattern (Object data, Match match) {
+  object pattern (object data, Match match) {
 //    trace("pattern:", data);
 
-    List<Object> value = cast data;
+    List<object> value = data;
     var w = value.Count();
     if (data.Count() == 0)
       return null;
@@ -91,7 +91,7 @@ class Bootstrap extends Context {
       };
   }
 
-  Object repetition (Object data) {
+  object repetition (object data) {
 //    trace("rule", data);
     var settings = data[1];
     var result = {
@@ -115,20 +115,20 @@ class Bootstrap extends Context {
     return result;
   }
 
-  Object rule (Object data) {
+  object rule (object data) {
 //    trace("rule", data);
-    List<Object> value = cast data[4];
+    List<object> value = data[4];
     return {
     name: data[0],
     value: value != null && value.Count() == 1 ? value[0] : value
     };
   }
 
-  Object start (Object data) {
-    Object map < string > = cast {};
+  object start (object data) {
+    object map < string > = {};
 //    trace("start", data);
 
-		List<Object> items = data;
+		List<object> items = data;
     foreach (var item in items) {
       Reflect.setField(map, item.name, item.value);
 //      map.setField(item.name, item.value);
@@ -136,4 +136,5 @@ class Bootstrap extends Context {
 //    trace("data", data);
     return map; //haxe.Json.parse(haxe.Json.stringify(map);
   }
+}
 }

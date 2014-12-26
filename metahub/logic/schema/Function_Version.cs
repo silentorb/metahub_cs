@@ -1,10 +1,11 @@
-package metahub.logic.schema;
+namespace metahub.logic.schema
+{
 
 /**
  * ...
  * @author Christopher W. Johnson
  */
-class Function_Version {
+public class Function_Version {
 	public Signature input_signature;
 	public Signature output_signature;
 	
@@ -12,4 +13,5 @@ class Function_Version {
 		input_signature = input;
 		output_signature = output;
 	}
+}
 }

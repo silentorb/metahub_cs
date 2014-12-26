@@ -1,16 +1,18 @@
-package metahub.imperative.types;
+namespace metahub.imperative.types
+{
 
 /**
  * ...
  * @author Christopher W. Johnson
  */
-class Path extends Expression {
+public class Path : Expression {
 	public List<Expression> children;
 	
 	public Path(List<Expression> children)
-	{
-		super(Expression_Type.path);
+
+:base(Expression_Type.path) {
 		this.children = children;
 	}
 	
+}
 }

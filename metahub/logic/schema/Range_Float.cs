@@ -1,10 +1,11 @@
-package metahub.logic.schema;
+namespace metahub.logic.schema
+{
 
 /**
  * ...
  * @author Christopher W. Johnson
  */
-class Range_Float implements IRange
+public class Range_Float : IRange
 {
 	public float min;
 	public float max;
@@ -18,4 +19,5 @@ class Range_Float implements IRange
 		this.path = path;
 	}
 	
+}
 }

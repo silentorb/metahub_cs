@@ -1,6 +1,6 @@
-package metahub.parser;
-
-class Pattern {
+namespace metahub.parser
+{
+public class Pattern {
   public string action;
   public string name;
   public string type;
@@ -55,7 +55,8 @@ class Pattern {
 //    return previous.pattern.rewind(previous, messages);
 //  }
 
-  public Object get_data (Match match) {
+  public object get_data (Match match) {
     return null;
   }
+}
 }

@@ -1,15 +1,15 @@
-package metahub.imperative.types ;
+namespace metahub.imperative.types
+{
 using metahub.logic.schema.Rail;
 
 /**
  * @author Christopher W. Johnson
  */
-
- class Instantiate extends Expression {
+public class Instantiate : Expression {
 	public Rail rail;
 	
-	public Instantiate(Rail rail) {
-		super(Expression_Type.instantiate);
+	public Instantiate(Rail rail)
+:base(Expression_Type.instantiate) {
 		this.rail = rail;
 	}
 }
@@ -18,3 +18,4 @@ using metahub.logic.schema.Rail;
 	//string type,
 	//Rail rail
 //}
+}

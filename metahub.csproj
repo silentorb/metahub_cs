@@ -42,7 +42,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="metahub\Hub.cs" />
-    <Compile Include="metahub\imperative\code\List.cs" />
+    <Compile Include="metahub\imperative\code\List_Code.cs" />
     <Compile Include="metahub\imperative\code\Parse.cs" />
     <Compile Include="metahub\imperative\code\Reference.cs" />
     <Compile Include="metahub\imperative\Imp.cs" />

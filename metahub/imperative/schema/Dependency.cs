@@ -1,11 +1,12 @@
-package metahub.imperative.schema ;
+namespace metahub.imperative.schema
+{
 using metahub.logic.schema.Rail;
 
 /**
  * ...
  * @author Christopher W. Johnson
  */
-class Dependency
+public class Dependency
 {
 	public Rail rail;
 	public bool allow_ambient = true;
@@ -15,4 +16,5 @@ class Dependency
 		this.rail = rail;
 	}
 	
+}
 }

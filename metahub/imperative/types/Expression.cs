@@ -1,25 +1,27 @@
-package metahub.imperative.types ;
-using metahub.logic.schema.Tie;
+using metahub.meta.types;
+
+namespace metahub.imperative.types
+{
 
 /**
  * @author Christopher W. Johnson
  */
-
-class Expression {
+public class Expression {
 	public Expression_Type type;
 	public Expression child = null;
 	
-	private Expression(Expression_Type type) {
+	protected Expression(Expression_Type type) {
 		this.type = type;
 	}
 }
 //struct Expression {
 	//Expression_Type type,
-	//Object value,
+	//object value,
 	//Expression child,
 	//string name,
-	//List<Object> args,
-	//List<Object> path,
+	//List<object> args,
+	//List<object> path,
 	//Tie tie,
 	//bool is_platform_specific
 //}
+}

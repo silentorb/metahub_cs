@@ -1,6 +1,6 @@
-package metahub.parser;
-
-class Regex extends Pattern {
+namespace metahub.parser
+{
+public class Regex : Pattern {
   EReg regex;
   string text;
 
@@ -23,9 +23,10 @@ class Regex extends Pattern {
     return success(start, match.Count());
   }
 
-  override Object get_data (Match match) {
+  override object get_data (Match match) {
     var start = match.start;
     regex.matchSub(start.context.text, start.get_offset());
     return regex.matched(0);
   }
+}
 }

@@ -1,11 +1,11 @@
 using metahub.logic.schema.Rail;
 
-namespace a {
+namespace metahub.meta {
 /**
  * ...
  * @author Christopher W. Johnson
  */
-class Scope {
+public class Scope {
 	public Rail rail;
 	public Scope parent;
 	public Dictionary<string, metahub.logic.schema.Signature> variables = new Dictionary<string, metahub.logic.schema.Signature>();

@@ -1,4 +1,5 @@
-package metahub.imperative.types ;
+namespace metahub.imperative.types
+{
 
 /**
  * @author Christopher W. Johnson
@@ -30,4 +31,5 @@ abstract Expression_Type(int) {
 	int declare_variable = 105;
 	int scope = 106;
 	int insert = 107;
+}
 }

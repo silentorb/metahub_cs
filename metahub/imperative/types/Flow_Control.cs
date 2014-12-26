@@ -1,17 +1,19 @@
-package metahub.imperative.types ;
+using System.Collections.Generic;
+using metahub.meta.types;
+
+namespace metahub.imperative.types
+{
 
 /**
  * @author Christopher W. Johnson
  */
-
- 
-class Flow_Control extends Expression {
+public class Flow_Control : Expression {
 	public string name;
 	public Condition condition;
 	public List<Expression> children;
 	
-	public Flow_Control(string name, Condition condition, List<Expression> children) {
-		super(Expression_Type.flow_control);
+	public Flow_Control(string name, Condition condition, List<Expression> children)
+:base(Expression_Type.flow_control) {
 		this.name = name;
 		this.condition = condition;
 		this.children = children;
@@ -22,5 +24,6 @@ class Flow_Control extends Expression {
 	//Expression_Type type,
 	//string name,
 	//Condition condition,
-	//List<Object> statements,
+	//List<object> statements,
 //}
+}

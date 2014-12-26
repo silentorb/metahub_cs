@@ -1,24 +1,28 @@
-using metahub.imperative.Imp;
-using metahub.imperative.types.*;
-using metahub.logic.schema.Rail;
-using metahub.logic.schema.Region;
-using metahub.logic.schema.Tie;
-using metahub.schema.Trellis;
-using metahub.schema.Kind;
-using metahub.imperative.code.List;
+using System;
+using System.Collections.Generic;
+using metahub.imperative.types;
+using metahub.logic.schema;
+using metahub.meta.types;
+using metahub.schema;
+using Expression = metahub.imperative.types.Expression;
+using Function_Call = metahub.imperative.types.Function_Call;
+using Namespace = metahub.imperative.types.Namespace;
+using Parameter = metahub.imperative.types.Parameter;
+using Property_Expression = metahub.imperative.types.Property_Expression;
+using Variable = metahub.imperative.types.Variable;
 
-namespace a {
+namespace metahub.imperative.schema {
 /**
  * ...
  * @author Christopher W. Johnson
  */
-class Dungeon
+public class Dungeon
 {
 	public Rail rail;
 	public List<Expression> code;
 	public Region region;
 	public Trellis trellis;
-	Object inserts;
+	object inserts;
 	Dictionary<string, List<metahub.imperative.types.Expression>> blocks = new Dictionary<string, List<metahub.imperative.types.Expression>>();
 	List<Zone> zones = new List<Zone>();
 	public List<Function_Definition> functions = new List<Function_Definition>();
@@ -35,7 +39,7 @@ class Dungeon
 		
 		map_additional();
 		
-		foreach (var tie in rail.all_ties) {
+		foreach (var tie in rail.all_ties.Values) {
 			Lair lair = new Lair(tie, this);
 			lairs[tie.name] = lair;
 		}
@@ -53,7 +57,7 @@ class Dungeon
 	
 	public void generate_code1 () {
 		Class_Definition definition = new Class_Definition(rail, []);
-		code = [];
+		code = new List<Expression>();
 		var zone = create_zone(code);
 		zone.divide("..pre");
 		var mid = zone.divide(null, [
@@ -82,7 +86,7 @@ class Dungeon
 		if (inserts != null) {
 			foreach (var path in inserts.Keys) {
 				List<string> lines = inserts[path];
-				concat_block(path, cast lines.map((s)=> new Insert(s)));
+				concat_block(path, lines.map((s)=> new Insert(s)));
 			}
 		}
 	}
@@ -109,7 +113,8 @@ class Dungeon
 		}
 	}
 
-	public void create_zone (target = null) {
+    public Zone create_zone(List<Expression> target = null)
+    {
 		Zone zone = new Zone(target, blocks);
 		zones.Add(zone);
 		return zone;
@@ -125,17 +130,17 @@ class Dungeon
 		if (!tie.has_setter())
 			return null;
 
-			Function_Definition result = new Function_Definition("set_" + tie.tie_name, this, [
+			Function_Definition result = new Function_Definition("set_" + tie.tie_name, this, new List<Parameter>{
 				new Parameter("value", tie.get_signature())
-			], []);
+			}, new List<Expression>());
 
 		var zone = create_zone(result.expressions);
 		var pre = zone.divide(tie.tie_name + "_set_pre");
 
 		var mid = zone.divide(null, [
-			new Flow_Control("if", new Condition("==", [
+			new Flow_Control("if", new Condition("==", new List<Expression> {
 					new Property_Expression(tie), new Variable("value")
-				]),
+            }),
 				[
 					new Statement("return")
 			]),
@@ -190,24 +195,27 @@ class Dungeon
 		switch(expression.type) {
 			
 			case Expression_Type.space:
-				Namespace ns = cast expression;
+				Namespace ns = expression;
 				post_analyze_many(ns.expressions);
+		        break;
 
 			case Expression_Type.class_definition:
-				Class_Definition definition = cast expression;
-				post_analyze_many(definition.expressions);
+				post_analyze_many(((Class_Definition)expression).expressions);
+                break;
 
 			case Expression_Type.function_definition:
-				Function_Definition definition = cast expression;
+				Function_Definition definition = expression;
 				post_analyze_many(definition.expressions);
+                break;
 
 			case Expression_Type.flow_control:
-				Flow_Control definition = cast expression;
+				Flow_Control definition = expression;
 				post_analyze_many(definition.condition.expressions);
 				post_analyze_many(definition.children);
+                break;
 
 			case Expression_Type.function_call:
-				Function_Call definition = cast expression;
+				Function_Call definition = expression;
 				//trace("func", definition.name);
 				if (definition.is_platform_specific && !used_functions.ContainsKey(definition.name))
 					used_functions[definition.name] = new Used_Function(definition.name, definition.is_platform_specific);
@@ -216,17 +224,20 @@ class Dungeon
 					if (arg.ContainsKey("type"))
 						post_analyze(arg);
 				}
+                break;
 
 			case Expression_Type.assignment:
-				Assignment definition = cast expression;
+				Assignment definition = expression;
 				post_analyze(definition.expression);
+                break;
 
 			case Expression_Type.declare_variable:
-				Declare_Variable definition = cast expression;
+				Declare_Variable definition = expression;
 				post_analyze(definition.expression);
+                break;
 				
 			//case Expression_Type.property:
-				//Property_Expression property_expression = cast expression;
+				//Property_Expression property_expression = expression;
 				//result = property_expression.tie.tie_name;
 
 			//case Expression_Type.instantiate:

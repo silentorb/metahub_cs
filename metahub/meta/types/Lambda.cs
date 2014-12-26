@@ -1,19 +1,19 @@
 using metahub.meta.Scope;
 
-namespace s {
+namespace metahub.meta.types {
 /**
  * ...
  * @author Christopher W. Johnson
  */
-class Lambda extends Expression
+public class Lambda : Expression
 {
 	public List<Parameter> parameters;
 	public List<Expression> expressions;
 	public Scope scope;
 
 	public Lambda(Scope scope, List<Parameter> parameters, List<Expression> expressions)
-	{
-		super(Expression_Type.lambda);
+
+:base(Expression_Type.lambda) {
 		this.scope = scope;
 		this.parameters = parameters;
 		this.expressions = expressions;		

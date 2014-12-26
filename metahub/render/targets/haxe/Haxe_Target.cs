@@ -1,4 +1,5 @@
-package metahub.render.targets.haxe ;
+namespace metahub.render.targets.haxe
+{
 using metahub.imperative.Imp;
 using metahub.logic.schema.Railway;
 using metahub.Hub;
@@ -8,10 +9,10 @@ using metahub.schema.Namespace;
  * ...
  * @author Christopher W. Johnson
  */
-class Haxe_Target extends Target{
+public class Haxe_Target : Target{
 
-	public Haxe_Target(Railway railway, Imp imp) {
-		super(railway, imp);
+	public Haxe_Target(Railway railway, Imp imp)
+:base(railway, imp) {
 	}
 
 	override public void run (string output_folder) {
@@ -31,4 +32,5 @@ class Haxe_Target extends Target{
 			}
 		}
 	}
+}
 }

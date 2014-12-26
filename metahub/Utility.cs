@@ -4,10 +4,9 @@ namespace b {
 #if nodejs
 using js.Node in Nodejs;
 #end
+public class Utility {
 
-class Utility {
-
-  public static Object load_json (string url) {
+  public static object load_json (string url) {
     string json;
 #if html5
 	throw new Exception("Not supported with html5.");
@@ -47,7 +46,7 @@ class Utility {
 
 	public static void create_file (string url, string contents) {
 #if nodejs
-	Nodejs.fs.writeFileSync(url, cast contents );
+	Nodejs.fs.writeFileSync(url, contents );
 #else
 	throw "Not supported.";
 #end

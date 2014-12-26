@@ -1,4 +1,5 @@
-package metahub.imperative.types ;
+namespace metahub.imperative.types
+{
 
 /**
  * @author Christopher W. Johnson
@@ -6,5 +7,6 @@ package metahub.imperative.types ;
 
 struct Block {
 	string type,
-	List<Object> statements
+	List<object> statements
+}
 }

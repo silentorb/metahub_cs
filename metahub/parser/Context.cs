@@ -1,6 +1,6 @@
-package metahub.parser;
-
-class Context {
+namespace metahub.parser
+{
+public class Context {
 
   public string text;
   public bool debug = false;
@@ -20,7 +20,7 @@ class Context {
 
     var result = definition.patterns[0].test(new Position(this), 0);
     if(result.success){
-      Match match = cast result;
+      Match match = result;
       var offset = match.start.move(match.Count());
       if (offset.get_offset() < text.Count()) {
 				result.success = false;
@@ -34,7 +34,7 @@ class Context {
     return result;
   }
 
-  public Object perform_action (string name, Object data, Match match) {
+  public object perform_action (string name, object data, Match match) {
     return null;
   }
 
@@ -57,7 +57,7 @@ class Context {
         throw new Exception("Infinite loop looking for previous repetition.");
     }
 
-    Repetition pattern = cast repetition.pattern;
+    Repetition pattern = repetition.pattern;
     if (repetition.matches.Count() > pattern.min) {
       repetition.matches.pop();
       messages.Add("rewinding " + pattern.name + " " + previous.start.get_coordinate_string());
@@ -74,4 +74,5 @@ class Context {
 //    messages.Add("cannot rewind " + pattern.name + ", looking for earlier repetition.");
 //    return previous.pattern.rewind(previous, messages);
   }
+}
 }

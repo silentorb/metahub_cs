@@ -1,11 +1,12 @@
-package metahub.imperative.types ;
-using metahub.logic.schema.Signature;
+using metahub.logic.schema;
+
+namespace metahub.imperative.types
+{
 
 /**
  * @author Christopher W. Johnson
  */
-
-class Parameter {
+public class Parameter {
 	public string name;
 	public Signature signature;
 
@@ -14,4 +15,5 @@ class Parameter {
 		this.name = name;
 		this.signature = signature;
 	}
+}
 }

@@ -1,15 +1,19 @@
-package metahub.imperative.types;
+using metahub.meta.types;
+
+namespace metahub.imperative.types
+{
 
 /**
  * ...
  * @author Christopher W. Johnson
  */
-class Self extends Expression {
+public class Self : Expression {
 
 	public Self(Expression child = null)
-	{
-		super(Expression_Type.self);
+
+:base(Expression_Type.self) {
 		this.child = child;
 	}
 	
+}
 }

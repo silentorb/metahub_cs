@@ -1,27 +1,31 @@
-using metahub.imperative.Imp;
-using metahub.logic.schema.Constraint;
-using metahub.logic.schema.Rail;
-using metahub.logic.schema.Tie;
-using metahub.imperative.types.*;
-using metahub.meta.types.Lambda;
-using metahub.schema.Kind;
+using System.Collections.Generic;
+using metahub.imperative.types;
+using metahub.logic.schema;
+using metahub.meta.types;
+using metahub.schema;
+using Constraint = metahub.logic.schema.Constraint;
+using Expression = metahub.imperative.types.Expression;
+using Function_Call = metahub.imperative.types.Function_Call;
+using Parameter = metahub.imperative.types.Parameter;
+using Path = metahub.imperative.types.Path;
+using Variable = metahub.imperative.types.Variable;
 
-namespace e {
+namespace metahub.imperative.code {
 /**
  * ...
  * @author Christopher W. Johnson
  */
-class List
+public class List_Code
 {
 	public static void common_functions (Tie tie, Imp imp) {
 		var rail = tie.rail;
 		var dungeon = imp.get_dungeon(tie.rail);
 
 		var function_name = tie.tie_name + "_add";
-		Function_Definition definition = new Function_Definition(function_name, dungeon, [
+		Function_Definition definition = new Function_Definition(function_name, dungeon, new List<Parameter> {
 			new Parameter("item", tie.get_other_signature()),
-			new Parameter("origin", { type: Kind.reference, rail: null })
-			], []);
+			new Parameter("origin", new Signature { type = Kind.reference, rail = null })
+        }, new List<Expression>());
 
 		var zone = dungeon.create_zone(definition.expressions);
 		var mid = zone.divide(null, [
@@ -43,14 +47,14 @@ class List
 	}
 
 	public static void generate_constraint (Constraint constraint, Imp imp) {
-		Path path = cast constraint.reference;
-		Property_Expression property_expression = cast path.children[0];
+		Path path = constraint.reference;
+		Property_Expression property_expression = path.children[0];
 		var reference = property_expression.tie;
 		//int amount = target.render_expression(constraint.expression, constraint.scope);
 		var expression = constraint.expression;
 
 		//if (constraint.expression.type == metahub.meta.types.Expression_Type.function_call) {
-			//metahub.meta.types.Function_Call func = cast constraint.expression;
+			//metahub.meta.types.Function_Call func = constraint.expression;
 			//if (func.name == "map") {
 				//map(constraint, expression, imp);
 				//return;
@@ -69,7 +73,7 @@ class List
 	public static void map (Constraint constraint, metahub expression.meta.types.Expression, Imp imp) {
 		var start = Parse.get_start_tie(constraint.reference);
 		var end = Parse.get_end_tie(constraint.reference);
-		metahub.meta.types.Path path = cast constraint.expression;
+		metahub.meta.types.Path path = constraint.expression;
 
 		var a = Parse.get_path(constraint.reference);
 		var b = Parse.get_path(path);
@@ -87,26 +91,26 @@ class List
 
 		var item_name = second_end.rail.name.toLowerCase() + "_item";
 
-		List<Expression> creation_block = [
-			new Declare_Variable(item_name, second_end.get_other_signature(), new Instantiate(second_end.other_rail)),
-		];
+		var creation_block = new List<Expression>();
+	    creation_block.Add(new Declare_Variable(item_name, second_end.get_other_signature(),
+	                                             new Instantiate(second_end.other_rail)));
 
 		if (mapping != null) {
-			List<metahub.meta.types.Constraint> constraints = cast mapping.expressions;
+			var constraints = (List<metahub.meta.types.Constraint>) mapping.expressions;
 			foreach (var constraint in constraints) {
-				metahub.meta.types.Path first = cast constraint.first;
-				metahub.meta.types.Property_Expression first_tie = cast first.children[1];
-				metahub.meta.types.Path second = cast constraint.second;
-				metahub.meta.types.Property_Expression second_tie = cast second;
+				metahub.meta.types.Path first = constraint.first;
+				metahub.meta.types.Property_Expression first_tie = first.children[1];
+				metahub.meta.types.Path second = constraint.second;
+				metahub.meta.types.Property_Expression second_tie = second;
 				creation_block.Add(new Assignment(
-					new Variable(item_name, new Property_Expression(cast a_end.other_rail.get_tie_or_error(first_tie.tie.name))),
+					new Variable(item_name, new Property_Expression(a_end.other_rail.get_tie_or_error(first_tie.tie.name))),
 					"=",
-					new Variable("item", new Property_Expression(cast second_end.other_rail.get_tie_or_error(second_tie.tie.name)))
+					new Variable("item", new Property_Expression(second_end.other_rail.get_tie_or_error(second_tie.tie.name)))
 				));
 			}
 		}
 
-		creation_block = creation_block.concat(cast [
+		creation_block = creation_block.concat([
 			new Variable(item_name, new Function_Call("initialize")),
 			new Property_Expression(c[0],
 				new Function_Call(second_end.tie_name + "_add",
@@ -131,8 +135,8 @@ class List
 	}
 
 	public static void size (Constraint constraint, metahub expression.meta.types.Expression, Imp imp) {
-		Path path = cast constraint.reference;
-		Property_Expression property_expression = cast path.children[0];
+		Path path = constraint.reference;
+		Property_Expression property_expression = path.children[0];
 		var reference = property_expression.tie;
 
 		var instance_name = reference.other_rail.rail_name;

@@ -1,22 +1,10 @@
-using haxe.xml.Parser;
-using metahub.imperative.Imp;
-using metahub.logic.schema.Railway;
-using metahub.meta.Coder;
-using metahub.meta.types.Expression;
-using metahub.parser.Definition;
-using metahub.parser.Match;
-using metahub.render.Generator;
-using metahub.schema.Load_Settings;
-using metahub.schema.Namespace;
-using metahub.schema.Schema;
-using metahub.schema.Trellis;
-using metahub.schema.Property;
 
-using metahub.schema.Kind;
-using haxe.Json;
 
-namespace b {
-class Hub {
+using System.Collections.Generic;
+using metahub.schema;
+
+namespace metahub {
+public class Hub {
   public Schema schema;
   public metahub.parser.Definition parser_definition;
 	static var remove_comments = ~/#[^\n]*/g;
@@ -37,7 +25,7 @@ class Hub {
 		//math_library.load(this);
   }
 
-	//public void add_change (INode node, int index, Object value, Context context, General_Port source = null) {
+	//public void add_change (INode node, int index, object value, Context context, General_Port source = null) {
 		//var i = queue.Count();
 		//while (--i >= 0) {
 			//if (queue[i].node == node) {
@@ -79,7 +67,7 @@ class Hub {
     metahub.parser.Bootstrap context = new metahub.parser.Bootstrap(boot_definition);
     var result = context.parse(metahub.Macros.insert_file_as_string("inserts/metahub.grammar"), false);
 		if (result.success) {
-			Match match = cast result;
+			Match match = result;
 			parser_definition = new Definition();
 			parser_definition.load(match.get_data());
 		}
@@ -174,7 +162,7 @@ class Hub {
     load_schema_from_object(data, namespace, auto_identity);
   }
 
-	public void load_schema_from_object (Object data, Namespace namespace, bool auto_identity = false) {
+	public void load_schema_from_object (object data, Namespace namespace, bool auto_identity = false) {
     schema.load_trellises(data.trellises, new Load_Settings(namespace, auto_identity));
 		if (data.ContainsKey("is_external") && data["is_external"] == true)
 			space.is_external = true;
@@ -187,7 +175,7 @@ class Hub {
 		}
   }
 
-  public Expression run_data (Object source, Railway railway) {
+  public Expression run_data (object source, Railway railway) {
     Coder coder = new Coder(railway);
     return coder.convert_statement(source, null);
   }
@@ -197,7 +185,7 @@ class Hub {
 		//if (!result.success) {
        //throw new Exception("Syntax Error at " + result.end.y + ":" + result.end.x);
 		//}
-    //metahub.parser.Match match = cast result;
+    //metahub.parser.Match match = result;
 		//var statement = run_data(match.get_data());
 //
 		////trace(graph_expressions(statement));
@@ -264,7 +252,7 @@ class Hub {
 
 	//public static void get_node_label (INode node, General_Port port = null) {
 		//Trellis trellis = Type.getClassName(Type.getClass(node)) == "metahub.schema.Trellis"
-			//? cast node
+			//? node
 			//: null;
 //
 		//return trellis != null && port != null
@@ -278,7 +266,7 @@ class Hub {
 //
 		////int maximum_depth = 50;
 		//Trellis trellis = Type.getClassName(Type.getClass(node)) == "metahub.schema.Trellis"
-			//? cast node
+			//? node
 			//: null;
 //
 		//var tabbing = " ";

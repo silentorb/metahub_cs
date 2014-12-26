@@ -1,6 +1,6 @@
-package metahub.parser;
-
-class Failure extends Result {
+namespace metahub.parser
+{
+public class Failure : Result {
 
   public Failure(Pattern pattern, Position start, Position end, List<Result> children = null) {
     this.pattern = pattern;
@@ -12,4 +12,5 @@ class Failure extends Result {
     : new List<Result>();
   }
 
+}
 }

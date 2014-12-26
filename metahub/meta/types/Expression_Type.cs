@@ -1,33 +1,29 @@
-package metahub.meta.types ;
+namespace metahub.meta.types
+{
+    enum Expression_Type
+    {
+        // Expressions
+        literal = 1,
+        property = 2,
+        variable = 3,
+        function_call = 4,
+        instantiate = 5,
+        parent_class = 6,
+        path = 7,
+        lambda = 8,
 
-/**
- * @author Christopher W. Johnson
- */
+        array = 12,
 
- @:enum
-abstract Expression_Type(int) {
-	// Expressions
-  int literal = 1;
-  int property = 2;
-  int variable = 3;
-  int function_call = 4;
-	int instantiate = 5;
-	int parent_class = 6;
-	int path = 7;
-	int lambda = 8;
-	
-	int array = 12;
-
-	// Statements
-	int namespace = 100;
-	int class_definition = 101;
-	int function_definition = 102;
-	int flow_control = 103;
-	int assignment = 104;
-	int declare_variable = 105;
-	int scope = 106;
-	int block = 107;
-	int constraint = 108;
-	int function_scope = 109;
-
+        // Statements
+        space = 100,
+        class_definition = 101,
+        function_definition = 102,
+        flow_control = 103,
+        assignment = 104,
+        declare_variable = 105,
+        scope = 106,
+        block = 107,
+        constra = 108,
+        function_scope = 109
+    }
 }

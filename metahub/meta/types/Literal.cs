@@ -1,14 +1,15 @@
-package metahub.meta.types;
+namespace metahub.meta.types
+{
 
 /**
  * @author Christopher W. Johnson
  */
+public class Literal : Expression {
+	public object value;
 
-class Literal extends Expression {
-	public Object value;
-
-	public Literal(Object value) {
+	public Literal(object value) {
 		this.value = value;
-		super(Expression_Type.literal);
+		base(Expression_Type.literal);
 	}
+}
 }

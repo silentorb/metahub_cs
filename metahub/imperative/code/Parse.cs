@@ -1,28 +1,25 @@
-using metahub.logic.schema.Tie;
-namespace e {
-//import metahub.imperative.types.Function_Call;
-//import metahub.imperative.types.Path;
-//import metahub.imperative.types.Expression;
-//import metahub.imperative.types.Expression_Type;
-//import metahub.imperative.types.Property_Expression;
-using metahub.meta.types.*;
+using System;
+using System.Collections.Generic;
+using metahub.logic.schema;
+using metahub.meta.types;
+using Expression = metahub.imperative.types.Expression;
+using Function_Call = metahub.imperative.types.Function_Call;
+using Path = metahub.imperative.types.Path;
 
-/**
- * ...
- * @author Christopher W. Johnson
- */
-class Parse
+namespace metahub.imperative.code {
+
+public class Parse
 {
 
 	public static Tie get_start_tie (Expression expression) {
-		Path path = cast expression;
-		metahub.imperative.types.Property_Expression property_expression = cast path.children[0];
+		Path path = expression;
+		metahub.imperative.types.Property_Expression property_expression = path.children[0];
 		return property_expression.tie;
 	}
 
 	public static Tie get_end_tie (Expression expression) {
 		var path = get_path(expression);
-		var i = path.Count();
+		var i = path.Count;
 		while (--i >= 0) {
 			if (!path[i].rail.trellis.is_value)
 				return path[i];
@@ -32,11 +29,11 @@ class Parse
 	}
 
 	//public static Tie get_end_tie (Expression expression) {
-		//Path path = cast expression;
+		//Path path = expression;
 		//var i = path.children.Count();
 		//while (--i >= 0) {
 			//if (path.children[i].type == Expression_Type.property) {
-				//metahub.imperative.types.Property_Expression property_expression = cast path.children[i];
+				//metahub.imperative.types.Property_Expression property_expression = path.children[i];
 				//if (property_expression.tie.rail.trellis.is_value)
 					//continue;
 //
@@ -51,17 +48,17 @@ class Parse
 		switch (expression.type) {
 
 			case Expression_Type.path:
-				return get_path_from_array(cast (expression, Path).children);
+				return get_path_from_array((expression, Path).children);
 
 			case Expression_Type.array:
-				return get_path_from_array(cast (expression, Array_Expression).children);
+				return get_path_from_array((expression, Array_Expression).children);
 
 			case Expression_Type.property:
-				Property_Expression property_expression = cast expression;
-				return [ cast property_expression.tie ];
+				Property_Expression property_expression = expression;
+				return [ property_expression.tie ];
 
 			case Expression_Type.function_call:
-				Function_Call function_call = cast expression;
+				Function_Call function_call = expression;
 				return [];
 				//throw new Exception("Not supported.");
 				//if (function_call.input == null)
@@ -92,7 +89,7 @@ class Parse
 		switch (expression.type) {
 
 			case Expression_Type.path:
-				Path path = cast expression;
+				Path path = expression;
 				var result = [];
 				foreach (var token in path.children) {
 					result = result.concat(normalize_path(token));
@@ -100,7 +97,7 @@ class Parse
 				return result;
 
 			case Expression_Type.function_call:
-				Function_Call function_call = cast expression;
+				Function_Call function_call = expression;
 				//if (function_call.input != null)
 					//return normalize_path(function_call.input);
 
@@ -116,7 +113,7 @@ class Parse
 		switch (expression.type) {
 
 			case Expression_Type.path:
-				Path path = cast expression;
+				Path path = expression;
 				return path.children[path.children.Count() - 1];
 
 			case Expression_Type.function_call:

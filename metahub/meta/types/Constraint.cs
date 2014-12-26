@@ -1,21 +1,23 @@
-package metahub.meta.types;
+namespace metahub.meta.types
+{
 
 /**
  * @author Christopher W. Johnson
  */
-
-class Constraint extends Expression
+public class Constraint : Expression
 {
 	public Expression first;
 	public Expression second;
-	public string operator;
+	public string op;
 	public Lambda lambda;
 	
-	public Constraint(first, second, operator = "=", Lambda lambda = null) {
-		super(Expression_Type.constraint);
+	public Constraint(Expression first, Expression second, string op = "=", Lambda lambda = null)
+        : base(Expression_Type.constraint)
+    {
 		this.first = first;
 		this.second = second;
-		this.operator = operator;
+		this.op = op;
 		this.lambda = lambda;
 	}
+}
 }

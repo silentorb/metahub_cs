@@ -1,16 +1,15 @@
 using metahub.meta.Scope;
 
-namespace s {
+namespace metahub.meta.types {
 /**
  * @author Christopher W. Johnson
  */
-
-class Scope_Expression extends Block
+public class Scope_Expression : Block
 {
 	public Scope scope;
 	
-	public Scope_Expression(Scope scope, expressions) {
-		super(expressions);
+	public Scope_Expression(Scope scope, expressions)
+:base(expressions) {
 		this.type = Expression_Type.scope;
 		this.scope = scope;
 	}

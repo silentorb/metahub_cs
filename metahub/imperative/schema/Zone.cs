@@ -1,23 +1,24 @@
-using metahub.imperative.types.Expression;
+using System.Collections.Generic;
+using metahub.imperative.types;
 
-namespace a {
+namespace metahub.imperative.schema {
 /**
  * ...
  * @author Christopher W. Johnson
  */
-class Zone
+public class Zone
 {
 	List<List<Expression>> divisions = new List<List<Expression>>();
 	List<Expression> target;
-	Map blocks<string, List<metahub.imperative.types.Expression>>;
-	
-	public Zone(List<Expression> target, blocks)
+	Dictionary<string, List<Expression>> blocks;
+
+    public Zone(List<Expression> target, Dictionary<string, List<Expression>> blocks)
 	{
 		this.target = target;
 		this.blocks = blocks;
 	}
 		
-	public void divide (string block_name = null, List<Expression> division = null) {
+	public List<Expression> divide (string block_name = null, List<Expression> division = null) {
 		division = add_zone(division);
 		if (block_name != null)
 			blocks[block_name] = division;		
@@ -27,7 +28,7 @@ class Zone
 	
 	public List<Expression> add_zone (List<Expression> zone = null) {
 		if (zone == null)
-			zone = [];
+			zone = new List<Expression>();
 			
 		divisions.Add(zone);
 		return zone;

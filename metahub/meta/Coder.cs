@@ -1,40 +1,23 @@
-using metahub.Hub;
-using metahub.imperative.code.Parse;
-using metahub.logic.schema.Signature;
-using metahub.logic.schema.Railway;
-using metahub.logic.schema.Tie;
-using metahub.meta.types.Array_Expression;
-using metahub.meta.types.Block;
-using metahub.meta.types.Constraint;
-using metahub.meta.types.Expression_Type;
-using metahub.meta.types.Expression;
-using metahub.meta.types.Function_Call;
-using metahub.meta.types.Function_Scope;
-using metahub.meta.types.Literal;
-using metahub.meta.types.Parameter;
-using metahub.meta.types.Path;
-using metahub.meta.types.Property_Expression;
-using metahub.meta.types.Scope_Expression;
-using metahub.meta.types.Variable;
-using metahub.schema.Kind;
-using metahub.schema.Namespace;
-using metahub.logic.schema.Rail;
+using System;
 
-namespace a {
+using metahub.meta.types;
+using metahub.schema;
+
+
+namespace metahub.meta {
 struct Conditions_Source {
 	string type,
-	List<Object> conditions,
+	List<object> conditions,
 	string mode
 }
-
-class Coder {
+public class Coder {
   Railway railway;
 
   public Coder(Railway railway) {
     this.railway = railway;
   }
 
-  public Expression convert_expression (Object source, Expression previous, Scope scope) {
+  public Expression convert_expression (object source, Expression previous, Scope scope) {
 
     switch(source.type) {
 			case "block":
@@ -64,7 +47,7 @@ class Coder {
     throw new Exception("Invalid block: " + source.type);
   }
 
-	public Expression convert_statement (Object source, Scope scope, Signature type = null) {
+	public Expression convert_statement (object source, Scope scope, Signature type = null) {
 
     switch(source.type) {
       case "block":
@@ -88,11 +71,11 @@ class Coder {
     throw new Exception("Invalid block: " + source.type);
   }
 
-  Expression constraint (Object source, Scope scope) {
+  Expression constraint (object source, Scope scope) {
 		//var reference = Reference.from_scope(source.path, scope);
 		var reference = convert_expression(source.reference, null, scope);
 		Expression back_reference = null;
-		var operator_name = source.operator;
+		var operator_name = source.op;
 		if (["+=", "-=", "*=", "/="].Contains(operator_name)) {
 			//operator_name = operator_name.substring(0, operator_name.Count() - 7);
 			back_reference = reference;
@@ -100,13 +83,13 @@ class Coder {
 		var expression = Parse.resolve(convert_expression(source.expression, null, scope));
 
 		return new Constraint(reference, expression, operator_name,
-			source.lambda != null ? cast create_lambda(source.lambda, scope, [ reference, expression ]) : null
+			source.lambda != null ? create_lambda(source.lambda, scope, [ reference, expression ]) : null
 		);
 		
 		
   }
 
-  Expression create_block (Object source, Scope scope) {
+  Expression create_block (object source, Scope scope) {
 		var count = source.expressions.Keys.Count();
     if (count == 0)
 			return new Block();
@@ -127,14 +110,14 @@ class Coder {
     return block;
   }
 
-  Expression create_literal (Object source, Scope scope) {
+  Expression create_literal (object source, Scope scope) {
     var type = get_type(source.value);
     //return new metahub.code.expressions.Literal(source.value, type);
 		return new Literal(source.value);
   }
 
-  Expression function_expression (Object source, Scope scope, string name, Expression previous) {
-    List<Object> expressions = source.inputs;
+  Expression function_expression (object source, Scope scope, string name, Expression previous) {
+    List<object> expressions = source.inputs;
 		if (source.inputs.Count() > 0)
 			throw new Exception("Not supported.");
 
@@ -145,7 +128,7 @@ class Coder {
     //return new metahub.code.expressions.Function_Call(name, info, inputs, hub);
   }
 
-	List<string> extract_path (Object path) {
+	List<string> extract_path (object path) {
 		List<string> result = new List<string>();
 		foreach (var i in 1...path.Count()) {
 			result.Add(path[i]);
@@ -154,11 +137,11 @@ class Coder {
 		return result;
 	}
 
-  Expression create_path (Object source, Expression previous, Scope scope) {
+  Expression create_path (object source, Expression previous, Scope scope) {
 		Rail rail = scope.rail;
 		Expression expression = null;
 		List<Expression> children = new List<Expression>();
-		List<Object> expressions = source.children;
+		List<object> expressions = source.children;
 		if (expressions.Count() == 0)
 			throw new Exception("Empty reference path.");
 
@@ -182,13 +165,13 @@ class Coder {
 						rail = variable.rail;
 					}
 					else {
-						Tie tie = cast rail.get_tie_or_error(item.name);
+						Tie tie = rail.get_tie_or_error(item.name);
 						previous = new Property_Expression(tie);
 						if (tie.other_rail != null)
 							rail = tie.other_rail;
 					}
 				case "array":
-					List<Object> items = cast item.expressions;
+					List<object> items = item.expressions;
 					Expression token = null;
 					var sub_array = [];
 					foreach (var item in items) {
@@ -206,11 +189,11 @@ class Coder {
 		return new Path(children);
   }
 
-  static Signature get_type (Object value) {
-    if (Std.is(value, int)) {
-      return {
-					type: Kind.unknown,
-					is_numeric: 1
+  static Signature get_type (object value) {
+    if (value.GetType() == typeof(int)) {
+      return new Signature {
+					type = Kind.unknown,
+					is_numeric = 1
 			}
 		}
 
@@ -226,7 +209,7 @@ class Coder {
     throw new Exception("Could not find type.");
   }
 
-	Expression new_scope (Object source, Scope scope) {
+	Expression new_scope (object source, Scope scope) {
 		List<string> path = source.path;
 		if (path.Count() == 0)
 			throw new Exception("Scope path is empty for node creation.");
@@ -259,17 +242,17 @@ class Coder {
 		//}
 	}
 
-	//Expression weight (Object source, Scope scope) {
+	//Expression weight (object source, Scope scope) {
 		//return new Set_Weight(source.weight, convert_statement(source.statement, scope));
   //}
 
-  Expression create_array (Object source, Scope scope) {
-		List<Object> expressions = source.expressions;
+  Expression create_array (object source, Scope scope) {
+		List<object> expressions = source.expressions;
 		return new Block(expressions.map((e)=> convert_expression(e, null, scope)));
   }
 
-  Expression create_lambda (Object source, Scope scope, List<Expression> constraint_expressions) {
-		List<Object> expressions = source.expressions;
+  Expression create_lambda (object source, Scope scope, List<Expression> constraint_expressions) {
+		List<object> expressions = source.expressions;
 		Scope new_scope = new Scope(scope);
 		List<string> parameters = source.parameters;
 		int i = 0;
@@ -285,12 +268,12 @@ class Coder {
 		);
   }
 
-  Expression function_scope (Object source, Scope scope) {
+  Expression function_scope (object source, Scope scope) {
 		var expression = convert_expression(source.expression, null, scope);
-		Path path = cast expression;
+		Path path = expression;
 		var token = path.children[path.children.Count() - 2];
 		return new Function_Scope(expression,
-			cast create_lambda(source.lambda, scope, [ token, token ])
+			create_lambda(source.lambda, scope, [ token, token ])
 		);
   }
 

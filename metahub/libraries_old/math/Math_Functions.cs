@@ -7,14 +7,14 @@ namespace h {
  * ...
  * @author Christopher W. Johnson
  */
-class Math_Functions extends Function
+public class Math_Functions : Function
 {
 
-	override public void set_value (int index, Object value, Context context, General_Port source = null) {
+	override public void set_value (int index, object value, Context context, General_Port source = null) {
 
 	}
 
-	override private Object forward (List<Object> args) {
+	override private object forward (List<object> args) {
 
 		switch (func) {
 			case 0:

@@ -1,6 +1,6 @@
-package metahub.parser;
-
-class Position {
+namespace metahub.parser
+{
+public class Position {
   int offset;
   public int y;
   public int x;
@@ -52,4 +52,6 @@ class Position {
     }
     return result;
   }
+}
+
 }

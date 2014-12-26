@@ -1,25 +1,21 @@
-package metahub.imperative.types ;
+using System.Collections.Generic;
+using metahub.meta.types;
 
-/**
- * @author Christopher W. Johnson
- */
+namespace metahub.imperative.types
+{
 
-class Function_Call extends Expression {
-	public string name;
-	public List<Object> args;
-	public bool is_platform_specific;
-	
-	public Function_Call(string name, List<Object> args = null, bool is_platform_specific = false) {
-		super(Expression_Type.function_call);
+    public class Function_Call : Expression
+    {
+        public string name;
+        public List<object> args;
+        public bool is_platform_specific;
+
+        public Function_Call(string name, List<object> args = null, bool is_platform_specific = false)
+            : base(Expression_Type.function_call) {
 		this.name = name;
 		this.is_platform_specific = is_platform_specific;
-		this.args = args != null ? args : [];
+		this.args = args ?? new List<object>();
 	}
+    }
+
 }
-//struct Function_Call {
-		//string type,
-		//string name,
-		//string caller,
-		//List<Object> args,
-		//bool is_platform_specific
-//}

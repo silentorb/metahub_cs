@@ -1,10 +1,11 @@
-package metahub.parser;
+namespace metahub.parser
+{
 //import metahub.code.functions.Functions;
 
 struct Assignment_Source {
 	string type,
 	List<string> path,
-	Object expression,
+	object expression,
 	string modifier
 }
 
@@ -12,16 +13,15 @@ struct Reference_Or_Function {
 	string type,
 	//List<string> path,
 	string name,
-	Object expression,
-	List<Object> inputs
+	object expression,
+	List<object> inputs
 }
-
-class MetaHub_Context extends Context {
+public class MetaHub_Context : Context {
 
 	//private static Map<string, Functions> function_Dictionary;
 
-  public MetaHub_Context(definition) {
-		super(definition);
+  public MetaHub_Context(definition)
+:base(definition) {
 
 		//if (function_map == null) {
 			//function_map = new Dictionary<string, Functions>();
@@ -49,7 +49,7 @@ class MetaHub_Context extends Context {
 		//}
 	}
 
-  public override Object perform_action (string name, Object data, Match match) {
+  public override object perform_action (string name, object data, Match match) {
     var name = match.pattern.name;
     switch(name) {
       case "start":
@@ -71,7 +71,7 @@ class MetaHub_Context extends Context {
         return method(data);
 
       case "reference":
-        return reference(data, cast match);
+        return reference(data, match);
 
       case "long_block":
         return long_block(data);
@@ -137,14 +137,14 @@ class MetaHub_Context extends Context {
     return data;
   }
 
-  static Object start (Object data) {
+  static object start (object data) {
     return {
 			"type": "block",
 			"expressions": data[1]
     };
   }
 
-  static Object create_symbol (Object data) {
+  static object create_symbol (object data) {
     return {
 			type: "symbol",
 			name: data[2],
@@ -152,14 +152,14 @@ class MetaHub_Context extends Context {
     };
   }
 
-  static Object expression (List<Object> data, Match match) {
+  static object expression (List<object> data, Match match) {
     if (data.Count() < 2)
       return data[0];
 
-    Repetition_Match rep_match = cast match;
-    string operator = cast rep_match.dividers[0].matches[1].get_data();
+    Repetition_Match rep_match = match;
+    string op = rep_match.dividers[0].matches[1].get_data();
 
-		if (operator == "|") {
+		if (op == "|") {
 			var function_name = data.pop();
 			return {
 				type: "function",
@@ -170,13 +170,13 @@ class MetaHub_Context extends Context {
 		else {
 			return {
 				type: "function",
-				"name": operator,
+				"name": op,
 				"inputs": data
 			}
 		}
   }
 
-	static Object method (Object data) {
+	static object method (object data) {
 		return {
     type: "function",
     "name": data[1],
@@ -184,22 +184,22 @@ class MetaHub_Context extends Context {
     }
 	}
 
-	static Object condition (Object data) {
+	static object condition (object data) {
 		return {
 			type: "condition",
 			"first": data[0],
-			"operator": Std.string(data[2][0]),
-			//"operator": Std.string(function_map[data[2][0]]),
+			"op": Std.string(data[2][0]),
+			//"op": Std.string(function_map[data[2][0]]),
 			"second": data[4]
     }
 	}
 
-	static Object optional_block (Object data) {
+	static object optional_block (object data) {
 		return data[1];
 	}
 
-	static Object conditions (Object data, Match match) {
-		Repetition_Match rep_match = cast match;
+	static object conditions (object data, Match match) {
+		Repetition_Match rep_match = match;
 		if (data.Count() > 1) {
 			string symbol = rep_match.dividers[0].matches[1].get_data();
 			string divider = null;
@@ -219,11 +219,11 @@ class MetaHub_Context extends Context {
 		}
 	}
 
-	static Object condition_block (Object data) {
+	static object condition_block (object data) {
 		return data[2];
 	}
 
-	static Object if_statement (Object data) {
+	static object if_statement (object data) {
 		return {
 			type: "if",
 			"condition": data[2],
@@ -231,7 +231,7 @@ class MetaHub_Context extends Context {
     }
 	}
 
-  static Object create_constraint (Object data) {
+  static object create_constraint (object data) {
     return {
 			type: "specific_constraint",
 			path: data[0],
@@ -239,8 +239,8 @@ class MetaHub_Context extends Context {
     };
   }
 
-  static Object create_node (Object data) {
-    Object result = cast {
+  static object create_node (object data) {
+    object result = {
 			type: "create_node",
 			trellis: data[2]
     };
@@ -253,7 +253,7 @@ class MetaHub_Context extends Context {
     return result;
   }
 
-  static Object reference (Object data, Repetition_Match match) {
+  static object reference (object data, Repetition_Match match) {
 		var dividers = Lambda.array(Lambda.map(match.dividers, (d)=>{ return d.matches[0].get_data(); } ));
 //
 		//if (data.Count() == 1) {
@@ -300,14 +300,14 @@ class MetaHub_Context extends Context {
 		return result;
   }
 
-  static Object long_block (Object data) {
+  static object long_block (object data) {
 		return {
 			type: "block",
 			expressions: data[2]
 		};
   }
 
-  static Object set_property (Object data) {
+  static object set_property (object data) {
     Assignment_Source result = {
 			type: "set_property",
 			path: data[0],
@@ -320,7 +320,7 @@ class MetaHub_Context extends Context {
 		return result;
   }
 
-  static Object set_weight (Object data) {
+  static object set_weight (object data) {
 		return {
 			type: "weight",
 			weight: data[0],
@@ -328,14 +328,14 @@ class MetaHub_Context extends Context {
 		}
 	}
 
-  static Object value (Object data) {
+  static object value (object data) {
     return {
     type: "literal",
     value: data
     };
   }
 
-	static Object new_scope (Object data) {
+	static object new_scope (object data) {
     return {
 			"type": "new_scope",
 			"path": data[0],
@@ -343,29 +343,29 @@ class MetaHub_Context extends Context {
 		};
   }
 
-	static Object constraint_block (Object data) {
+	static object constraint_block (object data) {
     return data[2];
   }
 
-	static Object constraint (Object data) {
+	static object constraint (object data) {
     return {
 			type: "constraint",
 			reference: data[0],
-			//operator: Std.string(function_map[data[2]]),
-			operator: data[2],
+			//op: Std.string(function_map[data[2]]),
+			op: data[2],
 			expression: data[4],
 			lambda: data[5][0]
     };
   }
 
-	static Object array_expression (Object data) {
+	static object array_expression (object data) {
     return {
 			"type": "array",
 			"expressions": data[2]
     };
   }
 
-	static Object lambda_expression (Object data) {
+	static object lambda_expression (object data) {
     return {
 			type: "lambda",
 			parameters: data[1],
@@ -373,11 +373,11 @@ class MetaHub_Context extends Context {
     };
   }
 	
-	static Object parameters (Object data) {
+	static object parameters (object data) {
     return data[2];
   }
 	
-	static Object function_scope (Object data) {
+	static object function_scope (object data) {
     return {
 			type: "function_scope",
 			expression: data[0],
@@ -385,4 +385,5 @@ class MetaHub_Context extends Context {
     };
   }
 	
+}
 }

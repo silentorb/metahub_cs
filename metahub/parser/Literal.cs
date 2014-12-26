@@ -1,6 +1,6 @@
-package metahub.parser;
-
-class Literal extends Pattern {
+namespace metahub.parser
+{
+public class Literal : Pattern {
   string value;
   string text;
 
@@ -15,7 +15,8 @@ class Literal extends Pattern {
     return failure(start, start);
   }
 
-  override Object get_data (Match match) {
+  override object get_data (Match match) {
     return text;
   }
+}
 }

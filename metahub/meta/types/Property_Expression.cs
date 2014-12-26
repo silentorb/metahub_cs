@@ -1,17 +1,17 @@
 using metahub.logic.schema.Signature;
 using metahub.logic.schema.Tie;
 
-namespace s {
+namespace metahub.meta.types {
 /**
  * ...
  * @author Christopher W. Johnson
  */
-class Property_Expression extends Expression {
+public class Property_Expression : Expression {
 	public Tie tie;
 	
 	public Property_Expression(Tie tie)
-	{
-		super(Expression_Type.property);
+
+:base(Expression_Type.property) {
 		this.tie = tie;		
 	}
 	

@@ -1,20 +1,21 @@
-package metahub.meta.types;
-
-/**
- * ...
- * @author Christopher W. Johnson
- */
-
-class Function_Scope extends Expression
+namespace metahub.meta.types
 {
-	public Expression expression;
-	public Lambda lambda;
-	
-	public Function_Scope(Expression expression, Lambda lambda)
-	{
-		super(Expression_Type.function_scope);
-		this.expression = expression;
-		this.lambda = lambda;
-	}
-	
+
+    /**
+     * ...
+     * @author Christopher W. Johnson
+     */
+public class Function_Scope : Expression
+    {
+        public Expression expression;
+        public Lambda lambda;
+
+        public Function_Scope(Expression expression, Lambda lambda)
+            : base(Expression_Type.function_scope)
+        {
+            this.expression = expression;
+            this.lambda = lambda;
+        }
+
+    }
 }

@@ -1,17 +1,19 @@
+using metahub.logic.schema;
 using metahub.logic.schema.Signature;
+using metahub.meta.types;
 
-namespace s {
+namespace metahub.imperative.types {
 /**
  * ...
  * @author Christopher W. Johnson
  */
-class Literal extends Expression {
-	public Object value;
+public class Literal : Expression {
+	public object value;
 	public Signature signature;
 
-	public Literal(Object value, Signature signature)
-	{
-		super(Expression_Type.literal);
+	public Literal(object value, Signature signature)
+
+:base(Expression_Type.literal) {
 		this.value = value;
 		this.signature = signature;
 	}

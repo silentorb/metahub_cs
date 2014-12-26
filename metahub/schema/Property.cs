@@ -7,7 +7,7 @@ namespace metahub.schema {
 /*
 struct Dictionary<string, object> {
 public string type;
-public   Object default_value;
+public   object default_value;
 public 	bool allow_null;
 public 	string trellis;
   public string other_property;
@@ -15,10 +15,10 @@ public 	string trellis;
 	public bool multiple;
 }
 */
-class Property {
+public class Property {
   public string name;
   public Kind type;
-  public Object default_value;
+  public object default_value;
   public bool allow_null;
   public Trellis trellis;
   public int id;
@@ -50,7 +50,7 @@ class Property {
 		return trellis.name + "." + name;
 	}
 
-  public Object get_default () {
+  public object get_default () {
     if (default_value != null)
       return default_value;
 

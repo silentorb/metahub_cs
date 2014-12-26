@@ -1,15 +1,17 @@
-package metahub.imperative.types;
+namespace metahub.imperative.types
+{
 
 /**
  * ...
  * @author Christopher W. Johnson
  */
-class Insert extends Expression {
+public class Insert : Expression {
 	public string code;
 	
 	public Insert(string code)
-	{
-		super(Expression_Type.insert);
+
+:base(Expression_Type.insert) {
 		this.code = code;
 	}
+}
 }

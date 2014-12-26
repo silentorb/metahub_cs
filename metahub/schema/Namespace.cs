@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace metahub.schema
 {
-    internal class Namespace
+public class Namespace
     {
         public string name;
         public string fullname;
@@ -11,7 +11,7 @@ namespace metahub.schema
         //public Function_Library function_library;
         public Dictionary<string, Namespace> children = new Dictionary<string, Namespace>();
         public Namespace parent;
-        public Dictionary<string, Object> additional = new Dictionary<string, Object>();
+        public Dictionary<string, object> additional = new Dictionary<string, object>();
         public bool is_external = false;
 
         public Namespace(string name, string fullname)

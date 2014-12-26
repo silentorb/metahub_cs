@@ -1,23 +1,18 @@
-using metahub.imperative.code.Reference;
-using metahub.imperative.code.List;
-using metahub.imperative.schema.*;
-using metahub.logic.schema.*;
-using metahub.meta.Scope;
-using metahub.imperative.types.*;
-using metahub.meta.types.Function_Scope;
-using metahub.meta.types.Lambda;
-using metahub.meta.types.Scope_Expression;
-using metahub.render.Target;
-using metahub.schema.Trellis;
-using metahub.schema.Kind;
-using metahub.imperative.code.Parse;
+using System.Collections.Generic;
+using metahub.imperative.code;
+using metahub.imperative.schema;
+using metahub.logic.schema;
+using metahub.meta;
+using metahub.meta.types;
+using metahub.render;
+using Constraint = metahub.logic.schema.Constraint;
 
-namespace e {
+namespace metahub.imperative {
 /**
  * ...
  * @author Christopher W. Johnson
  */
-class Imp
+public class Imp
 {
 	public Railway railway;
 	public List<Constraint> constraints = new List<Constraint>();
@@ -29,7 +24,7 @@ class Imp
 		railway = new Railway(hub, target_name);
 	}
 
-	public void run (metahub root.meta.types.Expression, Target target) {
+	public void run (metahub.meta.types.Expression root, Target target) {
 		process(root, null);
 		generate_code(target);
 
@@ -92,19 +87,19 @@ class Imp
 	public void process (metahub expression.meta.types.Expression, Scope scope) {
 		switch(expression.type) {
 			case metahub.meta.types.Expression_Type.scope:
-				scope_expression(cast expression, scope);
+				scope_expression(expression, scope);
 
 			case metahub.meta.types.Expression_Type.block:
-				block_expression(cast expression, scope);
+				block_expression(expression, scope);
 
 			case metahub.meta.types.Expression_Type.constraint:
-				create_constraint(cast expression, scope);
+				create_constraint(expression, scope);
 
 			case metahub.meta.types.Expression_Type.function_scope:
-				function_scope(cast expression, scope);
+				function_scope(expression, scope);
 
 			case metahub.meta.types.Expression_Type.path:
-				block_expression(cast expression, scope);
+				block_expression(expression, scope);
 				
 			case metahub.meta.types.Expression_Type.property:
 			case metahub.meta.types.Expression_Type.function_call:
@@ -134,19 +129,19 @@ class Imp
 		}
 	}
 	
-	void create_constraint (metahub expression.meta.types.Constraint, Scope scope) {
-		Rail rail = cast scope.rail;
+	void create_constraint (metahub.meta.types.Constraint expression, Scope scope) {
+		Rail rail = scope.rail;
 		metahub.logic.schema.Constraint constraint = new metahub.logic.schema.Constraint(expression, this);
 		var tie = Parse.get_end_tie(constraint.reference);
 		//trace("tie", tie.rail.name + "." + tie.name);
 		tie.constraints.Add(constraint);
 		constraints.Add(constraint);
-		trace("constraint", constraint.operator, tie.fullname());
+		trace("constraint", constraint.op, tie.fullname());
 	}
 	
 	//Expression create_lambda_constraint (metahub expression.meta.types.Constraint, Scope scope) {
 		//throw "";
-		//var rail = get_rail(cast scope.trellis);
+		//var rail = get_rail(scope.trellis);
 		//metahub.logic.schema.Constraint constraint = new metahub.logic.schema.Constraint(expression, this);
 		//var tie = Parse.get_end_tie(constraint.reference);
 		//trace("tie", tie.rail.name + "." + tie.name);
@@ -174,31 +169,31 @@ class Imp
 	public Expression translate (metahub expression.meta.types.Expression, Scope scope = null) {
 		switch(expression.type) {
 			case metahub.meta.types.Expression_Type.literal:
-				metahub.meta.types.Literal literal = cast expression;
+				metahub.meta.types.Literal literal = expression;
 				return new Literal(literal.value, { Kind type.unknown });
 
 			case metahub.meta.types.Expression_Type.function_call:
-				metahub.meta.types.Function_Call func = cast expression;
+				metahub.meta.types.Function_Call func = expression;
 				//return new Function_Call(func.name, [translate(func.input)]);
 				throw new Exception("Not implemented.");
 
 			case metahub.meta.types.Expression_Type.path:
-				return convert_path(cast expression);
+				return convert_path(expression);
 
 			case metahub.meta.types.Expression_Type.block:
-				metahub.meta.types.Block array = cast expression;
+				metahub.meta.types.Block array = expression;
 				return new Create_Array(array.children.map((e)=> translate(e)));
 				
 			case metahub.meta.types.Expression_Type.lambda:
 				
 				return null;
-				//metahub.meta.types.Lambda lambda = cast expression;
+				//metahub.meta.types.Lambda lambda = expression;
 				//return new Anonymous_(lambda.parameters.map(function(p)=> new Parameter(p.name, p.signature)),
 					//lambda.expressions.map((e)=> translate(e, lambda.scope))
 				//);
 //
 			//case metahub.meta.types.Expression_Type.constraint:
-				//return create_lambda_constraint(cast expression, scope);
+				//return create_lambda_constraint(expression, scope);
 			
 			default:
 				throw new Exception("Cannot convert expression " + expression.type + ".");
@@ -208,11 +203,11 @@ class Imp
 	public Expression convert_path (metahub expression.meta.types.Path) {
 		var path = expression.children;
 		List<metahub.imperative.types.Expression> result = new List<metahub.imperative.types.Expression>();
-		metahub.meta.types.Property_Expression first = cast path[0];
-		Rail rail = cast first.tie.get_abstract_rail();
+		metahub.meta.types.Property_Expression first = path[0];
+		Rail rail = first.tie.get_abstract_rail();
 		foreach (var token in path) {
 			if (token.type == metahub.meta.types.Expression_Type.property) {
-				metahub.meta.types.Property_Expression property_token = cast token;
+				metahub.meta.types.Property_Expression property_token = token;
 				var tie = rail.all_ties[property_token.tie.name];
 				if (tie == null)
 					throw new Exception("tie is null: " + property_token.tie.fullname());
@@ -221,7 +216,7 @@ class Imp
 				rail = tie.other_rail;
 			}
 			else {
-				metahub.meta.types.Function_Call function_token = cast token;
+				metahub.meta.types.Function_Call function_token = token;
 				result.Add(new Function_Call(function_token.name, [], true));
 			}
 		}

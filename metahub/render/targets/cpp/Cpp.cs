@@ -1,4 +1,5 @@
-package metahub.render.targets.cpp ;
+namespace metahub.render.targets.cpp
+{
 using haxe.Timer;
 using metahub.imperative.Imp;
 using metahub.imperative.schema.Dungeon;
@@ -36,8 +37,7 @@ using metahub.imperative.types.Expression_Type;
  * ...
  * @author Christopher W. Johnson
  */
-
-class External_Header {
+public class External_Header {
 	public string name;
 	public bool is_standard;
 	
@@ -47,8 +47,7 @@ class External_Header {
 		this.is_standard = is_standard;
 	}
 }
-
-class Cpp extends Target{
+public class Cpp : Target{
 
 	Region current_region;
 	Rail current_rail;
@@ -64,8 +63,8 @@ class Cpp extends Target{
 		"none": "void"
 	}
 
-	public Cpp(Railway railway, Imp imp) {
-		super(railway, imp);
+	public Cpp(Railway railway, Imp imp)
+:base(railway, imp) {
 	}
 
 	override public void run (string output_folder) {
@@ -100,17 +99,17 @@ class Cpp extends Target{
 		}
 
 		Function_Definition func = new Function_Definition(rail.rail_name, dungeon, [],
-			cast references.map((tie)=> new Assignment(
+			references.map((tie)=> new Assignment(
 				new Property_Expression(tie), "=", new Null_Value())				
 			)
-			.concat(cast scalars.map((tie)=> new Assignment(
+			.concat(scalars.map((tie)=> new Assignment(
 				new Property_Expression(tie), "=", new Literal(tie.get_default_value(), tie.get_signature())))
 			)
 		);
 		func.return_type = null;
 		root.Add(func);
 		func = new Function_Definition("~" + rail.rail_name, dungeon, [],
-		[]	//cast references.map((tie)=> new Function_Call("SAFE_DELETE",
+		[]	//references.map((tie)=> new Function_Call("SAFE_DELETE",
 				//[new Property_Expression(tie)])
 			//)
 		);
@@ -173,11 +172,11 @@ class Cpp extends Target{
 		Utility.create_file(dir + "/" + rail.name + ".cpp", result);
 	}
 
-	string render_statements (List<Object> statements, glue = "") {
+	string render_statements (List<object> statements, glue = "") {
 		return statements.map((s)=> render_statement(s)).join(glue);
 	}
 
-	void render_statement (Object statement) {
+	void render_statement (object statement) {
 		Expression_Type type = statement.type;
 		switch(type) {
 			case Expression_Type.space:
@@ -204,11 +203,11 @@ class Cpp extends Target{
 				return render_variable_declaration(statement);
 
 			case Expression_Type.statement:
-				Statement s = cast statement;
+				Statement s = statement;
 				return line(s.name + ";");
 
 			case Expression_Type.insert:
-				Insert insert = cast statement;
+				Insert insert = statement;
 				return line(insert.code);
 
 			default:
@@ -302,7 +301,7 @@ class Cpp extends Target{
 		return result;
 	}
 
-	string class_definition (Rail rail, List<Object> statements) {
+	string class_definition (Rail rail, List<object> statements) {
 		current_rail = rail;
 		var result = "";
 
@@ -513,7 +512,7 @@ class Cpp extends Target{
 		return result;
 	}
 
-	public string render_scope2 (string intro, List<Object> statements, minimal = false) {
+	public string render_scope2 (string intro, List<object> statements, minimal = false) {
 		indent();
 		var lines = line_count;
 		var block = render_statements(statements);
@@ -565,27 +564,27 @@ class Cpp extends Target{
 	}
 
 	string render_condition (Condition condition) {
-		return condition.expressions.map((c)=> render_expression(c)).join(" " + condition.operator + " ");
+		return condition.expressions.map((c)=> render_expression(c)).join(" " + condition.op + " ");
 	}
 
 	string render_expression (Expression expression, Expression parent = null) {
 		string result;
 		switch(expression.type) {
 			case Expression_Type.literal:
-				return render_literal(cast expression);
+				return render_literal(expression);
 
 			case Expression_Type.path:
-				result = render_path_old(cast expression);
+				result = render_path_old(expression);
 
 			case Expression_Type.property:
-				Property_Expression property_expression = cast expression;
+				Property_Expression property_expression = expression;
 				result = property_expression.tie.tie_name;
 
 			case Expression_Type.function_call:
-				result = render_function_call(cast expression, parent);
+				result = render_function_call(expression, parent);
 
 			case Expression_Type.instantiate:
-				result = render_instantiation(cast expression);
+				result = render_instantiation(expression);
 
 			case Expression_Type.self:
 				result = "this";
@@ -594,7 +593,7 @@ class Cpp extends Target{
 				return "NULL";
 
 			case Expression_Type.variable:
-				Variable variable_expression = cast expression;
+				Variable variable_expression = expression;
 				if (find_variable(variable_expression.name) == null)
 					throw new Exception("Could not find variable: " + variable_expression.name + ".");
 
@@ -654,14 +653,14 @@ class Cpp extends Target{
 		}
 	}
 
-	Object get_signature (Expression expression) {
+	object get_signature (Expression expression) {
 		switch (expression.type) {
 			case Expression_Type.variable:
-				Variable variable_expression = cast expression;
+				Variable variable_expression = expression;
 				return find_variable(variable_expression.name);
 
 			case Expression_Type.property:
-				Property_Expression property_expression = cast expression;
+				Property_Expression property_expression = expression;
 				return property_expression.tie;
 
 			default:
@@ -669,7 +668,7 @@ class Cpp extends Target{
 		}
 	}
 
-	bool is_pointer (Object signature) {
+	bool is_pointer (object signature) {
 		if (signature.type == null)
 			throw "";
 		return !signature.is_value && signature.type != Kind.list;
@@ -710,8 +709,8 @@ class Cpp extends Target{
 					return "push_back(" + dereference + first + ")";
 
 				case "rand":
-					float min = cast (expression.args[0], Literal).value;
-					float max = cast (expression.args[1], Literal).value;
+					float min = (expression.args[0], Literal).value;
+					float max = (expression.args[1], Literal).value;
 					return "rand() % " + (max - min) + (min < 0 ? " - " + -min : " + " + min);						
 					
 				default:
@@ -739,16 +738,16 @@ class Cpp extends Target{
 	}
 
 	string render_assignment (Assignment statement) {
-		return line(render_expression(statement.target) + " " + statement.operator + " " + render_expression(statement.expression) + ";");
+		return line(render_expression(statement.target) + " " + statement.op + " " + render_expression(statement.expression) + ";");
 	}
 
-	//public Object render_expression (Expression expression, Scope scope) {
+	//public object render_expression (Expression expression, Scope scope) {
 		//var type = Railway.get_class_name(expression);
 		//trace("expression:", type);
 //
 		//switch(type) {
 			//case "Literal":
-				//return render_literal(cast expression);
+				//return render_literal(expression);
 		//}
 //
 		//throw new Exception("Cannot render expression " + type + ".");
@@ -757,4 +756,5 @@ class Cpp extends Target{
 	//string render_literal (Literal expression) {
 		//return expression.value;
 	//}
+}
 }

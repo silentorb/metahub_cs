@@ -1,18 +1,22 @@
+using System;
+using metahub.logic.schema;
 using metahub.logic.schema.Railway;
 using metahub.logic.schema.Signature;
 
-namespace s {
+namespace metahub.meta.types {
 /**
  * ...
  * @author Christopher W. Johnson
  */
-class Function_Call extends Expression {
+public class Function_Call : Expression {
 	public string name;
 	public Expression input;
 	public Signature signature;
 
-	public Function_Call(string name, Expression input, Railway railway) {
-		super(Expression_Type.function_call);
+	public Function_Call(string name, Expression input, Railway railway)
+        : base(Expression_Type.function_call)
+    {
+		;
 		this.name = name;
 		if (input == null)
 			throw new Exception("Function input cannot be null");

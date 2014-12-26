@@ -1,11 +1,11 @@
-package metahub.imperative.schema;
+namespace metahub.imperative.schema
+{
 
 /**
  * ...
  * @author Christopher W. Johnson
  */
-
-class Used_Function {
+public class Used_Function {
 	public string name;
 	public bool is_platform_specific;
 	
@@ -13,4 +13,5 @@ class Used_Function {
 		this.name = name;
 		this.is_platform_specific = is_platform_specific;
 	}
+}
 }

@@ -1,6 +1,6 @@
-package metahub.parser;
-
-class Result {
+namespace metahub.parser
+{
+public class Result {
   public Position start;
   public List<Result> children;
   public bool success;
@@ -11,4 +11,5 @@ class Result {
  public string debug_info () {
     return "";
   }
+}
 }

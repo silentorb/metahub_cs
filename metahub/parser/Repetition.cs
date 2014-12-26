@@ -1,6 +1,6 @@
-package metahub.parser;
-
-class Repetition extends Pattern {
+namespace metahub.parser
+{
+public class Repetition : Pattern {
   public int min; // min < 1 means this pattern is optional
   public int max; // max < 1 is infinite
   public Pattern pattern;
@@ -30,7 +30,7 @@ class Repetition extends Pattern {
       if (!result.success) {
           break;
       }
-      Match match = cast result;
+      Match match = result;
       position = match.start.move(match.Count());
 //      match.Count() += last_divider_length;
       length += match.Count() + last_divider_length;
@@ -47,7 +47,7 @@ class Repetition extends Pattern {
       if (!result.success)
         break;
 
-      match = cast result;
+      match = result;
       dividers.Add(match);
       last_divider_length = match.Count();
       position = position.move(match.Count());
@@ -81,11 +81,12 @@ class Repetition extends Pattern {
 //    return previous.pattern.rewind(previous, messages);
 //  }
 
-  override Object get_data (Match match) {
-    List<Object> result = new List<Object>();
+  override object get_data (Match match) {
+    List<object> result = new List<object>();
     foreach (var child in match.matches) {
       result.Add(child.get_data());
     }
     return result;
   }
+}
 }

@@ -6,7 +6,7 @@ namespace metahub.schema {
 struct ITrellis_Source {
   string name;
   //Dictionary properties<string; Dictionary<string, object>>;
-  Object properties;
+  object properties;
   string parent;
 	string primary_key;
     private bool is_value;
@@ -14,8 +14,7 @@ struct ITrellis_Source {
      */ 
 
 //struct Identity UInt;
-
-class Trellis {
+public class Trellis {
   public string name;
   public Schema schema;
   public List<Property> core_properties = new List<Property>();
@@ -46,7 +45,7 @@ class Trellis {
     return property;
   }
 
-	public void copy_identity (Object source, Object target) {
+	public void copy_identity (object source, object target) {
 		var identity_key = identity_property.name;
 		Reflect.setField(target, identity_key, source[identity_key]);
 	}
@@ -65,7 +64,7 @@ class Trellis {
     //return result;
   }
 
-	public void get_identity (Object seed) {
+	public void get_identity (object seed) {
 		if (identity_property == null)
 			throw new Exception("This trellis does not have an identity property set.");
 
@@ -103,7 +102,7 @@ class Trellis {
 		//context.node.set_value(index, change.value, source);
 	//}
 //
-	 //public void set_external_value (int index, Object value, Context context, General_Port source) {
+	 //public void set_external_value (int index, object value, Context context, General_Port source) {
 		//#if trace
 			//context.hub.history.start_anchor();
 		//#end

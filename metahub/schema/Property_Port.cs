@@ -17,7 +17,7 @@ namespace metahub.schema
 	*/
 
  /*
-class Property_Port implements IPort {
+public class Property_Port implements IPort {
 	Property property;
 
 	public List<IPort> connections = new List<IPort>();
@@ -35,16 +35,16 @@ class Property_Port implements IPort {
 		return property.type;
 	}
 
-	public Object get_value (Context context) {
+	public object get_value (Context context) {
 		return context.node.get_value(property.id);
 	}
 
-	public Object set_value (Object value, Context context) {
+	public object set_value (object value, Context context) {
 		context.node.set_value(property.id, value);
 		return value;
 	}
 
-	public void output (Object value, Context context) {
+	public void output (object value, Context context) {
     foreach (var other in connections) {
       value = other.set_value(value, context);
     }

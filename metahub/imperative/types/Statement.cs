@@ -1,16 +1,18 @@
-package metahub.imperative.types ;
+using metahub.meta.types;
+
+namespace metahub.imperative.types
+{
 
 /**
  * ...
  * @author Christopher W. Johnson
  */
-
-class Statement extends Expression {
+public class Statement : Expression {
 	public string name;
 
 	public Statement(string name)
-	{
-		super(Expression_Type.statement);
+
+:base(Expression_Type.statement) {
 		this.name = name;
 	}
 	
@@ -18,3 +20,4 @@ class Statement extends Expression {
 //struct Statement {
 	//Expression_Type type
 //}
+}

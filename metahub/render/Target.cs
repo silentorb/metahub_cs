@@ -1,4 +1,5 @@
-package metahub.render ;
+namespace metahub.render
+{
 using metahub.imperative.Imp;
 using metahub.imperative.schema.Dungeon;
 using metahub.logic.schema.Railway;
@@ -8,7 +9,7 @@ using metahub.render.Renderer;
  * ...
  * @author Christopher W. Johnson
  */
-class Target{
+public class Target{
 	Railway railway;
 	Renderer render = new Renderer();
 	int line_count = 0;
@@ -51,4 +52,5 @@ class Target{
 		: newline() + content;
 	}
 
+}
 }

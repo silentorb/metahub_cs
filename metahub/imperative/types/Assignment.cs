@@ -1,24 +1,25 @@
-package metahub.imperative.types ;
+namespace metahub.imperative.types
+{
 
 /**
  * @author Christopher W. Johnson
  */
-
-class Assignment extends Expression {
-	public string operator;
+public class Assignment : Expression {
+	public string op;
 	public Expression target;
 	public Expression expression;
 	
-	public Assignment(Expression target, string operator, Expression expression) {
-		super(Expression_Type.assignment);
-		this.operator = operator;
+	public Assignment(Expression target, string op, Expression expression)
+:base(Expression_Type.assignment) {
+		this.op = op;
 		this.target = target;
 		this.expression = expression;
 	}
 }
 //struct Assignment //{
 	//string type,
-	//string operator,
+	//string op,
 	//Expression target,
 	//Expression expression
 //}
+}

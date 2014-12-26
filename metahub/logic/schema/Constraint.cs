@@ -1,32 +1,30 @@
-package metahub.logic.schema ;
-using metahub.imperative.Imp;
-using metahub.logic.schema.Railway;
-using metahub.meta.types.Expression;
-using metahub.meta.types.Lambda;
+using System.Collections.Generic;
+using metahub.imperative;
+using metahub.meta.types;
+
 //import metahub.logic.schema.Signature;
 //import metahub.imperative.types.Expression;
-using metahub.meta.types.Function_Call;
-using metahub.meta.types.Path;
-using metahub.meta.types.Property_Expression;
 
 /**
  * ...
  * @author Christopher W. Johnson
  */
-class Constraint {
+namespace metahub.logic.schema {
+public class Constraint {
   public Expression reference;
   public Expression expression;
 	public bool is_back_referencing = false;
-	public string operator;
+	public string op;
 	public List<Constraint> other_constraints = new List<Constraint>();
 	public Lambda lambda;
 	//public List<Expression> block = null;
 
-	public Constraint(metahub expression.meta.types.Constraint, Imp imp) {
-		operator = expression.operator;
+	public Constraint(metahub.meta.types.Constraint expression, Imp imp) {
+		op = expression.op;
 		reference = expression.first;
 		this.expression = expression.second;
 		this.lambda = expression.lambda;
 	}
 
+}
 }

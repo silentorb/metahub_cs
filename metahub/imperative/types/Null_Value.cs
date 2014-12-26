@@ -1,14 +1,18 @@
-package metahub.imperative.types;
+using metahub.meta.types;
+
+namespace metahub.imperative.types
+{
 
 /**
  * ...
  * @author Christopher W. Johnson
  */
-class Null_Value extends Expression
+public class Null_Value : Expression
 {
 	public Null_Value()
-	{
-		super(Expression_Type.null_value);
+
+:base(Expression_Type.null_value) {
 	}
 
+}
 }

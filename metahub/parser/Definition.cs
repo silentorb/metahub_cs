@@ -4,22 +4,21 @@ namespace r {
 struct Group_Source {
 	string type,
 	string action,
-	List<Object> patterns
+	List<object> patterns
 }
 
 struct Pattern_Source {
 	string type,
 	bool backtrack
 }
-
-class Definition {
+public class Definition {
   public List<Pattern> patterns = new List<Pattern>();
   public Dictionary<string, Pattern> pattern_keys = new Dictionary<string, Pattern>();
 
   public Definition() {
   }
 
-  public void load (Object source) {
+  public void load (object source) {
 // First create all of the patterns
     foreach (var key in source.Keys) {
       var pattern = create_pattern(source[key], true);
@@ -35,7 +34,7 @@ class Definition {
     }
   }
 
-  Pattern __create_pattern (Object source) {
+  Pattern __create_pattern (object source) {
     if (Std.is(source, string))
       return new Literal(source);
 
@@ -80,12 +79,12 @@ class Definition {
     return pattern;
   }
 
-  public void initialize_pattern (Object source, Pattern pattern, root = false) {
+  public void initialize_pattern (object source, Pattern pattern, root = false) {
 		if (root && source.type == "reference") {
 			if (!pattern_keys.ContainsKey(source.name))
 				throw new Exception("There is no pattern named: " + source.name);
 
-			Wrapper wrapper = cast pattern;
+			Wrapper wrapper = pattern;
 			wrapper.pattern = pattern_keys[source.name];
 			if (source.ContainsKey("action"))
 				wrapper.action = source.action;
@@ -93,8 +92,8 @@ class Definition {
 			return;
 		}
     if (source.type == "and" || source.type == "or") {
-			Group_Source group_source = cast source;
-      Group group = cast pattern;
+			Group_Source group_source = source;
+      Group group = pattern;
       if (group_source.ContainsKey("action"))
         group.action = group_source.action;
 
@@ -110,7 +109,7 @@ class Definition {
       }
     }
     else if (source.type == "repetition") {
-      Repetition repetition = cast pattern;
+      Repetition repetition = pattern;
       repetition.pattern = create_pattern(source.pattern);
       initialize_pattern(source.pattern, repetition.pattern);
 //      trace("  [pattern]");

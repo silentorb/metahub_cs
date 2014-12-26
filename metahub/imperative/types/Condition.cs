@@ -1,17 +1,24 @@
-package metahub.imperative.types ;
+using System;
+using System.Collections.Generic;
+using metahub.meta.types;
 
-/**
- * @author Christopher W. Johnson
- */
+namespace metahub.imperative.types
+{
 
-class Condition {
-	public string operator;
-	public Object expressions;
-	
-	public Condition(string operator, Object expressions) {
-		this.operator = operator;
-		this.expressions = expressions;
-		if (expressions[0].type == 7)
-		throw "";
-	}
+    /**
+     * @author Christopher W. Johnson
+     */
+    public class Condition
+    {
+        public string op;
+        public List<Expression> expressions;
+
+        public Condition(string op, List<Expression> expressions)
+        {
+            this.op = op;
+            this.expressions = expressions;
+            if (expressions[0].type == Expression_Type.path)
+                throw new Exception();
+        }
+    }
 }

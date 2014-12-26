@@ -1,17 +1,18 @@
-using metahub.logic.schema.Tie;
+using metahub.logic.schema;
+using metahub.meta.types;
 
-namespace s {
+namespace metahub.imperative.types {
 /**
  * ...
  * @author Christopher W. Johnson
  */
-class Property_Expression extends Expression
+public class Property_Expression : Expression
 {
 	public Tie tie;
 	
 	public Property_Expression(Tie tie, Expression child = null)
-	{
-		super(Expression_Type.property);
+
+:base(Expression_Type.property) {
 		this.tie = tie;
 		this.child = child;
 	}

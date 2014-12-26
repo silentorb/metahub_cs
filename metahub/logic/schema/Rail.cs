@@ -1,5 +1,8 @@
+using System.Collections.Generic;
 using metahub.imperative.code.List;
+using metahub.imperative.schema;
 using metahub.imperative.schema.*;
+using metahub.schema;
 using metahub.schema.Trellis;
 using metahub.schema.Kind;
 using metahub.imperative.types.Expression_Type;
@@ -11,19 +14,19 @@ using metahub.imperative.types.Expression_Type;
 
 namespace metahub.logic.schema
 {
-//    internal struct Dictionary<string, object>
+//    struct Dictionary<string, object>
 //    {
 //        private string name,
 //        private bool is_external,
 //        private string source_file,
 //        private string class_export,
-//                       Object
+//                       object
 //        private inserts
 //    ,
-//        private Object default_value
+//        private object default_value
 //    }
 
-    class Rail
+  public class Rail
     {
 
         public Trellis trellis;
@@ -37,11 +40,11 @@ namespace metahub.logic.schema
         public bool is_external = false;
         public string source_file = null;
         public Region region;
-        public Dictionary<string, Object> hooks = new Dictionary<string, Object>();
+        public Dictionary<string, object> hooks = new Dictionary<string, object>();
         public List<string> stubs = new List<string>();
         public Dictionary<string, Property_Addition> property_additional = new Dictionary<string, Property_Addition>();
         public string class_export = "";
-        public Object default_value = null;
+        public object default_value = null;
 
         public Rail(Trellis trellis, Railway railway)
         {

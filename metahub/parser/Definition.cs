@@ -21,7 +21,7 @@ class Definition {
 
   public void load (Object source) {
 // First create all of the patterns
-    foreach (var key in Reflect.fields(source)) {
+    foreach (var key in source.Keys) {
       var pattern = create_pattern(source[key], true);
       pattern.name = key;
       pattern_keys[key] = pattern;
@@ -29,7 +29,7 @@ class Definition {
     }
 
 // Then finishing loading each one so that references can be resolved.
-    foreach (var key in Reflect.fields(source)) {
+    foreach (var key in source.Keys) {
 //      trace(key);
       initialize_pattern(source[key], pattern_keys[key], true);
     }

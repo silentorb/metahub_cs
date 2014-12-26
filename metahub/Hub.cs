@@ -179,7 +179,7 @@ class Hub {
 		if (data.ContainsKey("is_external") && data["is_external"] == true)
 			space.is_external = true;
 
-		foreach (var key in Reflect.fields(data)) {
+		foreach (var key in data.Keys) {
 			if (key == "trellises")
 				continue;
 
@@ -350,6 +350,6 @@ class Hub {
 	//}
 //
 	//public void is_node_new (Node node) {
-		//return this.new_nodes.indexOf(node) > -1;
+		//return this.new_nodes.Contains(node);
 	//}
 }}

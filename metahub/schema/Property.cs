@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using metahub.schema;
 
 namespace metahub.schema {
@@ -73,25 +74,25 @@ class Property {
   }
 
   public void initialize_link1 (Dictionary<string, object> source) {
-		if (source.type != "list" && source.type != "reference")
+		if ((string)source["type"] != "list" && (string)source["type"] != "reference")
       return;
 
-    this.other_trellis = this.trellis.schema.get_trellis(source.trellis, trellis.space);
+    this.other_trellis = this.trellis.schema.get_trellis(source["trellis"], trellis.space);
 			if (this.other_trellis == null)
 				throw new Exception("Could not find other trellis for " + fullname() + ".");
 	}
 
   public void initialize_link2 (Dictionary<string, object> source) {
-    if (source.type != "list" && source.type != "reference")
+    if (source["type"] != "list" && source["type"] != "reference")
       return;
 
-    if (source.other_property != null) {
-      other_property = other_trellis.get_property(source.other_property);
+    if (source["other_property"] != null) {
+      other_property = other_trellis.get_property((string)source["other_property"]);
 			if (other_property == null) {
-				other_property = other_trellis.add_property(source.other_property, {
-					type: source.other_type,
-					trellis: trellis.name,					
-					other_property: name
+				other_property = other_trellis.add_property((string)source["other_property"], new Dictionary<string, object> {
+					{"type", source["other_type"]},
+					{"trellis", trellis.name},
+					{"other_property", name}
 				});
 				other_property.other_trellis = trellis;
 				other_property.other_property = this;
@@ -100,7 +101,7 @@ class Property {
 		}
     else {
 
-      var other_properties = other_trellis.properties.Filter((p)=>{ return p.other_trellis == this.trellis; });
+      var other_properties = other_trellis.properties.Where((p)=> p.other_trellis == this.trellis);
 //        throw new Exception("Could not find other property for " + this.trellis.name + "." + this.name + ".");
 
       if (other_properties.Count() > 1) {
@@ -108,7 +109,7 @@ class Property {
 //        var direct = Lambda.filter(other_properties, (p)=>{ return p.other_property})
       }
       else if (other_properties.Count() == 1) {
-        this.other_property = other_properties.first();
+        this.other_property = other_properties.First();
         this.other_property.other_trellis = this.trellis;
         this.other_property.other_property = this;
       }

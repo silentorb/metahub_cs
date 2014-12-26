@@ -1,15 +1,19 @@
-package metahub.schema;
+namespace metahub.schema
+{
+
+
 
 /**
  * @author Christopher W. Johnson
  */
 
 class Load_Settings {
-	public Namespace namespace;
+	public Namespace space;
 	public bool auto_identity;
 	
-	public Load_Settings(Namespace namespace, bool auto_identity = false) {
-		this.space = namespace;
+	public Load_Settings(Namespace space, bool auto_identity = false) {
+		this.space = space;
 		this.auto_identity = auto_identity;
 	}
+}
 }

@@ -43,7 +43,7 @@ class MetaHub_Context extends Context {
 				//">=": Functions.greater_than_or_equal_to,
 			//}
 //
-			//foreach (var i in Reflect.fields(map)) {
+			//foreach (var i in map.Keys) {
 				//function_map[i] = map[i];
 			//}
 		//}

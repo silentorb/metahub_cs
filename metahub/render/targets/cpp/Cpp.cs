@@ -626,7 +626,7 @@ class Cpp extends Target{
 			
 			case Kind.Float:
 				var result = Std.string(expression.value);
-				return result.indexOf(".") > -1
+				return result.Contains(".")
 					? result + "f"
 					: result;
 				

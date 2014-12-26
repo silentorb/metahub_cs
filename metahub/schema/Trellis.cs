@@ -165,20 +165,22 @@ class Trellis {
     return false;
   }
 
-  public void load_properties (ITrellis_Source source) {
-    foreach (var name in Reflect.fields(source.properties)) {
-      add_property(name, source.properties[name]);
+  public void load_properties (Dictionary<string, object> source)
+  {
+      var properties = source["properties"] as Dictionary<string, Dictionary<string, object>>;
+    foreach (var name in properties.Keys) {
+      add_property(name, properties[name]);
     }
   }
 
-  public void initialize1 (ITrellis_Source source, Namespace namespace) {
+  public void initialize1 (Dictionary<string, object> source, Namespace space) {
     //var trellises = this.schema.trellises;
-    if (source.parent != null) {
-      var trellis = this.schema.get_trellis(source.parent, namespace);
+    if (source["parent"] != null) {
+      var trellis = this.schema.get_trellis((string)source["parent"], space);
       this.set_parent(trellis);
     }
-		if (source.primary_key != null) {
-			var primary_key = source.primary_key;
+		if (source["primary_key"] != null) {
+			var primary_key = (string)source["primary_key"];
 			if (property_keys.ContainsKey(primary_key)) {
 				identity_property = property_keys[primary_key];
 			}
@@ -202,23 +204,25 @@ class Trellis {
 			}
     }
 
-		foreach (var j in Reflect.fields(source.properties)) {
+		foreach (var j in Reflect.fields(source["properties"])) {
 			Property property = this.get_property(j);
-			property.initialize_link1(source.properties[j]);
+			property.initialize_link1(source["properties"][j]);
 		}
   }
 
-	public void initialize2 (ITrellis_Source source) {
+	public void initialize2 (Dictionary<string, object> source) {
 		if (source.ContainsKey("is_value"))
-			is_value = source.is_value;
+			is_value = (bool)source["is_value"];
 		else if (parent != null) {
 			is_value = parent.is_value;
 		}
 
-    if (source.properties != null) {
-			 foreach (var j in Reflect.fields(source.properties)) {
+    if (source["properties"] != null)
+    {
+        var properties = (Dictionary<string, Dictionary<string, object>>)source["properties"];
+			 foreach (var j in properties.Keys) {
         Property property = this.get_property(j);
-        property.initialize_link2(source.properties[j]);
+        property.initialize_link2(properties[j]);
       }
     }
 

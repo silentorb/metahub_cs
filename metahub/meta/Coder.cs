@@ -93,7 +93,7 @@ class Coder {
 		var reference = convert_expression(source.reference, null, scope);
 		Expression back_reference = null;
 		var operator_name = source.operator;
-		if (["+=", "-=", "*=", "/="].indexOf(operator_name) > -1) {
+		if (["+=", "-=", "*=", "/="].Contains(operator_name)) {
 			//operator_name = operator_name.substring(0, operator_name.Count() - 7);
 			back_reference = reference;
 		}
@@ -107,11 +107,11 @@ class Coder {
   }
 
   Expression create_block (Object source, Scope scope) {
-		var count = Reflect.fields(source.expressions).Count();
+		var count = source.expressions.Keys.Count();
     if (count == 0)
 			return new Block();
 
-		var fields = Reflect.fields(source.expressions);
+		var fields = source.expressions.Keys;
 
 		if (count == 1) {
 			var expression = source.expressions[fields[0]];

@@ -49,7 +49,7 @@ class Region
 				
 		var trellises = additional["trellises"];
 		if (trellises != null) {
-			foreach (var key in Reflect.fields(trellises)) {
+			foreach (var key in trellises.Keys) {
 				trellis_additional[key] = trellises[key];
 			}
 		}

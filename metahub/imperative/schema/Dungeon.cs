@@ -80,7 +80,7 @@ class Dungeon
 		}
 
 		if (inserts != null) {
-			foreach (var path in Reflect.fields(inserts)) {
+			foreach (var path in inserts.Keys) {
 				List<string> lines = inserts[path];
 				concat_block(path, cast lines.map((s)=> new Insert(s)));
 			}

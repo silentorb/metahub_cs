@@ -84,7 +84,7 @@ namespace metahub.logic.schema
             if (map.ContainsKey("hooks"))
             {
                 var hook_source = map["hooks"];
-                foreach (var key in Reflect.fields(hook_source))
+                foreach (var key in hook_source.Keys)
                 {
                     hooks[key] = hook_source[key];
                 }
@@ -93,7 +93,7 @@ namespace metahub.logic.schema
             if (map.ContainsKey("stubs"))
             {
                 var hook_source = map["stubs"];
-                foreach (var key in Reflect.fields(hook_source))
+                foreach (var key in hook_source.Keys)
                 {
                     stubs.Add(hook_source[key]);
                 }
@@ -102,7 +102,7 @@ namespace metahub.logic.schema
             if (map.ContainsKey("properties"))
             {
                 var properties = map["properties"];
-                foreach (var key in Reflect.fields(properties))
+                foreach (var key in properties.Keys)
                 {
                     property_additional[key] = properties[key];
                 }

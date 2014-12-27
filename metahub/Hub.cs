@@ -43,8 +43,8 @@ public class Hub {
     boot_definition.load_parser_schema();
     Bootstrap context = new Bootstrap(boot_definition);
 
-      var data = System.Text.Encoding.Default.GetString(Resources.metahub);//.Replace("\r", "");
-      var result = context.parse(data, false);
+      var json = System.Text.Encoding.Default.GetString(Resources.metahub);//.Replace("\r", "");
+      var result = context.parse(json, false);
 		if (result.success) {
 			var match = (Match)result;
 			parser_definition = new Definition();

@@ -36,7 +36,7 @@ namespace metahub.parser
 
         override public object get_data(Match match)
         {
-            return match.matches.Select(child => child.get_data()).ToList();
+            return match.matches.Select(child => child.get_data()).ToArray();
         }
     }
 }

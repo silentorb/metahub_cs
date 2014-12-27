@@ -10,7 +10,11 @@ public class Literal : Pattern {
 
   override protected Result __test__(Position start, int depth)
   {
-    if (start.context.text.Substring(start.get_offset(), text.Length) == text)
+      var offset = start.get_offset();
+      if (offset + text.Length >= start.context.text.Length)
+          return failure(start, start);
+
+    if (start.context.text.Substring(offset, text.Length) == text)
       return success(start, text.Length);
 
     return failure(start, start);

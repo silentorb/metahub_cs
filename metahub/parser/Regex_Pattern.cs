@@ -31,9 +31,10 @@ public class Regex_Pattern : Pattern {
   override public object get_data(Match match)
   {
     var start = match.start;
-      throw new Exception("Not implemented.");
-    //regex.matchSub(start.context.text, start.get_offset());
-    //return regex.matched(0);
+      //throw new Exception("Not implemented.");
+      var result = regex.Match(start.context.text, start.get_offset());
+      return result.Value;
+      //return regex.matched(0);
   }
 }
 }

@@ -21,7 +21,8 @@ namespace metahub.parser
 
         public Pattern_Source pattern;
         public Pattern_Source divider;
-        public List<Pattern_Source> patterns;
+        public Pattern_Source[] patterns;
+        public Pattern_Source value;
     }
 
     public class Definition

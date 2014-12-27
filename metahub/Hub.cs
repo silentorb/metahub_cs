@@ -21,7 +21,7 @@ namespace metahub {
 
 public class Hub {
   public Schema schema;
-  public metahub.parser.Definition parser_definition;
+  public Definition parser_definition;
 	static Regex remove_comments = new Regex("/#[^\n]*");
 	public Namespace metahub_namespace;
 	public int max_steps = 100;

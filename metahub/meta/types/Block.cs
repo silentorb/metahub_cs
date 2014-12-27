@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 
 namespace metahub.meta.types
 {
@@ -6,11 +7,11 @@ namespace metahub.meta.types
     {
         public List<Node> children = new List<Node>();
 
-        public Block(List<Node> statements = null)
+        public Block(IEnumerable<Node> statements = null)
             : base(Node_Type.block)
         {
             if (statements != null)
-                children = statements;
+                children = statements.ToList();
 
         }
     }

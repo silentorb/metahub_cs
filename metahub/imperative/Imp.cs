@@ -13,10 +13,7 @@ using Function_Call = metahub.meta.types.Function_Call;
 using Scope = metahub.meta.Scope;
 
 namespace metahub.imperative {
-/**
- * ...
- * @author Christopher W. Johnson
- */
+
 public class Imp
 {
 	public Railway railway;
@@ -225,7 +222,7 @@ public class Imp
 			}
 			else {
 				metahub.meta.types.Function_Call function_token = token;
-				result.Add(new Function_Call(function_token.name, [], true));
+				result.Add(new Function_Call(function_token.name, new Array_Expression(), true));
 			}
 		}
 		return new metahub.imperative.types.Path(result);

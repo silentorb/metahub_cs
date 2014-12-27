@@ -1,14 +1,9 @@
-
-
-/**
- * @author Christopher W. Johnson
- */
-
 using System;
+using metahub.logic.schema;
 
 namespace metahub.meta.types
 {
-public class Node
+    public class Node
     {
         public Node_Type type;
 
@@ -17,7 +12,7 @@ public class Node
             this.type = type;
         }
 
-        virtual public metahub.logic.schema.Signature get_signature()
+        virtual public Signature get_signature()
         {
             throw new Exception(GetType().Name + " does not implement get_signature().");
         }

@@ -1,8 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using metahub.imperative.code;
 using metahub.logic.schema;
 using metahub.meta.types;
+using metahub.parser.types;
 using metahub.schema;
 using Constraint = metahub.meta.types.Constraint;
 
@@ -76,7 +78,7 @@ public class Coder {
     throw new Exception("Invalid block: " + source.type);
   }
 
-  Node constraint (object source, Scope scope) {
+  Node constraint (Parser_Constraint source, Scope scope) {
 		//var reference = Reference.from_scope(source.path, scope);
 		var reference = convert_expression(source.reference, null, scope);
 		Node back_reference = null;
@@ -94,16 +96,15 @@ public class Coder {
 		
   }
 
-  Node create_block (object source, Scope scope) {
-		var count = source.expressions.Keys.Count;
+  Node create_block (Parser_Block source, Scope scope) {
+		var count = source.expressions.Length;
     if (count == 0)
 			return new Block();
 
-		var fields = source.expressions.Keys;
+		var fields = source.expressions;
 
 		if (count == 1) {
-			var expression = source.expressions[fields[0]];
-      return convert_statement(expression, scope);
+      return convert_statement(fields.First(), scope);
 		}
     Block block = new Block();
 
@@ -115,15 +116,15 @@ public class Coder {
     return block;
   }
 
-  Node create_literal (object source, Scope scope) {
+  Node create_literal (Literal_Value source, Scope scope) {
     var type = get_type(source.value);
     //return new metahub.code.expressions.Literal(source.value, type);
 		return new Literal_Value(source.value);
   }
 
-  Node function_expression (object source, Scope scope, string name, Node previous) {
-    List<object> expressions = source.inputs;
-		if (source.inputs.Count > 0)
+  Node function_expression (Parser_Function_Call source, Scope scope, string name, Node previous) {
+    var expressions = source.inputs;
+		if (source.inputs.Length > 0)
 			throw new Exception("Not supported.");
 
     //var inputs = Lambda.array(Lambda.map(expressions, (e)=> convert_expression(e, scope)));
@@ -142,12 +143,13 @@ public class Coder {
     //    return result;
     //}
 
-  Node create_path (object source, Node previous, Scope scope) {
+  Node create_path(Parser_Block source, Node previous, Scope scope)
+  {
 		Rail rail = scope.rail;
 		Node expression = null;
 		List<Node> children = new List<Node>();
-		List<object> expressions = source.children;
-		if (expressions.Count == 0)
+		var expressions = source.expressions;
+		if (expressions.Length == 0)
 			throw new Exception("Empty reference path.");
 
 		if (expressions[0].type == "reference" && rail.get_tie_or_null(expressions[0].name) == null
@@ -167,9 +169,10 @@ public class Coder {
 					var variable = scope.find(item.name);
 					if (variable != null) {
 						previous = new Variable(item.name);
-						if (variable.rail == null)
-							throw new Exception("");
-						rail = variable.rail;
+                        //if (variable.rail == null)
+                        //    throw new Exception("");
+                        //rail = variable.rail;
+                        throw new Exception("Not implemented");
 					}
 					else {
 						Tie tie = rail.get_tie_or_error(item.name);
@@ -180,7 +183,7 @@ public class Coder {
 			        break;
 
 				case "array":
-					List<object> items = item.expressions;
+					var items = ((Parser_Block)item).expressions;
 					Node token = null;
 					var sub_array = items.Select(i => convert_expression(i, token, scope)).ToList();
 			        previous = new Array_Expression(sub_array);
@@ -217,14 +220,14 @@ public class Coder {
     throw new Exception("Could not find type.");
   }
 
-	Node new_scope (object source, Scope scope) {
-		List<string> path = source.path;
-		if (path.Count == 0)
+	Node new_scope (Parser_Scope source, Scope scope) {
+		var path = source.path;
+		if (path.Length == 0)
 			throw new Exception("Scope path is empty for node creation.");
 
 		Node expression = null;
 		Scope new_scope = new Scope();
-		if (path.Count == 1 && path[0] == "new") {
+		if (path.Length == 1 && path[0] == "new") {
 			//new_scope_definition.only_new = true;
 			expression = convert_statement(source.expression, new_scope);
 			return new Scope_Expression(new_scope,new List<Node> {expression});
@@ -254,15 +257,14 @@ public class Coder {
 		//return new Set_Weight(source.weight, convert_statement(source.statement, scope));
   //}
 
-  Node create_array (object source, Scope scope) {
-		List<object> expressions = source.expressions;
-		return new Block(expressions.map((e)=> convert_expression(e, null, scope)));
+  Node create_array (Parser_Block source, Scope scope) {
+        return new Block(source.expressions.Select((e) => convert_expression(e, null, scope)));
   }
 
-  Node create_lambda (object source, Scope scope, List<Node> constraint_expressions) {
-		List<object> expressions = source.expressions;
+  Lambda create_lambda (Parser_Lambda source, Scope scope, List<Node> constraint_expressions) {
+		var expressions = source.expressions;
 		Scope new_scope = new Scope(scope);
-		List<string> parameters = source.parameters;
+		var parameters = source.parameters;
 		int i = 0;
 		foreach (var parameter in parameters) {
 			var expression = constraint_expressions[i];
@@ -271,12 +273,12 @@ public class Coder {
 			++i;
 		}
 
-		return new metahub.meta.types.Lambda(new_scope, parameters.map((p)=> new Parameter(p, null))
-			, expressions.map((e)=> convert_statement(e, new_scope))
+		return new Lambda(new_scope, parameters.Select((p)=> new Parameter(p, null))
+			, expressions.Select((e)=> convert_statement(e, new_scope))
 		);
   }
 
-  Node function_scope (object source, Scope scope) {
+  Node function_scope (Parser_Function_Scope source, Scope scope) {
 		var expression = convert_expression(source.expression, null, scope);
 		var path = (Reference_Path)expression;
 		var token = path.children[path.children.Count - 2];

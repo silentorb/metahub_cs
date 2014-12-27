@@ -5,7 +5,7 @@ using metahub.imperative;
 using metahub.imperative.schema;
 using metahub.imperative.types;
 using metahub.logic.schema;
-using metahub.schema;
+using Kind = metahub.schema.Kind;
 
 namespace metahub.render.targets.cpp
 {
@@ -150,14 +150,14 @@ public class Cpp : Target{
 	}
 
 	string render_statements (List<object> statements, string glue = "") {
-		return statements.Select((s)=> render_statement(s)).join(glue);
+		return statements.Select((s)=> render_statement(s)).Join(glue);
 	}
 
-	void render_statement (object statement) {
+	void render_statement (Expression statement) {
 		Expression_Type type = statement.type;
 		switch(type) {
 			case Expression_Type.space:
-				return render_region(statement.region, ()=>{
+				return render_region(((Namespace)statement).region, ()=>{
 					return render_statements(statement.expressions);
 				});
 

@@ -99,8 +99,8 @@ public class Railway {
 		//return new metahub.imperative.types.Reference_Path(result);
 	//}
 	
-	public Rail resolve_rail_path (List<string> path) {
-		var tokens = path.GetRange(0, path.Count - 2);
+	public Rail resolve_rail_path (IEnumerable<string> path) {
+		var tokens = path.Take(path.Count() - 2);
 		var rail_name = path.Last();
 		var region = root_region;
 		foreach (var token in tokens) {

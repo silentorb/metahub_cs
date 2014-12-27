@@ -124,6 +124,7 @@
     <Compile Include="metahub\parser\Repetition.cs" />
     <Compile Include="metahub\parser\Repetition_Match.cs" />
     <Compile Include="metahub\parser\Result.cs" />
+    <Compile Include="metahub\parser\types\Parser_Types.cs" />
     <Compile Include="metahub\parser\Wrapper.cs" />
     <Compile Include="metahub\render\Generator.cs" />
     <Compile Include="metahub\render\Renderer.cs" />

@@ -10,7 +10,7 @@ public class Regex_Pattern : Pattern {
   public Regex_Pattern(string text)
   {
     if (text[0] != '^')
-      this.text = "^" + text;
+      text = "^" + text;
 
     regex = new Regex(text);
     this.text = text;

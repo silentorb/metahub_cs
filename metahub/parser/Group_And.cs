@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 
 namespace metahub.parser
 {
@@ -34,13 +35,9 @@ public class Group_And : Group {
     return success(start, length, info_items, matches);
   }
 
-  override protected object get_data(Match match)
+  override public object get_data(Match match)
   {
-    List<object> result = new List<object>();
-    foreach (var child in match.matches) {
-      result.Add(child.get_data());
-    }
-    return result;
+      return match.matches.Select(child => child.get_data()).ToList();
   }
 }
 }

@@ -14,11 +14,12 @@ public class Railway {
 
 	public Railway(Hub hub, string target_name) {
 		this.target_name = target_name;
-		
-		root_region = new Region(hub.schema.root_space, "/");
+
+        root_region = new Region(hub.schema.root_namespace, "/");
 		initialize_root_functions();
 
-		foreach (var space in hub.schema.root_space.children) {
+        foreach (var space in hub.schema.root_namespace.children.Values)
+        {
 			if (space.name == "metahub")
 				continue;
 
@@ -26,27 +27,27 @@ public class Railway {
 			regions[space.name] = region;
 			root_region.children[region.name] = region;
 
-			foreach (var trellis in space.trellises) {
+			foreach (var trellis in space.trellises.Values) {
 				region.rails[trellis.name] = new Rail(trellis, this);
 			}
 		}
 
-		foreach (var region in regions) {
-			foreach (var rail in region.rails) {
+		foreach (var region in regions.Values) {
+			foreach (var rail in region.rails.Values) {
 				rail.process1();
 			}
 		}
 		
-		foreach (var region in regions) {
-			foreach (var rail in region.rails) {
+		foreach (var region in regions.Values) {
+			foreach (var rail in region.rails.Values) {
 				rail.process2();
 			}
 		}
 	}
 
-	public static string get_class_name (Node expression) {
-		return Type.getClassName(Type.getClass(expression)).split(".").pop();
-	}
+    //public static string get_class_name (Node expression) {
+    //    return Type.getClassName(Type.getClass(expression)).split(".").pop();
+    //}
 
 	public Rail get_rail (Trellis trellis) {
 		return regions[trellis.space.name].rails[trellis.name];

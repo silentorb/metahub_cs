@@ -7,10 +7,10 @@ namespace metahub.imperative.types
  * @author Christopher W. Johnson
  */
 public class Expression {
-	public Node_Type type;
+    public Expression_Type type;
 	public Expression child = null;
 	
-	protected Expression(Node_Type type) {
+	protected Expression(Expression_Type type) {
 		this.type = type;
 	}
 }

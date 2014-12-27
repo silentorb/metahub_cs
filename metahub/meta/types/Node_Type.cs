@@ -3,6 +3,7 @@ namespace metahub.meta.types
     public enum Node_Type
     {
         // Expressions
+        constraint,
         literal = 1,
         property = 2,
         variable = 3,

@@ -43,6 +43,11 @@ namespace metahub
         {
             File.WriteAllText(url, contents);
         }
+
+        public static void create_folder(string url)
+        {
+            Directory.CreateDirectory(url);
+        }
     }
 }
 /*

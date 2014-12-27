@@ -10,13 +10,13 @@ public class Literal : Pattern {
 
   override protected Result __test__(Position start, int depth)
   {
-    if (start.context.text.substr(start.get_offset(), text.Count) == text)
-      return success(start, text.Count);
+    if (start.context.text.Substring(start.get_offset(), text.Length) == text)
+      return success(start, text.Length);
 
     return failure(start, start);
   }
 
-  override protected object get_data(Match match)
+  override public object get_data(Match match)
   {
     return text;
   }

@@ -120,7 +120,7 @@
     <Compile Include="metahub\parser\MetaHub_Context.cs" />
     <Compile Include="metahub\parser\Pattern.cs" />
     <Compile Include="metahub\parser\Position.cs" />
-    <Compile Include="metahub\parser\Regex.cs" />
+    <Compile Include="metahub\parser\Regex_Pattern.cs" />
     <Compile Include="metahub\parser\Repetition.cs" />
     <Compile Include="metahub\parser\Repetition_Match.cs" />
     <Compile Include="metahub\parser\Result.cs" />

@@ -168,7 +168,7 @@ public class Coder {
 					if (variable != null) {
 						previous = new Variable(item.name);
 						if (variable.rail == null)
-							throw "";
+							throw new Exception("");
 						rail = variable.rail;
 					}
 					else {

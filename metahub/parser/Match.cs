@@ -12,7 +12,7 @@ public class Match : Result {
                       List<Result> children = null, List<Match> matches = null) {
     this.pattern = pattern;
     this.start = start;
-    this.Count = length;
+    this.length = length;
     success = true;
 
     if (pattern.type == "regex" || pattern.type == "literal") {
@@ -20,9 +20,7 @@ public class Match : Result {
       start.context.last_success = this;
     }
 
-    this.children = children != null
-    ? children
-    : new List<Result>();
+    this.children = children ?? new List<Result>();
 
     if (matches != null) {
       this.matches = matches;
@@ -36,7 +34,7 @@ public class Match : Result {
   }
 
   override public string debug_info () {
-    return start.context.text.substr(start.get_offset(), length);
+    return start.context.text.Substring(start.get_offset(), length);
   }
 
   public object get_data () {

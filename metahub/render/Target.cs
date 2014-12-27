@@ -16,7 +16,7 @@ public class Target{
 		this.imp = imp;
 	}
 
-	public void generate_rail_code (Dungeon dungeon) {
+	public virtual void generate_rail_code (Dungeon dungeon) {
 	
 	}
 	

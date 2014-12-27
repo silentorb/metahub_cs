@@ -64,7 +64,7 @@ public class Cpp : Target{
 		}
 	}
 
-    override protected void generate_rail_code(Dungeon dungeon)
+    override public void generate_rail_code(Dungeon dungeon)
     {
 		var rail = dungeon.rail;
 		var root = dungeon.get_block("/");

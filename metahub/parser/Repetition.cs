@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 
 namespace metahub.parser
 {
@@ -34,9 +35,9 @@ public class Repetition : Pattern {
           break;
       }
       Match match = result;
-      position = match.start.move(match.Count);
+      position = match.start.move(match.length);
 //      match.Count += last_divider_length;
-      length += match.Count + last_divider_length;
+      length += match.length + last_divider_length;
       matches.Add(match);
 
       ++step;
@@ -52,18 +53,19 @@ public class Repetition : Pattern {
 
       match = result;
       dividers.Add(match);
-      last_divider_length = match.Count;
-      position = position.move(match.Count);
+      last_divider_length = match.length;
+      position = position.move(match.length);
     }
     while (max < 1 || step < max);
 
     if (step < min)
       return failure(start, end, info_items);
 
-    Repetition_Match final = new Repetition_Match(this, start, length, info_items, matches);
-		final.end = end;
-    final.dividers = dividers;
-    return final;
+    return new Repetition_Match(this, start, length, info_items, matches)
+        {
+            end = end,
+            dividers = dividers
+        };
   }
 
 //  override Position rewind (Match match, List<string> messages) {
@@ -84,13 +86,9 @@ public class Repetition : Pattern {
 //    return previous.pattern.rewind(previous, messages);
 //  }
 
-  override protected object get_data(Match match)
+  override public object get_data(Match match)
   {
-    List<object> result = new List<object>();
-    foreach (var child in match.matches) {
-      result.Add(child.get_data());
-    }
-    return result;
+      return match.matches.Select(child => child.get_data()).ToList();
   }
 }
 }

@@ -12,7 +12,7 @@ class Group_Source
 public class Pattern_Source
 {
     public string type;
-    public bool backtrack;
+    public bool? backtrack;
 }
 
 public class Definition {
@@ -73,8 +73,8 @@ public class Definition {
     if (pattern.type == null)
       pattern.type = source.type != null ? source.type : "literal";
 
-    if (source.ContainsKey("backtrack"))
-      pattern.backtrack = source.backtrack;
+    if (source.backtrack.HasValue)
+      pattern.backtrack = source.backtrack.Value;
 
     return pattern;
   }

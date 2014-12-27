@@ -12,7 +12,8 @@ public class Literal : Expression {
 
 	public Literal(object value, Signature signature)
 
-:base(Node_Type.literal) {
+        : base(Expression_Type.literal)
+    {
 		this.value = value;
 		this.signature = signature;
 	}

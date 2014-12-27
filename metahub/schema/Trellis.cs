@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace metahub.schema
 {
@@ -7,7 +8,7 @@ namespace metahub.schema
     {
         public string name;
         //Dictionary properties<string; Dictionary<string, object>>;
-        public object properties;
+        public Dictionary<string, IProperty_Source> properties;
         public string parent;
         public string primary_key;
         public bool? is_value;
@@ -39,20 +40,20 @@ namespace metahub.schema
             space.trellises[name] = this;
         }
 
-        public Property add_property(string name, Dictionary<string, object> source)
+        public Property add_property(string property_name, IProperty_Source source)
         {
-            Property property = new Property(name, source, this);
-            this.property_keys[name] = property;
+            Property property = new Property(property_name, source, this);
+            this.property_keys[property_name] = property;
             property.id = 10000;
             core_properties.Add(property);
             return property;
         }
 
-        public void copy_identity(object source, object target)
-        {
-            var identity_key = identity_property.name;
-            Reflect.setField(target, identity_key, source[identity_key]);
-        }
+        //public void copy_identity(object source, object target)
+        //{
+        //    var identity_key = identity_property.name;
+        //   target.identity_key = source[identity_key];
+        //}
 
         public Dictionary<string, Property> get_all_properties()
         {
@@ -134,12 +135,11 @@ namespace metahub.schema
             return false;
         }
 
-        public void load_properties(Dictionary<string, object> source)
+        public void load_properties(ITrellis_Source source)
         {
-            var properties = source["properties"] as Dictionary<string, Dictionary<string, object>>;
-            foreach (var name in properties.Keys)
+            foreach (var item in source.properties)
             {
-                add_property(name, properties[name]);
+                add_property(item.Key, item.Value);
             }
         }
 
@@ -183,43 +183,33 @@ namespace metahub.schema
                 }
             }
 
-            foreach (var j in Reflect.fields(source["properties"]))
+            foreach (var j in source.properties.Keys)
             {
                 Property property = this.get_property(j);
-                property.initialize_link1(source["properties"][j]);
+                property.initialize_link1(source.properties[j]);
             }
         }
 
-        public void initialize2(Dictionary<string, object> source)
+        public void initialize2(ITrellis_Source source)
         {
-            if (source.ContainsKey("is_value"))
-                is_value = (bool)source["is_value"];
+            if (source.is_value.HasValue)
+                is_value = source.is_value.Value;
             else if (parent != null)
             {
                 is_value = parent.is_value;
             }
 
-            if (source["properties"] != null)
+            if (source.properties != null)
             {
-                var properties = (Dictionary<string, Dictionary<string, object>>)source["properties"];
-                foreach (var j in properties.Keys)
+                var props = (Dictionary<string, IProperty_Source>) source.properties;
+                foreach (var j in props.Keys)
                 {
                     Property property = this.get_property(j);
                     property.initialize_link2(properties[j]);
                 }
             }
 
-            //get_all_properties();
-
-            is_numeric = true;
-            foreach (var p in properties)
-            {
-                if (p.type != Kind.Float && p.type != Kind.Int)
-                {
-                    is_numeric = false;
-                    break;
-                }
-            }
+            is_numeric = properties.Any(p => p.type != Kind.Float && p.type != Kind.Int);
         }
 
         void set_parent(Trellis parent)

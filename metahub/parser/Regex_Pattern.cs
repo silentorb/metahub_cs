@@ -1,3 +1,4 @@
+using System;
 using System.Text.RegularExpressions;
 
 namespace metahub.parser
@@ -30,8 +31,9 @@ public class Regex_Pattern : Pattern {
   override public object get_data(Match match)
   {
     var start = match.start;
-    regex.matchSub(start.context.text, start.get_offset());
-    return regex.matched(0);
+      throw new Exception("Not implemented.");
+    //regex.matchSub(start.context.text, start.get_offset());
+    //return regex.matched(0);
   }
 }
 }

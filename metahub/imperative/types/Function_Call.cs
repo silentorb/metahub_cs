@@ -11,7 +11,7 @@ namespace metahub.imperative.types
         public bool is_platform_specific;
 
         public Function_Call(string name, List<object> args = null, bool is_platform_specific = false)
-            : base(Node_Type.function_call) {
+            : base(Expression_Type.function_call) {
 		this.name = name;
 		this.is_platform_specific = is_platform_specific;
 		this.args = args ?? new List<object>();

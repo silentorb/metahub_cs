@@ -14,7 +14,8 @@ public class Class_Definition : Expression {
 	
 	public Class_Definition(Rail rail, List<Expression> statements)
 
-:base(Node_Type.class_definition) {
+        : base(Expression_Type.class_definition)
+    {
 		this.rail = rail;
 		this.expressions = statements;
 	}

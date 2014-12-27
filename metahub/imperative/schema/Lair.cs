@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using metahub.imperative.types;
 using metahub.logic.schema;
 using metahub.schema;
@@ -28,7 +29,7 @@ namespace metahub.imperative.schema
             {
                 Range_Float range = r;
                 var reference = create_reference(range.path.Count > 0
-                                                     ? new Path(range.path.map((t) => new Property_Expression(t)))
+                                                     ? new Path(range.path.Select((t) => new Property_Expression(t)))
                                                      : null
                     );
                 block.Add(new Assignment(reference, "=", new Function_Call("rand",

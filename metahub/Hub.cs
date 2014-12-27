@@ -9,7 +9,9 @@ using metahub.imperative;
 using metahub.imperative.types;
 using metahub.logic.schema;
 using metahub.meta;
+using metahub.meta.types;
 using metahub.parser;
+using metahub.parser.types;
 using metahub.render;
 using metahub.schema;
 using Namespace = metahub.schema.Namespace;
@@ -75,7 +77,8 @@ public class Hub {
         //}
   }
 
-  public Expression run_data (object source, Railway railway) {
+    public Node run_data(Parser_Item source, Railway railway)
+    {
     Coder coder = new Coder(railway);
     return coder.convert_statement(source, null);
   }
@@ -98,7 +101,7 @@ public class Hub {
     //schema.load_trellises(data.trellises, new Load_Settings(metahub_namespace));
   //}
 
-	public void generate (object source, string target_name, string destination) {
+	public void generate (Parser_Item source, string target_name, string destination) {
 		Imp imp = new Imp(this, target_name);
 		var root = run_data(source, imp.railway);
 		Generator generator = new Generator(this);

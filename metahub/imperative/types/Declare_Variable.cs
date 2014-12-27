@@ -10,7 +10,7 @@ namespace metahub.imperative.types
         public Expression expression;
 
         public Declare_Variable(string name, Signature signature, Expression expression)
-            : base(Node_Type.declare_variable)
+            : base(Expression_Type.declare_variable)
         {
             this.name = name;
             this.signature = signature;

@@ -39,7 +39,7 @@ namespace metahub.schema
             return trellis;
         }
 
-        public void load_trellises(Dictionary<string, Dictionary<string, object>> trellises, Load_Settings settings)
+        public void load_trellises(Dictionary<string, ITrellis_Source> trellises, Load_Settings settings)
         {
             if (settings.space == null)
                 settings.space = root_namespace;
@@ -60,7 +60,7 @@ namespace metahub.schema
 
                 trellis.load_properties(source);
 
-                if (settings.auto_identity && source["primary_key"] == null && source["parent"] == null)
+                if (settings.auto_identity && source.primary_key == null && source.parent == null)
                 {
                     var identity_property = trellis.get_property_or_null("id");
                     if (identity_property == null)
@@ -76,7 +76,7 @@ namespace metahub.schema
             // Initialize parents
             foreach (var name in trellises.Keys)
             {
-                source = trellises[name];
+                var source = trellises[name];
                 trellis = space.trellises[name];
                 trellis.initialize1(source, space);
             }
@@ -84,7 +84,7 @@ namespace metahub.schema
             // Connect everything together
             foreach (var name in trellises.Keys)
             {
-                source = trellises[name];
+                var source = trellises[name];
                 trellis = space.trellises[name];
                 trellis.initialize2(source);
             }

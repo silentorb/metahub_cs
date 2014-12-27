@@ -80,13 +80,13 @@ namespace metahub.parser.types
     public class Parser_Scope : Parser_Item
     {
         public string[] path;
-        public object expression;
+        public Parser_Item expression;
     }
 
     public class Parser_Function_Scope : Parser_Item
     {
         public object lambda;
-        public object expression;
+        public Parser_Item expression;
     }
 }
 

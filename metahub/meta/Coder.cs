@@ -24,15 +24,15 @@ public class Coder {
     this.railway = railway;
   }
 
-  public Node convert_expression (object source, Node previous, Scope scope) {
+  public Node convert_expression (Parser_Item source, Node previous, Scope scope) {
 
     switch(source.type) {
 			case "block":
-        return create_block(source, scope);
+            return create_block((Parser_Block)source, scope);
       case "literal":
-        return create_literal(source, scope);
+        return create_literal((Parser_Literal)source, scope);
       case "path":
-        return create_path(source, previous, scope);
+        return create_path((Parser_Block) source, previous, scope);
 			//case "reference":
         //return create_general_reference(source, scope);
       case "function":
@@ -46,7 +46,7 @@ public class Coder {
 			//case "condition":
         //return condition(source, scope);
 			case "array":
-        return create_array(source, scope);
+        return create_array((Parser_Block) source, scope);
 			//case "lambda":
         //return create_lambda(source, scope);
     }
@@ -54,23 +54,23 @@ public class Coder {
     throw new Exception("Invalid block: " + source.type);
   }
 
-	public Node convert_statement (object source, Scope scope, Signature type = null) {
-
+  public Node convert_statement(Parser_Item source, Scope scope, Signature type = null)
+  {
     switch(source.type) {
       case "block":
-        return create_block(source, scope);
+        return create_block((Parser_Block)source, scope);
       //case "symbol":
         //return create_symbol(source, scope);
 			case "new_scope":
-				return new_scope(source, scope);
+				return new_scope((Parser_Scope) source, scope);
 			//case "create_node":
         //return create_node(source, scope);
 			//case "if":
         //return if_statement(source, scope);
       case "constraint":
-        return constraint(source, scope);
+        return constraint((Parser_Constraint) source, scope);
       case "function_scope":
-        return function_scope(source, scope);
+        return function_scope((Parser_Function_Scope) source, scope);
 			//case "weight":
         //return weight(source, scope);
 		}
@@ -116,7 +116,7 @@ public class Coder {
     return block;
   }
 
-  Node create_literal (Literal_Value source, Scope scope) {
+  Node create_literal (Parser_Literal source, Scope scope) {
     var type = get_type(source.value);
     //return new metahub.code.expressions.Literal(source.value, type);
 		return new Literal_Value(source.value);

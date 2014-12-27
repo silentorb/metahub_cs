@@ -5,12 +5,12 @@ using metahub.imperative.code;
 using metahub.imperative.schema;
 using metahub.imperative.types;
 using metahub.logic.schema;
-using metahub.meta.types;
 using metahub.render;
 using metahub.schema;
 using Constraint = metahub.logic.schema.Constraint;
-using Function_Call = metahub.meta.types.Function_Call;
 using Scope = metahub.meta.Scope;
+using Node_Type = metahub.meta.types.Node_Type;
+using Node = metahub.meta.types.Node;
 
 namespace metahub.imperative {
 
@@ -41,11 +41,11 @@ public class Imp
 
 	public void generate_code (Target target) {
 		
-		foreach (var region in railway.regions) {
+		foreach (var region in railway.regions.Values) {
 			if (region.is_external)
 				continue;
 
-			foreach (var rail in region.rails) {
+			foreach (var rail in region.rails.Values) {
 				if (rail.is_external)
 					continue;
 				
@@ -88,28 +88,28 @@ public class Imp
 
 	public void process (Node expression, Scope scope) {
 		switch(expression.type) {
-			case metahub.meta.types.Node_Type.scope:
-				scope_expression((Scope_Expression) expression, scope);
+			case Node_Type.scope:
+                scope_expression((metahub.meta.types.Scope_Expression)expression, scope);
 		        break;
 
-			case metahub.meta.types.Node_Type.block:
+			case Node_Type.block:
 				block_expression((metahub.meta.types.Block) expression, scope);
 		        break;
 
-			case metahub.meta.types.Node_Type.constraint:
-				create_constraint(expression, scope);
+			case Node_Type.constraint:
+				create_constraint((metahub.meta.types.Constraint)expression, scope);
 		        break;
 
-			case metahub.meta.types.Node_Type.function_scope:
-				function_scope(expression, scope);
+			case Node_Type.function_scope:
+                function_scope((metahub.meta.types.Function_Scope)expression, scope);
 		        break;
 
 			case metahub.meta.types.Node_Type.path:
-				block_expression(expression, scope);
+                block_expression((metahub.meta.types.Block)expression, scope);
 		        break;
 				
-			case metahub.meta.types.Node_Type.property:
-			case metahub.meta.types.Node_Type.function_call:
+			case Node_Type.property:
+			case Node_Type.function_call:
 		        break;
 				
 			default:
@@ -117,7 +117,8 @@ public class Imp
 		}
 	}
 
-	void scope_expression (Scope_Expression expression, Scope scope) {
+    void scope_expression(metahub.meta.types.Scope_Expression expression, Scope scope)
+    {
 		//Scope new_scope = new Scope(scope.hub, Node.scope_definition, scope);
 		foreach (var child in expression.children) {
 			process(child, expression.scope);
@@ -130,7 +131,8 @@ public class Imp
 		}
 	}
 
-	void function_scope (Function_Scope expression, Scope scope) {
+    void function_scope(metahub.meta.types.Function_Scope expression, Scope scope)
+    {
 		process(expression.expression, scope);
 		foreach (var child in expression.lambda.expressions) {
 			process(child, expression.lambda.scope);
@@ -173,10 +175,11 @@ public class Imp
 		}
 	}
 
-	public Expression translate (Node expression, Scope scope = null) {
+    public Expression translate(metahub.meta.types.Node expression, Scope scope = null)
+    {
 		switch(expression.type) {
 			case Node_Type.literal:
-                return new Literal(((Literal_Value)expression).value, new Signature(Kind.unknown));
+                return new Literal(((metahub.meta.types.Literal_Value)expression).value, new Signature(Kind.unknown));
 
 			case Node_Type.function_call:
                 //metahub.meta.types.Function_Call func = expression;
@@ -184,7 +187,7 @@ public class Imp
 				throw new Exception("Not implemented.");
 
 			case Node_Type.path:
-				return convert_path((Reference_Path)expression);
+                return convert_path((metahub.meta.types.Reference_Path)expression);
 
 			case Node_Type.block:
                 return new Create_Array(((metahub.meta.types.Block)expression).children.Select((e) => translate(e)));
@@ -205,24 +208,25 @@ public class Imp
 		}
 	}
 
-	public Expression convert_path (Reference_Path expression) {
+    public Expression convert_path(metahub.meta.types.Reference_Path expression)
+    {
 		var path = expression.children;
-		List<metahub.imperative.types.Expression> result = new List<metahub.imperative.types.Expression>();
-		metahub.meta.types.Property_Reference first = path[0];
+		List<Expression> result = new List<Expression>();
+		var first = (metahub.meta.types.Property_Reference)path[0];
 		Rail rail = first.tie.get_abstract_rail();
 		foreach (var token in path) {
 			if (token.type == metahub.meta.types.Node_Type.property) {
-				metahub.meta.types.Property_Reference property_token = token;
+                var property_token = (metahub.meta.types.Property_Reference)token;
 				var tie = rail.all_ties[property_token.tie.name];
 				if (tie == null)
 					throw new Exception("tie is null: " + property_token.tie.fullname());
 
-				result.Add(new Property_Reference(tie));
+                result.Add(new Property_Expression(tie));
 				rail = tie.other_rail;
 			}
 			else {
-				metahub.meta.types.Function_Call function_token = token;
-				result.Add(new Function_Call(function_token.name, new Array_Expression(), true));
+				var function_token = (metahub.meta.types.Function_Call)token;
+				result.Add(new Function_Call(function_token.name, new List<object>(), true));
 			}
 		}
 		return new metahub.imperative.types.Path(result);

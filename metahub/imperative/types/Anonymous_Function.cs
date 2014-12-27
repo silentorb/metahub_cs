@@ -15,7 +15,8 @@ public class Anonymous_Function : Expression
 	public Signature return_type;
 	
 	public Anonymous_Function(List<Parameter> parameters,List<Expression> expressions, Signature return_type = null)
-	:base(Node_Type.function_definition) {
+        : base(Expression_Type.function_definition)
+    {
 		this.parameters = parameters;
 		this.expressions = expressions;
 		this.return_type = return_type ?? new Signature(Kind.none);

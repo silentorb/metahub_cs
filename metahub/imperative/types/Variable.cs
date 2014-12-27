@@ -12,7 +12,8 @@ public class Variable : Expression {
 
 	public Variable(string name, Expression child = null)
 
-:base(Node_Type.variable) {
+        : base(Expression_Type.variable)
+    {
 		this.name = name;
 		this.child = child;
 	}

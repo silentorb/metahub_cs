@@ -8,7 +8,7 @@ namespace metahub.imperative.types
         public Rail rail;
 
         public Instantiate(Rail rail)
-            : base(Node_Type.instantiate)
+            : base(Expression_Type.instantiate)
         {
             this.rail = rail;
         }

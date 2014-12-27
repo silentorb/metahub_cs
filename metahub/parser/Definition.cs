@@ -2,24 +2,33 @@ using System;
 using System.Collections.Generic;
 
 namespace metahub.parser {
-class Group_Source
-{
-    public string type;
-    public string action;
-    public List<object> patterns;
-}
 
 public class Pattern_Source
 {
     public string type;
+    public string action;
+    public string name;
+    public string text;
     public bool? backtrack;
+
+    public int? min;
+    public int? max;
+
+    public string pattern;
+    public string divider;
+}
+
+class Group_Source : Pattern_Source
+{
+    public List<Pattern_Source> patterns;
 }
 
 public class Definition {
   public List<Pattern> patterns = new List<Pattern>();
   public Dictionary<string, Pattern> pattern_keys = new Dictionary<string, Pattern>();
 
-  public void load (object source) {
+  public void load(Dictionary<string, Pattern_Source> source)
+  {
 // First create all of the patterns
     foreach (var key in source.Keys) {
       var pattern = create_pattern(source[key], true);
@@ -35,32 +44,34 @@ public class Definition {
     }
   }
 
-  Pattern __create_pattern (object source) {
-    if (source is string)
-      return new Literal((string)source);
+  Pattern __create_pattern (object s) {
+    if (s is string)
+      return new Literal((string)s);
 
-    //switch (source.type) {
-    //  case "reference":
-    //    if (!pattern_keys.ContainsKey(source.name))
-    //      throw new Exception("There is no pattern named: " + source.name);
+      var source = (Pattern_Source) s;
+      switch (source.type)
+      {
+          case "reference":
+              if (!pattern_keys.ContainsKey(source.name))
+                  throw new Exception("There is no pattern named: " + source.name);
 
-    //    if (source.ContainsKey("action"))
-    //      return new Wrapper(pattern_keys[source.name], source.action);
-    //    else
-    //      return pattern_keys[source.name];
+              if (source.action != null)
+                  return new Wrapper(pattern_keys[source.name], source.action);
+              else
+                  return pattern_keys[source.name];
 
-    //  case "regex":
-    //    return new Regex(source.text);
+          case "regex":
+              return new Regex_Pattern(source.text);
 
-    //  case "and":
-    //    return new Group_And();
+          case "and":
+              return new Group_And();
 
-    //  case "or":
-    //    return new Group_Or();
+          case "or":
+              return new Group_Or();
 
-    //  case "repetition":
-    //    return new Repetition();
-    //}
+          case "repetition":
+              return new Repetition();
+      }
 
     throw new Exception("Invalid parser pattern type: " + source.type + ".");
   }
@@ -71,7 +82,7 @@ public class Definition {
 
     var pattern = __create_pattern(source);
     if (pattern.type == null)
-      pattern.type = source.type != null ? source.type : "literal";
+      pattern.type = source.type ?? "literal";
 
     if (source.backtrack.HasValue)
       pattern.backtrack = source.backtrack.Value;
@@ -79,54 +90,60 @@ public class Definition {
     return pattern;
   }
 
-  public void initialize_pattern (Dictionary<string, object> source, Pattern pattern, bool root = false) {
-//        if (root && source.type == "reference") {
-//            if (!pattern_keys.ContainsKey(source.name))
-//                throw new Exception("There is no pattern named: " + source.name);
+  public void initialize_pattern(Pattern_Source source, Pattern pattern, bool root = false)
+  {
+      if (root && source.type == "reference")
+      {
+          if (!pattern_keys.ContainsKey(source.name))
+              throw new Exception("There is no pattern named: " + source.name);
 
-//            Wrapper wrapper = pattern;
-//            wrapper.pattern = pattern_keys[source.name];
-//            if (source.ContainsKey("action"))
-//                wrapper.action = source.action;
+          var wrapper = (Wrapper)pattern;
+          wrapper.pattern = pattern_keys[source.name];
+          if (source.action != null)
+              wrapper.action = source.action;
 
-//            return;
-//        }
-//    if (source.type == "and" || source.type == "or") {
-//            Group_Source group_source = source;
-//      Group group = pattern;
-//      if (group_source.ContainsKey("action"))
-//        group.action = group_source.action;
+          return;
+      }
+      if (source.type == "and" || source.type == "or")
+      {
+          var group_source = (Group_Source)source;
+          var group = (Group)pattern;
+          if (group_source.action != null)
+              group.action = group_source.action;
 
-//      foreach (var child in group_source.patterns) {
-//        var child_pattern = create_pattern(child);
-////        trace("  " + key);
-//        if (child_pattern == null) {
-////          trace(child);
-//          throw new Exception("Null child pattern!");
-//        }
-//        initialize_pattern(child, child_pattern);
-//        group.patterns.Add(child_pattern);
-//      }
-//    }
-//    else if (source.type == "repetition") {
-//      Repetition repetition = pattern;
-//      repetition.pattern = create_pattern(source.pattern);
-//      initialize_pattern(source.pattern, repetition.pattern);
-////      trace("  [pattern]");
+          foreach (var child in group_source.patterns)
+          {
+              var child_pattern = create_pattern(child);
+              //        trace("  " + key);
+              if (child_pattern == null)
+              {
+                  //          trace(child);
+                  throw new Exception("Null child pattern!");
+              }
+              initialize_pattern(child, child_pattern);
+              group.patterns.Add(child_pattern);
+          }
+      }
+      else if (source.type == "repetition")
+      {
+          Repetition repetition = pattern;
+          repetition.pattern = create_pattern(source.pattern);
+          initialize_pattern(source.pattern, repetition.pattern);
+          //      trace("  [pattern]");
 
-////      trace("repi", source);
-//      repetition.divider = create_pattern(source.divider);
-//      initialize_pattern(source.divider, repetition.divider);
+          //      trace("repi", source);
+          repetition.divider = create_pattern(source.divider);
+          initialize_pattern(source.divider, repetition.divider);
 
-//      if (source.ContainsKey("min"))
-//        repetition.min = source.min;
+          if (source.min.HasValue)
+              repetition.min = source.min.Value;
 
-//      if (source.ContainsKey("max"))
-//        repetition.max = source.max;
-
-//      if (source.ContainsKey("action"))
-//        repetition.action = source.action;
-//    }
+          if (source.max.HasValue)
+              repetition.max = source.max.Value;
+          
+          if (source.action != null)
+              repetition.action = source.action;
+      }
   }
 
   public void load_parser_schema () {

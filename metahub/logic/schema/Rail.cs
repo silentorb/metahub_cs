@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using metahub.imperative.schema;
 using metahub.schema;
@@ -37,7 +38,7 @@ namespace metahub.logic.schema
         public Region region;
         public Dictionary<string, object> hooks = new Dictionary<string, object>();
         public List<string> stubs = new List<string>();
-        public Dictionary<string, Dictionary<string, object>> property_additional = new Dictionary<string, Dictionary<string, object>>();
+        public Dictionary<string, Tie_Addition> property_additional = new Dictionary<string, Tie_Addition>();
         public string class_export = "";
         public object default_value = null;
 
@@ -149,7 +150,7 @@ namespace metahub.logic.schema
 
         public void finalize()
         {
-            foreach (var tie in all_ties)
+            foreach (var tie in all_ties.Values)
             {
                 tie.finalize();
             }

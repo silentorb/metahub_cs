@@ -2,16 +2,20 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using metahub.imperative.code;
-using metahub.imperative.types;
 using metahub.meta.types;
 using metahub.schema;
 
 namespace metahub.logic.schema
 {
-    /**
-     * ...
-     * @author Christopher W. Johnson
-     */
+    public class Tie_Hooks
+    {
+        public string set_post;
+    }
+
+    public class Tie_Addition
+    {
+        public Tie_Hooks hooks;
+    }
 
     public class Tie
     {
@@ -107,12 +111,15 @@ namespace metahub.logic.schema
             determine_range();
         }
 
+
+
         class Temp
         {
             public Node min;
             public Node max;
             public List<Tie> path;
         }
+
 
         void determine_range()
         {
@@ -148,11 +155,11 @@ namespace metahub.logic.schema
                 }
                 else if (constraint.op == ">" || constraint.op == ">=")
                 {
-                    pairs[path_name].min = constraint;
+                    pairs[path_name].min = constraint.expression;
                 }
                 else if (constraint.op == "<" || constraint.op == "<=")
                 {
-                    pairs[path_name].max = constraint;
+                    pairs[path_name].max = constraint.expression;
                 }
             }
 
@@ -168,10 +175,10 @@ namespace metahub.logic.schema
             }
         }
 
-        static float get_expression_float(Expression expression)
+        static float get_expression_float(Node expression)
         {
-            metahub.imperative.types.Literal conversion = expression;
-            return conversion.value;
+            var conversion = (Literal_Value)expression;
+            return (float)conversion.value;
         }
 
         public Rail get_abstract_rail()

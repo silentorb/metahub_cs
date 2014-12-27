@@ -58,8 +58,8 @@ public class Cpp : Target{
 
 				line_count = 0;
 				var dungeon = imp.get_dungeon(rail);
-				create_header_file(dungeon, space, dir);
-				create_class_file(dungeon, space, dir);
+				create_header_file(dungeon, dir);
+				create_class_file(dungeon, dir);
 			}
 		}
 	}
@@ -70,7 +70,7 @@ public class Cpp : Target{
 		var root = dungeon.get_block("/");
 		List<Tie> references = new List<Tie>();
 		List<Tie> scalars = new List<Tie>();
-		foreach (var tie in rail.core_ties) {
+		foreach (var tie in rail.core_ties.Values) {
 			if (tie.type == Kind.reference && !tie.is_value)
 				references.Add(tie);
 			else if (tie.type != Kind.list)
@@ -106,7 +106,7 @@ public class Cpp : Target{
 		current_scope = scopes[scopes.Count - 1];
 	}
 
-	void create_header_file (Dungeon dungeon, string space, string dir) {
+	void create_header_file (Dungeon dungeon, string dir) {
 		var rail = dungeon.rail;
 		List<External_Header> headers = new List<External_Header> { new External_Header("stdafx") };
 
@@ -124,7 +124,7 @@ public class Cpp : Target{
 		Utility.create_file(dir + "/" + rail.name + ".h", result);
 	}
 
-	void create_class_file (Dungeon dungeon, string space, string dir) {
+	void create_class_file (Dungeon dungeon, string dir) {
 		var rail = dungeon.rail;
 		scopes = new List<Dictionary<string, Signature>>();
 		List<External_Header> headers = new List<External_Header>{ new External_Header("stdafx"), new External_Header(rail.source_file) };
@@ -149,43 +149,42 @@ public class Cpp : Target{
 		Utility.create_file(dir + "/" + rail.name + ".cpp", result);
 	}
 
-	string render_statements (List<object> statements, string glue = "") {
-		return statements.Select((s)=> render_statement(s)).Join(glue);
+    string render_statements(IEnumerable<Expression> statements, string glue = "")
+    {
+		return statements.Select(render_statement).Join(glue);
 	}
 
-	void render_statement (Expression statement) {
+	string render_statement (Expression statement) {
 		Expression_Type type = statement.type;
 		switch(type) {
 			case Expression_Type.space:
-				return render_region(((Namespace)statement).region, ()=>{
-					return render_statements(statement.expressions);
-				});
+		        var space = (Namespace) statement;
+                return render_region(space.region, () => render_statements(space.expressions));
 
 			case Expression_Type.class_definition:
-				return class_definition(statement.rail, statement.expressions);
+		        var definition = (Class_Definition) statement;
+                return class_definition(definition.rail, definition.expressions);
 
 			case Expression_Type.function_definition:
-				return render_function_definition(statement);
+				return render_function_definition((Function_Definition)statement);
 
 			case Expression_Type.flow_control:
-				return render_if(statement);
+				return render_if((Flow_Control)statement);
 
 			case Expression_Type.function_call:
-				return line(render_function_call(statement, null) + ";");
+				return line(render_function_call((Function_Call)statement, null) + ";");
 
 			case Expression_Type.assignment:
-				return render_assignment(statement);
+				return render_assignment((Assignment)statement);
 
 			case Expression_Type.declare_variable:
-				return render_variable_declaration(statement);
+				return render_variable_declaration((Declare_Variable)statement);
 
 			case Expression_Type.statement:
-				Statement s = statement;
-				return line(s.name + ";");
+				return line(((Statement)statement).name + ";");
 
 			case Expression_Type.insert:
-				Insert insert = statement;
-				return line(insert.code);
+				return line(((Insert)statement).code);
 
 			default:
 				return line(render_expression(statement) + ";");
@@ -229,8 +228,8 @@ public class Cpp : Target{
 			}
 		}
 
-		foreach (var r in regions) {
-			result += render_region(r.region, ()=> r.dependencies.map((d)=> line("class " + d.rail_name + ";"))
+		foreach (var r in regions.Values) {
+			result += render_region(r.region, ()=> r.dependencies.Select(d => line("class " + d.rail_name + ";"))
 					.Join("")
 			);
 		}
@@ -275,7 +274,7 @@ public class Cpp : Target{
 		+ "public:" + newline();
 		indent();
 
-		foreach (var tie in rail.core_ties) {
+		foreach (var tie in rail.core_ties.Values) {
 			result += property_declaration(tie);
 		}
 
@@ -286,7 +285,7 @@ public class Cpp : Target{
 		return result;
 	}
 
-	string class_definition (Rail rail, List<object> statements) {
+	string class_definition (Rail rail, IEnumerable<Expression> statements) {
 		current_rail = rail;
 		var result = "";
 
@@ -338,7 +337,7 @@ public class Cpp : Target{
 	string render_function_definition (Function_Definition definition) {
 		var intro = (definition.return_type != null ? render_signature(definition.return_type) + " " : "")
 		+ current_rail.rail_name + "::" + definition.name
-		+ "(" + definition.parameters.Select(render_parameter).join(", ") + ")";
+		+ "(" + definition.parameters.Select(render_parameter).Join(", ") + ")";
         
 		return render_scope(intro, ()=>{
 			foreach (var parameter in definition.parameters) {
@@ -489,7 +488,7 @@ public class Cpp : Target{
 		return result;
 	}
 
-	public string render_scope2 (string intro, List<object> statements, bool minimal = false) {
+	public string render_scope2 (string intro, List<Expression> statements, bool minimal = false) {
 		indent();
 		var lines = line_count;
 		var block = render_statements(statements);
@@ -526,9 +525,9 @@ public class Cpp : Target{
 		//return result;
 	//}
 
-	string render_path (List<Tie> path) {
-		return path.map((t)=> t.tie_name).join("->");
-	}
+    //string render_path (List<Tie> path) {
+    //    return path.Select(t => t.tie_name).Join("->");
+    //}
 
 	//string render_function_call (Function_Call statement) {
 		//return line(statement.name + "();");
@@ -541,43 +540,49 @@ public class Cpp : Target{
 	}
 
 	string render_condition (Condition condition) {
-		return condition.expressions.map((c)=> render_expression(c)).join(" " + condition.op + " ");
+		return condition.expressions.Select(c => render_expression(c)).Join(" " + condition.op + " ");
 	}
 
 	string render_expression (Expression expression, Expression parent = null) {
 		string result;
 		switch(expression.type) {
 			case Expression_Type.literal:
-				return render_literal(expression);
+				return render_literal((Literal) expression);
 
 			case Expression_Type.path:
-				result = render_path_old(expression);
+				result = render_path_old((Path) expression);
+                break;
 
 			case Expression_Type.property:
-				Property_Expression property_expression = expression;
-				result = property_expression.tie.tie_name;
+				result = ((Property_Expression)expression).tie.tie_name;
+		        break;
 
 			case Expression_Type.function_call:
-				result = render_function_call(expression, parent);
+				result = render_function_call((Function_Call) expression, parent);
+                break;
 
 			case Expression_Type.instantiate:
-				result = render_instantiation(expression);
+				result = render_instantiation((Instantiate) expression);
+                break;
 
 			case Expression_Type.self:
 				result = "this";
+                break;
 
 			case Expression_Type.null_value:
 				return "NULL";
 
 			case Expression_Type.variable:
-				Variable variable_expression = expression;
+				var variable_expression = (Variable)expression;
 				if (find_variable(variable_expression.name) == null)
 					throw new Exception("Could not find variable: " + variable_expression.name + ".");
 
 				result = variable_expression.name;
+                break;
 
 			case Expression_Type.parent_class:
 				result = current_rail.parent.rail_name;
+                break;
 
 			default:
 				throw new Exception("Unsupported Node type: " + expression.type + ".");
@@ -631,11 +636,11 @@ public class Cpp : Target{
 	object get_signature (Expression expression) {
 		switch (expression.type) {
 			case Expression_Type.variable:
-				Variable variable_expression = expression;
+				var variable_expression = (Variable)expression;
 				return find_variable(variable_expression.name);
 
 			case Expression_Type.property:
-				Property_Expression property_expression = expression;
+				var property_expression = (Property_Expression)expression;
 				return property_expression.tie;
 
 			default:
@@ -643,13 +648,14 @@ public class Cpp : Target{
 		}
 	}
 
-	bool is_pointer (object signature) {
+	bool is_pointer (Signature signature) {
 		if (signature.type == null)
-			throw "";
+			throw new Exception();
+
 		return !signature.is_value && signature.type != Kind.list;
 	}
 
-	void get_connector (Expression expression) {
+	string get_connector (Expression expression) {
 		if (expression.type == Expression_Type.parent_class)
 			return "::";
 
@@ -679,13 +685,13 @@ public class Cpp : Target{
 					return "size()";
 
 				case "add":
-					var first = expression.args[0].name;
+					var first = ((Variable)expression.args[0]).name;
 					var dereference = is_pointer(find_variable(first)) ? "*" : "";
 					return "push_back(" + dereference + first + ")";
 
 				case "rand":
-					float min = (expression.args[0]).value;
-					float max = ((Literal)expression.args[1]).value;
+                    float min = (float)((Literal)expression.args[0]).value;
+                    float max = (float)((Literal)expression.args[1]).value;
 					return "rand() % " + (max - min) + (min < 0 ? " - " + -min : " + " + min);						
 					
 				default:
@@ -694,11 +700,11 @@ public class Cpp : Target{
 		}
 
 		return expression.name + "(" +
-			expression.args.map((a)=> render_expression(a))
-			.join(", ") + ")";
+			expression.args.Select(a=> render_expression(a))
+			.Join(", ") + ")";
 	}
 
-	void render_path_old (Path expression) {
+	string render_path_old (Path expression) {
 		Expression parent = null;
 		var result = "";
 		foreach (var child in expression.children) {

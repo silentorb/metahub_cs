@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using metahub.imperative.code;
 using metahub.imperative.types;
 using metahub.logic.schema;
@@ -87,7 +88,7 @@ public class Dungeon
 		if (inserts != null) {
 			foreach (var path in inserts.Keys) {
 				List<string> lines = inserts[path];
-				concat_block(path, lines.map((s)=> new Insert(s)));
+				concat_block(path, lines.Select((s)=> new Insert(s)));
 			}
 		}
 	}
@@ -108,11 +109,9 @@ public class Dungeon
 		block.Add(code);
 	}
 
-	public void concat_block (string path, List<Expression> code) {
+	public void concat_block (string path, IEnumerable<Expression> code) {
 		var block = get_block(path);
-		foreach (var expression in code) {
-			block.Add(expression);
-		}
+	    block.AddRange(code);
 	}
 
     public Zone create_zone(List<Expression> target = null)
@@ -196,24 +195,24 @@ public class Dungeon
 	public void post_analyze (Expression expression) {
 		switch(expression.type) {
 			
-			case Node_Type.space:
+			case Expression_Type.space:
                 post_analyze_many(((Namespace)expression).expressions);
 		        break;
 
-			case Node_Type.class_definition:
+            case Expression_Type.class_definition:
 				post_analyze_many(((Class_Definition)expression).expressions);
                 break;
 
-			case Node_Type.function_definition:
+            case Expression_Type.function_definition:
 				post_analyze_many(((Function_Definition)expression).expressions);
                 break;
 
-			case Node_Type.flow_control:
+            case Expression_Type.flow_control:
 				post_analyze_many(((Flow_Control)expression).condition.expressions);
                 post_analyze_many(((Flow_Control)expression).children);
                 break;
 
-			case Node_Type.function_call:
+            case Expression_Type.function_call:
 				var definition = (Function_Call)expression;
 				//trace("func", definition.name);
 				if (definition.is_platform_specific && !used_functions.ContainsKey(definition.name))
@@ -226,22 +225,17 @@ public class Dungeon
 				}
                 break;
 
-			case Node_Type.assignment:
+            case Expression_Type.assignment:
 				post_analyze(((Assignment)expression).expression);
                 break;
 
-			case Node_Type.declare_variable:
+            case Expression_Type.declare_variable:
 				post_analyze(((Declare_Variable)expression).expression);
                 break;
 				
 			//case Expression_Type.property:
 				//Property_Reference property_expression = Node;
 				//result = property_expression.tie.tie_name;
-
-			//case Expression_Type.instantiate:
-
-			default:
-				// Do nothing.  This is a gentler function than most MetaHub Node processors.
 		}
 	}
 	

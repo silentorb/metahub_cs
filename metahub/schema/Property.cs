@@ -1,20 +1,26 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Newtonsoft.Json;
 using metahub.schema;
 
 namespace metahub.schema {
-/*
-struct Dictionary<string, object> {
+
+public class IProperty_Source 
+{
 public string type;
-public   object default_value;
-public 	bool allow_null;
 public 	string trellis;
   public string other_property;
 	public string other_type;
-	public bool multiple;
+	public bool? multiple;
+public 	bool? allow_null;
+
+        [JsonProperty("default")]
+public   object default_value;
+
+
 }
-*/
+
 public class Property {
   public string name;
   public Kind type;
@@ -26,16 +32,17 @@ public class Property {
   public Property other_property;
   public bool multiple = false;
 
-  public Property(string name, Dictionary<string, object> source, Trellis trellis) {
+  public Property(string name, IProperty_Source source, Trellis trellis)
+  {
 
-    if (source.ContainsKey("default"))
-      this.default_value = source["default"];
+    if (source.default_value != null)
+      default_value = source.default_value;
 
-    if (source.ContainsKey("allow_null"))
-      this.allow_null = (bool) source["allow_null"];
+    if (source.allow_null.HasValue)
+      allow_null = source.allow_null.Value;
 
-		if (source.ContainsKey("multiple"))
-			multiple = (bool)source["multiple"];
+		if (source.multiple.HasValue)
+			multiple = source.multiple.Value;
 
     this.name = name;
     this.trellis = trellis;
@@ -73,24 +80,25 @@ public class Property {
     }
   }
 
-  public void initialize_link1 (Dictionary<string, object> source) {
-		if ((string)source["type"] != "list" && (string)source["type"] != "reference")
+  public void initialize_link1 (IProperty_Source source) {
+		if (source.type != "list" && source.type != "reference")
       return;
 
-    this.other_trellis = this.trellis.schema.get_trellis(source["trellis"], trellis.space);
-			if (this.other_trellis == null)
+    other_trellis = trellis.schema.get_trellis(source.trellis, trellis.space);
+			if (other_trellis == null)
 				throw new Exception("Could not find other trellis for " + fullname() + ".");
 	}
 
-  public void initialize_link2 (Dictionary<string, object> source) {
-    if (source["type"] != "list" && source["type"] != "reference")
+  public void initialize_link2(IProperty_Source source)
+  {
+    if (source.type != "list" && source.type != "reference")
       return;
 
-    if (source["other_property"] != null) {
-      other_property = other_trellis.get_property((string)source["other_property"]);
+    if (source.other_property != null) {
+      other_property = other_trellis.get_property(source.other_property);
 			if (other_property == null) {
-				other_property = other_trellis.add_property((string)source["other_property"], new Dictionary<string, object> {
-					{"type", source["other_type"]},
+				other_property = other_trellis.add_property(source.other_property, new Dictionary<string, object> {
+					{"type", source.other_type},
 					{"trellis", trellis.name},
 					{"other_property", name}
 				});
@@ -101,17 +109,17 @@ public class Property {
 		}
     else {
 
-      var other_properties = other_trellis.properties.Where((p)=> p.other_trellis == this.trellis);
+      var other_properties = other_trellis.properties.Where(p => p.other_trellis == trellis);
 //        throw new Exception("Could not find other property for " + this.trellis.name + "." + this.name + ".");
 
-      if (other_properties.Count > 1) {
-        throw new Exception("Multiple ambiguous other properties for " + this.trellis.name + "." + this.name + ".");
+      if (other_properties.Count() > 1) {
+        throw new Exception("Multiple ambiguous other properties for " + trellis.name + "." + name + ".");
 //        var direct = Lambda.filter(other_properties, (p)=>{ return p.other_property})
       }
-      else if (other_properties.Count == 1) {
-        this.other_property = other_properties.First();
-        this.other_property.other_trellis = this.trellis;
-        this.other_property.other_property = this;
+      else if (other_properties.Count() == 1) {
+        other_property = other_properties.First();
+        other_property.other_trellis = trellis;
+        other_property.other_property = this;
       }
 			else {
 				if (!other_trellis.is_value) {

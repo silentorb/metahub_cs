@@ -30,7 +30,7 @@ public class Position {
     int i = 0;
     if (modifier > 0) {
       do {
-        if (context.text.charAt(offset + i) == "\n") {
+        if (context.text[offset + i] == '\n') {
           ++position.y;
           position.x = 1;
         }

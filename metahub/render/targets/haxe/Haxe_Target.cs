@@ -19,7 +19,7 @@ public class Haxe_Target : Target{
 				var dir = output_folder + "/" + space.Join("/");
 				Utility.create_folder(dir);
 
-				var text = "package " + space.join(".")
+				var text = "package " + space.Join(".")
 					+ ";\n\nclass " + trellis.name + " {\n\n}\n\nclass "
 					+ trellis.name + "_Actions {\n\n}\n";
 

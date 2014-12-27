@@ -10,17 +10,18 @@ using metahub.schema;
 
 namespace metahub.logic.schema
 {
-//    struct Dictionary<string, object>
-//    {
-//        private string name,
-//        private bool is_external,
-//        private string source_file,
-//        private string class_export,
-//                       object
-//        private inserts
-//    ,
-//        private object default_value
-//    }
+    public class Rail_Additional
+    {
+        public string name;
+        public bool? is_external;
+        public string source_file;
+        public string class_export;
+        public Dictionary<string, string[]> inserts;
+        public object default_value;
+        public Dictionary<string, string> hooks;
+        public List<string> stubs;
+        public Dictionary<string, Tie_Addition> properties;
+    }
 
   public class Rail
     {
@@ -63,47 +64,44 @@ namespace metahub.logic.schema
             if (!region.trellis_additional.ContainsKey(trellis.name))
                 return;
 
-            Dictionary<string, object> map = region.trellis_additional[trellis.name];
+            var map = region.trellis_additional[trellis.name];
 
-            if (map.ContainsKey("is_external"))
-                is_external = (bool)map["is_external"];
+            if (map.is_external.HasValue)
+                is_external = map.is_external.Value;
 
-            if (map.ContainsKey("name"))
-                rail_name = (string)map["name"];
+            if (map.name != null)
+                rail_name = map.name;
 
-            if (map.ContainsKey("source_file"))
-                source_file = (string)map["source_file"];
+            if (map.source_file != null)
+                source_file = map.source_file;
 
-            if (map.ContainsKey("class_export"))
-                class_export = (string)map["class_export"];
+            if (map.class_export != null)
+                class_export = map.class_export;
 
-            if (map.ContainsKey("default_value")) // Should only be set if is_value is set to true
-                default_value = map["default_value"];
+            if (map.default_value != null) // Should only be set if is_value is set to true
+                default_value = map.default_value;
 
-            if (map.ContainsKey("hooks"))
+            if (map.hooks != null)
             {
-                var hook_source = (Dictionary<string, object>) map["hooks"];
-                foreach (var key in hook_source.Keys)
+                foreach (var item in map.hooks)
                 {
-                    hooks[key] = hook_source[key];
+                    hooks[item.Key] = item.Value;
                 }
             }
 
-            if (map.ContainsKey("stubs"))
+            if (map.stubs != null)
             {
-                var hook_source =(Dictionary<string, string>) map["stubs"];
-                foreach (var key in hook_source.Keys)
+                foreach (var item in map.stubs)
                 {
-                    stubs.Add(hook_source[key]);
+                    stubs.Add(item);
                 }
             }
 
-            if (map.ContainsKey("properties"))
+            if (map.properties != null)
             {
-                var properties = (Dictionary<string, object>) map["properties"];
-                foreach (var key in properties.Keys)
+                foreach (var item in map.properties)
                 {
-                    property_additional[key] = properties[key];
+                    property_additional[item.Key] = item.Value;
                 }
             }
         }

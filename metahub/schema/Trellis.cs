@@ -70,13 +70,13 @@ namespace metahub.schema
             //return result;
         }
 
-        public void get_identity(object seed)
-        {
-            if (identity_property == null)
-                throw new Exception("This trellis does not have an identity property set.");
+        //public void get_identity(object seed)
+        //{
+        //    if (identity_property == null)
+        //        throw new Exception("This trellis does not have an identity property set.");
 
-            return seed[identity_property.name];
-        }
+        //    return seed[identity_property.name];
+        //}
 
         public Property get_property(string name)
         {
@@ -148,12 +148,12 @@ namespace metahub.schema
             //var trellises = this.schema.trellises;
             if (source.parent != null)
             {
-                var trellis = this.schema.get_trellis((string)source["parent"], space);
+                var trellis = this.schema.get_trellis(source.parent, space);
                 this.set_parent(trellis);
             }
-            if (source["primary_key"] != null)
+            if (source.primary_key != null)
             {
-                var primary_key = (string)source["primary_key"];
+                var primary_key = source.primary_key;
                 if (property_keys.ContainsKey(primary_key))
                 {
                     identity_property = property_keys[primary_key];
@@ -201,11 +201,10 @@ namespace metahub.schema
 
             if (source.properties != null)
             {
-                var props = (Dictionary<string, IProperty_Source>) source.properties;
-                foreach (var j in props.Keys)
+                foreach (var j in source.properties.Keys)
                 {
-                    Property property = this.get_property(j);
-                    property.initialize_link2(properties[j]);
+                    Property property = get_property(j);
+                    property.initialize_link2(source.properties[j]);
                 }
             }
 

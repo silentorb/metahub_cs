@@ -41,12 +41,18 @@
     "type": "and",
     "action": "literal",
     "patterns": [
-      "\"",
+      {
+        "type": "literal",
+        "text": "\""
+      },
       {
         "type": "regex",
         "text": "([^\"]|\\\\\")+"
       },
-      "\""
+      {
+        "type": "literal",
+        "text": "\""
+      }
     ]
   },
 
@@ -54,12 +60,18 @@
     "type": "and",
     "action": "literal",
     "patterns": [
-      "'",
+      {
+        "type": "literal",
+        "text": "'"
+      },
       {
         "type": "regex",
         "text": "([^']|\\\\')+"
       },
-      "'"
+      {
+        "type": "literal",
+        "text": "'"
+      }
     ]
   },
 
@@ -67,12 +79,18 @@
     "type": "and",
     "action": "regex",
     "patterns": [
-      "/",
+      {
+        "type": "literal",
+        "text": "/"
+      },
       {
         "type": "regex",
         "text": "([^/]|\\\\/)+"
       },
-      "/"
+      {
+        "type": "literal",
+        "text": "/"
+      }
     ]
   },
 
@@ -86,7 +104,10 @@
     "type": "and",
     "action": "repetition",
     "patterns": [
-      "@(",
+      {
+        "type": "literal",
+        "text": "@("
+      },
       {
         "type": "repetition",
         "pattern": {
@@ -98,7 +119,10 @@
           "name": "comma"
         }
       },
-      ")"
+      {
+        "type": "literal",
+        "text": ")"
+      }
     ]
   },
 
@@ -115,7 +139,10 @@
         "type": "reference",
         "name": "trim"
       },
-      "=",
+      {
+        "type": "literal",
+        "text": "="
+      },
       {
         "type": "reference",
         "name": "trim"
@@ -177,7 +204,10 @@
         "type": "reference",
         "name": "trim"
       },
-      "|",
+      {
+        "type": "literal",
+        "text": "|"
+      },
       {
         "type": "reference",
         "name": "trim"
@@ -246,7 +276,10 @@
     "type": "and",
     "action": "group",
     "patterns": [
-      "(",
+      {
+        "type": "literal",
+        "text": "("
+      },
       {
         "type": "reference",
         "name": "trim"
@@ -259,7 +292,10 @@
         "type": "reference",
         "name": "trim"
       },
-      ")"
+      {
+        "type": "literal",
+        "text": ")"
+      }
     ]
   }
 }

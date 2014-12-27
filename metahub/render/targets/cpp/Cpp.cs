@@ -53,7 +53,7 @@ public class Cpp : Target{
 
 				//trace(rail.space.fullname);
 				var space = Generator.get_namespace_path(rail.region);
-				var dir = output_folder + "/" + space.Join("/");
+				var dir = output_folder + "/" + space.join("/");
 				Utility.create_folder(dir);
 
 				line_count = 0;
@@ -151,7 +151,7 @@ public class Cpp : Target{
 
     string render_statements(IEnumerable<Expression> statements, string glue = "")
     {
-		return statements.Select(render_statement).Join(glue);
+		return statements.Select(render_statement).join(glue);
 	}
 
 	string render_statement (Expression statement) {
@@ -230,7 +230,7 @@ public class Cpp : Target{
 
 		foreach (var r in regions.Values) {
 			result += render_region(r.region, ()=> r.dependencies.Select(d => line("class " + d.rail_name + ";"))
-					.Join("")
+					.join("")
 			);
 		}
 
@@ -299,7 +299,7 @@ public class Cpp : Target{
 
 	string render_region (Region region, String_Delegate action) {
 		var space = Generator.get_namespace_path(region);
-		var result = line("namespace " + space.Join("::") + " {");
+		var result = line("namespace " + space.join("::") + " {");
 		current_region = region;
 		indent();
 		result += action()
@@ -331,13 +331,13 @@ public class Cpp : Target{
 
 	string render_region_name (Region region) {
 		var path = Generator.get_namespace_path(region);
-		return path.Join("::");
+		return path.join("::");
 	}
 
 	string render_function_definition (Function_Definition definition) {
 		var intro = (definition.return_type != null ? render_signature(definition.return_type) + " " : "")
 		+ current_rail.rail_name + "::" + definition.name
-		+ "(" + definition.parameters.Select(render_parameter).Join(", ") + ")";
+		+ "(" + definition.parameters.Select(render_parameter).join(", ") + ")";
         
 		return render_scope(intro, ()=>{
 			foreach (var parameter in definition.parameters) {
@@ -371,7 +371,7 @@ public class Cpp : Target{
 
 	    declarations.AddRange(dungeon.functions.Select(render_function_declaration));
 
-	    return declarations.Join("");
+	    return declarations.join("");
 	}
 
 	//string render_initialize_definition (Rail rail) {
@@ -433,7 +433,7 @@ public class Cpp : Target{
 		return headers.Select((h)=> line(h.is_standard
 		    ? "#include <" + h.name + ".h>"
 		    : "#include \"" + h.name + ".h\""
-		)).Join("");
+		)).join("");
 	}
 
 	string render_signature_old (string name, Tie tie) {
@@ -445,7 +445,7 @@ public class Cpp : Target{
 		return line((definition.return_type != null ? "virtual " : "")
 		+ (definition.return_type != null ? render_signature(definition.return_type) + " " : "")
 		+ definition.name
-		+ "(" + definition.parameters.Select(render_parameter).Join(", ") + ");");
+		+ "(" + definition.parameters.Select(render_parameter).join(", ") + ");");
 
 	}
 
@@ -526,7 +526,7 @@ public class Cpp : Target{
 	//}
 
     //string render_path (List<Tie> path) {
-    //    return path.Select(t => t.tie_name).Join("->");
+    //    return path.Select(t => t.tie_name).join("->");
     //}
 
 	//string render_function_call (Function_Call statement) {
@@ -540,7 +540,7 @@ public class Cpp : Target{
 	}
 
 	string render_condition (Condition condition) {
-		return condition.expressions.Select(c => render_expression(c)).Join(" " + condition.op + " ");
+		return condition.expressions.Select(c => render_expression(c)).join(" " + condition.op + " ");
 	}
 
 	string render_expression (Expression expression, Expression parent = null) {
@@ -633,7 +633,8 @@ public class Cpp : Target{
 		}
 	}
 
-	object get_signature (Expression expression) {
+    Signature get_signature(Expression expression)
+    {
 		switch (expression.type) {
 			case Expression_Type.variable:
 				var variable_expression = (Variable)expression;
@@ -641,7 +642,7 @@ public class Cpp : Target{
 
 			case Expression_Type.property:
 				var property_expression = (Property_Expression)expression;
-				return property_expression.tie;
+				return property_expression.tie.get_signature();
 
 			default:
 				throw new Exception("Determining pointer is not yet implemented for Node type: " + expression.type + ".");
@@ -701,7 +702,7 @@ public class Cpp : Target{
 
 		return expression.name + "(" +
 			expression.args.Select(a=> render_expression(a))
-			.Join(", ") + ")";
+			.join(", ") + ")";
 	}
 
 	string render_path_old (Path expression) {

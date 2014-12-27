@@ -65,7 +65,7 @@ namespace metahub.schema
                     var identity_property = trellis.get_property_or_null("id");
                     if (identity_property == null)
                     {
-                        identity_property = trellis.add_property("id", new Dictionary<string, object> { { "type", "int" } });
+                        identity_property = trellis.add_property("id", new IProperty_Source { type = "int" });
                     }
 
                     trellis.identity_property = identity_property;
@@ -101,14 +101,14 @@ namespace metahub.schema
             }
 
             if (space == null)
-                throw new Exception("Could not find space for trellis: " + name + ".", 400);
+                throw new Exception("Could not find space for trellis: " + name + ".");
 
             if (!space.trellises.ContainsKey(name))
             {
                 if (!throw_exception_on_missing)
                     return null;
 
-                throw new Exception("Could not find trellis named: " + name + ".", 400);
+                throw new Exception("Could not find trellis named: " + name + ".");
             }
             return space.trellises[name];
         }

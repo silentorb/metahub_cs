@@ -25,15 +25,14 @@ namespace metahub.imperative.schema
 
         public void customize_initialize(List<Expression> block)
         {
-            foreach (var r in tie.ranges)
+            foreach (Range_Float range in tie.ranges)
             {
-                Range_Float range = r;
                 var reference = create_reference(range.path.Count > 0
                                                      ? new Path(range.path.Select((t) => new Property_Expression(t)))
                                                      : null
                     );
                 block.Add(new Assignment(reference, "=", new Function_Call("rand",
-                    new List<object>
+                    new List<Expression>
 	                {
 	                    new Literal(range.min,
 	                                new Signature {type = Kind.Float}),

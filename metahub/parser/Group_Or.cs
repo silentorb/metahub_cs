@@ -21,7 +21,7 @@ public class Group_Or : Group {
       if (result.success) {
 //        match.children.Add(result);
 //        result = info;
-        Match match = result;
+        var match = (Match)result;
         return success(position, match.length, info_items, new List<Match> { match });
       }
     }

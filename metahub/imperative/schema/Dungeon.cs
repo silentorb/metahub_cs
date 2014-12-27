@@ -24,7 +24,7 @@ public class Dungeon
 	public List<Expression> code;
 	public Region region;
 	public Trellis trellis;
-	Dictionary<string, string> inserts;
+	Dictionary<string, string[]> inserts;
 	Dictionary<string, List<Expression>> blocks = new Dictionary<string, List<metahub.imperative.types.Expression>>();
 	List<Zone> zones = new List<Zone>();
 	public List<Function_Definition> functions = new List<Function_Definition>();
@@ -51,10 +51,10 @@ public class Dungeon
 		if (!region.trellis_additional.ContainsKey(trellis.name))
 			return;	
 			
-		var map = (Dictionary<string, object>)region.trellis_additional[trellis.name];
+		var map = region.trellis_additional[trellis.name];
 
-		if (map.ContainsKey("inserts"))
-			inserts = map["inserts"];
+		if (map.inserts != null)
+			inserts = map.inserts;
 	}
 	
 	public void generate_code1 () {
@@ -87,8 +87,8 @@ public class Dungeon
 
 		if (inserts != null) {
 			foreach (var path in inserts.Keys) {
-				List<string> lines = inserts[path];
-				concat_block(path, lines.Select((s)=> new Insert(s)));
+				var lines = inserts[path];
+				concat_block(path, lines.Select(s => new Insert(s)));
 			}
 		}
 	}
@@ -151,12 +151,12 @@ public class Dungeon
 		if (tie.type == Kind.reference && tie.other_tie != null) {
 			if (tie.other_tie.type == Kind.reference) {
 				mid.Add(new Property_Expression(tie,
-					new Function_Call("set_" + tie.other_tie.tie_name, new List<object> {new Self()})
+					new Function_Call("set_" + tie.other_tie.tie_name, new List<Expression> {new Self()})
 				));
 			}
 			else {
 				mid.Add(new Property_Expression(tie,
-					new Function_Call(tie.other_tie.tie_name + "_add", new List<object>{ new Self(), new Self()}))
+                    new Function_Call(tie.other_tie.tie_name + "_add", new List<Expression> { new Self(), new Self() }))
 				);
 			}
 		}
@@ -164,7 +164,7 @@ public class Dungeon
 		var post = zone.divide(tie.tie_name + "_set_post");
 
 		if (tie.has_set_post_hook) {
-			post.Add(new Function_Call(tie.get_setter_post_name(), new List<object> {
+            post.Add(new Function_Call(tie.get_setter_post_name(), new List<Expression> {
 					new Variable("value")
 			}));
 		}

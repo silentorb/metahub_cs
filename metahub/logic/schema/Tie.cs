@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using metahub.imperative.code;
 using metahub.meta.types;
+using metahub.render;
 using metahub.schema;
 
 namespace metahub.logic.schema
@@ -136,7 +137,7 @@ namespace metahub.logic.schema
             {
                 var path = Parse.get_path(constraint.reference);
                 path.RemoveAt(0);
-                var path_name = path.Select((t) => t.name).Join(".");
+                var path_name = path.Select(t => t.name).join(".");
                 if (!pairs.ContainsKey(path_name))
                 {
                     pairs[path_name] = new Temp

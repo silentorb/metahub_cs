@@ -160,7 +160,7 @@ namespace metahub.parser
                 return new Parser_Function_Call
                     {
                         type = "function",
-                        name = ((Parser_Reference)block.expressions[0]).name,
+                        name = block.expressions[0].name,
                         inputs = data
                     };
             }
@@ -368,8 +368,8 @@ namespace metahub.parser
             return new Parser_Scope
             {
                 type = "new_scope",
-                path = data[0],
-                expression = data[2]
+                path = (string[])data[0],
+                expression = (Parser_Item)data[2]
             };
         }
 
@@ -387,7 +387,7 @@ namespace metahub.parser
                 //op= Std.string(function_map[data[2]]),
                 op = (string)data[2],
                 expression = (Parser_Item)data[4],
-                lambda = ((object[])data[5])[0]
+                lambda = (Parser_Lambda) ((object[])data[5])[0]
             };
         }
 
@@ -405,7 +405,7 @@ namespace metahub.parser
             return new Parser_Lambda
             {
                 type = "lambda",
-                parameters = (object[])data[1],
+                parameters = (string[])data[1],
                 expressions = ((Parser_Block)data[3]).expressions
             };
         }
@@ -420,8 +420,8 @@ namespace metahub.parser
             return new Parser_Function_Scope
             {
                 type = "function_scope",
-                expression = data[0],
-                lambda = data[1]
+                expression =(Parser_Item) data[0],
+                lambda =(Parser_Lambda) data[1]
             };
         }
 

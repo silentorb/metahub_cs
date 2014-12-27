@@ -226,7 +226,7 @@ public class Imp
 			}
 			else {
 				var function_token = (metahub.meta.types.Function_Call)token;
-				result.Add(new Function_Call(function_token.name, new List<object>(), true));
+                result.Add(new Function_Call(function_token.name, new List<Expression>(), true));
 			}
 		}
 		return new metahub.imperative.types.Path(result);

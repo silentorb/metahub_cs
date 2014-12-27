@@ -16,10 +16,10 @@ public class Haxe_Target : Target{
 				var trellis = rail.trellis;
 				//trace(trellis.space.fullname);
 				var space = Generator.get_namespace_path(rail.region);
-				var dir = output_folder + "/" + space.Join("/");
+				var dir = output_folder + "/" + space.join("/");
 				Utility.create_folder(dir);
 
-				var text = "package " + space.Join(".")
+				var text = "package " + space.join(".")
 					+ ";\n\nclass " + trellis.name + " {\n\n}\n\nclass "
 					+ trellis.name + "_Actions {\n\n}\n";
 

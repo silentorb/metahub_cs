@@ -10,19 +10,20 @@ using metahub.schema;
 
 namespace metahub.logic.schema
 {
-    /*
-    struct Region_Additional
+    
+    public class Region_Additional
     {
-        private bool is_external;
-        private string space;
-        private string class_export;
+        public bool? is_external;
+        public string space;
+        public string class_export;
+        public Dictionary<string, Rail_Additional> trellises;
     }
-     */ 
+      
 public class Region
     {
         public Namespace space;
         public bool is_external = false;
-        public Dictionary<string, object> trellis_additional = new Dictionary<string, object>();
+        public Dictionary<string, Rail_Additional> trellis_additional = new Dictionary<string, Rail_Additional>();
         public string external_name = null;
         public Dictionary<string, Rail> rails = new Dictionary<string, Rail>();
         public string class_export = "";
@@ -40,25 +41,24 @@ public class Region
             if (space.additional == null)
                 return;
 
-            var additional = (Dictionary<string, object>)space.additional[target_name];
+            var additional = space.additional[target_name];
             if (additional == null)
                 return;
 
-            if (additional.ContainsKey("is_external"))
-                is_external = (bool)additional["is_external"];
+            if (additional.is_external.HasValue)
+                is_external = additional.is_external.Value;
 
-            if (additional.ContainsKey("namespace"))
-                external_name = (string)additional["space"];
+            if (additional.space != null)
+                external_name = additional.space;
 
-            if (additional.ContainsKey("class_export"))
-                class_export = (string)additional["class_export"];
+            if (additional.class_export != null)
+                class_export = additional.class_export;
 
-            var trellises = (Dictionary<string, object>) additional["trellises"];
-            if (trellises != null)
+            if (additional.trellises != null)
             {
-                foreach (var key in trellises.Keys)
+                foreach (var item in additional.trellises)
                 {
-                    trellis_additional[key] = trellises[key];
+                    trellis_additional[item.Key] = item.Value;
                 }
             }
         }

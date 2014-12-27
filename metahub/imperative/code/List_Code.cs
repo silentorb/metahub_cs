@@ -31,7 +31,7 @@ public class List_Code
 		var zone = dungeon.create_zone(definition.expressions);
 		var mid = zone.divide(null, new List<Expression> {
 			new Property_Expression(tie,
-				new Function_Call("add",new List<object>{ new Variable("item") }, true)
+				new Function_Call("add",new List<Expression>{ new Variable("item") }, true)
 			)
 		});
 		var post = zone.divide(function_name + "_post");
@@ -97,8 +97,7 @@ public class List_Code
 	                                             new Instantiate(second_end.other_rail)));
 
 		if (mapping != null) {
-			var constraints = (List<metahub.meta.types.Constraint>) mapping.expressions;
-			foreach (var constraint in constraints) {
+			foreach (metahub.meta.types.Constraint constraint in mapping.expressions) {
 				var first = constraint.first as Reference_Path;
 				var first_tie = first.children[1] as Property_Reference;
 				var second = constraint.second as Property_Reference;
@@ -115,7 +114,7 @@ public class List_Code
 			new Variable(item_name, new Function_Call("initialize")),
 			new Property_Expression(c.First(),
 				new Function_Call(second_end.tie_name + "_add",
-				new List<object> { new Variable(item_name), new Self()}))
+				new List<Expression> { new Variable(item_name), new Self()}))
 		}).ToList();
 
 		List<Expression> block = new List<Expression> {
@@ -156,7 +155,7 @@ public class List_Code
 			}, new Instantiate(rail)),
 			new Variable(child, new Function_Call("initialize")),
 			new Function_Call(reference.tie_name + "_add",
-			new List<object> {new Variable(child), new Null_Value()})
+			new List<Expression> {new Variable(child), new Null_Value()})
 	});
 		imp.get_dungeon(local_rail).add_to_block("initialize", flow_control);
 	}

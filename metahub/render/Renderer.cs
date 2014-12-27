@@ -2,22 +2,7 @@ using System.Collections.Generic;
 
 namespace metahub.render
 {
-
-    public delegate string String_Delegate();
-
-    public static class String_Extensions
-    {
-        public static string Join(this object[] array, string seperator)
-        {
-            return string.Join(seperator, array);
-        }
-
-        public static string Join<T>(this IEnumerable<T> array, string seperator)
-        {
-            return string.Join(seperator, array);
-        }
-    }
-
+    
     public class Renderer
     {
 

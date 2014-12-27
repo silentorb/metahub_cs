@@ -97,10 +97,10 @@ public class Property {
     if (source.other_property != null) {
       other_property = other_trellis.get_property(source.other_property);
 			if (other_property == null) {
-				other_property = other_trellis.add_property(source.other_property, new Dictionary<string, object> {
-					{"type", source.other_type},
-					{"trellis", trellis.name},
-					{"other_property", name}
+				other_property = other_trellis.add_property(source.other_property, new IProperty_Source {
+					type = source.other_type,
+					trellis = trellis.name,
+					other_property = name
 				});
 				other_property.other_trellis = trellis;
 				other_property.other_property = this;

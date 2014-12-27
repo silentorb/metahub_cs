@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using metahub.logic.schema;
 
 namespace metahub.schema
 {
@@ -11,7 +12,7 @@ public class Namespace
         //public Function_Library function_library;
         public Dictionary<string, Namespace> children = new Dictionary<string, Namespace>();
         public Namespace parent;
-        public Dictionary<string, object> additional = new Dictionary<string, object>();
+        public Dictionary<string, Region_Additional> additional = new Dictionary<string, Region_Additional>();
         public bool is_external = false;
 
         public Namespace(string name, string fullname)

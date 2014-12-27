@@ -58,7 +58,7 @@ namespace metahub.parser.types
         public Parser_Item reference;
         public Parser_Item expression;
         public string op;
-        public object lambda;
+        public Parser_Lambda lambda;
     }
 
     public class Parser_Assignment : Parser_Constraint
@@ -85,7 +85,7 @@ namespace metahub.parser.types
 
     public class Parser_Function_Scope : Parser_Item
     {
-        public object lambda;
+        public Parser_Lambda lambda;
         public Parser_Item expression;
     }
 }

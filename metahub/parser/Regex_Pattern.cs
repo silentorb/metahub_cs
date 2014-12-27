@@ -25,7 +25,7 @@ public class Regex_Pattern : Pattern {
     }
 
 //    trace(Position.pad(depth) + "reg", text, match);
-    return success(start, match.Groups.Count);
+    return success(start, match.Length);
   }
 
   override public object get_data(Match match)

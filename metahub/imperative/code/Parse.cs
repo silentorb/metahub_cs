@@ -14,8 +14,8 @@ namespace metahub.imperative.code
 
         public static Tie get_start_tie(Node expression)
         {
-            var path = expression as Reference_Path;
-            metahub.imperative.types.Property_Expression property_expression = path.children[0];
+            var path = (Reference_Path)expression;
+            var property_expression = (Property_Reference)path.children[0];
             return property_expression.tie;
         }
 

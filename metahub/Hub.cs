@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using Newtonsoft.Json;
+using metahub.Properties;
 using metahub.imperative;
 using metahub.imperative.types;
 using metahub.logic.schema;
@@ -37,16 +38,17 @@ public class Hub {
 		metahub_namespace = schema.add_namespace("metahub");
   }
 
-  private void load_parser () {
+  public void load_parser () {
     Definition boot_definition = new Definition();
     boot_definition.load_parser_schema();
     Bootstrap context = new Bootstrap(boot_definition);
 
-    var result = context.parse(Utility.get_string_resource("metahub.grammar"), false);
+      var data = System.Text.Encoding.Default.GetString(Resources.metahub);//.Replace("\r", "");
+      var result = context.parse(data, false);
 		if (result.success) {
-			var  match = (metahub.parser.Match)result;
+			var match = (Match)result;
 			parser_definition = new Definition();
-			parser_definition.load(match.get_data());
+			parser_definition.load((Dictionary<string, Pattern_Source>) match.get_data());
 		}
 		else {
 			throw new Exception("Error loading parser.");

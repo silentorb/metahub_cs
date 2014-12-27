@@ -37,7 +37,7 @@ public class Coder {
         //return create_general_reference(source, scope);
       case "function":
 				throw new Exception("Not supported.");
-        return function_expression(source, scope, source.name, previous);
+                return function_expression((Parser_Function_Call)source, scope, source.name, previous);
 
 			//case "create_node":
         //return create_node(source, scope);
@@ -108,9 +108,9 @@ public class Coder {
 		}
     Block block = new Block();
 
-    foreach (var e in fields) {
-      var child = source.expressions[e];
-      block.children.Add(convert_statement(child, scope));
+    foreach (var expression in source.expressions)
+    {
+        block.children.Add(convert_statement(expression, scope));
     }
 
     return block;

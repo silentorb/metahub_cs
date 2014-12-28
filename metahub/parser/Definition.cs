@@ -8,23 +8,6 @@ using metahub.schema;
 namespace metahub.parser
 {
 
-    public class Pattern_Source
-    {
-        public string type;
-        public string action;
-        public string name;
-        public string text;
-        public bool? backtrack;
-
-        public int? min;
-        public int? max;
-
-        public Pattern_Source pattern;
-        public Pattern_Source divider;
-        public Pattern_Source[] patterns;
-        public Pattern_Source value;
-    }
-
     public class Definition
     {
         public List<Pattern> patterns = new List<Pattern>();
@@ -76,6 +59,7 @@ namespace metahub.parser
 
                 case "literal":
                     return new Literal(source.text);
+
             }
 
             throw new Exception("Invalid parser pattern type: " + source.type + ".");

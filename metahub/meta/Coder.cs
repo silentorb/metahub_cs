@@ -54,7 +54,7 @@ public class Coder {
     throw new Exception("Invalid block: " + source.type);
   }
 
-  public Node convert_statement(Parser_Item source, Scope scope, Signature type = null)
+  public Node convert_statement(IParser_Item source, Scope scope, Signature type = null)
   {
     switch(source.type) {
       case "block":

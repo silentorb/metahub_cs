@@ -149,7 +149,7 @@ namespace metahub.parser
                 return data[0];
 
             var rep_match = (Repetition_Match)match;
-            string op = (string)rep_match.dividers[0].matches[1].get_data();
+            string op = (string)rep_match.dividers[0].matches[1].get_data().text;
 
             if (op == "|")
             {
@@ -205,7 +205,7 @@ namespace metahub.parser
             var rep_match = (Repetition_Match)match;
             if (data.Length > 1)
             {
-                string symbol = (string)rep_match.dividers[0].matches[1].get_data();
+                string symbol = rep_match.dividers[0].matches[1].get_data().text;
                 string divider = null;
                 switch (symbol)
                 {

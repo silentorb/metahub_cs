@@ -5,11 +5,16 @@ using System.Text;
 
 namespace metahub.parser.types
 {
-
-    public class Parser_Item
+    public interface IParser_Item
     {
-        public string type;
-        public string name;
+        string type { get; set; }
+        string name { get; set; }
+    }
+
+    public class Parser_Item : IParser_Item
+    {
+        public string type { get; set; }
+        public string name { get; set; }
     }
 
     public class Parser_Block : Parser_Item

@@ -81,6 +81,7 @@
     <Compile Include="metahub\imperative\types\Self.cs" />
     <Compile Include="metahub\imperative\types\Statement.cs" />
     <Compile Include="metahub\imperative\types\Variable.cs" />
+    <Compile Include="metahub\lab\Debug_Info.cs" />
     <Compile Include="metahub\logic\schema\Constraint.cs" />
     <Compile Include="metahub\logic\schema\Function_Info.cs" />
     <Compile Include="metahub\logic\schema\Function_Version.cs" />
@@ -119,6 +120,7 @@
     <Compile Include="metahub\parser\Match.cs" />
     <Compile Include="metahub\parser\MetaHub_Context.cs" />
     <Compile Include="metahub\parser\Pattern.cs" />
+    <Compile Include="metahub\parser\Pattern_Source.cs" />
     <Compile Include="metahub\parser\Position.cs" />
     <Compile Include="metahub\parser\Regex_Pattern.cs" />
     <Compile Include="metahub\parser\Repetition.cs" />

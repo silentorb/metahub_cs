@@ -46,17 +46,20 @@ namespace metahub.schema
 
             var space = settings.space;
             // Due to cross referencing, loading trellises needs to be done in passes
-            //trace("t2",  trellises.Keys);
             // First load the core trellises
             Trellis trellis;
             foreach (var name in trellises.Keys)
             {
 
                 var source = trellises[name];
-                trellis = space.trellises[name];
-                //trace("t", name);
-                if (trellis == null)
-                    trellis = add_trellis(name, new Trellis(name, this, space));
+                if (space.trellises.ContainsKey(name))
+                {
+                    trellis = space.trellises[name];
+                }
+                else
+                {
+                    trellis = space.trellises[name] = add_trellis(name, new Trellis(name, this, space));
+                }
 
                 trellis.load_properties(source);
 

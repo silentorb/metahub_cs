@@ -56,7 +56,7 @@ public class Pattern {
 //    return previous.pattern.rewind(previous, messages);
 //  }
 
-  public virtual object get_data (Match match) {
+  public virtual Pattern_Source get_data (Match match) {
     return null;
   }
 }

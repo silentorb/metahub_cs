@@ -30,7 +30,7 @@ namespace metahub
             hub.load_parser();
             foreach (var schema_name in config.schemas)
             {
-                var schema = File.ReadAllText(root + schema_name + ".json");
+                var schema = File.ReadAllText(Path.Combine(root, schema_name + ".json"));
                 var space = hub.schema.add_namespace(Path.GetFileNameWithoutExtension(schema_name));
                 hub.load_schema_from_string(schema, space);
             }
@@ -40,7 +40,7 @@ namespace metahub
                 throw new Exception("Syntax Error at " + result.end.y + ":" + result.end.x);
 
             var match = (Match) result;
-            hub.generate((Parser_Item)match.get_data(), "cpp", Path.Combine(root, config.output.Replace("/", "\\")));
+            hub.generate((IParser_Item)match.get_data(), "cpp", Path.Combine(root, config.output.Replace("/", "\\")));
         }
     }
 }

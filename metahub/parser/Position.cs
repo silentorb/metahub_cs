@@ -38,7 +38,7 @@ public class Position {
           ++position.x;
         }
       }
-      while (++i < modifier);
+      while (++i < modifier && offset + i < context.text.Length);
     }
     position.offset += modifier;
     return position;

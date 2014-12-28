@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -91,9 +92,15 @@ namespace metahub.parser
         //    return previous.pattern.rewind(previous, messages);
         //  }
 
-        override public object get_data(Match match)
+        override public Pattern_Source get_data(Match match)
         {
-            return match.matches.Select(child => (Pattern_Source)child.get_data()).ToArray();
+            if (match.success && match.matches.Count == 0)
+                throw new Exception();
+
+            return new Pattern_Source
+                {
+                    patterns = match.matches.Select(child => child.get_data()).ToArray()
+                };
         }
     }
 }

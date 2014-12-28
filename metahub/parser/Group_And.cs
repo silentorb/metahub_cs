@@ -34,9 +34,12 @@ namespace metahub.parser
             return success(start, length, info_items, matches);
         }
 
-        override public object get_data(Match match)
+        override public Pattern_Source get_data(Match match)
         {
-            return match.matches.Select(child => child.get_data()).ToArray();
+            return new Pattern_Source
+                {
+                    patterns = match.matches.Select(child => child.get_data()).ToArray()
+                };
         }
     }
 }

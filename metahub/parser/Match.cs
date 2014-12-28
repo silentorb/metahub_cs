@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 
 namespace metahub.parser
@@ -33,13 +34,24 @@ public class Match : Result {
     }
   }
 
-  override public string debug_info () {
-    return start.context.text.Substring(start.get_offset(), length);
+  override public string debug_info ()
+  {
+      var a = start.get_offset();
+      var b = length;
+      if (a + b >= start.context.text.Length)
+      {
+          b = start.context.text.Length - a;
+      }
+
+    return start.context.text.Substring(a, b);
   }
 
-  public object get_data () {
+  public Pattern_Source get_data () {
     var data = pattern.get_data(this);
-    return start.context.perform_action(pattern.action, data, this);
+      var result = (Pattern_Source)start.context.perform_action(pattern.action, data, this);
+      if (result == null)
+          throw new Exception();
+      return result;
   }
 
 

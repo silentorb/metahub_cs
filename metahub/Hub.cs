@@ -8,6 +8,7 @@ using Newtonsoft.Json;
 using metahub.Properties;
 using metahub.imperative;
 using metahub.imperative.types;
+using metahub.lab;
 using metahub.logic.schema;
 using metahub.meta;
 using metahub.meta.types;
@@ -45,10 +46,12 @@ public class Hub {
 
       var json = System.Text.Encoding.Default.GetString(Resources.metahub);//.Replace("\r", "");
       var result = context.parse(json, false);
+      //Debug_Info.output(result);
 		if (result.success) {
 			var match = (Match)result;
+            
 			parser_definition = new Definition();
-			parser_definition.load((Dictionary<string, Pattern_Source>) match.get_data());
+			parser_definition.load(match.get_data().dictionary);
 		}
 		else {
 			throw new Exception("Error loading parser.");
@@ -62,7 +65,7 @@ public class Hub {
   }
 
 	public void load_schema_from_string (string json, Namespace space, bool auto_identity = false) {
-    var data = JsonConvert.DeserializeObject<Schema_Source>(File.ReadAllText(json));
+    var data = JsonConvert.DeserializeObject<Schema_Source>(json);
     load_schema_from_object(data, space, auto_identity);
   }
 
@@ -79,7 +82,7 @@ public class Hub {
         //}
   }
 
-    public Node run_data(Parser_Item source, Railway railway)
+    public Node run_data(IParser_Item source, Railway railway)
     {
     Coder coder = new Coder(railway);
     return coder.convert_statement(source, null);
@@ -103,7 +106,7 @@ public class Hub {
     //schema.load_trellises(data.trellises, new Load_Settings(metahub_namespace));
   //}
 
-	public void generate (Parser_Item source, string target_name, string destination) {
+	public void generate (IParser_Item source, string target_name, string destination) {
 		Imp imp = new Imp(this, target_name);
 		var root = run_data(source, imp.railway);
 		Generator generator = new Generator(this);

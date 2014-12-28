@@ -76,7 +76,8 @@ namespace metahub.parser
             if (repetition.matches.Count > pattern.min)
             {
                 messages.Add("rewinding " + pattern.name + " " + previous.start.get_coordinate_string());
-                repetition.matches = repetition.matches.Take(repetition.matches.Count - 2).ToList();
+                repetition.matches.RemoveAt(repetition.matches.Count - 1);
+                repetition.children.RemoveAt(repetition.matches.Count - 1);
                 return previous.start;
             }
 

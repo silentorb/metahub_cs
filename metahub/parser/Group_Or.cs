@@ -29,7 +29,7 @@ public class Group_Or : Group {
     return failure(position, end, info_items);
   }
 
-  override public object get_data(Match match)
+  override public Pattern_Source get_data(Match match)
   {
     return match.matches[0].get_data();
   }

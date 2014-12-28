@@ -32,155 +32,150 @@ namespace metahub.parser
             if (name == null)
                 return data;
 
+            var pattern_data = (Pattern_Source) data;
             switch (name)
             {
 
                 case "group":
-                    return @group((object[])data);
+                    return group(pattern_data);
                 case "and_group":
-                    return and_group((object[])data);
+                    return and_group(pattern_data);
                 case "or":
-                    return or_group(data);
+                    return or_group(pattern_data);
                 case "literal":
-                    return literal((object[])data);
+                    return literal(pattern_data);
                 case "pattern":
-                    return pattern((object[])data, match);
+                    return pattern(pattern_data, match);
                 case "start":
-                    return start((Pattern_Source[])data);
+                    return start(pattern_data);
                 case "repetition":
-                    return repetition((object[])data);
+                    return repetition(pattern_data);
                 case "reference":
-                    return reference(data);
+                    return reference(pattern_data);
                 case "regex":
-                    return regex((object[])data);
+                    return regex(pattern_data);
                 case "rule":
-                    return rule((object[])data);
+                    return rule(pattern_data);
 
                 default:
                     throw new Exception("Invalid parser method: " + name + ".");
             }
         }
 
-        static object literal(object[] data)
+        static object literal(Pattern_Source data)
         {
-            //    trace("data", data);
-            return data[1];
-        }
-
-        static object regex(object[] data)
-        {
-            //    trace("data", data);
-            return new Pattern_Source
-            {
-                type = "regex",
-                text = (string)data[1]
+            return new Pattern_Source {
+                text = data.patterns[1].text 
             };
         }
 
-        static object reference(object data)
+        static object regex(Pattern_Source data)
+        {
+            return new Pattern_Source
+            {
+                type = "regex",
+                text = data.patterns[1].text
+            };
+        }
+
+        static Pattern_Source reference(Pattern_Source data)
         {
             return new Pattern_Source
             {
                 type = "reference",
-                name = (string)data
+                name = data.text
             };
         }
 
-        static object and_group(object[] data)
+        static Pattern_Source and_group(Pattern_Source data)
         {
             return new Pattern_Source
             {
                 type = "and",
-                patterns = (Pattern_Source[])data
+                patterns = data.patterns
             };
         }
 
-        static object group(object[] data)
+        static object group(Pattern_Source data)
         {
-            //  trace("group", data);
-            return data[2];
+            return data.patterns[2];
         }
 
-        static object or_group(object data)
+        static object or_group(Pattern_Source data)
         {
             return new Pattern_Source
             {
                 type = "or",
-                patterns = (Pattern_Source[])data
+                patterns = data.patterns
             };
         }
 
-        static object pattern(object[] data, Match match)
+        static object pattern(Pattern_Source data, Match match)
         {
-            //    trace("pattern:", data);
 
-            if (data.Length == 0)
-                return null;
-            else if (data.Length == 1)
-                return data[0];
+            if (data.patterns.Length == 0)
+                return data;
+            else if (data.patterns.Length == 1)
+                return data.patterns[0];
             else
                 return new Pattern_Source
-                {
-                    type = "and",
-                    patterns = (Pattern_Source[])data
-                };
+                    {
+                        type = "and",
+                        patterns = data.patterns
+                    };
         }
 
-        static object repetition(object[] data)
+        static object repetition(Pattern_Source data)
         {
-            //    trace("rule", data);
-            var settings = (string[])data[1];
+            var settings = data.patterns[1].patterns;
             var result = new Pattern_Source
             {
                 type = "repetition",
                 pattern = new Pattern_Source
                 {
                     type = "reference",
-                    name = settings[0]
+                    name = settings[0].text
                 },
                 divider = new Pattern_Source
                 {
                     type = "reference",
-                    name = settings[1]
+                    name = settings[1].text
                 }
             };
 
             if (settings.Length > 2)
             {
-                result.min = int.Parse(settings[2]);
+                result.min = int.Parse(settings[2].text);
                 if (settings.Length > 3)
                 {
-                    result.max = int.Parse(settings[3]);
+                    result.max = int.Parse(settings[3].text);
                 }
             }
             return result;
         }
 
-        static object rule(object[] data)
+        static Pattern_Source rule(Pattern_Source data)
         {
-            //var value = (Pattern_Source)data[4];
-            //Pattern_Source val = null;
-            //if (value != null && value.Length == 1)
-            //    val = value[0];
-            //else
-            //    val = value;
-            
             return new Pattern_Source
             {
-                name = (string)data[0],
-                value = (Pattern_Source)data[4]
+                name = data.patterns[0].text,
+                value = data.patterns[4]
             };
         }
 
-        object start(IEnumerable<Pattern_Source> data)
+        static Pattern_Source start(Pattern_Source data)
         {
             var map = new Dictionary<string, Pattern_Source>();
 
-            foreach (var item in data)
+            foreach (var item in data.patterns)
             {
+                if (item.value == null)
+                    throw new Exception();
                 map[item.name] = item.value;
             }
-            return map; //haxe.Json.parse(haxe.Json.stringify(map);
+            return new Pattern_Source {
+               dictionary = map
+            };
         }
     }
 }

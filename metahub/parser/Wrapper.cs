@@ -20,7 +20,7 @@ public class Wrapper : Pattern {
     return success(start, match.length, new List<Result> { result }, new List<Match> { match });
   }
 
-  override public object get_data(Match match)
+  override public Pattern_Source get_data(Match match)
   {
     return match.matches[0].get_data();
   }

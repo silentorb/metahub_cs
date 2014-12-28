@@ -37,7 +37,7 @@ namespace metahub
             }
 
             var result = hub.parse_code(code);
-            Debug_Info.output(result);
+            //Debug_Info.output(result);
             if (!result.success)
                 throw new Exception("Syntax Error at " + result.end.y + ":" + result.end.x);
 

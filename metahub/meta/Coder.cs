@@ -30,31 +30,33 @@ namespace metahub.meta
 
         public Node convert_expression(Pattern_Source source, Node previous, Scope scope)
         {
-
             switch (source.type)
             {
                 case "block":
                     return create_block(source.patterns, scope);
+
                 case "literal":
                     return create_literal(source, scope);
+
                 case "path":
                     return create_path(source, previous, scope);
-                //case "reference":
-                //return create_general_reference(source, scope);
+
                 case "function":
                     throw new Exception("Not supported.");
-                //return function_expression((Parser_Function_Call)source, scope, source.name, previous);
 
-                //case "create_node":
-                //return create_node(source, scope);
-                //case "conditions":
-                //return conditions(source, scope);
-                //case "condition":
-                //return condition(source, scope);
                 case "array":
                     return create_array(source, scope);
-                //case "lambda":
-                //return create_lambda(source, scope);
+
+                case "expression":
+                    return process_expression(source, scope);
+
+                case "int":
+                    return new Literal_Value(int.Parse(source.text));
+
+                case "reference":
+                    return source.patterns.Length < 2
+                        ? convert_expression(source.patterns[0], null, scope)
+                        : create_path(source, previous, scope);
             }
 
             throw new Exception("Invalid block: " + source.type);
@@ -65,10 +67,10 @@ namespace metahub.meta
             switch (source.type)
             {
                 case "start":
-                    return create_block(source.patterns[1].patterns, scope);
-
                 case "block":
-                    return create_block(source.patterns[2].patterns, scope);
+                case "long_block":
+                    return create_block(source.patterns, scope);
+
                 //case "symbol":
                 //return create_symbol(source, scope);
                 case "new_scope":
@@ -100,7 +102,8 @@ namespace metahub.meta
                 back_reference = reference;
             }
             var expression = Parse.resolve(convert_expression(source.patterns[4], null, scope));
-            var lambda = source.patterns[5].patterns[0];
+            var lambda_array = source.patterns[5].patterns;
+            var lambda = lambda_array != null && lambda_array.Length > 0 ? lambda_array[0] : null;
 
             return new Constraint(reference, expression, operator_name,
                 lambda != null ? create_lambda(lambda, scope, new List<Node> { reference, expression }) : null
@@ -167,8 +170,8 @@ namespace metahub.meta
             if (expressions.Length == 0)
                 throw new Exception("Empty reference path.");
 
-            if (expressions[0].type == "reference" && rail.get_tie_or_null(expressions[0].name) == null
-                && scope.find(expressions[0].name) == null)
+            if (expressions[0].type == "reference" && rail.get_tie_or_null(expressions[0].text) == null
+                && scope.find(expressions[0].text) == null)
             {
                 throw new Exception("Not supported.");
             }
@@ -178,16 +181,17 @@ namespace metahub.meta
                 switch (item.type)
                 {
                     case "function":
-                        previous = new Function_Call(item.name, previous, railway);
+                        previous = new Function_Call(item.text, previous, railway);
                         //var info = Function_Call.get_function_info(item.name, hub);
                         //children.Add(new metahub.code.expressions.Function_Call(item.name, info, [], hub));
                         break;
 
+                    case "id":
                     case "reference":
-                        var variable = scope.find(item.name);
+                        var variable = scope.find(item.text);
                         if (variable != null)
                         {
-                            previous = new Variable(item.name);
+                            previous = new Variable(item.text);
                             //if (variable.rail == null)
                             //    throw new Exception("");
                             //rail = variable.rail;
@@ -195,7 +199,7 @@ namespace metahub.meta
                         }
                         else
                         {
-                            Tie tie = rail.get_tie_or_error(item.name);
+                            Tie tie = rail.get_tie_or_error(item.text);
                             previous = new Property_Reference(tie);
                             if (tie.other_rail != null)
                                 rail = tie.other_rail;
@@ -282,7 +286,7 @@ namespace metahub.meta
 
         Node create_array(Pattern_Source source, Scope scope)
         {
-            return new Block(source.patterns[2].patterns.Select((e) => convert_expression(e, null, scope)));
+            return new Block(source.patterns.Select((e) => convert_expression(e, null, scope)));
         }
 
         Lambda create_lambda(Pattern_Source source, Scope scope, List<Node> constraint_expressions)
@@ -312,6 +316,40 @@ namespace metahub.meta
             return new Function_Scope(expression,
                 create_lambda(source.patterns[1], scope, new List<Node> { token, token })
             );
+        }
+
+        Node process_expression(Pattern_Source source, Scope scope)
+        {
+            if (source.patterns.Length < 2)
+                return convert_expression(source.patterns[0], null, scope);
+
+            throw new Exception("Not implemented.");
+
+            //var rep_match = (Repetition_Match)match;
+            //string op = rep_match.dividers[0].matches[1].get_data().text;
+
+            //if (op == "|")
+            //{
+            //    var function_name = data.patterns.Last();
+            //    data = ;
+            //    var block = ((Parser_Block) function_name);
+
+            //    return new Parser_Function_Call
+            //        {
+            //            type = "function",
+            //            name = block.expressions[0].name,
+            //            inputs = data.patterns.Take(data.patterns.Length - 1).ToArray()
+            //        };
+            //}
+            //else
+            //{
+            //    return new Parser_Function_Call
+            //        {
+            //            type = "function",
+            //            name = op,
+            //            inputs = data
+            //        };
+            //}
         }
 
     }

@@ -36,8 +36,28 @@ namespace metahub.parser
 
         public override object perform_action(string name, Pattern_Source data, Match match)
         {
+            
+            switch (match.pattern.name)
+            {
+                case "reference":
+                    data = expression(data, match);
+                    break;
+
+                case "start":
+                    data = data.patterns[1];
+                    break;
+
+                case "array":
+                case "parameters":
+                case "long_block":
+                    data = data.patterns[2];
+                    break;
+            }
+
             if (data.type == null)
                 data.type = match.pattern.name;
+
+            Console.WriteLine(data.type ?? "null", match.pattern.name);
 
             return data;
             //switch (match.pattern.name)
@@ -146,37 +166,46 @@ namespace metahub.parser
         //    };
         //}
 
-        //static object expression(Pattern_Source data, Match match)
-        //{
-        //    if (data.patterns.Length < 2)
-        //        return data.patterns[0];
+        static Pattern_Source expression(Pattern_Source data, Match match)
+        {
+            if (data.patterns.Length < 2)
+                return data.patterns[0];
 
-        //    var rep_match = (Repetition_Match)match;
-        //    string op = rep_match.dividers[0].matches[1].get_data().text;
+            var rep_match = (Repetition_Match)match;
+            //string op = rep_match.dividers[0].matches[1].get_data().text;
+            var dividers = rep_match.dividers.Select(d => d.matches[0].get_data()).ToArray();
+            for (var i = 1; i < data.patterns.Length; ++i)
+            {
+                var divider = dividers[i - 1];
+                if (divider.text == "|")
+                {
+                    data.patterns[i].type = "function";
+                }
+            }
+                return data;
+            //if (op == "|")
+            //{
+            //    var function_name = data.patterns.Last();
+            //    data = ;
+            //    var block = ((Parser_Block) function_name);
 
-        //    if (op == "|")
-        //    {
-        //        var function_name = data.patterns.Last();
-        //        data = ;
-        //        var block = ((Parser_Block) function_name);
-
-        //        return new Parser_Function_Call
-        //            {
-        //                type = "function",
-        //                name = block.expressions[0].name,
-        //                inputs = data.patterns.Take(data.patterns.Length - 1).ToArray()
-        //            };
-        //    }
-        //    else
-        //    {
-        //        return new Parser_Function_Call
-        //            {
-        //                type = "function",
-        //                name = op,
-        //                inputs = data
-        //            };
-        //    }
-        //}
+            //    return new Parser_Function_Call
+            //        {
+            //            type = "function",
+            //            name = block.expressions[0].name,
+            //            inputs = data.patterns.Take(data.patterns.Length - 1).ToArray()
+            //        };
+            //}
+            //else
+            //{
+            //    return new Parser_Function_Call
+            //        {
+            //            type = "function",
+            //            name = op,
+            //            inputs = data
+            //        };
+            //}
+        }
 
         //static Parser_Condition condition(Pattern_Source data)
         //{

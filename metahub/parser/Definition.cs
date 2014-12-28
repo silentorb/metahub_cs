@@ -37,16 +37,16 @@ namespace metahub.parser
             switch (source.type)
             {
                 case "reference":
-                    if (!pattern_keys.ContainsKey(source.name))
+                    if (!pattern_keys.ContainsKey(source.name ?? source.text))
                         throw new Exception("There is no pattern named: " + source.name);
 
                     if (source.action != null)
-                        return new Wrapper(pattern_keys[source.name], source.action);
+                        return new Wrapper(pattern_keys[source.text], source.action);
                     else
-                        return pattern_keys[source.name];
+                        return pattern_keys[source.name ?? source.text];
 
                 case "regex":
-                    return new Regex_Pattern(source.text);
+                    return new Regex_Pattern(source.name ?? source.text);
 
                 case "and":
                     return new Group_And();

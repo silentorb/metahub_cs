@@ -134,12 +134,12 @@ namespace metahub.parser
                 pattern = new Pattern_Source
                 {
                     type = "reference",
-                    name = settings[0].text
+                    text = settings[0].text
                 },
                 divider = new Pattern_Source
                 {
                     type = "reference",
-                    name = settings[1].text
+                    text = settings[1].text
                 }
             };
 
@@ -171,7 +171,7 @@ namespace metahub.parser
             {
                 if (item.value == null)
                     throw new Exception();
-                map[item.name] = item.value;
+                map[item.text ?? item.name] = item.value;
             }
             return new Pattern_Source {
                dictionary = map

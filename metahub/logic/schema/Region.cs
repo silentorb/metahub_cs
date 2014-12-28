@@ -41,9 +41,10 @@ public class Region
             if (space.additional == null)
                 return;
 
-            var additional = space.additional[target_name];
-            if (additional == null)
+            if (!space.additional.ContainsKey(target_name))
                 return;
+
+            var additional = space.additional[target_name];
 
             if (additional.is_external.HasValue)
                 is_external = additional.is_external.Value;

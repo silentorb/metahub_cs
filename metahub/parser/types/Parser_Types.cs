@@ -5,6 +5,7 @@ using System.Text;
 
 namespace metahub.parser.types
 {
+    /*
     public interface IParser_Item
     {
         string type { get; set; }
@@ -93,5 +94,6 @@ namespace metahub.parser.types
         public Parser_Lambda lambda;
         public Parser_Item expression;
     }
+     * */
 }
 

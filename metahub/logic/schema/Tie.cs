@@ -57,10 +57,13 @@ namespace metahub.logic.schema
                 }
             }
 
-            var additional = rail.property_additional[name];
-            if (additional != null && additional.hooks != null)
+            if (rail.property_additional.ContainsKey(name))
             {
-                has_set_post_hook = additional.hooks.set_post != null;
+                var additional = rail.property_additional[name];
+                if (additional.hooks != null)
+                {
+                    has_set_post_hook = additional.hooks.set_post != null;
+                }
             }
         }
 

@@ -42,7 +42,7 @@ namespace metahub
                 throw new Exception("Syntax Error at " + result.end.y + ":" + result.end.x);
 
             var match = (Match) result;
-            hub.generate((IParser_Item)match.get_data(), "cpp", Path.Combine(root, config.output.Replace("/", "\\")));
+            hub.generate(match.get_data(), "cpp", Path.Combine(root, config.output.Replace("/", "\\")));
         }
     }
 }

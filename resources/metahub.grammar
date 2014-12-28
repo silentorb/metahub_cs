@@ -24,9 +24,9 @@ method = "|" id
 statement =
     create_symbol
 	| if
-  | constraint
+    | constraint
 	| set_weight
-  | new_scope
+    | new_scope
 	| create_node
 	| function_scope
 

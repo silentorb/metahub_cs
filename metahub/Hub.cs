@@ -82,7 +82,7 @@ public class Hub {
         //}
   }
 
-    public Node run_data(IParser_Item source, Railway railway)
+    public Node run_data(Pattern_Source source, Railway railway)
     {
     Coder coder = new Coder(railway);
     return coder.convert_statement(source, null);
@@ -106,7 +106,7 @@ public class Hub {
     //schema.load_trellises(data.trellises, new Load_Settings(metahub_namespace));
   //}
 
-	public void generate (IParser_Item source, string target_name, string destination) {
+	public void generate (Pattern_Source source, string target_name, string destination) {
 		Imp imp = new Imp(this, target_name);
 		var root = run_data(source, imp.railway);
 		Generator generator = new Generator(this);

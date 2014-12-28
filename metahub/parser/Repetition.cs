@@ -94,8 +94,8 @@ namespace metahub.parser
 
         override public Pattern_Source get_data(Match match)
         {
-            if (match.success && match.matches.Count == 0)
-                throw new Exception();
+            //if (match.success && match.matches.Count == 0)
+            //    throw new Exception();
 
             return new Pattern_Source
                 {

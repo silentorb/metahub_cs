@@ -6,7 +6,7 @@ using metahub.parser.types;
 
 namespace metahub.parser
 {
-    public class Pattern_Source : IParser_Item
+    public class Pattern_Source
     {
         public string type { get; set; }
         public string name { get; set; }

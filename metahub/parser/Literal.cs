@@ -13,7 +13,7 @@ namespace metahub.parser
         override protected Result __test__(Position start, int depth)
         {
             var offset = start.get_offset();
-            if (offset + text.Length >= start.context.text.Length)
+            if (offset + text.Length > start.context.text.Length)
                 return failure(start, start);
 
             if (start.context.text.Substring(offset, text.Length) == text)

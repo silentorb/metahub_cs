@@ -80,16 +80,17 @@ namespace metahub.schema
 
         public Property get_property(string name)
         {
-            return property_keys[name];
+            var props = get_all_properties();
+            return !props.ContainsKey(name) ? null : props[name];
         }
 
         public Property get_property_or_error(string name)
         {
-            var properties = this.get_all_properties();
-            if (!properties.ContainsKey(name))
+            var props = get_all_properties();
+            if (!props.ContainsKey(name))
                 throw new Exception(this.name + " does not contain a property named " + name + ".");
 
-            return properties[name];
+            return props[name];
         }
 
         public Property get_property_or_null(string name)
@@ -137,6 +138,9 @@ namespace metahub.schema
 
         public void load_properties(ITrellis_Source source)
         {
+            if (source.properties == null)
+                return;
+
             foreach (var item in source.properties)
             {
                 add_property(item.Key, item.Value);
@@ -145,11 +149,10 @@ namespace metahub.schema
 
         public void initialize1(ITrellis_Source source, Namespace space)
         {
-            //var trellises = this.schema.trellises;
             if (source.parent != null)
             {
                 var trellis = this.schema.get_trellis(source.parent, space);
-                this.set_parent(trellis);
+                set_parent(trellis);
             }
             if (source.primary_key != null)
             {
@@ -183,10 +186,13 @@ namespace metahub.schema
                 }
             }
 
-            foreach (var j in source.properties.Keys)
+            if (source.properties != null)
             {
-                Property property = this.get_property(j);
-                property.initialize_link1(source.properties[j]);
+                foreach (var j in source.properties.Keys)
+                {
+                    Property property = this.get_property(j);
+                    property.initialize_link1(source.properties[j]);
+                }
             }
         }
 

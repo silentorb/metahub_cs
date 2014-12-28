@@ -27,35 +27,34 @@ namespace metahub.parser
         }
 
 
-        public override object perform_action(string name, object data, Match match)
+        public override object perform_action(string name, Pattern_Source data, Match match)
         {
             if (name == null)
                 return data;
 
-            var pattern_data = (Pattern_Source) data;
             switch (name)
             {
 
                 case "group":
-                    return group(pattern_data);
+                    return group(data);
                 case "and_group":
-                    return and_group(pattern_data);
+                    return and_group(data);
                 case "or":
-                    return or_group(pattern_data);
+                    return or_group(data);
                 case "literal":
-                    return literal(pattern_data);
+                    return literal(data);
                 case "pattern":
-                    return pattern(pattern_data, match);
+                    return pattern(data, match);
                 case "start":
-                    return start(pattern_data);
+                    return start(data);
                 case "repetition":
-                    return repetition(pattern_data);
+                    return repetition(data);
                 case "reference":
-                    return reference(pattern_data);
+                    return reference(data);
                 case "regex":
-                    return regex(pattern_data);
+                    return regex(data);
                 case "rule":
-                    return rule(pattern_data);
+                    return rule(data);
 
                 default:
                     throw new Exception("Invalid parser method: " + name + ".");
@@ -65,6 +64,7 @@ namespace metahub.parser
         static object literal(Pattern_Source data)
         {
             return new Pattern_Source {
+                type = "literal",
                 text = data.patterns[1].text 
             };
         }

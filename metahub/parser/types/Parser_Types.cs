@@ -54,7 +54,7 @@ namespace metahub.parser.types
 
     public class Parser_Function_Call : Parser_Item
     {
-        public object[] inputs;
+        public Pattern_Source[] inputs;
     }
 
     public class Parser_Constraint : Parser_Item

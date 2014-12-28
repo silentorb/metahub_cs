@@ -34,88 +34,88 @@ namespace metahub.parser
 
         }
 
-        public override object perform_action(string name, object data, Match match)
+        public override object perform_action(string name, Pattern_Source data, Match match)
         {
             //var name = match.pattern.name;
             switch (match.pattern.name)
             {
                 case "start":
-                    return start((object[])data);
+                    return start(data);
 
                 case "create_symbol":
-                    return create_symbol((object[])data);
+                    return create_symbol(data);
 
                 //case "create_node":
                 //    return create_node(data);
 
                 case "create_constraint":
-                    return create_constraint((object[])data);
+                    return create_constraint(data);
 
                 case "Node":
-                    return expression((object[])data, match);
+                    return expression(data, match);
 
                 //case "method":
                 //    return method(data);
 
                 case "reference":
-                    return reference((object[])data, (Repetition_Match) match);
+                    return reference(data, (Repetition_Match) match);
 
                 case "long_block":
-                    return long_block((object[])data);
+                    return long_block(data);
 
                 case "set_property":
-                    return set_property((object[])data);
+                    return set_property(data);
 
                 case "new_scope":
-                    return new_scope((object[])data);
+                    return new_scope(data);
 
                 case "constraint_block":
-                    return constraint_block((object[])data);
+                    return constraint_block(data);
 
                 case "constraint":
-                    return constraint((object[])data);
+                    return constraint(data);
 
                 case "condition":
-                    return condition((object[])data);
+                    return condition(data);
 
                 case "conditions":
-                    return conditions((object[])data, match);
+                    return conditions(data, match);
 
                 case "condition_block":
-                    return condition_block((object[])data);
+                    return condition_block(data);
 
                 case "if":
-                    return if_statement((object[])data);
+                    return if_statement(data);
 
                 case "string":
-                    return ((object[])data)[1];
+                    return data.patterns[1].text;
 
                 case "bool":
-                    return (string)data == "true";
+                    return data.text == "true";
 
                 case "int":
-                    return int.Parse((string)data);
+                    return int.Parse(data.text);
 
                 case "value":
                     return value(data);
 
                 case "optional_block":
-                    return optional_block((object[])data);
+                    return optional_block(data);
 
                 case "set_weight":
-                    return set_weight((object[])data);
+                    return set_weight(data);
 
                 case "array":
-                    return array_expression((object[])data);
+                    return array_expression(data);
 
                 case "lambda":
-                    return lambda_expression((object[])data);
+                    return lambda_expression(data);
 
                 case "parameters":
-                    return parameters((object[])data);
+                    return parameters(data);
 
                 case "function_scope":
-                    return function_scope((object[])data);
+                    return function_scope(data);
 
                 //      default:
                 //        throw new Exception("Invalid parser method: " + name + ".");
@@ -124,44 +124,44 @@ namespace metahub.parser
             return data;
         }
 
-        static Parser_Block start(object[] data)
+        static Parser_Block start(Pattern_Source data)
         {
             return new Parser_Block
             {
                 type = "block",
-                expressions = (Parser_Item[])data[1]
+                expressions = data.patterns[1]
             };
         }
 
-        static Parser_Symbol create_symbol(object[] data)
+        static Parser_Symbol create_symbol(Pattern_Source data)
         {
             return new Parser_Symbol
             {
                 type = "symbol",
-                name = (string)data[2],
-                expression = (Parser_Item)data[6]
+                name = (string)data.patterns[2],
+                expression = (Parser_Item)data.patterns[6]
             };
         }
 
-        static object expression(object[] data, Match match)
+        static object expression(Pattern_Source data, Match match)
         {
-            if (data.Length < 2)
-                return data[0];
+            if (data.patterns.Length < 2)
+                return data.patterns[0];
 
             var rep_match = (Repetition_Match)match;
-            string op = (string)rep_match.dividers[0].matches[1].get_data().text;
+            string op = rep_match.dividers[0].matches[1].get_data().text;
 
             if (op == "|")
             {
-                var function_name = data.Last();
-                data = data.Take(data.Length - 1).ToArray();
+                var function_name = data.patterns.Last();
+                data = ;
                 var block = ((Parser_Block) function_name);
 
                 return new Parser_Function_Call
                     {
                         type = "function",
                         name = block.expressions[0].name,
-                        inputs = data
+                        inputs = data.patterns.Take(data.patterns.Length - 1).ToArray()
                     };
             }
             else
@@ -178,29 +178,29 @@ namespace metahub.parser
         //static object method (object data) {
         //    return {
         //type= "function",
-        //"name"= data[1],
+        //"name"= data.patterns[1],
         //"inputs"= []
         //}
         //}
 
-        static Parser_Condition condition(object[] data)
+        static Parser_Condition condition(Pattern_Source data)
         {
             return new Parser_Condition
                 {
                     type = "condition",
-                    first = (Parser_Item)data[0],
-                    op = ((object[])data[2])[0].ToString(),
-                    //"op"= Std.string(function_map[data[2][0]]),
-                    second = (Parser_Item)data[4]
+                    first = (Parser_Item)data.patterns[0],
+                    op = ((object[])data.patterns[2])[0].ToString(),
+                    //"op"= Std.string(function_map[data.patterns[2][0]]),
+                    second = (Parser_Item)data.patterns[4]
                 };
         }
 
-        static object optional_block(object[] data)
+        static object optional_block(Pattern_Source data)
         {
-            return data[1];
+            return data.patterns[1];
         }
 
-        static object conditions(object[] data, Match match)
+        static object conditions(Pattern_Source data, Match match)
         {
             var rep_match = (Repetition_Match)match;
             if (data.Length > 1)
@@ -228,71 +228,71 @@ namespace metahub.parser
             else
             {
                 //throw new Exception("Not implemented.");
-                return data[0];
+                return data.patterns[0];
             }
         }
 
-        static object condition_block(object[] data)
+        static object condition_block(Pattern_Source data)
         {
-            return data[2];
+            return data.patterns[2];
         }
 
-        static Parser_If if_statement(object[] data)
+        static Parser_If if_statement(Pattern_Source data)
         {
             return new Parser_If
                 {
                     type = "if",
-                    condition = (Parser_Condition)data[2],
-                    action = (Parser_Item)data[4]
+                    condition = (Parser_Condition)data.patterns[2],
+                    action = (Parser_Item)data.patterns[4]
                 };
         }
 
-        static Parser_Constraint create_constraint(object[] data)
+        static Parser_Constraint create_constraint(Pattern_Source data)
         {
             return new Parser_Constraint
             {
                 type = "specific_constraint",
-                path = (Parser_Item)data[0],
-                expression = (Parser_Item)data[4]
+                path = (Parser_Item)data.patterns[0],
+                expression = (Parser_Item)data.patterns[4]
             };
         }
 
         //static object create_node (object data) {
         //  object result = {
         //          type= "create_node",
-        //          trellis= data[2]
+        //          trellis= data.patterns[2]
         //  };
 
-        //  if (data[3] != null && data[3].Count > 0) {
-        //          result.block = data[3][0];
-        //    //result.set = data[4][0];
+        //  if (data.patterns[3] != null && data.patterns[3].Count > 0) {
+        //          result.block = data.patterns[3][0];
+        //    //result.set = data.patterns[4][0];
         //  }
 
         //  return result;
         //}
 
-        static object reference(object[] data, Repetition_Match match)
+        static object reference(Pattern_Source data, Repetition_Match match)
         {
             var dividers = match.dividers.Select((d) => d.matches[0].get_data());
             //
             //if (data.Count == 1) {
             //return {
             //type= "reference",
-            //path= [ data[0] ]
+            //path= [ data.patterns[0] ]
             //}
             //}
 
             var tokens = new List<Parser_Item>();
             throw new Exception();
-            //data[0].type == "array"
-            //? data[0]
+            //data.patterns[0].type == "array"
+            //? data.patterns[0]
             //: new Parser_Reference {
             //    type= "reference",
-            //    name= (string) data[0]
+            //    name= (string) data.patterns[0]
             //}			
             /*
               for (var i = 1; i <data.Length; ++i) {
-                  var token = data[i];
+                  var token = data.patterns[i];
                   var divider = dividers[i - 1];
                   if (divider == ".") {
                       tokens.Add({
@@ -318,25 +318,25 @@ namespace metahub.parser
             };
         }
 
-        static object long_block(object[] data)
+        static object long_block(Pattern_Source data)
         {
             return new Parser_Block
             {
                 type = "block",
-                expressions = (Parser_Item[])data[2]
+                expressions = (Parser_Item[])data.patterns[2]
             };
         }
 
-        static object set_property(object[] data)
+        static object set_property(Pattern_Source data)
         {
             var result = new Parser_Assignment
             {
                 type = "set_property",
-                path = (Parser_Item)data[0],
-                expression = (Parser_Item)data[6],
+                path = (Parser_Item)data.patterns[0],
+                expression = (Parser_Item)data.patterns[6],
             };
 
-            var modifier = (object[])data[4];
+            var modifier = (object[])data.patterns[4];
 
             if (modifier.Length > 0)
                 result.modifier = modifier[0].ToString();
@@ -344,13 +344,13 @@ namespace metahub.parser
             return result;
         }
 
-        static object set_weight(object[] data)
+        static object set_weight(Pattern_Source data)
         {
             return new Parser_Set_Weight
                 {
                     type = "weight",
-                    weight = (float)data[0],
-                    statement = (Parser_Item)data[4]
+                    weight = (float)data.patterns[0],
+                    statement = (Parser_Item)data.patterns[4]
                 };
         }
 
@@ -363,65 +363,65 @@ namespace metahub.parser
             };
         }
 
-        static object new_scope(object[] data)
+        static object new_scope(Pattern_Source data)
         {
             return new Parser_Scope
             {
                 type = "new_scope",
-                path = (string[])data[0],
-                expression = (Parser_Item)data[2]
+                path = (string[])data.patterns[0],
+                expression = (Parser_Item)data.patterns[2]
             };
         }
 
-        static object constraint_block(object[] data)
+        static object constraint_block(Pattern_Source data)
         {
-            return data[2];
+            return data.patterns[2];
         }
 
-        static object constraint(object[] data)
+        static object constraint(Pattern_Source data)
         {
             return new Parser_Constraint
             {
                 type = "constraint",
-                reference = (Parser_Item)data[0],
-                //op= Std.string(function_map[data[2]]),
-                op = (string)data[2],
-                expression = (Parser_Item)data[4],
-                lambda = (Parser_Lambda) ((object[])data[5])[0]
+                reference = (Parser_Item)data.patterns[0],
+                //op= Std.string(function_map[data.patterns[2]]),
+                op = (string)data.patterns[2],
+                expression = (Parser_Item)data.patterns[4],
+                lambda = (Parser_Lambda) ((object[])data.patterns[5])[0]
             };
         }
 
-        static object array_expression(object[] data)
+        static object array_expression(Pattern_Source data)
         {
             return new Parser_Block
             {
                 type = "array",
-                expressions = (Parser_Item[])data[2]
+                expressions = (Parser_Item[])data.patterns[2]
             };
         }
 
-        static object lambda_expression(object[] data)
+        static object lambda_expression(Pattern_Source data)
         {
             return new Parser_Lambda
             {
                 type = "lambda",
-                parameters = (string[])data[1],
-                expressions = ((Parser_Block)data[3]).expressions
+                parameters = (string[])data.patterns[1],
+                expressions = ((Parser_Block)data.patterns[3]).expressions
             };
         }
 
-        static object parameters(object[] data)
+        static object parameters(Pattern_Source data)
         {
-            return data[2];
+            return data.patterns[2];
         }
 
-        static object function_scope(object[] data)
+        static object function_scope(Pattern_Source data)
         {
             return new Parser_Function_Scope
             {
                 type = "function_scope",
-                expression =(Parser_Item) data[0],
-                lambda =(Parser_Lambda) data[1]
+                expression =(Parser_Item) data.patterns[0],
+                lambda =(Parser_Lambda) data.patterns[1]
             };
         }
 

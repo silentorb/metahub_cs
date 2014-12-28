@@ -44,7 +44,7 @@ namespace metahub.parser
             return result;
         }
 
-        virtual public object perform_action(string name, object data, Match match)
+        virtual public object perform_action(string name, Pattern_Source data, Match match)
         {
             return null;
         }

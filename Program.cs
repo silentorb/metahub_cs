@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using Newtonsoft.Json;
+using metahub.lab;
 using metahub.parser;
 using metahub.parser.types;
 
@@ -36,6 +37,7 @@ namespace metahub
             }
 
             var result = hub.parse_code(code);
+            Debug_Info.output(result);
             if (!result.success)
                 throw new Exception("Syntax Error at " + result.end.y + ":" + result.end.x);
 

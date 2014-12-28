@@ -12,7 +12,7 @@ namespace metahub.parser
         {
             text = "\\G" + text;
 
-            regex = new Regex(text);
+            regex = new Regex(text, RegexOptions.Singleline);
             this.text = text;
         }
 

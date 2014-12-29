@@ -34,7 +34,7 @@ public class Cpp : Target{
 
     private static Dictionary<string, string> types = new Dictionary<string, string>
         {
-            {"string", "std,,string"},
+            {"string", "std::string"},
             {"int", "int"},
             {"bool", "bool"},
             {"float", "float"},
@@ -103,7 +103,9 @@ public class Cpp : Target{
 
 	void pop_scope () {
 		scopes.RemoveAt(scopes.Count - 1);
-		current_scope = scopes[scopes.Count - 1];
+		current_scope = scopes.Count > 0 
+            ? scopes[scopes.Count - 1]
+            : null;
 	}
 
 	void create_header_file (Dungeon dungeon, string dir) {
@@ -413,7 +415,7 @@ public class Cpp : Target{
     string get_property_type_string (Tie tie, bool is_parameter = false) {
 		var other_rail = tie.other_rail;
 		if (other_rail == null)
-			return types[tie.property.type.ToString()];
+			return types[tie.property.type.ToString().ToLower()];
 
 		var other_name = get_rail_type_string(other_rail);
 		if (tie.property.type == Kind.reference) {

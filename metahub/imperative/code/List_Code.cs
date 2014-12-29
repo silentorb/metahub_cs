@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using metahub.imperative.types;
 using metahub.logic.schema;
+using metahub.meta;
 using metahub.meta.types;
 using metahub.schema;
 using Constraint = metahub.logic.schema.Constraint;
@@ -74,7 +75,7 @@ public class List_Code
 	public static void map (Constraint constraint, Node expression, Imp imp) {
 		var start = Parse.get_path(constraint.reference).First();
 		var end = Parse.get_end_tie(constraint.reference);
-		var path = (Reference_Path)constraint.expression;
+		var path = (Property_Reference)constraint.expression;
 
 		var a = Parse.get_path(constraint.reference);
 		var b = Parse.get_path(path);
@@ -142,11 +143,12 @@ public class List_Code
 		var rail = reference.other_rail;
 		Rail local_rail = reference.rail;
 		const string child = "child";
+        var scope = new metahub.meta.Scope();
 		Flow_Control flow_control = new Flow_Control("while", new Condition("<",
 		new List<Expression>{
-				imp.translate(constraint.reference),
+				imp.translate(constraint.reference, scope),
 				//{ type: "path", path: constraint.reference },
-				imp.translate(expression)
+				imp.translate(expression, scope)
         }),new List<Expression> {
 			new Declare_Variable(child,new Signature {
 					type = Kind.reference,

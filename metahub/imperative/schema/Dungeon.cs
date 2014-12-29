@@ -219,7 +219,8 @@ public class Dungeon
 					used_functions[definition.name] = new Used_Function(definition.name, definition.is_platform_specific);
 				
 				foreach (var arg in definition.args) {
-                    throw new Exception("Not implemented.");
+                    post_analyze(arg);
+                    //throw new Exception("Not implemented.");
                     //if (arg.ContainsKey("type"))
                     //    post_analyze(arg);
 				}

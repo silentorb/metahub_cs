@@ -9,5 +9,10 @@ namespace metahub.meta.types
         {
             this.value = value;
         }
+
+        public float get_float()
+        {
+            return value is int ? (int)value : (float)value;
+        }
     }
 }

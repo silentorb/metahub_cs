@@ -26,7 +26,7 @@ namespace metahub {
 public class Hub {
   public Schema schema;
   public Definition parser_definition;
-	static Regex remove_comments = new Regex("/#[^\n]*");
+	static Regex remove_comments = new Regex("#[^\n]*");
 	public Namespace metahub_namespace;
 	public int max_steps = 100;
 
@@ -74,6 +74,13 @@ public class Hub {
 		if (data.is_external.HasValue && data.is_external.Value)
 			space.is_external = true;
 
+        if (data.targets != null)
+        {
+            foreach (var target in data.targets)
+            {
+                space.additional[target.Key] = target.Value;
+            }
+        }
         //foreach (var key in data.Keys) {
         //    if (key == "trellises")
         //        continue;

@@ -30,7 +30,10 @@ namespace metahub.render
         public Renderer unindent()
         {
             --depth;
-            indentation = indentation.Substring(0, indentation.Length - 1);
+            indentation = indentation.Length > 1
+                ? indentation.Substring(0, indentation.Length - 1)
+                : "";
+
             return this;
         }
 

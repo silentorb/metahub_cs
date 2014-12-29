@@ -57,7 +57,7 @@ namespace metahub.parser
             if (data.type == null)
                 data.type = match.pattern.name;
 
-            Console.WriteLine(data.type ?? "null", match.pattern.name);
+            //Console.WriteLine(data.type ?? "null", match.pattern.name);
 
             return data;
             //switch (match.pattern.name)

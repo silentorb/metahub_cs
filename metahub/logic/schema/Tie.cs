@@ -181,8 +181,7 @@ namespace metahub.logic.schema
 
         static float get_expression_float(Node expression)
         {
-            var conversion = (Literal_Value)expression;
-            return (float)conversion.value;
+            return ((Literal_Value)expression).get_float();
         }
 
         public Rail get_abstract_rail()

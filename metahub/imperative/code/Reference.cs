@@ -43,7 +43,7 @@ public class Reference
     static List<Expression> generate_constraint(Expression reference, string op, Literal_Value literal)
     {
 		var inverse = inverse_operators[op];
-		float limit = (float)literal.value;
+        float limit = literal.get_float();
 
 		const float min = 0.0001f;
 		float value = 0;

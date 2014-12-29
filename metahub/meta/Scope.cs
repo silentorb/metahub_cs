@@ -17,7 +17,7 @@ public class Scope {
 			rail = parent.rail;
 	}
 
-	public object find (string name) {
+	public Signature find (string name) {
 		if (variables.ContainsKey(name))
 			return variables[name];
 

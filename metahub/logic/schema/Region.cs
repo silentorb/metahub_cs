@@ -1,6 +1,7 @@
 
 using System;
 using System.Collections.Generic;
+using Newtonsoft.Json;
 using metahub.schema;
 
 /**
@@ -14,6 +15,8 @@ namespace metahub.logic.schema
     public class Region_Additional
     {
         public bool? is_external;
+
+        [JsonProperty("namespace")]
         public string space;
         public string class_export;
         public Dictionary<string, Rail_Additional> trellises;

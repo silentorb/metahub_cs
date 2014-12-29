@@ -53,6 +53,12 @@ namespace metahub.meta
                 case "int":
                     return new Literal_Value(int.Parse(source.text));
 
+                case "id":
+                    {
+                        Tie tie = scope.rail.get_tie_or_error(source.text);
+                        return new Property_Reference(tie);
+                    }
+
                 case "reference":
                     return source.patterns.Length < 2
                         ? convert_expression(source.patterns[0], null, scope)
@@ -191,11 +197,12 @@ namespace metahub.meta
                         var variable = scope.find(item.text);
                         if (variable != null)
                         {
-                            previous = new Variable(item.text);
-                            //if (variable.rail == null)
+                            previous = new Variable(item.text, variable);
+                            if (variable.rail != null)
+                                rail = variable.rail;
                             //    throw new Exception("");
                             //rail = variable.rail;
-                            throw new Exception("Not implemented");
+                            //throw new Exception("Not implemented");
                         }
                         else
                         {

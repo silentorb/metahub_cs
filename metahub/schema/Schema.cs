@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using metahub.logic.schema;
 
 namespace metahub.schema
 {
@@ -8,6 +9,7 @@ namespace metahub.schema
     {
         public bool? is_external;
         public Dictionary<string, ITrellis_Source> trellises;
+        public Dictionary<string, Region_Additional> targets;
     }
 
     public class Schema

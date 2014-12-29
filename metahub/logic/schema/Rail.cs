@@ -18,7 +18,7 @@ namespace metahub.logic.schema
         public string class_export;
         public Dictionary<string, string[]> inserts;
         public object default_value;
-        public Dictionary<string, string> hooks;
+        public Dictionary<string, object> hooks;
         public List<string> stubs;
         public Dictionary<string, Tie_Addition> properties;
     }
@@ -47,10 +47,8 @@ namespace metahub.logic.schema
         {
             this.trellis = trellis;
             this.railway = railway;
-            rail_name = this.name = trellis.name;
-            region = railway.regions[trellis.space.
-            name]
-            ;
+            rail_name = name = trellis.name;
+            region = railway.regions[trellis.space.name];
             is_external = region.is_external;
             class_export = region.class_export;
             load_additional();

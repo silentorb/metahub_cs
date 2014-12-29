@@ -28,7 +28,7 @@ namespace metahub.schema
             if (root_namespace.children.ContainsKey(name))
                 return root_namespace.children[name];
 
-            Namespace space = new Namespace(name, name);
+            var space = new Namespace(name, name);
             root_namespace.children[name] = space;
             space.parent = root_namespace;
             return space;

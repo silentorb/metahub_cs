@@ -12,8 +12,8 @@ namespace metahub.imperative.types
         public Dungeon dungeon;
         public Rail rail;
 
-        public Function_Definition(string name, Dungeon dungeon, List<Parameter> parameters, IEnumerable<Expression> expressions, Signature return_type = null)
-            : base(parameters, expressions.ToList(), return_type)
+        public Function_Definition(string name, Dungeon dungeon, List<Parameter> parameters, List<Expression> expressions, Signature return_type = null)
+            : base(parameters, expressions, return_type)
         {
             this.name = name;
             this.dungeon = dungeon;

@@ -159,7 +159,8 @@ public class List_Code
 			new Function_Call(reference.tie_name + "_add",
 			new List<Expression> {new Variable(child), new Null_Value()})
 	});
-		imp.get_dungeon(local_rail).add_to_block("initialize", flow_control);
+	    var dungeon = imp.get_dungeon(local_rail);
+		dungeon.add_to_block("initialize", flow_control);
 	}
 
 }}

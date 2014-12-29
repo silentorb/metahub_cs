@@ -10,7 +10,7 @@ namespace metahub.logic.schema
 {
     public class Tie_Hooks
     {
-        public string set_post;
+        public object set_post;
     }
 
     public class Tie_Addition

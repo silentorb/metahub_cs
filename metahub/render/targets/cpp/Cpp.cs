@@ -77,14 +77,16 @@ public class Cpp : Target{
 				scalars.Add(tie);
 		}
 
+        var block = references.Select((tie) => new Assignment(
+            new Property_Expression(tie), "=", new Null_Value()))
+            .Union(scalars.Select((tie) => new Assignment(
+            new Property_Expression(tie), "=",
+            new Literal(tie.get_default_value(),
+                        tie.get_signature())))
+            );
+
 		Function_Definition func = new Function_Definition(rail.rail_name, dungeon, new List<imperative.types.Parameter>(), 
-			references.Select((tie)=> new Assignment(
-				new Property_Expression(tie), "=", new Null_Value())				
-			)
-			.Union(scalars.Select((tie)=> new Assignment(
-				new Property_Expression(tie), "=", new Literal(tie.get_default_value(), tie.get_signature())))
-			)
-		);
+		    ((IEnumerable<Expression>)block).ToList());
 		func.return_type = null;
 		root.Add(func);
 		func = new Function_Definition("~" + rail.rail_name, dungeon, new List<imperative.types.Parameter>(), 

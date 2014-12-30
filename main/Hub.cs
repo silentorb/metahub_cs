@@ -91,10 +91,10 @@ namespace metahub
             }
         }
 
-        public Node run_data(Pattern_Source source, Railway railway)
+        public void run_data(Pattern_Source source, Railway railway, Logician logician)
         {
-            Coder coder = new Coder(railway);
-            return coder.convert_statement(source, null);
+            Coder coder = new Coder(railway, logician);
+            coder.convert_statement(source, null);
         }
 
         public Result parse_code(string code)
@@ -120,10 +120,11 @@ namespace metahub
         public void generate(Pattern_Source source, string target_name, string destination)
         {
             Imp imp = new Imp(this, target_name);
-            var root = run_data(source, imp.railway);
+            var logician = new Logician();
+            run_data(source, imp.railway, logician);
             Generator generator = new Generator(this);
             var target = generator.create_target(imp, target_name);
-            imp.run(root, target);
+            imp.run(logician, target);
             generator.run(target, destination);
         }
 

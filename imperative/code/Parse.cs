@@ -32,6 +32,24 @@ namespace metahub.imperative.code
             throw new Exception("Could not find property inside Node path.");
         }
 
+        public static Tie get_end_tie(Node[] path)
+        {
+            var i = path.Length;
+            while (--i >= 0)
+            {
+                var token = path[i] as Property_Reference;
+                if (token == null)
+                    continue;
+
+                if (!token.tie.rail.trellis.is_value)
+                    return token.tie;
+            }
+
+            //throw new Exception("Could not find property inside Node path.");
+            return null;
+        }
+
+
         //public static Tie get_end_tie (Node Node) {
         //Reference_Path path = Node;
         //var i = path.children.Count;

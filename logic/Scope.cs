@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using metahub.logic.schema;
+using metahub.logic.types;
 
 namespace metahub.logic {
 /**
@@ -10,6 +11,8 @@ public class Scope {
 	public Rail rail;
 	public Scope parent;
 	public Dictionary<string, Signature> variables = new Dictionary<string, Signature>();
+    public bool is_map = false;
+    public Node[] caller;
 
 	public Scope(Scope parent = null) {
 		this.parent = parent;

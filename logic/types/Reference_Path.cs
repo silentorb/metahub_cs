@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using metahub.logic.schema;
 
 namespace metahub.logic.types
@@ -8,10 +9,10 @@ namespace metahub.logic.types
     {
         public List<Node> children;
 
-        public Reference_Path(List<Node> children)
+        public Reference_Path(IEnumerable<Node> children)
             : base(Node_Type.path)
         {
-            this.children = children;
+            this.children = children.ToList();
         }
 
         override public Signature get_signature()

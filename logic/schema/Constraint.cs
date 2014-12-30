@@ -2,29 +2,25 @@ using System.Collections.Generic;
 using metahub.imperative;
 using metahub.logic.types;
 
-//import metahub.logic.schema.Signature;
-//import metahub.imperative.types.Node;
+namespace metahub.logic.schema
+{
+    public class Constraint
+    {
+        public Node[] first;
+        public Node[] second;
+        public bool is_back_referencing = false;
+        public string op;
+        public List<Constraint> other_constraints = new List<Constraint>();
+        public Lambda lambda;
+        public Node[] caller;
 
-/**
- * ...
- * @author Christopher W. Johnson
- */
-namespace metahub.logic.schema {
-public class Constraint {
-  public Node reference;
-  public Node expression;
-	public bool is_back_referencing = false;
-	public string op;
-	public List<Constraint> other_constraints = new List<Constraint>();
-	public Lambda lambda;
-	//public List<Node> block = null;
-
-	public Constraint(metahub.logic.types.Constraint expression, Imp imp) {
-		op = expression.op;
-		reference = expression.first;
-		this.expression = expression.second;
-		this.lambda = expression.lambda;
-	}
-
-}
+        public Constraint(Node[] first, Node[] second, string op, Lambda lambda, Node[] caller)
+        {
+            this.op = op;
+            this.first = first;
+            this.second = second;
+            this.lambda = lambda;
+            this.caller = caller;
+        }
+    }
 }

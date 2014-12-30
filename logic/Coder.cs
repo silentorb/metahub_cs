@@ -1,13 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using metahub.imperative.code;
 using metahub.logic.schema;
 using metahub.logic.types;
 using metahub.parser;
 using metahub.parser.types;
 using metahub.schema;
-using Constraint = metahub.logic.types.Constraint;
 
 
 namespace metahub.logic
@@ -22,10 +20,12 @@ namespace metahub.logic
     public class Coder
     {
         Railway railway;
+        Logician logician;
 
-        public Coder(Railway railway)
+        public Coder(Railway railway, Logician logician)
         {
             this.railway = railway;
+            this.logician = logician;
         }
 
         public Node convert_expression(Pattern_Source source, Node previous, Scope scope)
@@ -39,7 +39,7 @@ namespace metahub.logic
                     return create_literal(source, scope);
 
                 case "path":
-                    return create_path(source, previous, scope);
+                    return new Reference_Path(create_path(source, previous, scope));
 
                 case "function":
                     throw new Exception("Not supported.");
@@ -51,7 +51,7 @@ namespace metahub.logic
                     return process_expression(source, scope);
 
                 case "int":
-                    return new Literal_Value(int.Parse(source.text));
+                    return new Literal_Value(int.Parse(source.text), Kind.Int);
 
                 case "id":
                     {
@@ -62,7 +62,7 @@ namespace metahub.logic
                 case "reference":
                     return source.patterns.Length < 2
                         ? convert_expression(source.patterns[0], null, scope)
-                        : create_path(source, previous, scope);
+                        : new Reference_Path(create_path(source, previous, scope));
             }
 
             throw new Exception("Invalid block: " + source.type);
@@ -99,21 +99,27 @@ namespace metahub.logic
         Node constraint(Pattern_Source source, Scope scope)
         {
             //var reference = Reference.from_scope(source.path, scope);
-            var reference = convert_expression(source.patterns[0], null, scope);
-            Node back_reference = null;
+            var reference = create_path(source.patterns[0], null, scope);
+            Node[] back_reference = null;
             var operator_name = source.patterns[2].text;
             if (new List<string> { "+=", "-=", "*=", "/=" }.Contains(operator_name))
             {
                 //operator_name = operator_name.substring(0, operator_name.Count - 7);
                 back_reference = reference;
             }
-            var expression = Parse.resolve(convert_expression(source.patterns[4], null, scope));
+            var expression = create_path(source.patterns[4], null, scope);
             var lambda_array = source.patterns[5].patterns;
-            var lambda = lambda_array != null && lambda_array.Length > 0 ? lambda_array[0] : null;
+            var lambda_source = lambda_array != null && lambda_array.Length > 0 ? lambda_array[0] : null;
+            var lambda = lambda_source != null
+                ? create_lambda(lambda_source, scope, new List<Node[]> { reference, expression })
+                : null;
 
-            return new Constraint(reference, expression, operator_name,
-                lambda != null ? create_lambda(lambda, scope, new List<Node> { reference, expression }) : null
-            );
+            //return new Constraint(reference, expression, operator_name,
+            //    lambda != null ? create_lambda(lambda, scope, new List<Node> { reference, expression }) : null
+            //);
+            var constraint = logician.create_constraint(reference, expression, operator_name, lambda, scope);
+
+            return new Constraint_Wrapper(constraint);
         }
 
         Node create_block(Pattern_Source[] expressions, Scope scope)
@@ -142,32 +148,15 @@ namespace metahub.logic
         {
             var type = get_type(source.value);
             //return new metahub.code.expressions.Literal(source.value, type);
-            return new Literal_Value(source.value);
+            return new Literal_Value(source.value, Kind.unknown);
         }
-        /*
-      Node function_expression(Pattern_Source source, Scope scope, string name, Node previous)
-      {
-        var expressions = source.inputs;
-            if (source.inputs.Length > 0)
-                throw new Exception("Not supported.");
 
-        //var inputs = Lambda.array(Lambda.map(expressions, (e)=> convert_expression(e, scope)));
-
-            return new Function_Call(name, previous, railway);
-            //var info = Function_Call.get_function_info(name, hub);
-        //return new metahub.code.expressions.Function_Call(name, info, inputs, hub);
-      }
-        */
-        //List<string> extract_path (object path) {
-        //    List<string> result = new List<string>();
-        //    for (var i = 1; i < path) {
-        //        result.Add(path[i]);
-        //    }
-
-        //    return result;
+        //Node[] to_path(Pattern_Source source, Node previous, Scope scope)
+        //{
+        //    return create_path(source, previous, scope).children;
         //}
 
-        Node create_path(Pattern_Source source, Node previous, Scope scope)
+        Node[] create_path(Pattern_Source source, Node previous, Scope scope)
         {
             Rail rail = scope.rail;
             Node expression = null;
@@ -176,7 +165,8 @@ namespace metahub.logic
             if (expressions.Length == 0)
                 throw new Exception("Empty reference path.");
 
-            if (expressions[0].type == "reference" && rail.get_tie_or_null(expressions[0].text) == null
+            if (expressions[0].type == "reference" && expressions[0].text != null 
+                && rail.get_tie_or_null(expressions[0].text) == null
                 && scope.find(expressions[0].text) == null)
             {
                 throw new Exception("Not supported.");
@@ -194,22 +184,32 @@ namespace metahub.logic
 
                     case "id":
                     case "reference":
-                        var variable = scope.find(item.text);
-                        if (variable != null)
+                        if (item.text != null)
                         {
-                            previous = new Variable(item.text, variable);
-                            if (variable.rail != null)
+                            var variable = scope.find(item.text);
+                            if (variable != null)
+                            {
+                                previous = new Variable(item.text, variable);
+                                if (variable.rail == null)
+                                    throw new Exception("variable rail cannot be null.");
+
                                 rail = variable.rail;
-                            //    throw new Exception("");
-                            //rail = variable.rail;
-                            //throw new Exception("Not implemented");
+                                //    throw new Exception("");
+                                //rail = variable.rail;
+                                //throw new Exception("Not implemented");
+                            }
+                            else
+                            {
+                                Tie tie = rail.get_tie_or_error(item.text);
+                                previous = new Property_Reference(tie);
+                                if (tie.other_rail != null)
+                                    rail = tie.other_rail;
+                            }
                         }
                         else
                         {
-                            Tie tie = rail.get_tie_or_error(item.text);
-                            previous = new Property_Reference(tie);
-                            if (tie.other_rail != null)
-                                rail = tie.other_rail;
+                            children.AddRange(create_path(item, previous, scope));
+                            previous = null;
                         }
                         break;
 
@@ -220,13 +220,19 @@ namespace metahub.logic
                         previous = new Array_Expression(sub_array);
                         break;
 
+                    case "int":
+                        previous = new Literal_Value(int.Parse(item.text), Kind.Int);
+                        break;
+
                     default:
                         throw new Exception("Invalid path token type: " + item.type);
                 }
 
-                children.Add(previous);
+                if (previous != null)
+                    children.Add(previous);
             }
-            return new Reference_Path(children);
+
+            return children.ToArray();
         }
 
         static Signature get_type(object value)
@@ -276,15 +282,6 @@ namespace metahub.logic
             expression = convert_statement(source.patterns[2], new_scope);
             //return new Scope_Expression(Node, new_scope_definition);
             return new Scope_Expression(new_scope, new List<Node> { expression });
-            //}
-            //else {
-            //throw new Exception("Not implemented.");
-            ////var symbol = scope.find(source.path);
-            ////new_scope_definition.symbol = symbol;
-            ////new_scope_definition.trellis = symbol.get_trellis();
-            ////Node = convert_statement(source.Node, new_scope_definition);
-            ////return new Node_Scope(Node, new_scope_definition);
-            //}
         }
 
         //Node weight (object source, Scope scope) {
@@ -296,17 +293,18 @@ namespace metahub.logic
             return new Block(source.patterns.Select((e) => convert_expression(e, null, scope)));
         }
 
-        Lambda create_lambda(Pattern_Source source, Scope scope, List<Node> constraint_expressions)
+        Lambda create_lambda(Pattern_Source source, Scope scope, List<Node[]> constraint_expressions)
         {
             var expressions = source.patterns[3].patterns;
             Scope new_scope = new Scope(scope);
+            new_scope.is_map = true;
             var parameters = source.patterns[1].patterns;
             int i = 0;
             foreach (var parameter in parameters)
             {
                 var expression = constraint_expressions[i];
-                var path = Parse.normalize_path(expression);
-                new_scope.variables[parameter.text] = path[path.Count - 1].get_signature();
+                var path = expression;
+                new_scope.variables[parameter.text] = get_path_signature(path);
                 ++i;
             }
 
@@ -317,12 +315,16 @@ namespace metahub.logic
 
         Node function_scope(Pattern_Source source, Scope scope)
         {
-            var expression = convert_expression(source.patterns[0], null, scope);
-            var path = (Reference_Path)expression;
-            var token = path.children[path.children.Count - 2];
-            return new Function_Scope(expression,
-                create_lambda(source.patterns[1], scope, new List<Node> { token, token })
-            );
+            var expression = create_path(source.patterns[0], null, scope);
+            //var path = (Reference_Path)expression;
+            //var token = path.children[path.children.Count - 2];
+            var lambda = create_lambda(source.patterns[1], scope, new List<Node[]> { expression, expression });
+            foreach (Constraint_Wrapper wrapper in lambda.expressions)
+            {
+                wrapper.constraint.caller = expression;
+                logician.constraints.Add(wrapper.constraint);
+            }
+            return new Function_Scope(expression, lambda);
         }
 
         Node process_expression(Pattern_Source source, Scope scope)
@@ -357,6 +359,22 @@ namespace metahub.logic
             //            inputs = data
             //        };
             //}
+        }
+
+        static Signature get_path_signature(Node[] path)
+        {
+            var i = path.Length;
+            while (--i >= 0)
+            {
+                var token = path[i] as Property_Reference;
+                if (token == null)
+                    continue;
+
+                if (!token.tie.rail.trellis.is_value)
+                    return token.tie.get_signature();
+            }
+
+            throw new Exception("Could not find signature.");
         }
 
     }

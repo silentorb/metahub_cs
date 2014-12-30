@@ -26,18 +26,19 @@ public class Reference
 	public static List<Expression> constraint (Constraint constraint, Imp imp) {
 		var op = constraint.op;
         //return new List<Expression>();
-		var reference = imp.translate(constraint.reference);
+		var reference = imp.convert_path(constraint.first, null);
+
+        //if (constraint.first.)
 
 		if (op == "in") {
-			var args = (metahub.logic.types.Block)constraint.expression;
-            return generate_constraint(reference, ">=", (Literal_Value)args.children[0])
+			var args =((Array_Expression) constraint.second[0]).children;
+            return generate_constraint(reference, ">=", (Literal_Value)args[0])
 			.Union(
-                generate_constraint(reference, "<=", (Literal_Value)args.children[1])
+                generate_constraint(reference, "<=", (Literal_Value)args[1])
 			).ToList();
 		}
 
-		return generate_constraint(reference, constraint.op, (Literal_Value)constraint.expression);
-
+		return generate_constraint(reference, constraint.op, (Literal_Value)constraint.second.First());
 	}
 
     static List<Expression> generate_constraint(Expression reference, string op, Literal_Value literal)

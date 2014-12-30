@@ -698,7 +698,7 @@ public class Cpp : Target{
                     float min = (float)((Literal)expression.args[0]).value;
                     float max = (float)((Literal)expression.args[1]).value;
 					return "rand() % " + (max - min) + (min < 0 ? " - " + -min : " + " + min);						
-					
+
 				default:
 					throw new Exception("Unsupported platform-specific function: " + expression.name + ".");
 			}

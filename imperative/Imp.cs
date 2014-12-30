@@ -4,6 +4,7 @@ using System.Linq;
 using metahub.imperative.code;
 using metahub.imperative.schema;
 using metahub.imperative.types;
+using metahub.logic;
 using metahub.logic.schema;
 using metahub.render;
 using metahub.schema;
@@ -18,7 +19,6 @@ namespace metahub.imperative
     public class Imp
     {
         public Railway railway;
-        public List<Constraint> constraints = new List<Constraint>();
         public List<Dungeon> dungeons = new List<Dungeon>();
         Dictionary<Rail, Dungeon> rail_map = new Dictionary<Rail, Dungeon>();
 
@@ -27,12 +27,12 @@ namespace metahub.imperative
             railway = new Railway(hub, target_name);
         }
 
-        public void run(metahub.logic.types.Node root, Target target)
+        public void run(Logician logician, Target target)
         {
-            process(root, null);
+            //process(root, null);
             generate_code(target);
 
-            foreach (var constraint in constraints)
+            foreach (var constraint in logician.constraints)
             {
                 implement_constraint(constraint);
             }
@@ -100,75 +100,6 @@ namespace metahub.imperative
             return rail_map[rail];
         }
 
-        public void process(Node expression, Scope scope)
-        {
-            switch (expression.type)
-            {
-                case Node_Type.scope:
-                    scope_expression((metahub.logic.types.Scope_Expression)expression, scope);
-                    break;
-
-                case Node_Type.block:
-                    block_expression(((metahub.logic.types.Block)expression).children, scope);
-                    break;
-
-                case Node_Type.constraint:
-                    create_constraint((metahub.logic.types.Constraint)expression, scope);
-                    break;
-
-                case Node_Type.function_scope:
-                    function_scope((metahub.logic.types.Function_Scope)expression, scope);
-                    break;
-
-                case metahub.logic.types.Node_Type.path:
-                    block_expression(((metahub.logic.types.Reference_Path)expression).children, scope);
-                    break;
-
-                case Node_Type.property:
-                case Node_Type.function_call:
-                    break;
-
-                default:
-                    throw new Exception("Cannot process Node of type :" + expression.type + ".");
-            }
-        }
-
-        void scope_expression(metahub.logic.types.Scope_Expression expression, Scope scope)
-        {
-            //Scope new_scope = new Scope(scope.hub, Node.scope_definition, scope);
-            foreach (var child in expression.children)
-            {
-                process(child, expression.scope);
-            }
-        }
-
-        void block_expression(IEnumerable<Node> expressions, Scope scope)
-        {
-            foreach (var child in expressions)
-            {
-                process(child, scope);
-            }
-        }
-
-        void function_scope(metahub.logic.types.Function_Scope expression, Scope scope)
-        {
-            process(expression.expression, scope);
-            foreach (var child in expression.lambda.expressions)
-            {
-                process(child, expression.lambda.scope);
-            }
-        }
-
-        void create_constraint(metahub.logic.types.Constraint expression, Scope scope)
-        {
-            var rail = scope.rail;
-            metahub.logic.schema.Constraint constraint = new metahub.logic.schema.Constraint(expression, this);
-            var tie = Parse.get_end_tie(constraint.reference);
-            //trace("tie", tie.rail.name + "." + tie.name);
-            tie.constraints.Add(constraint);
-            constraints.Add(constraint);
-        }
-
         //Node create_lambda_constraint (metahub Node.meta.types.Constraint, Scope scope) {
         //throw "";
         //var rail = get_rail(scope.trellis);
@@ -187,7 +118,9 @@ namespace metahub.imperative
 
         public void implement_constraint(Constraint constraint)
         {
-            var tie = Parse.get_end_tie(constraint.reference);
+            var tie = Parse.get_end_tie(constraint.first);
+            if (tie == null)
+                return;
 
             if (tie.type == Kind.list)
             {
@@ -213,7 +146,7 @@ namespace metahub.imperative
                     throw new Exception("Not implemented.");
 
                 case Node_Type.path:
-                    return convert_path((metahub.logic.types.Reference_Path)expression, scope);
+                    return convert_path(((metahub.logic.types.Reference_Path)expression).children, scope);
 
                 case Node_Type.array:
                     return new Create_Array(translate_many(((metahub.logic.types.Array_Expression)expression).children, scope));
@@ -232,8 +165,11 @@ namespace metahub.imperative
                 //case metahub.logic.types.Expression_Type.constraint:
                 //return create_lambda_constraint(Node, scope);
 
+                case Node_Type.property:
+                    return convert_path(new List<Node> {expression});
+
                 default:
-                    throw new Exception("Cannot convert Node " + expression.type + ".");
+                    throw new Exception("Cannot convert node " + expression.type + ".");
             }
         }
 
@@ -242,9 +178,27 @@ namespace metahub.imperative
             return nodes.Select(n => translate(n, scope));
         }
 
-        public Expression convert_path(metahub.logic.types.Reference_Path expression, Scope scope = null)
+        public Expression convert_path(Node[] path, Scope scope)
         {
-            var path = expression.children;
+            if (path.Length == 0)
+                throw new Exception("Cannot convert empty path.");
+
+            if (path.Length == 1)
+                return translate(path[0], scope);
+
+            return package_path(translate_many(path, scope));
+        }
+
+        Expression package_path(IEnumerable<Expression> path)
+        {
+            if (path.Count() == 1)
+                return path.First();
+
+            return new Path(path);  
+        }
+
+        public Expression convert_path(List<metahub.logic.types.Node> path, Scope scope = null)
+        {
             List<Expression> result = new List<Expression>();
             Rail rail = null;
 
@@ -290,8 +244,12 @@ namespace metahub.imperative
                         throw new Exception("Invalid path token: " + token.type);
                 }
             }
-            return new metahub.imperative.types.Path(result);
+            return package_path(result);
         }
 
+        public static Node[] simplify_path(Node[] path)
+        {
+            return path.Where(t => t.type == Node_Type.property).ToArray();
+        }
     }
 }

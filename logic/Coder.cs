@@ -216,7 +216,7 @@ namespace metahub.logic
                     case "array":
                         var items = (item).patterns;
                         Node token = null;
-                        var sub_array = items.Select(i => convert_expression(i, token, scope)).ToList();
+                        var sub_array = items.Select(i => convert_expression(i, token, scope)).ToArray();
                         previous = new Array_Expression(sub_array);
                         break;
 

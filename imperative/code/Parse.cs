@@ -49,6 +49,40 @@ namespace metahub.imperative.code
             return null;
         }
 
+        public static List<Tie> get_endpoints(Node[] path)
+        {
+            var i = path.Length;
+            while (--i >= 0)
+            {
+                var token = path[i];
+                switch (token.type)
+                {
+                    case Node_Type.property:
+                        var prop = (Property_Reference)token;
+                        if (!prop.tie.rail.trellis.is_value)
+                            return new List<Tie> { prop.tie };
+
+                        break;
+
+                    case Node_Type.array:
+                        var result = new List<Tie>();
+                        foreach (var t in ((Array_Expression)token).children)
+                        {
+                            result.AddRange(get_endpoints(new Node[] { t }));
+                        }
+                        return result;
+
+                    case Node_Type.path:
+                        return get_endpoints(((Reference_Path)token).children.ToArray());
+                        break;
+                }
+
+            }
+
+            return new List<Tie>();
+            //throw new Exception("Could not find endpo inside Node path.");
+        }
+
 
         //public static Tie get_end_tie (Node Node) {
         //Reference_Path path = Node;
@@ -93,7 +127,7 @@ namespace metahub.imperative.code
             }
         }
 
-        public static List<Tie> get_path_from_array(List<Node> expressions)
+        public static List<Tie> get_path_from_array(IEnumerable<Node> expressions)
         {
             List<Tie> result = new List<Tie>();
             foreach (var token in expressions)

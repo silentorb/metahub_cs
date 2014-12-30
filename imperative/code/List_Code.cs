@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using System.Linq;
 using metahub.imperative.types;
 using metahub.logic.schema;
-using metahub.logic;
 using metahub.logic.types;
 using metahub.schema;
 using Constraint = metahub.logic.schema.Constraint;

@@ -118,18 +118,18 @@ namespace metahub.imperative
 
         public void implement_constraint(Constraint constraint)
         {
-            var tie = Parse.get_end_tie(constraint.first);
-            if (tie == null)
-                return;
-
-            if (tie.type == Kind.list)
+            var ties = Parse.get_endpoints(constraint.first);
+            foreach (var tie in ties.Where(tie => tie != null))
             {
-                List_Code.generate_constraint(constraint, this);
-            }
-            else
-            {
-                var dungeon = get_dungeon(tie.rail);
-                dungeon.concat_block(tie.tie_name + "_set_pre", Reference.constraint(constraint, this));
+                if (tie.type == Kind.list)
+                {
+                    List_Code.generate_constraint(constraint, this);
+                }
+                else
+                {
+                    var dungeon = get_dungeon(tie.rail);
+                    dungeon.concat_block(tie.tie_name + "_set_pre", Reference.constraint(constraint, tie, this));
+                }
             }
         }
 

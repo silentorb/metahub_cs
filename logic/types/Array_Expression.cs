@@ -7,12 +7,12 @@ namespace metahub.logic.types {
  * @author Christopher W. Johnson
  */
 public class Array_Expression : Node{
-	public List<Node> children;
+	public Node[] children;
 
-	public Array_Expression(List<Node> children = null)
+	public Array_Expression(Node[] children = null)
 		:base(Node_Type.array)
     {
-		this.children = children ?? new List<Node>();
+		this.children = children ?? new Node[]{};
 	}
 	
 	override public Signature get_signature ()

@@ -68,7 +68,7 @@ namespace metahub.imperative.code
                         var result = new List<Tie>();
                         foreach (var t in ((Array_Expression)token).children)
                         {
-                            result.AddRange(get_endpoints(new Node[] { t }));
+                            result.AddRange(get_endpoints(new Node[] { t }).Distinct());
                         }
                         return result;
 

@@ -1,3 +1,5 @@
+using System;
+using metahub.logic.schema;
 using metahub.logic.types;
 
 namespace metahub.imperative.types
@@ -13,6 +15,11 @@ public class Expression {
 	protected Expression(Expression_Type type) {
 		this.type = type;
 	}
+
+    public virtual Signature get_signature()
+    {
+        throw new Exception("Not implemented.");
+    }
 }
 //struct Node {
 	//Expression_Type type,

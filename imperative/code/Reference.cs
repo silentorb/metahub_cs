@@ -33,7 +33,7 @@ namespace metahub.imperative.code
             if (first_last.type == Node_Type.function_call
                 && ((metahub.logic.types.Function_Call)first_last).name == "dist")
             {
-                return dist(constraint, tie);
+                return dist(constraint, tie, imp);
             }
             else
             {
@@ -91,12 +91,23 @@ namespace metahub.imperative.code
 		    )};
         }
 
-        public List<Expression> dist(Constraint constraint, Tie tie, Imp imp)
+        public static List<Expression> dist(Constraint constraint, Tie tie, Imp imp)
         {
             //var dungeon = imp.get_dungeon(tie.rail);
             //dungeon.concat_block(tie.tie_name + "_set_pre", Reference.constraint(constraint, this));
 
+            var property_reference = (metahub.logic.types.Property_Reference) constraint.caller.First();
             //return new List<Expression>();
+            return new List<Expression>
+                {
+                    new Flow_Control("each", 
+                        new Property_Expression(property_reference.tie.other_tie, 
+                            new Property_Expression(property_reference.tie)), 
+                        new List<Expression>
+                        {
+                            
+                        })
+                };
         }
 
     }

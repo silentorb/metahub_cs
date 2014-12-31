@@ -207,8 +207,12 @@ public class Dungeon
 				post_analyze_many(((Function_Definition)expression).expressions);
                 break;
 
+            case Expression_Type.condition:
+                post_analyze_many(((Condition)expression).expressions);
+                break;
+
             case Expression_Type.flow_control:
-				post_analyze_many(((Flow_Control)expression).condition.expressions);
+				post_analyze(((Flow_Control)expression).expression);
                 post_analyze_many(((Flow_Control)expression).children);
                 break;
 

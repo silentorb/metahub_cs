@@ -118,8 +118,8 @@ namespace metahub.imperative
 
         public void implement_constraint(Constraint constraint)
         {
-            var ties = Parse.get_endpoints(constraint.first);
-            foreach (var tie in ties.Where(tie => tie != null))
+            //var ties = Parse.get_endpoints(constraint.first);
+            foreach (var tie in constraint.endpoints.Where(tie => tie != null))
             {
                 if (tie.type == Kind.list)
                 {

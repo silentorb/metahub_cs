@@ -17,5 +17,13 @@ public class Property_Expression : Expression
 		this.tie = tie;
 		this.child = child;
 	}
+
+    public override Signature get_signature()
+    {
+        if (child != null)
+            return child.get_signature();
+
+        return tie.get_signature();
+    }
 	
 }}

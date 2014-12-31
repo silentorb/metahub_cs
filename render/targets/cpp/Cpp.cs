@@ -173,7 +173,7 @@ public class Cpp : Target{
 				return render_function_definition((Function_Definition)statement);
 
 			case Expression_Type.flow_control:
-				return render_if((Flow_Control)statement);
+				return render_flow_control((Flow_Control)statement);
 
 			case Expression_Type.function_call:
 				return line(render_function_call((Function_Call)statement, null) + ";");
@@ -537,9 +537,18 @@ public class Cpp : Target{
 		//return line(statement.name + "();");
 	//}
 
-	string render_if (Flow_Control statement) {
+	string render_flow_control (Flow_Control statement)
+	{
+	    var name = statement.name == "each"
+	                   ? "for"
+	                   : statement.name;
+
+	    var expression = statement.name == "each"
+	                         ? render_iterator(statement.expression)
+	                         : render_expression(statement.expression);
+
 		return render_scope2(
-			statement.name + " (" + render_condition(statement.condition) + ")"
+            name + " (" + expression + ")"
 		, statement.children, statement.name == "if");
 	}
 
@@ -547,11 +556,25 @@ public class Cpp : Target{
 		return condition.expressions.Select(c => render_expression(c)).join(" " + condition.op + " ");
 	}
 
+    string render_iterator(Expression expression)
+    {
+        var signature = expression.get_signature();
+        var path_string = render_expression(expression);
+        return
+           render_signature(signature) 
+            + "::const_iterator it = " 
+            + path_string + ".begin(); it != " 
+            + path_string + ".end(); it++";
+    }
+
 	string render_expression (Expression expression, Expression parent = null) {
 		string result;
 		switch(expression.type) {
 			case Expression_Type.literal:
 				return render_literal((Literal) expression);
+
+            case Expression_Type.condition:
+		        return render_condition((Condition) expression);
 
 			case Expression_Type.path:
 				result = render_path_old((Path) expression);

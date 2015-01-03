@@ -4,12 +4,11 @@ using System.Linq;
 using metahub.imperative.code;
 using metahub.imperative.schema;
 using metahub.imperative.types;
-using metahub.logic;
 using metahub.logic.schema;
 using metahub.render;
 using metahub.schema;
 using Constraint = metahub.logic.schema.Constraint;
-using Scope = metahub.logic.Scope;
+using Logician = metahub.logic.Logician;
 using Node_Type = metahub.logic.types.Node_Type;
 using Node = metahub.logic.types.Node;
 
@@ -128,12 +127,13 @@ namespace metahub.imperative
                 else
                 {
                     var dungeon = get_dungeon(tie.rail);
-                    dungeon.concat_block(tie.tie_name + "_set_pre", Reference.constraint(constraint, tie, this));
+                    var block = dungeon.get_block("set_" + tie.tie_name);
+                    block.add_many("pre", Reference.constraint(constraint, tie, this, block.scope));
                 }
             }
         }
 
-        public Expression translate(Node expression, Scope scope = null)
+        public Expression translate(Node expression, metahub.logic.Scope scope = null)
         {
             switch (expression.type)
             {
@@ -173,12 +173,12 @@ namespace metahub.imperative
             }
         }
 
-        public IEnumerable<Expression> translate_many(IEnumerable<Node> nodes, Scope scope)
+        public IEnumerable<Expression> translate_many(IEnumerable<Node> nodes, metahub.logic.Scope scope)
         {
             return nodes.Select(n => translate(n, scope));
         }
 
-        public Expression convert_path(Node[] path, Scope scope)
+        public Expression convert_path(Node[] path, metahub.logic.Scope scope)
         {
             if (path.Length == 0)
                 throw new Exception("Cannot convert empty path.");
@@ -197,7 +197,7 @@ namespace metahub.imperative
             return new Path(path);  
         }
 
-        public Expression convert_path(List<metahub.logic.types.Node> path, Scope scope = null)
+        public Expression convert_path(List<metahub.logic.types.Node> path, metahub.logic.Scope scope = null)
         {
             List<Expression> result = new List<Expression>();
             Rail rail = null;
@@ -228,11 +228,11 @@ namespace metahub.imperative
                         //result.Add(translate(token, scope));
                         break;
 
-                    case Node_Type.variable:
-                        var variable = (metahub.logic.types.Variable) token;
-                        result.Add(new Variable(variable.name));
-                        rail = variable.signature.rail;
-                        break;
+                    //case Node_Type.variable:
+                    //    var variable = (metahub.logic.types.Variable) token;
+                    //    result.Add(new Variable(variable.name));
+                    //    rail = variable.signature.rail;
+                    //    break;
 
                     case Node_Type.function_call:
                     case Node_Type.function_scope:

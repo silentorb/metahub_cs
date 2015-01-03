@@ -19,5 +19,9 @@ namespace metahub.logic.types
             this.signature = signature;
         }
 
+        public override Signature get_signature()
+        {
+            return signature;
+        }
     }
 }

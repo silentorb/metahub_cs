@@ -12,8 +12,9 @@ public class Expression {
     public Expression_Type type;
 	public Expression child = null;
 	
-	protected Expression(Expression_Type type) {
+	protected Expression(Expression_Type type, Expression child = null) {
 		this.type = type;
+	    this.child = child;
 	}
 
     public virtual Signature get_signature()

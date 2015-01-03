@@ -1,0 +1,28 @@
+using System.Collections.Generic;
+using metahub.logic.schema;
+using metahub.logic.types;
+
+namespace metahub.imperative.types
+{
+    public enum Property_Function_Type
+    {
+        get,
+        set
+    }
+
+    public class Property_Function_Call : Expression
+    {
+        public Tie tie;
+        public Property_Function_Type function_type;
+        public List<Expression> args;
+
+        public Property_Function_Call(Property_Function_Type function_type, Tie tie, List<Expression> args = null)
+            : base(Expression_Type.property_function_call)
+        {
+            this.function_type = function_type;
+            this.tie = tie;
+            this.args = args ?? new List<Expression>();
+        }
+    }
+
+}

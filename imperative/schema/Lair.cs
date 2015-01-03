@@ -23,7 +23,7 @@ namespace metahub.imperative.schema
             this.name = tie.name;
         }
 
-        public void customize_initialize(List<Expression> block)
+        public void customize_initialize(Block block)
         {
             foreach (Range_Float range in tie.ranges)
             {
@@ -31,13 +31,21 @@ namespace metahub.imperative.schema
                                                      ? new Path(range.path.Select((t) => new Property_Expression(t)))
                                                      : null
                     );
-                block.Add(new Assignment(reference, "=", new Function_Call("rand",
+                block.add(new Assignment(reference, "=", new Function_Call("rand",
                     new List<Expression>
 	                {
 	                    new Literal(range.min,
 	                                new Signature {type = Kind.Float}),
                                     new Literal(range.max, new Signature {type = Kind.Float})
 	                }, true)));
+            }
+
+            if (tie.has_setter())
+            {
+                block.add("post", new Property_Function_Call(Property_Function_Type.set, tie, new List<Expression>
+                    {
+                        new Property_Expression(tie)
+                    } ));
             }
         }
 

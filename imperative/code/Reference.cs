@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using metahub.imperative.schema;
 using metahub.imperative.types;
 using metahub.logic.schema;
 //using metahub.logic.types;
@@ -25,7 +26,7 @@ namespace metahub.imperative.code
             {"<=", ">"}
         };
 
-        public static List<Expression> constraint(Constraint constraint, Tie tie, Imp imp)
+        public static List<Expression> constraint(Constraint constraint, Tie tie, Imp imp, Scope scope)
         {
             var op = constraint.op;
             //return new List<Expression>();
@@ -33,7 +34,7 @@ namespace metahub.imperative.code
             if (first_last.type == Node_Type.function_call
                 && ((metahub.logic.types.Function_Call)first_last).name == "dist")
             {
-                return dist(constraint, tie, imp);
+                return dist(constraint, tie, imp, scope);
             }
             else
             {
@@ -80,7 +81,7 @@ namespace metahub.imperative.code
                     break;
             }
 
-            return new List<Expression> { new Flow_Control("if", new Condition(inverse,
+            return new List<Expression> { new Flow_Control(Flow_Control_Type.If, new Condition(inverse,
 				new List<Expression> {
 					reference,
 				new Literal(limit, new Signature(Kind.Float))
@@ -91,21 +92,67 @@ namespace metahub.imperative.code
 		    )};
         }
 
-        public static List<Expression> dist(Constraint constraint, Tie tie, Imp imp)
+        public static List<Expression> dist(Constraint constraint, Tie tie, Imp imp, Scope scope)
         {
             //var dungeon = imp.get_dungeon(tie.rail);
             //dungeon.concat_block(tie.tie_name + "_set_pre", Reference.constraint(constraint, this));
+            var property_reference = (metahub.logic.types.Property_Reference)constraint.caller.First();
 
-            var property_reference = (metahub.logic.types.Property_Reference) constraint.caller.First();
-            //return new List<Expression>();
-            return new List<Expression>
-                {
-                    new Flow_Control("each", 
+            var iterator_scope = new Scope(scope);
+            var it = iterator_scope.create_symbol("it", property_reference.tie.other_tie.get_signature());
+
+            var dungeon = imp.get_dungeon(tie.rail);
+            var class_block = dungeon.get_block("class_definition");
+            var function_scope = new Scope(class_block.scope);
+            var value = function_scope.create_symbol("value", tie.get_signature());
+            var function_name = "check_" + property_reference.tie.tie_name + "_" + property_reference.tie.other_tie.tie_name;
+            class_block.add(new Function_Definition(function_name, dungeon, new List<Parameter>{
+				new Parameter(value)
+			}, new List<Expression>
+			    {
+			        new Flow_Control(Flow_Control_Type.If, new Condition("==", new List<Expression>
+			            {
+			                new Property_Expression(property_reference.tie.other_tie),
+                            new Null_Value()
+			            }), new List<Expression>{ 
+                            new Statement("return")
+                        }),
+                    new Iterator(it, 
                         new Property_Expression(property_reference.tie.other_tie, 
                             new Property_Expression(property_reference.tie)), 
                         new List<Expression>
                         {
-                            
+                            new Flow_Control(Flow_Control_Type.If,
+                                new Condition(inverse_operators[constraint.op], new List<Expression>
+                                    {
+                                        new Variable(value,
+                                            new Function_Call("dist", new List<Expression>
+                                            {
+                                                new Variable(it, new Property_Expression(constraint.endpoints.Last()))
+                                            }, true)),
+                                        imp.translate(constraint.second.First())
+                                    }),
+                                new List<Expression>
+                                {
+                                    
+                                })
+                        })
+			    })
+            );
+
+            var setter_block = dungeon.get_block("set_" + property_reference.tie.other_tie.tie_name);
+            setter_block.add("post", new Function_Call(function_name, new List<Expression>
+                        {
+                            new Property_Expression(constraint.endpoints.First())
+                        })
+            );
+
+            //return new List<Expression>();
+            return new List<Expression>
+                {
+                    new Function_Call(function_name, new List<Expression>
+                        {
+                            new Variable(scope.find("value"))
                         })
                 };
         }

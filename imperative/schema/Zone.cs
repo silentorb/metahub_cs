@@ -1,27 +1,29 @@
 using System.Collections.Generic;
 using metahub.imperative.types;
 
-namespace metahub.imperative.schema {
-/**
- * ...
- * @author Christopher W. Johnson
- */
+namespace metahub.imperative.schema
+{
+    /**
+     * ...
+     * @author Christopher W. Johnson
+     */
+    /*
 public class Zone
 {
 	List<List<Expression>> divisions = new List<List<Expression>>();
-	List<Expression> target;
-	Dictionary<string, List<Expression>> blocks;
+	Block target;
+    private Dungeon dungeon;
 
-    public Zone(List<Expression> target, Dictionary<string, List<Expression>> blocks)
+    public Zone(Block target, Dungeon dungeon)
 	{
 		this.target = target;
-		this.blocks = blocks;
+        this.dungeon = dungeon;
 	}
 		
 	public List<Expression> divide (string block_name = null, List<Expression> division = null) {
 		division = add_division(division);
-		if (block_name != null)
-			blocks[block_name] = division;		
+        if (!dungeon.has_block(block_name))
+			dungeon.create_block(block_name, target.scope, division);		
 			
 		return division;
 	}
@@ -37,11 +39,12 @@ public class Zone
 	public void flatten () {
 		foreach (var division in divisions) {
 			foreach (var expression in division) {
-				target.Add(expression);
+				target.add(expression);
 			}
 		}
 		
 		divisions = new List<List<Expression>>();
 	}
 	
-}}
+}*/
+}

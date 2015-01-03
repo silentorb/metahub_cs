@@ -28,7 +28,7 @@ namespace metahub.logic
             this.logician = logician;
         }
 
-        public Node convert_expression(Pattern_Source source, Node previous, Scope scope)
+        public Node convert_expression(Pattern_Source source, Scope scope, Node previous = null)
         {
             switch (source.type)
             {
@@ -39,10 +39,10 @@ namespace metahub.logic
                     return create_literal(source, scope);
 
                 case "path":
-                    return new Reference_Path(create_path(source, previous, scope));
+                    return new Reference_Path(create_path(source, scope));
 
                 case "function":
-                    throw new Exception("Not supported.");
+                    return new Function_Call(source.text, previous, railway);
 
                 case "array":
                     return create_array(source, scope);
@@ -54,15 +54,29 @@ namespace metahub.logic
                     return new Literal_Value(int.Parse(source.text), Kind.Int);
 
                 case "id":
+                    var variable = scope.find(source.text);
+                    if (variable != null)
+                    {
+                        return new Variable(source.text, variable);
+                        //if (variable.rail == null)
+                        //throw new Exception("variabcle rail cannot be null.");
+                    }
+                    else
                     {
                         Tie tie = scope.rail.get_tie_or_error(source.text);
                         return new Property_Reference(tie);
+                        //if (tie.other_rail != null)
+                        //    rail = tie.other_rail;
                     }
+                //{
+                //    Tie tie = scope.rail.get_tie_or_error(source.text);
+                //    return new Property_Reference(tie);
+                //}
 
                 case "reference":
                     return source.patterns.Length < 2
-                        ? convert_expression(source.patterns[0], null, scope)
-                        : new Reference_Path(create_path(source, previous, scope));
+                        ? convert_expression(source.patterns[0], scope)
+                        : new Reference_Path(create_path(source, scope));
             }
 
             throw new Exception("Invalid block: " + source.type);
@@ -99,7 +113,7 @@ namespace metahub.logic
         Node constraint(Pattern_Source source, Scope scope)
         {
             //var reference = Reference.from_scope(source.path, scope);
-            var reference = create_path(source.patterns[0], null, scope);
+            var reference = create_path(source.patterns[0], scope);
             Node[] back_reference = null;
             var operator_name = source.patterns[2].text;
             if (new List<string> { "+=", "-=", "*=", "/=" }.Contains(operator_name))
@@ -107,7 +121,7 @@ namespace metahub.logic
                 //operator_name = operator_name.substring(0, operator_name.Count - 7);
                 back_reference = reference;
             }
-            var expression = create_path(source.patterns[4], null, scope);
+            var expression = create_path(source.patterns[4], scope);
             var lambda_array = source.patterns[5].patterns;
             var lambda_source = lambda_array != null && lambda_array.Length > 0 ? lambda_array[0] : null;
             var lambda = lambda_source != null
@@ -151,85 +165,104 @@ namespace metahub.logic
             return new Literal_Value(source.value, Kind.unknown);
         }
 
-        //Node[] to_path(Pattern_Source source, Node previous, Scope scope)
+        //Node[] to_path(Pattern_Source source, Scope scope)
         //{
-        //    return create_path(source, previous, scope).children;
+        //    return create_path(source, scope).children;
         //}
 
-        Node[] create_path(Pattern_Source source, Node previous, Scope scope)
+        Node[] create_path(Pattern_Source source, Scope scope)
         {
             Rail rail = scope.rail;
             Node expression = null;
             List<Node> children = new List<Node>();
             var expressions = source.patterns;
-            if (expressions.Length == 0)
-                throw new Exception("Empty reference path.");
-
-            if (expressions[0].type == "reference" && expressions[0].text != null 
-                && rail.get_tie_or_null(expressions[0].text) == null
-                && scope.find(expressions[0].text) == null)
+            if (expressions == null || expressions.Length == 0)
             {
-                throw new Exception("Not supported.");
+                return new Node[]
+                    {
+                        convert_expression(source, scope)
+                    };
             }
+
+            //if (expressions[0].type == "reference" && expressions[0].text != null 
+            //    && rail.get_tie_or_null(expressions[0].text) == null
+            //    && scope.find(expressions[0].text) == null)
+            //{
+            //    throw new Exception("Not supported.");
+            //}
+            Node previous = null;
 
             foreach (var item in expressions)
             {
-                switch (item.type)
+                if (item.text == null && item.type == "reference")
                 {
-                    case "function":
-                        previous = new Function_Call(item.text, previous, railway);
-                        //var info = Function_Call.get_function_info(item.name, hub);
-                        //children.Add(new metahub.code.expressions.Function_Call(item.name, info, [], hub));
-                        break;
-
-                    case "id":
-                    case "reference":
-                        if (item.text != null)
-                        {
-                            var variable = scope.find(item.text);
-                            if (variable != null)
-                            {
-                                previous = new Variable(item.text, variable);
-                                if (variable.rail == null)
-                                    throw new Exception("variable rail cannot be null.");
-
-                                rail = variable.rail;
-                                //    throw new Exception("");
-                                //rail = variable.rail;
-                                //throw new Exception("Not implemented");
-                            }
-                            else
-                            {
-                                Tie tie = rail.get_tie_or_error(item.text);
-                                previous = new Property_Reference(tie);
-                                if (tie.other_rail != null)
-                                    rail = tie.other_rail;
-                            }
-                        }
-                        else
-                        {
-                            children.AddRange(create_path(item, previous, scope));
-                            previous = null;
-                        }
-                        break;
-
-                    case "array":
-                        var items = (item).patterns;
-                        Node token = null;
-                        var sub_array = items.Select(i => convert_expression(i, token, scope)).ToArray();
-                        previous = new Array_Expression(sub_array);
-                        break;
-
-                    case "int":
-                        previous = new Literal_Value(int.Parse(item.text), Kind.Int);
-                        break;
-
-                    default:
-                        throw new Exception("Invalid path token type: " + item.type);
+                    children.AddRange(create_path(item, scope));
                 }
-
-                if (previous != null)
+                else
+                {
+                    previous = convert_expression(item, scope, previous);
                     children.Add(previous);
+                    var signature = previous.get_signature();
+                    if (signature.rail != null)
+                        scope = new Scope(scope) { rail = signature.rail };
+                }
+                /*     switch (item.type)
+                     {
+                         case "function":
+                             previous = new Function_Call(item.text, railway);
+                             //var info = Function_Call.get_function_info(item.name, hub);
+                             //children.Add(new metahub.code.expressions.Function_Call(item.name, info, [], hub));
+                             break;
+
+                         case "id":
+                         case "reference":
+                             if (item.text != null)
+                             {
+                                 var variable = scope.find(item.text);
+                                 if (variable != null)
+                                 {
+                                     previous = new Variable(item.text, variable);
+                                     if (variable.rail == null)
+                                         throw new Exception("variable rail cannot be null.");
+
+                                     rail = variable.rail;
+                                     //    throw new Exception("");
+                                     //rail = variable.rail;
+                                     //throw new Exception("Not implemented");
+                                 }
+                                 else
+                                 {
+                                     Tie tie = rail.get_tie_or_error(item.text);
+                                     previous = new Property_Reference(tie);
+                                     if (tie.other_rail != null)
+                                         rail = tie.other_rail;
+                                 }
+                             }
+                             else
+                             {
+                                 children.AddRange(create_path(item, scope));
+                                 previous = null;
+                             }
+                             break;
+
+                         case "array":
+                             var items = (item).patterns;
+                             Node token = null;
+                             var sub_array = items.Select(i => convert_expression(i, token, scope)).ToArray();
+                             previous = new Array_Expression(sub_array);
+                             break;
+
+                         case "int":
+                             previous = new Literal_Value(int.Parse(item.text), Kind.Int);
+                             break;
+
+                         default:
+                             throw new Exception("Invalid path token type: " + item.type);
+                     }
+
+                     if (previous != null)
+                         children.Add(previous);
+                 * */
             }
 
             return children.ToArray();
@@ -290,7 +323,9 @@ namespace metahub.logic
 
         Node create_array(Pattern_Source source, Scope scope)
         {
-            return new Block(source.patterns.Select((e) => convert_expression(e, null, scope)));
+            var sub_array = source.patterns.Select(i => convert_expression(i, scope)).ToArray();
+            return new Array_Expression(sub_array);
+            //return new Block(source.patterns.Select((e) => convert_expression(e, scope)));
         }
 
         Lambda create_lambda(Pattern_Source source, Scope scope, List<Node[]> constraint_expressions)
@@ -315,7 +350,7 @@ namespace metahub.logic
 
         Node function_scope(Pattern_Source source, Scope scope)
         {
-            var expression = create_path(source.patterns[0], null, scope);
+            var expression = create_path(source.patterns[0], scope);
             //var path = (Reference_Path)expression;
             //var token = path.children[path.children.Count - 2];
             var lambda = create_lambda(source.patterns[1], scope, new List<Node[]> { expression, expression });
@@ -330,7 +365,7 @@ namespace metahub.logic
         Node process_expression(Pattern_Source source, Scope scope)
         {
             if (source.patterns.Length < 2)
-                return convert_expression(source.patterns[0], null, scope);
+                return convert_expression(source.patterns[0], scope);
 
             throw new Exception("Not implemented.");
 

@@ -1,22 +1,27 @@
+using System;
+using metahub.imperative.schema;
+using metahub.logic.schema;
 using metahub.logic.types;
+using metahub.schema;
 
 namespace metahub.imperative.types
 {
-
-/**
- * ...
- * @author Christopher W. Johnson
- */
-public class Variable : Expression {
-	public string name;
-
-	public Variable(string name, Expression child = null)
-
-        : base(Expression_Type.variable)
+    public class Variable : Expression
     {
-		this.name = name;
-		this.child = child;
-	}
-	
-}
+        public Symbol symbol;
+
+        public Variable(Symbol symbol, Expression child = null)
+            : base(Expression_Type.variable, child)
+        {
+            if (symbol == null)
+               throw new Exception("Variable symbol cannot be null.");
+
+            this.symbol = symbol;
+        }
+
+        public override Signature get_signature()
+        {
+            return symbol.signature;
+        }
+    }
 }

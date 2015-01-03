@@ -7,6 +7,7 @@ namespace metahub.imperative.types
         property,
         variable,
         function_call,
+        property_function_call,
         instantiate,
         parent_class,
         condition,
@@ -24,6 +25,7 @@ namespace metahub.imperative.types
         assignment,
         declare_variable,
         scope,
-        insert
+        insert,
+        iterator
     }
 }

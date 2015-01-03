@@ -11,7 +11,6 @@ public class Function_Call : Node {
 	public Function_Call(string name, Node input, Railway railway)
         : base(Node_Type.function_call)
     {
-		;
 		this.name = name;
 		if (input == null)
 			throw new Exception("Function input cannot be null");

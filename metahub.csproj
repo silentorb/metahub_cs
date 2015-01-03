@@ -45,6 +45,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="imperative\schema\Block.cs" />
+    <Compile Include="imperative\schema\Division.cs" />
+    <Compile Include="imperative\schema\Symbol.cs" />
+    <Compile Include="imperative\types\Property_Function_Call.cs" />
+    <Compile Include="imperative\types\Iterator.cs" />
     <Compile Include="logic\Logician.cs" />
     <Compile Include="logic\types\Constraint_Wrapper.cs" />
     <Compile Include="main\Hub.cs" />
@@ -60,7 +65,6 @@
     <Compile Include="imperative\schema\Zone.cs" />
     <Compile Include="imperative\types\Anonymous_Function.cs" />
     <Compile Include="imperative\types\Assignment.cs" />
-    <Compile Include="imperative\types\Block.cs" />
     <Compile Include="imperative\types\Class_Definition.cs" />
     <Compile Include="imperative\types\Condition.cs" />
     <Compile Include="imperative\types\Create_Array.cs" />
@@ -79,7 +83,7 @@
     <Compile Include="imperative\types\Parent_Class.cs" />
     <Compile Include="imperative\types\Path.cs" />
     <Compile Include="imperative\types\Property_Expression.cs" />
-    <Compile Include="imperative\types\Scope.cs" />
+    <Compile Include="imperative\schema\Scope.cs" />
     <Compile Include="imperative\types\Self.cs" />
     <Compile Include="imperative\types\Statement.cs" />
     <Compile Include="imperative\types\Variable.cs" />

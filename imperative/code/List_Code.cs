@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using metahub.imperative.schema;
 using metahub.imperative.types;
 using metahub.logic.schema;
 using metahub.logic.types;
@@ -8,46 +9,46 @@ using Constraint = metahub.logic.schema.Constraint;
 using Expression = metahub.imperative.types.Expression;
 using Function_Call = metahub.imperative.types.Function_Call;
 using Parameter = metahub.imperative.types.Parameter;
-using Path = metahub.imperative.types.Path;
 using Variable = metahub.imperative.types.Variable;
 
 namespace metahub.imperative.code
 {
-    /**
-     * ...
-     * @author Christopher W. Johnson
-     */
+
     public class List_Code
     {
-        public static void common_functions(Tie tie, Imp imp)
+        public static void common_functions(Tie tie, Imp imp, Scope scope)
         {
             var rail = tie.rail;
             var dungeon = imp.get_dungeon(tie.rail);
+            var root_block = dungeon.get_block("class_definition");
 
             var function_name = tie.tie_name + "_add";
+            var function_scope = new Scope(scope);
+            var item_symbol = function_scope.create_symbol("item", tie.get_other_signature());
+            var origin = function_scope.create_symbol("origin", new Signature(Kind.reference));
             Function_Definition definition = new Function_Definition(function_name, dungeon, new List<Parameter> {
-			new Parameter("item", tie.get_other_signature()),
-			new Parameter("origin", new Signature { type = Kind.reference, rail = null })
-        }, new List<Expression>());
+			    new Parameter(item_symbol),
+			    new Parameter(origin)
+            }, new List<Expression>());
 
-            var zone = dungeon.create_zone(definition.expressions);
-            var mid = zone.divide(null, new List<Expression> {
+            var block = dungeon.create_block(function_name, scope, definition.expressions);
+            var mid = block.divide(null, new List<Expression> {
 			new Property_Expression(tie,
-				new Function_Call("add",new List<Expression>{ new Variable("item") }, true)
+				new Function_Call("add",new List<Expression>{ new Variable(item_symbol) }, true)
 			)
 		});
-            var post = zone.divide(function_name + "_post");
+            var post = block.divide("post");
 
             if (tie.other_tie != null)
             {
                 //throw "";
-                mid.Add(
-                    new Assignment(new Variable("item", new Property_Expression(tie.other_tie)),
+                mid.add(
+                    new Assignment(new Variable(item_symbol, new Property_Expression(tie.other_tie)),
                     "=", new Self())
                 );
             }
-
-            dungeon.add_to_block("/", definition);
+            
+            root_block.add(definition);
         }
 
         public static void generate_constraint(Constraint constraint, Imp imp)
@@ -100,9 +101,15 @@ namespace metahub.imperative.code
 
             var item_name = second_end.rail.name.ToLower() + "_item";
 
+            var function_block = imp.get_dungeon(a_end.rail).get_block(a_end.tie_name + "_add");
+            var new_scope = new Scope(function_block.scope);
+            var item = new_scope.create_symbol("item", second_end.get_other_signature());
+            var item2 = new_scope.create_symbol("item", second_end.get_other_signature());
+            var origin = new_scope.create_symbol("origin", second_end.get_other_signature());
             var creation_block = new List<Expression>();
-            creation_block.Add(new Declare_Variable(item_name, second_end.get_other_signature(),
-                                                     new Instantiate(second_end.other_rail)));
+            creation_block.Add(new Declare_Variable(item2,
+                new Instantiate(second_end.other_rail))
+            );
 
             if (mapping != null)
             {
@@ -110,39 +117,40 @@ namespace metahub.imperative.code
                 {
                     var constraint = wrapper.constraint;
                     var first = constraint.first;
-                    var first_tie = first[1] as Property_Reference;
+                    var first_tie = a_end.other_rail.get_tie_or_error(((Property_Reference) first[1]).tie.name);
                     var second = (Property_Reference)Imp.simplify_path(constraint.second)[0];
                     //var second_tie = second.children[] as Property_Reference;
-                    creation_block.Add(new Assignment(
-                        new Variable(item_name, new Property_Expression(a_end.other_rail.get_tie_or_error(first_tie.tie.name))),
-                        "=",
-                        new Variable("item", new Property_Expression(second_end.other_rail.get_tie_or_error(second.tie.name)))
+                    creation_block.Add(new Variable(item2, new Function_Call("set_" + first_tie.name, new List<Expression>
+                        {
+                        new Variable(item, new Property_Expression(second_end.other_rail.get_tie_or_error(second.tie.name)))
+                        }
+                       )
                     ));
                 }
             }
 
             creation_block = creation_block.Union(new List<Expression>{
-			new Variable(item_name, new Function_Call("initialize")),
+			new Variable(item2, new Function_Call("initialize")),
 			new Property_Expression(c.First(),
 				new Function_Call(second_end.tie_name + "_add",
-				new List<Expression> { new Variable(item_name), new Self()}))
+				new List<Expression> { new Variable(item2), new Self()}))
 		}).ToList();
 
             List<Expression> block = new List<Expression> {
-				new Flow_Control("if", new Condition("!=", new List<Expression> {
-				new Variable("origin"), new Property_Expression(c.First())}), creation_block)
+				new Flow_Control(Flow_Control_Type.If, new Condition("!=", new List<Expression> {
+				new Variable(origin), new Property_Expression(c.First())}), creation_block)
 		};
 
             if (a_start.other_tie.property.allow_null)
             {
                 block = new List<Expression> {
-				new Flow_Control("if",
+				new Flow_Control(Flow_Control_Type.If, 
 					new Condition("!=", new List<Expression> { new Property_Expression(a_start.other_tie),
 					new Null_Value() }), block
 				)
 			};
             }
-            imp.get_dungeon(a_end.rail).concat_block(a_end.tie_name + "_add_post", block);
+            function_block.add_many("post", block);
         }
 
         public static void size(Constraint constraint, Node[] expression, Imp imp)
@@ -154,27 +162,28 @@ namespace metahub.imperative.code
             var instance_name = reference.other_rail.rail_name;
             var rail = reference.other_rail;
             Rail local_rail = reference.rail;
-            const string child = "child";
-            var scope = new metahub.logic.Scope();
-            var imp_ref = (Property_Expression)imp.convert_path(Imp.simplify_path(constraint.first), scope);
+            var dungeon = imp.get_dungeon(local_rail);
+            var block = dungeon.get_block("initialize");
+
+            //const string child = "child";
+            var new_scope = new Scope(block.scope);
+            var child = new_scope.create_symbol("child", new Signature(Kind.reference, rail));
+            var logic_scope = new metahub.logic.Scope();
+            var imp_ref = (Property_Expression)imp.convert_path(Imp.simplify_path(constraint.first), logic_scope);
             imp_ref.child = new Function_Call("count", null, true);
-            Flow_Control flow_control = new Flow_Control("while", new Condition("<",
+            Flow_Control flow_control = new Flow_Control(Flow_Control_Type.While, new Condition("<",
             new List<Expression>{
 				imp_ref,
 				//{ type: "path", path: constraint.reference },
-				imp.convert_path(expression, scope)
+				imp.convert_path(expression, logic_scope)
         }), new List<Expression> {
-			new Declare_Variable(child,new Signature {
-					type = Kind.reference,
-					rail = rail,
-					is_value = false
-			}, new Instantiate(rail)),
+			new Declare_Variable(child, new Instantiate(rail)),
 			new Variable(child, new Function_Call("initialize")),
 			new Function_Call(reference.tie_name + "_add",
-			new List<Expression> {new Variable(child), new Null_Value()})
+			new List<Expression> { new Variable(child), new Null_Value() })
 	});
-            var dungeon = imp.get_dungeon(local_rail);
-            dungeon.add_to_block("initialize", flow_control);
+
+            block.add(flow_control);
         }
 
     }

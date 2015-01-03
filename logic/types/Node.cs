@@ -1,5 +1,6 @@
 using System;
 using metahub.logic.schema;
+using metahub.schema;
 
 namespace metahub.logic.types
 {
@@ -14,7 +15,8 @@ namespace metahub.logic.types
 
         virtual public Signature get_signature()
         {
-            throw new Exception(GetType().Name + " does not implement get_signature().");
+            //throw new Exception(GetType().Name + " does not implement get_signature().");
+            return new Signature(Kind.unknown);
         }
     }
 }

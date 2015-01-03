@@ -378,7 +378,7 @@ namespace metahub.render.targets.cpp
         {
             var intro = (definition.return_type != null ? render_signature(definition.return_type) + " " : "")
             + current_rail.rail_name + "::" + definition.name
-            + "(" + definition.parameters.Select(render_parameter).join(", ") + ")";
+            + "(" + definition.parameters.Select(render_definition_parameter).join(", ") + ")";
 
             return render_scope(intro, () =>
             {
@@ -391,9 +391,18 @@ namespace metahub.render.targets.cpp
             });
         }
 
-        string render_parameter(Parameter parameter)
+        string render_definition_parameter(Parameter parameter)
         {
             return render_signature(parameter.symbol.signature, true) + " " + parameter.symbol.name;
+        }
+
+        string render_declaration_parameter(Parameter parameter)
+        {
+            return render_signature(parameter.symbol.signature, true) + " " + parameter.symbol.name
+                + (parameter.default_value != null 
+                    ? " = " + render_expression(parameter.default_value) 
+                    : ""
+            );
         }
 
         string render_function_declarations(Dungeon dungeon)
@@ -500,7 +509,7 @@ namespace metahub.render.targets.cpp
             return line((definition.return_type != null ? "virtual " : "")
             + (definition.return_type != null ? render_signature(definition.return_type) + " " : "")
             + definition.name
-            + "(" + definition.parameters.Select(render_parameter).join(", ") + ");");
+            + "(" + definition.parameters.Select(render_declaration_parameter).join(", ") + ");");
 
         }
 
@@ -608,11 +617,16 @@ namespace metahub.render.targets.cpp
 
         string render_iterator_block(Iterator statement)
         {
-            var expression = render_iterator(statement.parameter, statement.expression);
+            var parameter = statement.parameter;
+            var it = parameter.scope.create_symbol("it", parameter.signature);
+            var expression = render_iterator(it, statement.expression);
 
             var result = render_scope2(
                 "for (" + expression + ")"
-            , statement.children);
+            , new List<Expression> { 
+                    new Declare_Variable(parameter, new Insert(it.name + "._Ptr"))
+                }.Concat(statement.children).ToList()
+            );
             return result;
         }
 
@@ -680,6 +694,10 @@ namespace metahub.render.targets.cpp
 
                 case Expression_Type.parent_class:
                     result = current_rail.parent.rail_name;
+                    break;
+
+                case Expression_Type.insert:
+                    result = ((Insert) expression).code;
                     break;
 
                 default:

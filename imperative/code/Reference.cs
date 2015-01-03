@@ -99,7 +99,7 @@ namespace metahub.imperative.code
             var property_reference = (metahub.logic.types.Property_Reference)constraint.caller.First();
 
             var iterator_scope = new Scope(scope);
-            var it = iterator_scope.create_symbol("it", property_reference.tie.other_tie.get_signature());
+            var it = iterator_scope.create_symbol("item", new Signature(Kind.reference, property_reference.tie.other_rail));
 
             var dungeon = imp.get_dungeon(tie.rail);
             var class_block = dungeon.get_block("class_definition");
@@ -122,14 +122,21 @@ namespace metahub.imperative.code
                             new Property_Expression(property_reference.tie)), 
                         new List<Expression>
                         {
+                            new Flow_Control(Flow_Control_Type.If, new Condition("==", new List<Expression>
+                                {
+                                    new Variable(it), new Self()
+                                }), new List<Expression>
+                                    {
+                                        new Statement("continue")
+                                    }),
                             new Flow_Control(Flow_Control_Type.If,
                                 new Condition(inverse_operators[constraint.op], new List<Expression>
                                     {
-                                        new Variable(value,
+                                        new Variable(it, new Property_Expression(constraint.endpoints.Last(),
                                             new Function_Call("dist", new List<Expression>
                                             {
-                                                new Variable(it, new Property_Expression(constraint.endpoints.Last()))
-                                            }, true)),
+                                                new Variable(value)
+                                            }, true))),
                                         imp.translate(constraint.second.First())
                                     }),
                                 new List<Expression>

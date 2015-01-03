@@ -24,17 +24,17 @@ namespace metahub.imperative.code
 
             var function_name = tie.tie_name + "_add";
             var function_scope = new Scope(scope);
-            var item_symbol = function_scope.create_symbol("item", tie.get_other_signature());
+            var item = function_scope.create_symbol("item", tie.get_other_signature());
             var origin = function_scope.create_symbol("origin", new Signature(Kind.reference));
             Function_Definition definition = new Function_Definition(function_name, dungeon, new List<Parameter> {
-			    new Parameter(item_symbol),
+			    new Parameter(item),
 			    new Parameter(origin)
             }, new List<Expression>());
 
             var block = dungeon.create_block(function_name, scope, definition.expressions);
             var mid = block.divide(null, new List<Expression> {
 			new Property_Expression(tie,
-				new Function_Call("add",new List<Expression>{ new Variable(item_symbol) }, true)
+				new Function_Call("add",new List<Expression>{ new Variable(item) }, true)
 			)
 		});
             var post = block.divide("post");
@@ -43,9 +43,18 @@ namespace metahub.imperative.code
             {
                 //throw "";
                 mid.add(
-                    new Assignment(new Variable(item_symbol, new Property_Expression(tie.other_tie)),
-                    "=", new Self())
-                );
+                    new Flow_Control(Flow_Control_Type.If, new Condition("!=", new List<Expression>
+                {
+                    new Variable(origin), new Variable(item)
+                }), new List<Expression> {
+                    new Variable(item, 
+                        new Property_Function_Call(Property_Function_Type.set,  tie.other_tie,
+                            new List<Expression>
+                                {
+                                    new Self(),
+                                    new Self()
+                                }))
+                }));
             }
             
             root_block.add(definition);

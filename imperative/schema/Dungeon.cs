@@ -99,7 +99,7 @@ namespace metahub.imperative.schema
                 {
                     var lines = inserts[path];
                     var tokens = path.Split('.');
-                    if(tokens.Length > 1)
+                    if (tokens.Length > 1)
                         get_block(tokens[0]).add_many(tokens[1], lines.Select(s => new Insert(s)));
                     else
                         get_block(tokens[0]).add_many(lines.Select(s => new Insert(s)));
@@ -154,17 +154,20 @@ namespace metahub.imperative.schema
             }
         }
 
-        Function_Definition generate_setter(Tie tie, Scope scope)
+        private Function_Definition generate_setter(Tie tie, Scope scope)
         {
             if (!tie.has_setter())
                 return null;
 
             var function_scope = new Scope(scope);
             var value = function_scope.create_symbol("value", tie.get_signature());
+            var parameters = new List<Parameter>
+                {
+                    new Parameter(value)
+                };
 
-            Function_Definition result = new Function_Definition("set_" + tie.tie_name, this, new List<Parameter>{
-				new Parameter(value)
-			}, new List<Expression>());
+            Function_Definition result = new Function_Definition("set_" + tie.tie_name, this,
+                    parameters, new List<Expression>());
 
             var block = create_block("set_" + tie.tie_name, new Scope(function_scope), result.expressions);
 
@@ -182,6 +185,9 @@ namespace metahub.imperative.schema
 
             if (tie.type == Kind.reference && tie.other_tie != null)
             {
+                var origin = function_scope.create_symbol("origin", new Signature(Kind.reference));
+                parameters.Add(new Parameter(origin, new Null_Value()));
+   
                 if (tie.other_tie.type == Kind.reference)
                 {
                     mid.add(new Property_Expression(tie,
@@ -190,9 +196,14 @@ namespace metahub.imperative.schema
                 }
                 else
                 {
-                    mid.add(new Property_Expression(tie,
+                    mid.add(new Flow_Control(Flow_Control_Type.If, new Condition("!=", new List<Expression>
+                {
+                    new Variable(origin), new Variable(value)
+                }), new List<Expression> {
+                        new Property_Expression(tie,
                         new Function_Call(tie.other_tie.tie_name + "_add", new List<Expression> { new Self(), new Self() }))
-                    );
+                    
+                    }));
                 }
             }
 

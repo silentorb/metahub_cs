@@ -61,22 +61,113 @@ namespace metahub.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized resource of type System.Byte[].
+        ///   Looks up a localized string similar to start = trim @(statement, newlines, 0, 0) final_trim
+        ///
+        ///none = /&amp;*/
+        ///ws = /\s+/
+        ///trim = /\s*/
+        ///final_trim = /\s*$/
+        ///newlines = /(\s*\n)+\s*/
+        ///comma_or_newline = /\s*((\s*\n)+|,)\s*/
+        ///dot = &quot;.&quot;
+        ///path_function_separator = &quot;.&quot; | &quot;|&quot;
+        ///
+        ///id = /[a-zA-Z0-9_]+/
+        ///
+        ///path = @(id, dot, 2, 0)
+        ///
+        ///path_or_id = @(id, dot, 1, 0)
+        ///
+        ///id_or_array = id | array
+        ///
+        ///reference = @(id_or_array, path_function_separator, 1, 0)
+        ///
+        ///method = &quot;|&quot; id
+        ///
+        ///statement =
+        ///    create_symbol
+        ///	| if
+        ///    | constraint
+        ///	| set_weight
+        ///    | new_scope [rest of string was truncated]&quot;;.
         /// </summary>
-        internal static byte[] metahub {
+        internal static string metahub {
             get {
-                object obj = ResourceManager.GetObject("metahub", resourceCulture);
-                return ((byte[])(obj));
+                return ResourceManager.GetString("metahub", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized resource of type System.Byte[].
+        ///   Looks up a localized string similar to {
+        ///  &quot;start&quot;: {
+        ///    &quot;type&quot;: &quot;repetition&quot;,
+        ///    &quot;action&quot;: &quot;start&quot;,
+        ///    &quot;pattern&quot;: {
+        ///      &quot;type&quot;: &quot;reference&quot;,
+        ///      &quot;name&quot;: &quot;rule&quot;
+        ///    },
+        ///    &quot;divider&quot;: {
+        ///      &quot;type&quot;: &quot;reference&quot;,
+        ///      &quot;name&quot;: &quot;whitespace&quot;
+        ///    }
+        ///  },
+        ///
+        ///  &quot;id&quot;: {
+        ///    &quot;type&quot;: &quot;regex&quot;,
+        ///    &quot;text&quot;: &quot;[a-zA-Z0-9_]+&quot;
+        ///  },
+        ///
+        ///  &quot;whitespace&quot;: {
+        ///    &quot;type&quot;: &quot;regex&quot;,
+        ///    &quot;text&quot;: &quot;\\s+&quot;
+        ///  },
+        ///
+        ///  &quot;trim&quot;: {
+        ///    &quot;type&quot;: &quot;regex&quot;,
+        ///    &quot;text&quot;: &quot;\\s*&quot;
+        ///  },
+        ///
+        ///  &quot;comma&quot;: {
+        ///    &quot;type&quot;: &quot;regex&quot;,
+        ///    &quot;text&quot;: &quot;[ \\r\\n]*,[ \\r\\n]*&quot;
+        ///  }, [rest of string was truncated]&quot;;.
         /// </summary>
-        internal static byte[] parser {
+        internal static string parser {
             get {
-                object obj = ResourceManager.GetObject("parser", resourceCulture);
-                return ((byte[])(obj));
+                return ResourceManager.GetString("parser", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {
+        ///  &quot;trellises&quot;: {
+        ///    &quot;Piece_Maker&quot;: {
+        ///      &quot;properties&quot;: {
+        ///        &quot;conflicts&quot;: {
+        ///          &quot;type&quot;: &quot;list&quot;,
+        ///          &quot;trellis&quot;: &quot;Conflict&quot;
+        ///        }
+        ///      }
+        ///    },
+        ///    &quot;Conflict&quot;: {
+        ///      &quot;properties&quot;: {
+        ///        &quot;piece_maker&quot;: {
+        ///          &quot;type&quot;: &quot;reference&quot;,
+        ///          &quot;trellis&quot;: &quot;Piece_Maker&quot;
+        ///        }
+        ///      }
+        ///    },
+        ///    &quot;Distance_Conflict&quot;: {
+        ///      &quot;properties&quot;: {
+        ///        &quot;first&quot;: {
+        ///          &quot;type&quot;: &quot;reference&quot;,
+        ///          &quot;trellis&quot;: &quot;Spatial_Node&quot;
+        ///        },
+        ///        &quot;second&quot;:  [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string piece_maker {
+            get {
+                return ResourceManager.GetString("piece_maker", resourceCulture);
             }
         }
     }

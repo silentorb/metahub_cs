@@ -8,12 +8,12 @@ namespace metahub.imperative.schema
  */
 public class Dependency
 {
-	public Rail rail;
-	public bool allow_ambient = true;
+	public Dungeon dungeon;
+	public bool allow_partial = true;
 
-	public Dependency(Rail rail)
+    public Dependency(Dungeon dungeon)
 	{
-		this.rail = rail;
+		this.dungeon = dungeon;
 	}
 	
 }

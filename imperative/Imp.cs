@@ -51,13 +51,18 @@ namespace metahub.imperative
 
                 foreach (var rail in region.rails.Values)
                 {
-                    if (rail.is_external)
+                    if (rail.is_external || rail.trellis.is_abstract)
                         continue;
 
                     Dungeon dungeon = new Dungeon(rail, this);
                     dungeons.Add(dungeon);
                     rail_map[rail] = dungeon;
                 }
+            }
+
+            foreach (var dungeon in dungeons)
+            {
+                dungeon.initialize();
             }
 
             finalize();
@@ -82,7 +87,7 @@ namespace metahub.imperative
         {
             foreach (var dungeon in dungeons)
             {
-                dungeon.post_analyze_many(dungeon.code);
+                dungeon.analyze();
             }
         }
 
@@ -96,6 +101,9 @@ namespace metahub.imperative
 
         public Dungeon get_dungeon(Rail rail)
         {
+            if (!rail_map.ContainsKey(rail))
+                return null;
+
             return rail_map[rail];
         }
 
@@ -258,6 +266,26 @@ namespace metahub.imperative
         public static Node[] simplify_path(Node[] path)
         {
             return path.Where(t => t.type == Node_Type.property).ToArray();
+        }
+
+        public static Flow_Control If(Expression expression, List<Expression> children)
+        {
+            return new Flow_Control(Flow_Control_Type.If, expression, children);
+        }
+
+        public static Literal False()
+        {
+            return new Literal(false, new Signature(Kind.Bool));
+        }
+
+        public static Literal True()
+        {
+            return new Literal(true, new Signature(Kind.Bool));
+        }
+
+        public static Operation operation(string op, Expression first, Expression second)
+        {
+            return new Operation(op, new List<Expression>{ first, second});
         }
     }
 }

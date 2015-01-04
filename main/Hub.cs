@@ -3,17 +3,12 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Reflection;
 using Newtonsoft.Json;
 using metahub.Properties;
 using metahub.imperative;
-using metahub.imperative.types;
-using metahub.lab;
 using metahub.logic.schema;
 using metahub.logic;
-using metahub.logic.types;
 using metahub.parser;
-using metahub.parser.types;
 using metahub.render;
 using metahub.schema;
 using Namespace = metahub.schema.Namespace;
@@ -31,6 +26,7 @@ namespace metahub
         static Regex remove_comments = new Regex("#[^\n]*");
         public Namespace metahub_namespace;
         public int max_steps = 100;
+        public Dictionary<string, string> core_schemas = new Dictionary<string, string>(); 
 
         static List<Hub> instances = new List<Hub>();
 
@@ -40,6 +36,8 @@ namespace metahub
             schema = new Schema();
 
             metahub_namespace = schema.add_namespace("metahub");
+
+            core_schemas["piece_maker"] = Resources.piece_maker;
         }
 
         public void load_parser()
@@ -48,8 +46,7 @@ namespace metahub
             boot_definition.load_parser_schema();
             Bootstrap context = new Bootstrap(boot_definition);
 
-            var json = System.Text.Encoding.Default.GetString(Resources.metahub);//.Replace("\r", "");
-            var result = context.parse(json, false);
+            var result = context.parse(Resources.metahub, false);
             //Debug_Info.output(result);
             if (result.success)
             {
@@ -62,6 +59,26 @@ namespace metahub
             {
                 throw new Exception("Error loading parser.");
             }
+        }
+
+        string find_schema(string schema_name, string root)
+        {
+            var path = Path.Combine(root, schema_name + ".json");
+            if (File.Exists(path))
+                return File.ReadAllText(path);
+
+            var base_name = Path.GetFileNameWithoutExtension(schema_name);
+            if (core_schemas.ContainsKey(base_name))
+                return core_schemas[base_name];
+
+            throw new Exception("Could not find schema source for: " + schema_name);
+        }
+
+        public void load_schema(string schema_name, string root)
+        {
+            var source = find_schema(schema_name, root);
+            var space = schema.add_namespace(Path.GetFileNameWithoutExtension(schema_name));
+            load_schema_from_string(source, space);
         }
 
         public void load_schema_from_file(string url, Namespace space, bool auto_identity = false)

@@ -21,7 +21,7 @@ namespace metahub.imperative.code
             var dungeon = imp.get_dungeon(tie.rail);
             var root_block = dungeon.get_block("class_definition");
 
-            var function_name = tie.tie_name + "_add";
+            var function_name = "add_" + tie.tie_name;
             var function_scope = new Scope(scope);
             var item = function_scope.create_symbol("item", tie.get_other_signature());
             var origin = function_scope.create_symbol("origin", new Signature(Kind.reference));
@@ -33,14 +33,13 @@ namespace metahub.imperative.code
             var block = dungeon.create_block(function_name, scope, definition.expressions);
             var mid = block.divide(null, new List<Expression> {
 			new Property_Expression(tie,
-				new Function_Call("add",new List<Expression>{ new Variable(item) }, true)
+				new Function_Call("add",new Expression[]{ new Variable(item) }, true)
 			)
 		});
             var post = block.divide("post");
 
             if (tie.other_tie != null)
             {
-                //throw "";
                 mid.add(
                     new Flow_Control(Flow_Control_Type.If, new Operation("!=", new List<Expression>
                 {
@@ -109,7 +108,7 @@ namespace metahub.imperative.code
 
             var item_name = second_end.rail.name.ToLower() + "_item";
 
-            var function_block = imp.get_dungeon(a_end.rail).get_block(a_end.tie_name + "_add");
+            var function_block = imp.get_dungeon(a_end.rail).get_block("add_" + a_end.tie_name);
             var new_scope = new Scope(function_block.scope);
             var item = new_scope.create_symbol("item", second_end.get_other_signature());
             var item2 = new_scope.create_symbol("item", second_end.get_other_signature());
@@ -128,7 +127,7 @@ namespace metahub.imperative.code
                     var first_tie = a_end.other_rail.get_tie_or_error(((Property_Reference) first[1]).tie.name);
                     var second = (Property_Reference)Imp.simplify_path(constraint.second)[0];
                     //var second_tie = second.children[] as Property_Reference;
-                    creation_block.Add(new Variable(item2, new Function_Call("set_" + first_tie.name, new List<Expression>
+                    creation_block.Add(new Variable(item2, new Function_Call("set_" + first_tie.name, new Expression[]
                         {
                         new Variable(item, new Property_Expression(second_end.other_rail.get_tie_or_error(second.tie.name)))
                         }
@@ -141,8 +140,8 @@ namespace metahub.imperative.code
             creation_block = creation_block.Union(new List<Expression>{
 			new Variable(item2, new Function_Call("initialize")),
 			new Property_Expression(c.First(),
-				new Function_Call(second_end.tie_name + "_add",
-				new List<Expression> { new Variable(item2), new Self(dungeon)}))
+				new Function_Call("add_" + second_end.tie_name,
+				new Expression[] { new Variable(item2), new Self(dungeon)}))
 		}).ToList();
 
             List<Expression> block = new List<Expression> {
@@ -188,7 +187,7 @@ namespace metahub.imperative.code
         }), new List<Expression> {
 			new Declare_Variable(child, new Instantiate(rail)),
 			new Variable(child, new Function_Call("initialize")),
-			new Function_Call(reference.tie_name + "_add",
+			new Function_Call("add_" + reference.tie_name,
 			new List<Expression> { new Variable(child), new Null_Value() })
 	});
 

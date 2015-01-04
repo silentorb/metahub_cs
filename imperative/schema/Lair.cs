@@ -32,7 +32,7 @@ namespace metahub.imperative.schema
                                                      : null
                     );
                 block.add(new Assignment(reference, "=", new Function_Call("rand",
-                    new List<Expression>
+                    new Expression[]
 	                {
 	                    new Literal(range.min,
 	                                new Signature {type = Kind.Float}),

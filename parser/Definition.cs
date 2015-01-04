@@ -137,8 +137,7 @@ namespace metahub.parser
 
         public void load_parser_schema()
         {
-            var data = System.Text.Encoding.Default.GetString(Resources.parser);
-            load(JsonConvert.DeserializeObject<Dictionary<string, Pattern_Source>>(data));
+            load(JsonConvert.DeserializeObject<Dictionary<string, Pattern_Source>>(Resources.parser));
         }
 
     }

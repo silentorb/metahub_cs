@@ -17,7 +17,9 @@ namespace metahub.imperative.schema
 {
     public class Dungeon
     {
+        public string name;
         public Rail rail;
+        public Dungeon parent;
         public List<Expression> code;
         public Region region;
         public Trellis trellis;
@@ -27,12 +29,15 @@ namespace metahub.imperative.schema
         public Imp imp;
         public Dictionary<string, Lair> lairs = new Dictionary<string, Lair>();
         public Dictionary<string, Used_Function> used_functions = new Dictionary<string, Used_Function>();
+        public Dictionary<string, Dependency> dependencies = new Dictionary<string, Dependency>();
 
         public Dungeon(Rail rail, Imp imp)
         {
             this.rail = rail;
             this.imp = imp;
-            this.region = rail.region;
+
+            name = rail.name;
+            region = rail.region;
             trellis = rail.trellis;
 
             map_additional();
@@ -42,6 +47,35 @@ namespace metahub.imperative.schema
                 Lair lair = new Lair(tie, this);
                 lairs[tie.name] = lair;
             }
+        }
+
+        public void initialize()
+        {
+            if (rail.parent != null)
+                parent = imp.get_dungeon(rail.parent);
+        }
+
+        public Dependency add_dependency(Dungeon dungeon)
+        {
+            if (dungeon == this)
+                return null;
+
+            if (!dependencies.ContainsKey(dungeon.name))
+                dependencies[dungeon.name] = new Dependency(dungeon);
+
+            return dependencies[dungeon.name];
+        }
+
+        public Dependency add_dependency(Rail rail)
+        {
+            if (rail == null)
+                return null;
+
+            var dungeon = imp.get_dungeon(rail);
+            if (dungeon == null)
+                return null;
+
+            return add_dependency(dungeon);
         }
 
         void map_additional()
@@ -202,7 +236,7 @@ namespace metahub.imperative.schema
                     new Variable(origin), new Variable(value)
                 }), new List<Expression> {
                         new Property_Expression(tie,
-                        new Function_Call(tie.other_tie.tie_name + "_add", new List<Expression> { new Self(dungeon), new Self(dungeon) }))
+                        new Function_Call("add_" + tie.other_tie.tie_name, new List<Expression> { new Self(dungeon), new Self(dungeon) }))
                     
                     }));
                 }
@@ -246,66 +280,91 @@ namespace metahub.imperative.schema
             return new Function_Definition("initialize", this, new List<Parameter>(), expressions);
         }
 
-        public void post_analyze(Expression expression)
+        public void analyze()
+        {
+            if (rail.parent != null && !rail.parent.trellis.is_abstract)
+            {
+                add_dependency(imp.get_dungeon(rail.parent)).allow_partial = false;
+            }
+
+            foreach (var lair in lairs.Values)
+            {
+                var tie = lair.tie;
+                if (tie.other_tie != null && !tie.other_rail.trellis.is_abstract)
+                {
+                    add_dependency(tie.other_rail);
+                }
+            }
+
+            analyze_expressions(code);
+        }
+
+        void analyze_expression(Expression expression)
         {
             switch (expression.type)
             {
 
                 case Expression_Type.space:
-                    post_analyze_many(((Namespace)expression).expressions);
+                    analyze_expressions(((Namespace)expression).expressions);
                     break;
 
                 case Expression_Type.class_definition:
-                    post_analyze_many(((Class_Definition)expression).expressions);
+                    analyze_expressions(((Class_Definition)expression).expressions);
                     break;
 
                 case Expression_Type.function_definition:
-                    post_analyze_many(((Function_Definition)expression).expressions);
+                    analyze_expressions(((Function_Definition)expression).expressions);
                     break;
 
                 case Expression_Type.operation:
-                    post_analyze_many(((Operation)expression).expressions);
+                    analyze_expressions(((Operation)expression).expressions);
                     break;
 
                 case Expression_Type.flow_control:
-                    post_analyze(((Flow_Control)expression).expression);
-                    post_analyze_many(((Flow_Control)expression).children);
+                    analyze_expression(((Flow_Control)expression).expression);
+                    analyze_expressions(((Flow_Control)expression).children);
                     break;
 
                 case Expression_Type.function_call:
                     var definition = (Function_Call)expression;
-                    //trace("func", definition.name);
                     if (definition.is_platform_specific && !used_functions.ContainsKey(definition.name))
                         used_functions[definition.name] = new Used_Function(definition.name, definition.is_platform_specific);
 
-                    foreach (var arg in definition.args)
-                    {
-                        post_analyze(arg);
-                        //throw new Exception("Not implemented.");
-                        //if (arg.ContainsKey("type"))
-                        //    post_analyze(arg);
-                    }
+                    analyze_expressions(definition.args);
+                    break;
+
+                case Expression_Type.property_function_call:
+                    var property_function = (Property_Function_Call)expression;
+                    analyze_expressions(property_function.args);
                     break;
 
                 case Expression_Type.assignment:
-                    post_analyze(((Assignment)expression).expression);
+                    analyze_expression(((Assignment)expression).expression);
                     break;
 
                 case Expression_Type.declare_variable:
-                    post_analyze(((Declare_Variable)expression).expression);
+                    var declare_variable = (Declare_Variable) expression;
+                    add_dependency(declare_variable.symbol.signature.rail);
+                    analyze_expression(declare_variable.expression);
                     break;
 
-                //case Expression_Type.property:
-                //Property_Reference property_expression = Node;
-                //result = property_expression.tie.tie_name;
+                case Expression_Type.property:
+                    var property_expression =(Property_Expression) expression;
+                    add_dependency(property_expression.tie.rail);
+                    break;
+
+                case Expression_Type.variable:
+                    var variable_expression = (Variable)expression;
+                    add_dependency(variable_expression.symbol.signature.rail);
+                    break;
             }
         }
 
-        public void post_analyze_many(IEnumerable<Expression> expressions)
+        void analyze_expressions(IEnumerable<Expression> expressions)
         {
             foreach (var expression in expressions)
             {
-                post_analyze(expression);
+                analyze_expression(expression);
             }
         }
     }

@@ -159,11 +159,13 @@
     <None Include="main\app.config" />
     <None Include="resources\metahub.grammar" />
     <None Include="resources\parser.json" />
+    <None Include="resources\piece_maker.json" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup />

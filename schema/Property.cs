@@ -105,19 +105,18 @@ namespace metahub.schema
                 {
                     other_property = other_trellis.add_property(source.other_property, new IProperty_Source
                     {
-                        type = source.other_type,
+                        type = source.other_type ?? "reference",
                         trellis = trellis.name,
                         other_property = name
                     });
-                    other_property.other_trellis = trellis;
+                    other_property.other_trellis = trellis.get_real();
                     other_property.other_property = this;
                     other_trellis.properties.Add(other_property);
                 }
             }
             else
             {
-
-                var other_properties = other_trellis.properties.Where(p => p.other_trellis == trellis);
+                var other_properties = other_trellis.properties.Where(p => p.other_trellis == trellis).ToArray();
                 //        throw new Exception("Could not find other property for " + this.trellis.name + "." + this.name + ".");
 
                 if (other_properties.Count() > 1)
@@ -128,7 +127,7 @@ namespace metahub.schema
                 else if (other_properties.Count() == 1)
                 {
                     other_property = other_properties.First();
-                    other_property.other_trellis = trellis;
+                    other_property.other_trellis = trellis.get_real();
                     other_property.other_property = this;
                 }
                 else

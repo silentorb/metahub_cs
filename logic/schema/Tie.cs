@@ -99,7 +99,7 @@ namespace metahub.logic.schema
 
             return new Signature
             {
-                type = other_type,
+                type = type == Kind.list && other_type == Kind.list ? Kind.reference : other_type,
                 rail = other_rail,
                 is_value = is_value
             };

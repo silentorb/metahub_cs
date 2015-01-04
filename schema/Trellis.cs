@@ -7,14 +7,13 @@ namespace metahub.schema
     public class ITrellis_Source
     {
         public string name;
-        //Dictionary properties<string; Dictionary<string, object>>;
         public Dictionary<string, IProperty_Source> properties;
         public string parent;
         public string primary_key;
         public bool? is_value;
+        public bool? is_abstract;
     }
 
-    //struct Identity UInt;
     public class Trellis
     {
         public string name;
@@ -31,6 +30,8 @@ namespace metahub.schema
         public List<string> events;
         public bool is_numeric = false;
         List<Trellis> _tree = null;
+        public bool is_abstract = false;
+        protected Trellis implementation;
 
         public Trellis(string name, Schema schema, Namespace space)
         {
@@ -48,13 +49,7 @@ namespace metahub.schema
             core_properties.Add(property);
             return property;
         }
-
-        //public void copy_identity(object source, object target)
-        //{
-        //    var identity_key = identity_property.name;
-        //   target.identity_key = source[identity_key];
-        //}
-
+        
         public Dictionary<string, Property> get_all_properties()
         {
             return property_keys;
@@ -69,14 +64,6 @@ namespace metahub.schema
             //}
             //return result;
         }
-
-        //public void get_identity(object seed)
-        //{
-        //    if (identity_property == null)
-        //        throw new Exception("This trellis does not have an identity property set.");
-
-        //    return seed[identity_property.name];
-        //}
 
         public Property get_property(string name)
         {
@@ -136,6 +123,11 @@ namespace metahub.schema
             return false;
         }
 
+        public Trellis get_real()
+        {
+            return implementation ?? this;
+        }
+
         public void load_properties(ITrellis_Source source)
         {
             if (source.properties == null)
@@ -149,6 +141,12 @@ namespace metahub.schema
 
         public void initialize1(ITrellis_Source source, Namespace space)
         {
+            if (source.is_abstract.HasValue)
+                is_abstract = source.is_abstract.Value;
+
+            if (source.is_value.HasValue)
+                is_value = source.is_value.Value;
+
             if (source.parent != null)
             {
                 var trellis = this.schema.get_trellis(source.parent, space);
@@ -174,7 +172,7 @@ namespace metahub.schema
                 }
             }
 
-            var tree = this.get_tree();
+            var tree = get_tree();
             int index = 0;
             foreach (var trellis in tree)
             {
@@ -198,12 +196,8 @@ namespace metahub.schema
 
         public void initialize2(ITrellis_Source source)
         {
-            if (source.is_value.HasValue)
-                is_value = source.is_value.Value;
-            else if (parent != null)
-            {
+            if (!source.is_value.HasValue && parent != null)
                 is_value = parent.is_value;
-            }
 
             if (source.properties != null)
             {
@@ -220,6 +214,23 @@ namespace metahub.schema
         void set_parent(Trellis parent)
         {
             this.parent = parent;
+            if (parent.is_abstract && !is_abstract)
+            {
+                parent.implementation = this;
+                //foreach (var child_space in schema.root_namespace.children)
+                //{
+                //    for
+                //}
+
+                foreach (var property in parent.properties)
+                {
+                    if (property.other_property != null)
+                    {
+                        property.other_property.other_trellis = this;
+                        property.other_property.other_property = get_property_or_error(property.name);
+                    }
+                }
+            }
 
             //    if (!parent.identity)
             //      throw new Exception(new Error(parent.name + " needs a primary key when being inherited by " + this.name + "."));
@@ -227,28 +238,9 @@ namespace metahub.schema
             //    this.identity = parent.identity.map((x) => x.clone(this))
         }
 
-        //public General_Port get_port (int index) {
-        //return ports[index];
-        //}
-        //
-        //public int get_port_count () {
-        //return ports.Count;
-        //}
-
         public string to_string()
         {
             return name;
         }
-
-        //public Context resolve (Context context) {
-        //throw new Exception("Not implemented.");
-        //}
-        //
-        //public void on_create_node (Context context) {
-        //foreach (var port in on_create_ports) {
-        //port.get_node_value(context);
-        //}
-        //}
-
     }
 }

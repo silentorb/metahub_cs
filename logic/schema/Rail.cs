@@ -29,7 +29,6 @@ namespace metahub.logic.schema
         public Trellis trellis;
         public string name;
         public string rail_name;
-        public Dictionary<string, Dependency> dependencies = new Dictionary<string, Dependency>();
         public Dictionary<string, Tie> core_ties = new Dictionary<string, Tie>();
         public Dictionary<string, Tie> all_ties = new Dictionary<string, Tie>();
         public Railway railway;
@@ -106,11 +105,12 @@ namespace metahub.logic.schema
 
         public void process1()
         {
-            if (trellis.parent != null)
+            if (trellis.parent != null && !trellis.parent.is_abstract)
             {
                 parent = railway.get_rail(trellis.parent);
-                add_dependency(parent).allow_ambient = false;
+                //add_dependency(parent).allow_partial = false;
             }
+
             foreach (var property in trellis.properties)
             {
                 Tie tie = new Tie(this, property);
@@ -118,12 +118,6 @@ namespace metahub.logic.schema
                 if (property.trellis == trellis)
                 {
                     core_ties[tie.name] = tie;
-                    if (property.other_trellis != null)
-                    {
-                        var dependency = add_dependency(railway.get_rail(property.other_trellis));
-                        if (property.type == Kind.list)
-                            dependency.allow_ambient = false;
-                    }
                 }
             }
         }
@@ -134,14 +128,6 @@ namespace metahub.logic.schema
             {
                 tie.initialize_links();
             }
-        }
-
-        private Dependency add_dependency(Rail rail)
-        {
-            if (!dependencies.ContainsKey(rail.name))
-                dependencies[rail.name] = new Dependency(rail);
-
-            return dependencies[rail.name];
         }
 
         public void finalize()

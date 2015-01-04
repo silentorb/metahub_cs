@@ -112,19 +112,19 @@ namespace metahub.imperative.code
 				new Parameter(value)
 			}, new List<Expression>
 			    {
-			        new Flow_Control(Flow_Control_Type.If, new Operation("==", new List<Expression>
+			        Imp.If(new Operation("==", new List<Expression>
 			            {
 			                new Property_Expression(property_reference.tie.other_tie),
                             new Null_Value()
 			            }), new List<Expression>{ 
-                            new Statement("return", new Literal(true, new Signature(Kind.Bool)))
+                            new Statement("return", Imp.True())
                         }),
                     new Iterator(it, 
                         new Property_Expression(property_reference.tie.other_tie, 
                             new Property_Expression(property_reference.tie)), 
                         new List<Expression>
                         {
-                            new Flow_Control(Flow_Control_Type.If, new Operation("==", new List<Expression>
+                            Imp.If(new Operation("==", new List<Expression>
                                 {
                                     new Variable(it), new Self(dungeon)
                                 }), new List<Expression>
@@ -139,7 +139,7 @@ namespace metahub.imperative.code
             );
 
             var setter_block = dungeon.get_block("set_" + property_reference.tie.other_tie.tie_name);
-            setter_block.add("post", new Function_Call(function_name, new List<Expression>
+            setter_block.add("post", new Function_Call(function_name, new Expression[]
                 {
                     new Property_Expression(constraint.endpoints.First())
                 })
@@ -150,7 +150,7 @@ namespace metahub.imperative.code
                 {
                     new Flow_Control(Flow_Control_Type.If, 
                     new Operation("==", new List<Expression>{ 
-                    new Function_Call(function_name, new List<Expression>
+                    new Function_Call(function_name, new Expression[]
                         {
                             new Variable(scope.find("value"))
                         }),
@@ -168,33 +168,25 @@ namespace metahub.imperative.code
             var offset = scope.create_symbol("offset", value.signature);
             return new List<Expression>
             {
-                new Flow_Control(Flow_Control_Type.If,
-                    new Operation(inverse_operators[constraint.op], new List<Expression>
-                    {
+                Imp.If(Imp.operation(inverse_operators[constraint.op], 
                         new Variable(it, new Property_Expression(constraint.endpoints.Last(),
                             new Function_Call("dist",
-                                new List<Expression>
-                                {
-                                    new Variable(value)
-                                }, true))),
+                                new List<Expression> { new Variable(value) }, true))),
                         imp.translate(constraint.second.First(), scope)
-                    }),
+                    ),
                     new List<Expression>
                     {
-                        new Declare_Variable(offset,new Operation("/", new List<Expression>{ new Operation("+", new List<Expression>
-                        {
+                        new Declare_Variable(offset, Imp.operation("/", Imp.operation("+",
                             new Variable(it, new Property_Expression(constraint.endpoints.Last())),
                             new Variable(value)
-                        }), new Literal(2, new Signature(Kind.Float))})),
+                        ), new Literal(2, new Signature(Kind.Float)))),
                             new Variable(it, new Property_Function_Call(Property_Function_Type.set, tie, new List<Expression>
-                                { new Operation("+", new List<Expression> {
+                                { Imp.operation("+",
                                     new Variable(it, new Property_Expression(constraint.endpoints.Last())),
-                                    new Variable(offset)}) })),
+                                    new Variable(offset)) })),
                             new Property_Function_Call(Property_Function_Type.set, tie, new List<Expression>
-                                { new Operation("+", new List<Expression> {
-                                    new Variable(value),
-                                    new Variable(offset)}) }),
-                            new Statement("return", new Literal(false, new Signature(Kind.Bool)))
+                                { Imp.operation("+", new Variable(value), new Variable(offset)) }),
+                            new Statement("return", Imp.False())
 
                     })
             };

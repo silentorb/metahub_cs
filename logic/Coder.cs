@@ -367,7 +367,8 @@ namespace metahub.logic
             if (source.patterns.Length < 2)
                 return convert_expression(source.patterns[0], scope);
 
-            throw new Exception("Not implemented.");
+            //throw new Exception("Not implemented.");
+            return new Operation_Node(source.text, source.patterns.Select(p=>convert_expression(p, scope)));
 
             //var rep_match = (Repetition_Match)match;
             //string op = rep_match.dividers[0].matches[1].get_data().text;

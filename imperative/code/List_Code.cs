@@ -13,7 +13,6 @@ using Variable = metahub.imperative.types.Variable;
 
 namespace metahub.imperative.code
 {
-
     public class List_Code
     {
         public static void common_functions(Tie tie, Imp imp, Scope scope)
@@ -43,7 +42,7 @@ namespace metahub.imperative.code
             {
                 //throw "";
                 mid.add(
-                    new Flow_Control(Flow_Control_Type.If, new Condition("!=", new List<Expression>
+                    new Flow_Control(Flow_Control_Type.If, new Operation("!=", new List<Expression>
                 {
                     new Variable(origin), new Variable(item)
                 }), new List<Expression> {
@@ -51,8 +50,8 @@ namespace metahub.imperative.code
                         new Property_Function_Call(Property_Function_Type.set,  tie.other_tie,
                             new List<Expression>
                                 {
-                                    new Self(),
-                                    new Self()
+                                    new Self(dungeon),
+                                    new Self(dungeon)
                                 }))
                 }));
             }
@@ -138,15 +137,16 @@ namespace metahub.imperative.code
                 }
             }
 
+            var dungeon = imp.get_dungeon(second_end.rail);
             creation_block = creation_block.Union(new List<Expression>{
 			new Variable(item2, new Function_Call("initialize")),
 			new Property_Expression(c.First(),
 				new Function_Call(second_end.tie_name + "_add",
-				new List<Expression> { new Variable(item2), new Self()}))
+				new List<Expression> { new Variable(item2), new Self(dungeon)}))
 		}).ToList();
 
             List<Expression> block = new List<Expression> {
-				new Flow_Control(Flow_Control_Type.If, new Condition("!=", new List<Expression> {
+				new Flow_Control(Flow_Control_Type.If, new Operation("!=", new List<Expression> {
 				new Variable(origin), new Property_Expression(c.First())}), creation_block)
 		};
 
@@ -154,7 +154,7 @@ namespace metahub.imperative.code
             {
                 block = new List<Expression> {
 				new Flow_Control(Flow_Control_Type.If, 
-					new Condition("!=", new List<Expression> { new Property_Expression(a_start.other_tie),
+					new Operation("!=", new List<Expression> { new Property_Expression(a_start.other_tie),
 					new Null_Value() }), block
 				)
 			};
@@ -177,10 +177,10 @@ namespace metahub.imperative.code
             //const string child = "child";
             var new_scope = new Scope(block.scope);
             var child = new_scope.create_symbol("child", new Signature(Kind.reference, rail));
-            var logic_scope = new metahub.logic.Scope();
+            var logic_scope = new Scope();
             var imp_ref = (Property_Expression)imp.convert_path(Imp.simplify_path(constraint.first), logic_scope);
             imp_ref.child = new Function_Call("count", null, true);
-            Flow_Control flow_control = new Flow_Control(Flow_Control_Type.While, new Condition("<",
+            Flow_Control flow_control = new Flow_Control(Flow_Control_Type.While, new Operation("<",
             new List<Expression>{
 				imp_ref,
 				//{ type: "path", path: constraint.reference },

@@ -36,11 +36,11 @@ namespace metahub.parser
 
         public override object perform_action(string name, Pattern_Source data, Match match)
         {
-            
+
             switch (match.pattern.name)
             {
                 case "reference":
-                    data = expression(data, match);
+                    data = reference(data, (Repetition_Match)match);
                     break;
 
                 case "start":
@@ -51,6 +51,10 @@ namespace metahub.parser
                 case "parameters":
                 case "long_block":
                     data = data.patterns[2];
+                    break;
+
+                case "expression":
+                    expression(data, (Repetition_Match)match);
                     break;
             }
 
@@ -166,45 +170,95 @@ namespace metahub.parser
         //    };
         //}
 
-        static Pattern_Source expression(Pattern_Source data, Match match)
+        static Pattern_Source reference(Pattern_Source data, Repetition_Match match)
         {
             if (data.patterns.Length < 2)
+                //return data;
                 return data.patterns[0];
 
-            var rep_match = (Repetition_Match)match;
+            var rep_match = match;
             //string op = rep_match.dividers[0].matches[1].get_data().text;
-            var dividers = rep_match.dividers.Select(d => d.matches[0].get_data()).ToArray();
+            var dividers = rep_match.dividers
+                .Select(d => d.matches.First(m => m.pattern.name != "trim").get_data().text).ToList();
+
+
             for (var i = 1; i < data.patterns.Length; ++i)
             {
                 var divider = dividers[i - 1];
-                if (divider.text == "|")
+                if (divider == "|")
                 {
                     data.patterns[i].type = "function";
                 }
             }
-                return data;
-            //if (op == "|")
-            //{
-            //    var function_name = data.patterns.Last();
-            //    data = ;
-            //    var block = ((Parser_Block) function_name);
 
-            //    return new Parser_Function_Call
-            //        {
-            //            type = "function",
-            //            name = block.expressions[0].name,
-            //            inputs = data.patterns.Take(data.patterns.Length - 1).ToArray()
-            //        };
-            //}
-            //else
+            return data;
+        }
+
+        static Pattern_Source expression(Pattern_Source data, Repetition_Match match)
+        {
+            if (data.patterns.Length < 2)
+                //return data;
+                return data;
+
+            var rep_match = match;
+            //string op = rep_match.dividers[0].matches[1].get_data().text;
+            var dividers = rep_match.dividers
+                .Select(d => d.matches.First(m => m.pattern.name != "trim").get_data().text).ToList();
+
+            //var has_operators = false;
+
+            //for (var i = 1; i < data.patterns.Length; ++i)
             //{
-            //    return new Parser_Function_Call
-            //        {
-            //            type = "function",
-            //            name = op,
-            //            inputs = data
-            //        };
+            //    var divider = dividers[i - 1];
+            //    if (divider == "|" || divider == "," || )
+            //    {
+            //        data.patterns[i].type = "function";
+            //    }
+            //    else if (divider != ".")
+            //    {
+            //        has_operators = true;
+            //        break;
+            //    }
             //}
+
+            //if (!has_operators)
+                //return data;
+
+            var patterns = data.patterns.ToList();
+            group_operators(new [] { "/", "*" }, patterns, dividers);
+            group_operators(new [] { "+", "-" }, patterns, dividers);
+            data.patterns = patterns.ToArray();
+
+            return data;
+        }
+
+       static void group_operators(string[] operators, List<Pattern_Source> patterns, List<string> dividers)
+        {
+            var i = 0;
+            for (var d = 0; d < dividers.Count; ++d)
+            {
+                var divider = dividers[d];
+                if (operators.Contains(divider))
+                {
+                    patterns[i] = new Pattern_Source()
+                        {
+                            type = "expression",
+                            text = divider,
+                            patterns = new[]
+                                {
+                                    patterns[i],
+                                    patterns[i + 1]
+                                }
+                        };
+                    patterns.RemoveAt(i + 1);
+                    dividers.RemoveAt(d);
+                    --d;
+                }
+                else
+                {
+                    ++i;
+                }
+            }
         }
 
         //static Parser_Condition condition(Pattern_Source data)

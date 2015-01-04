@@ -5,6 +5,7 @@ using metahub.logic.types;
 namespace metahub.imperative.types
 {
 
+    public delegate Expression Expression_Generator();
 /**
  * @author Christopher W. Johnson
  */

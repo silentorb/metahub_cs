@@ -48,10 +48,12 @@
     <Compile Include="imperative\schema\Block.cs" />
     <Compile Include="imperative\schema\Division.cs" />
     <Compile Include="imperative\schema\Symbol.cs" />
+    <Compile Include="imperative\types\Operation.cs" />
     <Compile Include="imperative\types\Property_Function_Call.cs" />
     <Compile Include="imperative\types\Iterator.cs" />
     <Compile Include="logic\Logician.cs" />
     <Compile Include="logic\types\Constraint_Wrapper.cs" />
+    <Compile Include="logic\types\Operation_Node.cs" />
     <Compile Include="main\Hub.cs" />
     <Compile Include="imperative\code\List_Code.cs" />
     <Compile Include="imperative\code\Parse.cs" />
@@ -66,7 +68,6 @@
     <Compile Include="imperative\types\Anonymous_Function.cs" />
     <Compile Include="imperative\types\Assignment.cs" />
     <Compile Include="imperative\types\Class_Definition.cs" />
-    <Compile Include="imperative\types\Condition.cs" />
     <Compile Include="imperative\types\Create_Array.cs" />
     <Compile Include="imperative\types\Declare_Variable.cs" />
     <Compile Include="imperative\types\Expression.cs" />

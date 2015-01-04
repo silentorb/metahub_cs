@@ -1,13 +1,16 @@
 using System;
 using System.Collections.Generic;
+using metahub.imperative.types;
 using metahub.logic.schema;
 
 namespace metahub.imperative.schema
 {
+
     public class Scope
     {
         public Scope parent;
         Dictionary<string, Symbol> symbols = new Dictionary<string, Symbol>();
+        Dictionary<string, Expression_Generator> map = new Dictionary<string, Expression_Generator>();
 
         public Scope(Scope parent = null)
         {
@@ -31,6 +34,11 @@ namespace metahub.imperative.schema
             return symbol;
         }
 
+        public void add_map(string name, Expression_Generator generator)
+        {
+            map[name] = generator;
+        }
+
         public bool exists(string name)
         {
             return symbols.ContainsKey(name) || (parent != null && parent.exists(name));
@@ -46,6 +54,11 @@ namespace metahub.imperative.schema
 
             throw new Exception("Could not find symbol " + name + ".");
             //return null;
+        }
+
+        public Expression resolve(string name)
+        {
+            return map[name]();
         }
     }
 }

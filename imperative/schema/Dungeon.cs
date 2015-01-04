@@ -174,7 +174,7 @@ namespace metahub.imperative.schema
             var pre = block.divide("pre");
 
             var mid = block.divide(null, new List<Expression> {
-			new Flow_Control(Flow_Control_Type.If, new Condition("==", new List<Expression> {
+			new Flow_Control(Flow_Control_Type.If, new Operation("==", new List<Expression> {
 					new Property_Expression(tie), new Variable(value)
             }),
 				new List<Expression>{
@@ -187,21 +187,22 @@ namespace metahub.imperative.schema
             {
                 var origin = function_scope.create_symbol("origin", new Signature(Kind.reference));
                 parameters.Add(new Parameter(origin, new Null_Value()));
+                var dungeon = imp.get_dungeon(tie.rail);
    
                 if (tie.other_tie.type == Kind.reference)
                 {
                     mid.add(new Property_Expression(tie,
-                        new Function_Call("set_" + tie.other_tie.tie_name, new List<Expression> { new Self() })
+                        new Function_Call("set_" + tie.other_tie.tie_name, new List<Expression> { new Self(dungeon) })
                     ));
                 }
                 else
                 {
-                    mid.add(new Flow_Control(Flow_Control_Type.If, new Condition("!=", new List<Expression>
+                    mid.add(new Flow_Control(Flow_Control_Type.If, new Operation("!=", new List<Expression>
                 {
                     new Variable(origin), new Variable(value)
                 }), new List<Expression> {
                         new Property_Expression(tie,
-                        new Function_Call(tie.other_tie.tie_name + "_add", new List<Expression> { new Self(), new Self() }))
+                        new Function_Call(tie.other_tie.tie_name + "_add", new List<Expression> { new Self(dungeon), new Self(dungeon) }))
                     
                     }));
                 }
@@ -262,8 +263,8 @@ namespace metahub.imperative.schema
                     post_analyze_many(((Function_Definition)expression).expressions);
                     break;
 
-                case Expression_Type.condition:
-                    post_analyze_many(((Condition)expression).expressions);
+                case Expression_Type.operation:
+                    post_analyze_many(((Operation)expression).expressions);
                     break;
 
                 case Expression_Type.flow_control:
@@ -300,7 +301,7 @@ namespace metahub.imperative.schema
             }
         }
 
-        public void post_analyze_many(List<Expression> expressions)
+        public void post_analyze_many(IEnumerable<Expression> expressions)
         {
             foreach (var expression in expressions)
             {

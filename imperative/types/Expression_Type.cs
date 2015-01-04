@@ -10,7 +10,7 @@ namespace metahub.imperative.types
         property_function_call,
         instantiate,
         parent_class,
-        condition,
+        operation,
         create_array,
         null_value,
         self,

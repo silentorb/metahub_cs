@@ -481,7 +481,9 @@ namespace metahub.render.targets.cpp
             }
             else
             {
-                return "std::vector<" + other_name + ">";
+                return "std::vector<" + (tie.is_value
+                ? other_name
+                : other_name + "*") + ">";
             }
         }
 
@@ -531,7 +533,10 @@ namespace metahub.render.targets.cpp
             }
             else
             {
-                return "std::vector<" + name + ">";
+                return "std::vector<" + (signature.rail.trellis.is_value
+                ? name
+                : name + "*")
+                + ">";
             }
         }
 
@@ -624,15 +629,19 @@ namespace metahub.render.targets.cpp
             var result = render_scope2(
                 "for (" + expression + ")"
             , new List<Expression> { 
-                    new Declare_Variable(parameter, new Insert(it.name + "._Ptr"))
+                    new Declare_Variable(parameter, new Insert("*" + it.name))
                 }.Concat(statement.children).ToList()
             );
             return result;
         }
 
-        string render_condition(Condition condition)
+        string render_operation(Operation operation)
         {
-            return condition.expressions.Select(c => render_expression(c)).join(" " + condition.op + " ");
+            return operation.expressions.Select(c =>
+                c.type == Expression_Type.operation && ((Operation)c).is_condition() == operation.is_condition()
+                ? "(" + render_expression(c) + ")"
+                : render_expression(c)
+            ).join(" " + operation.op + " ");
         }
 
         string render_iterator(Symbol parameter, Expression expression)
@@ -654,8 +663,8 @@ namespace metahub.render.targets.cpp
                 case Expression_Type.literal:
                     return render_literal((Literal)expression);
 
-                case Expression_Type.condition:
-                    return render_condition((Condition)expression);
+                case Expression_Type.operation:
+                    return render_operation((Operation)expression);
 
                 case Expression_Type.path:
                     result = render_path_old((Path)expression);
@@ -765,7 +774,8 @@ namespace metahub.render.targets.cpp
                     return property_expression.tie.get_signature();
 
                 default:
-                    throw new Exception("Determining pointer is not yet implemented for Node type: " + expression.type + ".");
+                    return expression.get_signature();
+                    //throw new Exception("Determining pointer is not yet implemented for Node type: " + expression.type + ".");
             }
         }
 
@@ -821,8 +831,8 @@ namespace metahub.render.targets.cpp
                     case "add":
                         {
                             var first = render_expression(expression.args[0]);
-                            var dereference = is_pointer(expression.args.Last().get_signature()) ? "*" : "";
-                            return "push_back(" + dereference + first + ")";
+                            //var dereference = is_pointer(expression.args.Last().get_signature()) ? "*" : "";
+                            return "push_back(" + first + ")";
                         }
                     case "dist":
                         {

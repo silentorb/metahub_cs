@@ -34,7 +34,7 @@ namespace metahub.imperative.code
             if (first_last.type == Node_Type.function_call
                 && ((metahub.logic.types.Function_Call)first_last).name == "dist")
             {
-                return dist(constraint, tie, imp, scope);
+                return cross(constraint, tie, imp, scope);
             }
             else
             {
@@ -81,7 +81,7 @@ namespace metahub.imperative.code
                     break;
             }
 
-            return new List<Expression> { new Flow_Control(Flow_Control_Type.If, new Condition(inverse,
+            return new List<Expression> { new Flow_Control(Flow_Control_Type.If, new Operation(inverse,
 				new List<Expression> {
 					reference,
 				new Literal(limit, new Signature(Kind.Float))
@@ -92,16 +92,18 @@ namespace metahub.imperative.code
 		    )};
         }
 
-        public static List<Expression> dist(Constraint constraint, Tie tie, Imp imp, Scope scope)
+        public static List<Expression> cross(Constraint constraint, Tie tie, Imp imp, Scope scope)
         {
             //var dungeon = imp.get_dungeon(tie.rail);
             //dungeon.concat_block(tie.tie_name + "_set_pre", Reference.constraint(constraint, this));
             var property_reference = (metahub.logic.types.Property_Reference)constraint.caller.First();
+            var dungeon = imp.get_dungeon(tie.rail);
 
             var iterator_scope = new Scope(scope);
             var it = iterator_scope.create_symbol("item", new Signature(Kind.reference, property_reference.tie.other_rail));
+            iterator_scope.add_map("a", () => new Variable(it));
+            iterator_scope.add_map("b", () => new Self(dungeon));
 
-            var dungeon = imp.get_dungeon(tie.rail);
             var class_block = dungeon.get_block("class_definition");
             var function_scope = new Scope(class_block.scope);
             var value = function_scope.create_symbol("value", tie.get_signature());
@@ -110,7 +112,7 @@ namespace metahub.imperative.code
 				new Parameter(value)
 			}, new List<Expression>
 			    {
-			        new Flow_Control(Flow_Control_Type.If, new Condition("==", new List<Expression>
+			        new Flow_Control(Flow_Control_Type.If, new Operation("==", new List<Expression>
 			            {
 			                new Property_Expression(property_reference.tie.other_tie),
                             new Null_Value()
@@ -122,28 +124,15 @@ namespace metahub.imperative.code
                             new Property_Expression(property_reference.tie)), 
                         new List<Expression>
                         {
-                            new Flow_Control(Flow_Control_Type.If, new Condition("==", new List<Expression>
+                            new Flow_Control(Flow_Control_Type.If, new Operation("==", new List<Expression>
                                 {
-                                    new Variable(it), new Self()
+                                    new Variable(it), new Self(dungeon)
                                 }), new List<Expression>
                                     {
                                         new Statement("continue")
-                                    }),
-                            new Flow_Control(Flow_Control_Type.If,
-                                new Condition(inverse_operators[constraint.op], new List<Expression>
-                                    {
-                                        new Variable(it, new Property_Expression(constraint.endpoints.Last(),
-                                            new Function_Call("dist", new List<Expression>
-                                            {
-                                                new Variable(value)
-                                            }, true))),
-                                        imp.translate(constraint.second.First())
-                                    }),
-                                new List<Expression>
-                                {
+                                    })
                                     
-                                })
-                        })
+                        }.Concat(dist(constraint, tie, imp, iterator_scope, it, value)).ToList())
 			    })
             );
 
@@ -162,6 +151,38 @@ namespace metahub.imperative.code
                             new Variable(scope.find("value"))
                         })
                 };
+
+        }
+
+        public static List<Expression> dist(Constraint constraint, Tie tie, Imp imp, Scope scope, Symbol it, Symbol value)
+        {
+            var offset = scope.create_symbol("offset", value.signature);
+            return new List<Expression>
+            {
+                new Flow_Control(Flow_Control_Type.If,
+                    new Operation(inverse_operators[constraint.op], new List<Expression>
+                    {
+                        new Variable(it, new Property_Expression(constraint.endpoints.Last(),
+                            new Function_Call("dist",
+                                new List<Expression>
+                                {
+                                    new Variable(value)
+                                }, true))),
+                        imp.translate(constraint.second.First(), scope)
+                    }),
+                    new List<Expression>
+                    {
+                        new Declare_Variable(offset,new Operation("/", new List<Expression>{ new Operation("+", new List<Expression>
+                        {
+                            new Variable(it, new Property_Expression(constraint.endpoints.Last())),
+                            new Variable(value)
+                        }), new Literal(2, new Signature(Kind.Float))})),
+                        new Assignment(new Variable(it, new Property_Expression(constraint.endpoints.Last())),
+                            "+=", new Variable(offset)),
+                            new Assignment(new Variable(value),
+                            "-=", new Variable(offset))
+                    })
+            };
         }
 
     }

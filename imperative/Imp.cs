@@ -133,7 +133,7 @@ namespace metahub.imperative
             }
         }
 
-        public Expression translate(Node expression, metahub.logic.Scope scope = null)
+        public Expression translate(Node expression, Scope scope = null)
         {
             switch (expression.type)
             {
@@ -154,8 +154,11 @@ namespace metahub.imperative
                 case Node_Type.block:
                     return new Create_Array(translate_many(((metahub.logic.types.Block)expression).children, scope));
 
+                case Node_Type.variable:
+                    var variable = (metahub.logic.types.Variable) expression;
+                    return scope.resolve(variable.name);
+                    
                 case Node_Type.lambda:
-
                     return null;
                 //metahub.logic.types.Lambda lambda = Node;
                 //return new Anonymous_(lambda.parameters.map(function(p)=> new Parameter(p.name, p.signature)),
@@ -168,17 +171,21 @@ namespace metahub.imperative
                 case Node_Type.property:
                     return convert_path(new List<Node> {expression});
 
+                case Node_Type.operation:
+                    var operation = (metahub.logic.types.Operation_Node) expression;
+                    return new Operation(operation.op, translate_many(operation.children, scope));
+
                 default:
                     throw new Exception("Cannot convert node " + expression.type + ".");
             }
         }
 
-        public IEnumerable<Expression> translate_many(IEnumerable<Node> nodes, metahub.logic.Scope scope)
+        public IEnumerable<Expression> translate_many(IEnumerable<Node> nodes, Scope scope)
         {
             return nodes.Select(n => translate(n, scope));
         }
 
-        public Expression convert_path(Node[] path, metahub.logic.Scope scope)
+        public Expression convert_path(Node[] path, Scope scope)
         {
             if (path.Length == 0)
                 throw new Exception("Cannot convert empty path.");
@@ -197,7 +204,7 @@ namespace metahub.imperative
             return new Path(path);  
         }
 
-        public Expression convert_path(List<metahub.logic.types.Node> path, metahub.logic.Scope scope = null)
+        public Expression convert_path(List<metahub.logic.types.Node> path, Scope scope = null)
         {
             List<Expression> result = new List<Expression>();
             Rail rail = null;
@@ -228,11 +235,12 @@ namespace metahub.imperative
                         //result.Add(translate(token, scope));
                         break;
 
-                    //case Node_Type.variable:
-                    //    var variable = (metahub.logic.types.Variable) token;
-                    //    result.Add(new Variable(variable.name));
-                    //    rail = variable.signature.rail;
-                    //    break;
+                    case Node_Type.variable:
+                        var variable = (metahub.logic.types.Variable)token;
+                        var variable_token = scope.resolve(variable.name);
+                        result.Add(variable_token);
+                        rail = variable_token.get_signature().rail;
+                        break;
 
                     case Node_Type.function_call:
                     case Node_Type.function_scope:

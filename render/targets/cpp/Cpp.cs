@@ -206,7 +206,10 @@ namespace metahub.render.targets.cpp
                     return render_variable_declaration((Declare_Variable)statement);
 
                 case Expression_Type.statement:
-                    return line(((Statement)statement).name + ";");
+                    var state = (Statement) statement;
+                    return line(state.name + (state.child != null
+                        ? " " + render_expression(state.child)
+                        : "") + ";");
 
                 case Expression_Type.insert:
                     return line(((Insert)statement).code);

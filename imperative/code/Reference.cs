@@ -117,7 +117,7 @@ namespace metahub.imperative.code
 			                new Property_Expression(property_reference.tie.other_tie),
                             new Null_Value()
 			            }), new List<Expression>{ 
-                            new Statement("return")
+                            new Statement("return", new Literal(true, new Signature(Kind.Bool)))
                         }),
                     new Iterator(it, 
                         new Property_Expression(property_reference.tie.other_tie, 
@@ -132,24 +132,33 @@ namespace metahub.imperative.code
                                         new Statement("continue")
                                     })
                                     
-                        }.Concat(dist(constraint, tie, imp, iterator_scope, it, value)).ToList())
-			    })
+                        }.Concat(dist(constraint, tie, imp, iterator_scope, it, value))
+                        .ToList()),
+                    new Statement("return", new Literal(true, new Signature(Kind.Bool)))
+			    }, new Signature(Kind.Bool))
             );
 
             var setter_block = dungeon.get_block("set_" + property_reference.tie.other_tie.tie_name);
             setter_block.add("post", new Function_Call(function_name, new List<Expression>
-                        {
-                            new Property_Expression(constraint.endpoints.First())
-                        })
+                {
+                    new Property_Expression(constraint.endpoints.First())
+                })
             );
 
             //return new List<Expression>();
             return new List<Expression>
                 {
+                    new Flow_Control(Flow_Control_Type.If, 
+                    new Operation("==", new List<Expression>{ 
                     new Function_Call(function_name, new List<Expression>
                         {
                             new Variable(scope.find("value"))
-                        })
+                        }),
+                    new Literal(false, new Signature(Kind.Bool))
+                    }), new List<Expression>
+                            {
+                                new Statement("return")
+                            })
                 };
 
         }
@@ -177,10 +186,16 @@ namespace metahub.imperative.code
                             new Variable(it, new Property_Expression(constraint.endpoints.Last())),
                             new Variable(value)
                         }), new Literal(2, new Signature(Kind.Float))})),
-                        new Assignment(new Variable(it, new Property_Expression(constraint.endpoints.Last())),
-                            "+=", new Variable(offset)),
-                            new Assignment(new Variable(value),
-                            "-=", new Variable(offset))
+                            new Variable(it, new Property_Function_Call(Property_Function_Type.set, tie, new List<Expression>
+                                { new Operation("+", new List<Expression> {
+                                    new Variable(it, new Property_Expression(constraint.endpoints.Last())),
+                                    new Variable(offset)}) })),
+                            new Property_Function_Call(Property_Function_Type.set, tie, new List<Expression>
+                                { new Operation("+", new List<Expression> {
+                                    new Variable(value),
+                                    new Variable(offset)}) }),
+                            new Statement("return", new Literal(false, new Signature(Kind.Bool)))
+
                     })
             };
         }

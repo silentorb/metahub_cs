@@ -45,6 +45,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="imperative\code\Piece_Maker.cs" />
     <Compile Include="imperative\schema\Block.cs" />
     <Compile Include="imperative\schema\Division.cs" />
     <Compile Include="imperative\schema\Symbol.cs" />
@@ -83,7 +84,7 @@
     <Compile Include="imperative\types\Parameter.cs" />
     <Compile Include="imperative\types\Parent_Class.cs" />
     <Compile Include="imperative\types\Path.cs" />
-    <Compile Include="imperative\types\Property_Expression.cs" />
+    <Compile Include="imperative\types\Tie_Expression.cs" />
     <Compile Include="imperative\schema\Scope.cs" />
     <Compile Include="imperative\types\Self.cs" />
     <Compile Include="imperative\types\Statement.cs" />
@@ -159,7 +160,7 @@
     <None Include="main\app.config" />
     <None Include="resources\metahub.grammar" />
     <None Include="resources\parser.json" />
-    <None Include="resources\piece_maker.json" />
+    <None Include="resources\piecemaker.json" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Properties\Resources.resx">

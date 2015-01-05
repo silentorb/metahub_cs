@@ -73,6 +73,12 @@ namespace metahub.imperative
                 target.generate_rail_code(dungeon);
                 dungeon.generate_code2();
             }
+
+            if (railway.regions.ContainsKey("piecemaker"))
+            {
+                var piece_region = railway.regions["piecemaker"];
+                Piece_Maker.add_functions(this, piece_region);
+            }
         }
 
         void finalize()
@@ -235,7 +241,7 @@ namespace metahub.imperative
                         if (tie == null)
                             throw new Exception("tie is null: " + property_token.tie.fullname());
 
-                        result.Add(new Property_Expression(tie));
+                        result.Add(new Tie_Expression(tie));
                         rail = tie.other_rail;
                         break;
 
@@ -286,6 +292,14 @@ namespace metahub.imperative
         public static Operation operation(string op, Expression first, Expression second)
         {
             return new Operation(op, new List<Expression>{ first, second});
+        }
+
+        public static Property_Function_Call setter(Tie tie, Expression value, Expression origin = null)
+        {
+            return new Property_Function_Call(Property_Function_Type.set, tie, origin != null
+                ? new List<Expression>{value, origin}
+                : new List<Expression> { value }
+            );
         }
     }
 }

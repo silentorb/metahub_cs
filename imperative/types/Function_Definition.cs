@@ -11,6 +11,7 @@ namespace metahub.imperative.types
         public string name;
         public Dungeon dungeon;
         public Rail rail;
+        public Scope scope;
 
         public Function_Definition(string name, Dungeon dungeon, List<Parameter> parameters, List<Expression> expressions, Signature return_type = null)
             : base(parameters, expressions, return_type)

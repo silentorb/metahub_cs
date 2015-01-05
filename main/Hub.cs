@@ -37,7 +37,7 @@ namespace metahub
 
             metahub_namespace = schema.add_namespace("metahub");
 
-            core_schemas["piece_maker"] = Resources.piece_maker;
+            core_schemas["piecemaker"] = Resources.piecemaker;
         }
 
         public void load_parser()

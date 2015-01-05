@@ -10,7 +10,6 @@ using Expression = metahub.imperative.types.Expression;
 using Function_Call = metahub.imperative.types.Function_Call;
 using Namespace = metahub.imperative.types.Namespace;
 using Parameter = metahub.imperative.types.Parameter;
-using Property_Expression = metahub.imperative.types.Property_Expression;
 using Variable = metahub.imperative.types.Variable;
 
 namespace metahub.imperative.schema
@@ -209,12 +208,12 @@ namespace metahub.imperative.schema
 
             var mid = block.divide(null, new List<Expression> {
 			new Flow_Control(Flow_Control_Type.If, new Operation("==", new List<Expression> {
-					new Property_Expression(tie), new Variable(value)
+					new Tie_Expression(tie), new Variable(value)
             }),
 				new List<Expression>{
 					new Statement("return")
                 }),
-			new Assignment(new Property_Expression(tie), "=", new Variable(value))
+			new Assignment(new Tie_Expression(tie), "=", new Variable(value))
 		});
 
             if (tie.type == Kind.reference && tie.other_tie != null)
@@ -225,7 +224,7 @@ namespace metahub.imperative.schema
    
                 if (tie.other_tie.type == Kind.reference)
                 {
-                    mid.add(new Property_Expression(tie,
+                    mid.add(new Tie_Expression(tie,
                         new Function_Call("set_" + tie.other_tie.tie_name, new List<Expression> { new Self(dungeon) })
                     ));
                 }
@@ -235,7 +234,7 @@ namespace metahub.imperative.schema
                 {
                     new Variable(origin), new Variable(value)
                 }), new List<Expression> {
-                        new Property_Expression(tie,
+                        new Tie_Expression(tie,
                         new Function_Call("add_" + tie.other_tie.tie_name, new List<Expression> { new Self(dungeon), new Self(dungeon) }))
                     
                     }));
@@ -303,7 +302,6 @@ namespace metahub.imperative.schema
         {
             switch (expression.type)
             {
-
                 case Expression_Type.space:
                     analyze_expressions(((Namespace)expression).expressions);
                     break;
@@ -349,15 +347,24 @@ namespace metahub.imperative.schema
                     break;
 
                 case Expression_Type.property:
-                    var property_expression =(Property_Expression) expression;
-                    add_dependency(property_expression.tie.rail);
+                    var property_expression =(Tie_Expression) expression;
+                    add_dependency(property_expression.tie.other_rail);
                     break;
 
                 case Expression_Type.variable:
                     var variable_expression = (Variable)expression;
                     add_dependency(variable_expression.symbol.signature.rail);
                     break;
+
+                case Expression_Type.iterator:
+                    var iterator = (Iterator) expression;
+                    analyze_expression(iterator.expression);
+                    analyze_expressions(iterator.children);
+                    break;
             }
+
+            if (expression.child != null)
+                analyze_expression(expression.child);
         }
 
         void analyze_expressions(IEnumerable<Expression> expressions)
@@ -366,6 +373,18 @@ namespace metahub.imperative.schema
             {
                 analyze_expression(expression);
             }
+        }
+
+        public Function_Definition add_function(string function_name, List<Parameter> parameters, Signature return_type = null)
+        {
+            var definition = new Function_Definition(
+                function_name, this, parameters, new List<Expression>(), return_type);
+
+            var block = get_block("class_definition");
+            block.add(definition);
+            definition.scope = new Scope(block.scope);
+
+            return definition;
         }
     }
 }

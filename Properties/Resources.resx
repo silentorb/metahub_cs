@@ -124,7 +124,7 @@
   <data name="parser" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\resources\parser.json;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
   </data>
-  <data name="piece_maker" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\resources\piece_maker.json;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
+  <data name="piecemaker" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\piecemaker.json;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
   </data>
 </root>

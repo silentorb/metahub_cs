@@ -151,7 +151,7 @@ namespace metahub.Properties {
         ///    },
         ///    &quot;Conflict&quot;: {
         ///      &quot;properties&quot;: {
-        ///        &quot;piece_maker&quot;: {
+        ///        &quot;piecemaker&quot;: {
         ///          &quot;type&quot;: &quot;reference&quot;,
         ///          &quot;trellis&quot;: &quot;Piece_Maker&quot;
         ///        }
@@ -159,15 +159,17 @@ namespace metahub.Properties {
         ///    },
         ///    &quot;Distance_Conflict&quot;: {
         ///      &quot;properties&quot;: {
-        ///        &quot;first&quot;: {
-        ///          &quot;type&quot;: &quot;reference&quot;,
+        ///        &quot;nodes&quot;: {
+        ///          &quot;type&quot;: &quot;list&quot;,
         ///          &quot;trellis&quot;: &quot;Spatial_Node&quot;
-        ///        },
-        ///        &quot;second&quot;:  [rest of string was truncated]&quot;;.
+        ///        }
+        ///      }
+        ///    },
+        ///    &quot;Sp [rest of string was truncated]&quot;;.
         /// </summary>
-        internal static string piece_maker {
+        internal static string piecemaker {
             get {
-                return ResourceManager.GetString("piece_maker", resourceCulture);
+                return ResourceManager.GetString("piecemaker", resourceCulture);
             }
         }
     }

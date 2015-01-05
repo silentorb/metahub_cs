@@ -52,8 +52,18 @@ public class Railway {
 	public Rail get_rail (Trellis trellis) {
 		return regions[trellis.space.name].rails[trellis.name];
 	}
-	
-	
+
+    //public Rail get_rail(string name)
+    //{
+    //    foreach (var region in regions.Values)
+    //    {
+    //        if (region.rails.ContainsKey(name))
+    //            return region.rails[name];
+    //    }
+        
+    //    throw new Exception("Could not find rail " + name + ".");
+    //}
+
 	//public metahub.imperative.types.Node translate (metahub Node.meta.types.Node) {
 		//switch(Node.type) {
 			//case metahub.logic.types.Expression_Type.literal:

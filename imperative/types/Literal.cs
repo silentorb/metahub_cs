@@ -1,5 +1,5 @@
 using metahub.logic.schema;
-using metahub.logic.types;
+using Kind = metahub.schema.Kind;
 
 namespace metahub.imperative.types {
 /**
@@ -17,5 +17,37 @@ public class Literal : Expression {
 		this.value = value;
 		this.signature = signature;
 	}
+
+    public Literal(int value)
+
+        : base(Expression_Type.literal)
+    {
+        this.value = value;
+        signature = new Signature(Kind.Int);
+    }
+
+    public Literal(string value)
+
+        : base(Expression_Type.literal)
+    {
+        this.value = value;
+        signature = new Signature(Kind.String);
+    }
+
+    public Literal(float value)
+
+        : base(Expression_Type.literal)
+    {
+        this.value = value;
+        signature = new Signature(Kind.Float);
+    }
+
+    public Literal(bool value)
+
+        : base(Expression_Type.literal)
+    {
+        this.value = value;
+        signature = new Signature(Kind.Bool);
+    }
 	
 }}

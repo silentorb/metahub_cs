@@ -27,12 +27,12 @@ namespace metahub.imperative.code
             var origin = function_scope.create_symbol("origin", new Signature(Kind.reference));
             Function_Definition definition = new Function_Definition(function_name, dungeon, new List<Parameter> {
 			    new Parameter(item),
-			    new Parameter(origin)
+			    new Parameter(origin, new Null_Value())
             }, new List<Expression>());
 
             var block = dungeon.create_block(function_name, scope, definition.expressions);
             var mid = block.divide(null, new List<Expression> {
-			new Property_Expression(tie,
+			new Tie_Expression(tie,
 				new Function_Call("add",new Expression[]{ new Variable(item) }, true)
 			)
 		});
@@ -129,7 +129,7 @@ namespace metahub.imperative.code
                     //var second_tie = second.children[] as Property_Reference;
                     creation_block.Add(new Variable(item2, new Function_Call("set_" + first_tie.name, new Expression[]
                         {
-                        new Variable(item, new Property_Expression(second_end.other_rail.get_tie_or_error(second.tie.name)))
+                        new Variable(item, new Tie_Expression(second_end.other_rail.get_tie_or_error(second.tie.name)))
                         }
                        )
                     ));
@@ -139,21 +139,21 @@ namespace metahub.imperative.code
             var dungeon = imp.get_dungeon(second_end.rail);
             creation_block = creation_block.Union(new List<Expression>{
 			new Variable(item2, new Function_Call("initialize")),
-			new Property_Expression(c.First(),
+			new Tie_Expression(c.First(),
 				new Function_Call("add_" + second_end.tie_name,
 				new Expression[] { new Variable(item2), new Self(dungeon)}))
 		}).ToList();
 
             List<Expression> block = new List<Expression> {
 				new Flow_Control(Flow_Control_Type.If, new Operation("!=", new List<Expression> {
-				new Variable(origin), new Property_Expression(c.First())}), creation_block)
+				new Variable(origin), new Tie_Expression(c.First())}), creation_block)
 		};
 
             if (a_start.other_tie.property.allow_null)
             {
                 block = new List<Expression> {
 				new Flow_Control(Flow_Control_Type.If, 
-					new Operation("!=", new List<Expression> { new Property_Expression(a_start.other_tie),
+					new Operation("!=", new List<Expression> { new Tie_Expression(a_start.other_tie),
 					new Null_Value() }), block
 				)
 			};
@@ -177,7 +177,7 @@ namespace metahub.imperative.code
             var new_scope = new Scope(block.scope);
             var child = new_scope.create_symbol("child", new Signature(Kind.reference, rail));
             var logic_scope = new Scope();
-            var imp_ref = (Property_Expression)imp.convert_path(Imp.simplify_path(constraint.first), logic_scope);
+            var imp_ref = (Tie_Expression)imp.convert_path(Imp.simplify_path(constraint.first), logic_scope);
             imp_ref.child = new Function_Call("count", null, true);
             Flow_Control flow_control = new Flow_Control(Flow_Control_Type.While, new Operation("<",
             new List<Expression>{

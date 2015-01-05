@@ -6,11 +6,11 @@ namespace metahub.imperative.types {
  * ...
  * @author Christopher W. Johnson
  */
-public class Property_Expression : Expression
+public class Tie_Expression : Expression
 {
 	public Tie tie;
 	
-	public Property_Expression(Tie tie, Expression child = null)
+	public Tie_Expression(Tie tie, Expression child = null)
 
         : base(Expression_Type.property)
     {

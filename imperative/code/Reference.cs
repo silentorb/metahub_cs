@@ -114,14 +114,14 @@ namespace metahub.imperative.code
 			    {
 			        Imp.If(new Operation("==", new List<Expression>
 			            {
-			                new Property_Expression(property_reference.tie.other_tie),
+			                new Tie_Expression(property_reference.tie.other_tie),
                             new Null_Value()
 			            }), new List<Expression>{ 
                             new Statement("return", Imp.True())
                         }),
                     new Iterator(it, 
-                        new Property_Expression(property_reference.tie.other_tie, 
-                            new Property_Expression(property_reference.tie)), 
+                        new Tie_Expression(property_reference.tie.other_tie, 
+                            new Tie_Expression(property_reference.tie)), 
                         new List<Expression>
                         {
                             Imp.If(new Operation("==", new List<Expression>
@@ -141,7 +141,7 @@ namespace metahub.imperative.code
             var setter_block = dungeon.get_block("set_" + property_reference.tie.other_tie.tie_name);
             setter_block.add("post", new Function_Call(function_name, new Expression[]
                 {
-                    new Property_Expression(constraint.endpoints.First())
+                    new Tie_Expression(constraint.endpoints.First())
                 })
             );
 
@@ -166,10 +166,18 @@ namespace metahub.imperative.code
         public static List<Expression> dist(Constraint constraint, Tie tie, Imp imp, Scope scope, Symbol it, Symbol value)
         {
             var offset = scope.create_symbol("offset", value.signature);
+            var dungeon = imp.get_dungeon(tie.rail);
+            var conflict_rail = imp.railway.regions["piecemaker"].rails["Distance_Conflict"];
+            var conflict_nodes = conflict_rail.get_tie_or_error("nodes");
+            var conflict = scope.create_symbol("conflict", new Signature(Kind.reference, conflict_rail));
+            var mold_tie = tie.rail.get_tie_or_error("mold");
+            var piecemaker_tie = mold_tie.other_rail.get_tie_or_error("piece_maker");
+            var conflicts_tie = piecemaker_tie.other_rail.get_tie_or_error("conflicts");
+
             return new List<Expression>
             {
                 Imp.If(Imp.operation(inverse_operators[constraint.op], 
-                        new Variable(it, new Property_Expression(constraint.endpoints.Last(),
+                        new Variable(it, new Tie_Expression(constraint.endpoints.Last(),
                             new Function_Call("dist",
                                 new List<Expression> { new Variable(value) }, true))),
                         imp.translate(constraint.second.First(), scope)
@@ -177,15 +185,24 @@ namespace metahub.imperative.code
                     new List<Expression>
                     {
                         new Declare_Variable(offset, Imp.operation("/", Imp.operation("+",
-                            new Variable(it, new Property_Expression(constraint.endpoints.Last())),
+                            new Variable(it, new Tie_Expression(constraint.endpoints.Last())),
                             new Variable(value)
                         ), new Literal(2, new Signature(Kind.Float)))),
-                            new Variable(it, new Property_Function_Call(Property_Function_Type.set, tie, new List<Expression>
-                                { Imp.operation("+",
-                                    new Variable(it, new Property_Expression(constraint.endpoints.Last())),
-                                    new Variable(offset)) })),
-                            new Property_Function_Call(Property_Function_Type.set, tie, new List<Expression>
-                                { Imp.operation("+", new Variable(value), new Variable(offset)) }),
+                            //new Variable(it, new Property_Function_Call(Property_Function_Type.set, tie, new List<Expression>
+                            //    { Imp.operation("+",
+                            //        new Variable(it, new Property_Expression(constraint.endpoints.Last())),
+                            //        new Variable(offset)) })),
+                            //new Property_Function_Call(Property_Function_Type.set, tie, new List<Expression>
+                            //    { Imp.operation("+", new Variable(value), new Variable(offset)) }),
+
+                            new Declare_Variable(conflict, new Instantiate(conflict_rail)),
+                            new Variable(conflict, new Function_Call("initialize")),
+                            new Variable(conflict,Imp.setter(conflict_nodes, new Self(dungeon))),
+                            new Variable(conflict,Imp.setter(conflict_nodes, new Variable(it))),
+                            new Tie_Expression(mold_tie,
+                                new Tie_Expression(piecemaker_tie,
+                                    Imp.setter(conflicts_tie, new Variable(conflict))
+                            )),
                             new Statement("return", Imp.False())
 
                     })

@@ -28,7 +28,7 @@ namespace metahub.imperative.schema
             foreach (Range_Float range in tie.ranges)
             {
                 var reference = create_reference(range.path.Count > 0
-                                                     ? new Path(range.path.Select((t) => new Property_Expression(t)))
+                                                     ? new Path(range.path.Select((t) => new Tie_Expression(t)))
                                                      : null
                     );
                 block.add(new Assignment(reference, "=", new Function_Call("rand",
@@ -44,14 +44,14 @@ namespace metahub.imperative.schema
             {
                 block.add("post", new Property_Function_Call(Property_Function_Type.set, tie, new List<Expression>
                     {
-                        new Property_Expression(tie)
+                        new Tie_Expression(tie)
                     } ));
             }
         }
 
-        public Property_Expression create_reference(Expression child = null)
+        public Tie_Expression create_reference(Expression child = null)
         {
-            return new Property_Expression(tie, child);
+            return new Tie_Expression(tie, child);
         }
     }
 }

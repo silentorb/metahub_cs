@@ -1,4 +1,9 @@
 {
+  "targets": {
+    "cpp": {
+      "class_export": "CORE_API"
+    }
+  },
   "trellises": {
     "Piece_Maker": {
       "properties": {
@@ -17,6 +22,7 @@
       }
     },
     "Distance_Conflict": {
+      "parent": "Conflict",
       "properties": {
         "nodes": {
           "type": "list",

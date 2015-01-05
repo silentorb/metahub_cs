@@ -86,9 +86,9 @@ namespace metahub.render.targets.cpp
             }
 
             var block = references.Select((tie) => new Assignment(
-                new Property_Expression(tie), "=", new Null_Value()))
+                new Tie_Expression(tie), "=", new Null_Value()))
                 .Union(scalars.Select((tie) => new Assignment(
-                new Property_Expression(tie), "=",
+                new Tie_Expression(tie), "=",
                 new Literal(tie.get_default_value(),
                             tie.get_signature())))
                 );
@@ -673,7 +673,7 @@ namespace metahub.render.targets.cpp
                     break;
 
                 case Expression_Type.property:
-                    result = ((Property_Expression)expression).tie.tie_name;
+                    result = ((Tie_Expression)expression).tie.tie_name;
                     break;
 
                 case Expression_Type.function_call:
@@ -772,7 +772,7 @@ namespace metahub.render.targets.cpp
                     return variable_expression.symbol.signature;
 
                 case Expression_Type.property:
-                    var property_expression = (Property_Expression)expression;
+                    var property_expression = (Tie_Expression)expression;
                     return property_expression.tie.get_signature();
 
                 default:
@@ -840,6 +840,7 @@ namespace metahub.render.targets.cpp
                             //var dereference = is_pointer(expression.args.Last().get_signature()) ? "*" : "";
                             return "push_back(" + first + ")";
                         }
+
                     case "dist":
                         {
                             var signature = expression.args[0].get_signature();
@@ -847,6 +848,12 @@ namespace metahub.render.targets.cpp
                             //var dereference = is_pointer(signature) ? "*" : "";
                             return "distance(" + first + ")";
                         }
+
+                    case "last":
+                        return "back()";
+
+                    case "pop":
+                        return "pop_back()";
 
                     case "rand":
                         float min = (float)((Literal)expression.args[0]).value;

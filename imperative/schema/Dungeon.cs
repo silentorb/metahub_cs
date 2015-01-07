@@ -111,7 +111,7 @@ namespace metahub.imperative.schema
         public void generate_code2()
         {
             var statements = blocks["class_definition"];
-            statements.add(new Function_Definition(generate_initialize(statements.scope)));
+            generate_initialize(statements.scope);
 
             foreach (var tie in rail.all_ties.Values)
             {
@@ -389,16 +389,28 @@ namespace metahub.imperative.schema
             return definition;
         }
 
-        public Imp spawn_imp(string imp_name, List<Parameter> parameters, List<Expression> expressions, Signature return_type = null, Portal portal = null)
+        public Imp spawn_imp(string imp_name, List<Parameter> parameters = null, List<Expression> expressions = null, Signature return_type = null, Portal portal = null)
         {
             var imp = new Imp(imp_name, this, portal)
                 {
-                    parameters = parameters,
-                    expressions = expressions,
+                    parameters = parameters ?? new List<Parameter>(),
+                    expressions = expressions ?? new List<Expression>(),
                     return_type = return_type ?? new Signature(Kind.none)
                 };
             imps.Add(imp);
+
+            var definition = new Function_Definition(imp);
+
+            var block = get_block("class_definition");
+            block.add(definition);
+            definition.scope = imp.scope = new Scope(block.scope);
+
             return imp;
+        }
+
+        public Imp summon_imp(string imp_name)
+        {
+            return imps.First(i => i.name == imp_name);
         }
     }
 }

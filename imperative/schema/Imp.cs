@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using metahub.imperative.types;
 using metahub.logic.schema;
+using metahub.schema;
 
 namespace metahub.imperative.schema
 {
@@ -17,9 +18,11 @@ namespace metahub.imperative.schema
         public List<Imp> invokees = new List<Imp>();
         public List<Parameter> parameters;
         public List<Expression> expressions;
-        public Signature return_type;
+        public Signature return_type = new Signature(Kind.none);
         public Imp parent;
         public List<Imp> children = new List<Imp>();
+        public Scope scope;
+        public bool is_abstract = false;
 
         public Imp(string name, Dungeon dungeon, Portal portal = null)
         {
@@ -43,5 +46,14 @@ namespace metahub.imperative.schema
 
             return invocation;
         }
+
+        public Imp spawn_child(Dungeon new_dungeon)
+        {
+            var child = new_dungeon.spawn_imp(name, parameters, expressions, return_type, portal);
+            child.parent = this;
+            children.Add(child);
+            return child;
+        }
+
     }
 }

@@ -13,6 +13,8 @@ namespace metahub.imperative.types
         public Rail rail;
         public Scope scope;
         public Imp imp;
+        public Signature return_type { get { return imp.return_type; } }
+        public bool is_abstract { get { return imp.is_abstract; } }
 
         public Function_Definition(string name, Dungeon dungeon, List<Parameter> parameters, List<Expression> expressions, Signature return_type = null)
             : base(parameters, expressions, return_type)
@@ -22,11 +24,14 @@ namespace metahub.imperative.types
             this.rail = dungeon.rail;
             if (rail != null)
                 dungeon.functions.Add(this);
+
+            imp = new Imp(name, dungeon) { return_type = _return_type };
         }
 
         public Function_Definition(Imp imp)
             : base(imp.parameters, imp.expressions, imp.return_type)
         {
+            this.imp = imp;
             this.name = imp.name;
             this.dungeon = imp.dungeon;
             this.rail = dungeon.rail;

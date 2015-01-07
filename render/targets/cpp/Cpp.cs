@@ -95,14 +95,14 @@ namespace metahub.render.targets.cpp
 
             Function_Definition func = new Function_Definition(rail.rail_name, dungeon, new List<imperative.types.Parameter>(),
                 ((IEnumerable<Expression>)block).ToList());
-            func.return_type = null;
+            func.imp.return_type = null;
             root.add(func);
             func = new Function_Definition("~" + rail.rail_name, dungeon, new List<imperative.types.Parameter>(),
             new List<Expression>()	//references.map((tie)=> new Function_Call("SAFE_DELETE",
                 //[new Property_Reference(tie)])
                 //)
             );
-            func.return_type = null;
+            func.imp.return_type = null;
             root.add(func);
         }
 
@@ -381,6 +381,9 @@ namespace metahub.render.targets.cpp
 
         string render_function_definition(Function_Definition definition)
         {
+            if (definition.is_abstract)
+                return "";
+
             var intro = (definition.return_type != null ? render_signature(definition.return_type) + " " : "")
             + current_rail.rail_name + "::" + definition.name
             + "(" + definition.parameters.Select(render_definition_parameter).join(", ") + ")";
@@ -501,8 +504,8 @@ namespace metahub.render.targets.cpp
             return line((definition.return_type != null ? "virtual " : "")
             + (definition.return_type != null ? render_signature(definition.return_type) + " " : "")
             + definition.name
-            + "(" + definition.parameters.Select(render_declaration_parameter).join(", ") + ");");
-
+            + "(" + definition.parameters.Select(render_declaration_parameter).join(", ") + ")"
+            + (definition.is_abstract ? " = 0;" : ";"));
         }
 
         string get_property_type_string(Tie tie, bool is_parameter = false)

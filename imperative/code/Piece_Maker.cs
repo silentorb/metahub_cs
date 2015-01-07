@@ -14,12 +14,25 @@ namespace metahub.imperative.code
        public static void add_functions(Overlord overlord, Region region)
        {
            conflict_functions(overlord, region);
+           distance_functions(overlord, region);
            piece_maker_functions(overlord, region);
        }
 
        static void conflict_functions(Overlord overlord, Region region)
        {
-           
+           var dungeon = overlord.get_dungeon(region.rails["Conflict"]);
+           var is_resolved = dungeon.spawn_imp("is_resolved");
+           is_resolved.return_type = new Signature(Kind.Bool);
+           is_resolved.is_abstract = true;
+       }
+
+       static void distance_functions(Overlord overlord, Region region)
+       {
+           var conflict = overlord.get_dungeon(region.rails["Conflict"]);
+           var dungeon = overlord.get_dungeon(region.rails["Distance_Conflict"]);
+           var parent = conflict.summon_imp("is_resolved");
+           var is_resolved = parent.spawn_child(dungeon);
+           is_resolved.expressions.Add(new Statement("return", Overlord.False()));
        }
 
        static void piece_maker_functions(Overlord overlord, Region region)

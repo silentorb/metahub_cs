@@ -10,13 +10,13 @@ namespace metahub.imperative.schema
      * ...
      * @author Christopher W. Johnson
      */
-    public class Lair
+    public class Portal
     {
         public Tie tie;
         public Dungeon dungeon;
         public string name;
 
-        public Lair(Tie tie, Dungeon dungeon)
+        public Portal(Tie tie, Dungeon dungeon)
         {
             this.tie = tie;
             this.dungeon = dungeon;

@@ -15,7 +15,7 @@ namespace metahub.imperative.code
 {
     public class List_Code
     {
-        public static void common_functions(Tie tie, Imp imp, Scope scope)
+        public static void common_functions(Tie tie, Overlord imp, Scope scope)
         {
             var rail = tie.rail;
             var dungeon = imp.get_dungeon(tie.rail);
@@ -58,7 +58,7 @@ namespace metahub.imperative.code
             root_block.add(definition);
         }
 
-        public static void generate_constraint(Constraint constraint, Imp imp)
+        public static void generate_constraint(Constraint constraint, Overlord imp)
         {
             var path = constraint.first;
             var property_expression = (Property_Reference)path[0];
@@ -85,7 +85,7 @@ namespace metahub.imperative.code
             }
         }
 
-        public static void map(Constraint constraint, Node[] expression, Imp imp)
+        public static void map(Constraint constraint, Node[] expression, Overlord imp)
         {
             var start = constraint.first.First();
             var end = constraint.first;
@@ -98,7 +98,7 @@ namespace metahub.imperative.code
             link(b, a, a.Take(a.Count - 1), constraint.lambda, imp);
         }
 
-        public static void link(List<Tie> a, List<Tie> b, IEnumerable<Tie> c, Lambda mapping, Imp imp)
+        public static void link(List<Tie> a, List<Tie> b, IEnumerable<Tie> c, Lambda mapping, Overlord imp)
         {
             var a_start = a[0];
             var a_end = a[a.Count - 1];
@@ -125,7 +125,7 @@ namespace metahub.imperative.code
                     var constraint = wrapper.constraint;
                     var first = constraint.first;
                     var first_tie = a_end.other_rail.get_tie_or_error(((Property_Reference) first[1]).tie.name);
-                    var second = (Property_Reference)Imp.simplify_path(constraint.second)[0];
+                    var second = (Property_Reference)Overlord.simplify_path(constraint.second)[0];
                     //var second_tie = second.children[] as Property_Reference;
                     creation_block.Add(new Variable(item2, new Function_Call("set_" + first_tie.name, new Expression[]
                         {
@@ -161,7 +161,7 @@ namespace metahub.imperative.code
             function_block.add_many("post", block);
         }
 
-        public static void size(Constraint constraint, Node[] expression, Imp imp)
+        public static void size(Constraint constraint, Node[] expression, Overlord imp)
         {
             var path = constraint.first;
             var property_expression = (Property_Reference)path[0];
@@ -177,7 +177,7 @@ namespace metahub.imperative.code
             var new_scope = new Scope(block.scope);
             var child = new_scope.create_symbol("child", new Signature(Kind.reference, rail));
             var logic_scope = new Scope();
-            var imp_ref = (Tie_Expression)imp.convert_path(Imp.simplify_path(constraint.first), logic_scope);
+            var imp_ref = (Tie_Expression)imp.convert_path(Overlord.simplify_path(constraint.first), logic_scope);
             imp_ref.child = new Function_Call("count", null, true);
             Flow_Control flow_control = new Flow_Control(Flow_Control_Type.While, new Operation("<",
             new List<Expression>{

@@ -48,6 +48,7 @@
     <Compile Include="imperative\code\Piece_Maker.cs" />
     <Compile Include="imperative\schema\Block.cs" />
     <Compile Include="imperative\schema\Division.cs" />
+    <Compile Include="imperative\schema\Imp.cs" />
     <Compile Include="imperative\schema\Symbol.cs" />
     <Compile Include="imperative\types\Operation.cs" />
     <Compile Include="imperative\types\Property_Function_Call.cs" />
@@ -59,10 +60,10 @@
     <Compile Include="imperative\code\List_Code.cs" />
     <Compile Include="imperative\code\Parse.cs" />
     <Compile Include="imperative\code\Reference.cs" />
-    <Compile Include="imperative\Imp.cs" />
+    <Compile Include="imperative\Overlord.cs" />
     <Compile Include="imperative\schema\Dependency.cs" />
     <Compile Include="imperative\schema\Dungeon.cs" />
-    <Compile Include="imperative\schema\Lair.cs" />
+    <Compile Include="imperative\schema\Portal.cs" />
     <Compile Include="imperative\schema\Property_Addition.cs" />
     <Compile Include="imperative\schema\Used_Function.cs" />
     <Compile Include="imperative\schema\Zone.cs" />

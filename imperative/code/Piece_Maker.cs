@@ -11,9 +11,20 @@ namespace metahub.imperative.code
 {
    static class Piece_Maker
     {
-       public static void add_functions(Imp imp, Region region)
+       public static void add_functions(Overlord overlord, Region region)
        {
-           var dungeon = imp.get_dungeon(region.rails["Piece_Maker"]);
+           conflict_functions(overlord, region);
+           piece_maker_functions(overlord, region);
+       }
+
+       static void conflict_functions(Overlord overlord, Region region)
+       {
+           
+       }
+
+       static void piece_maker_functions(Overlord overlord, Region region)
+       {
+           var dungeon = overlord.get_dungeon(region.rails["Piece_Maker"]);
            var conflicts = dungeon.rail.get_tie_or_error("conflicts");
            var update_function = dungeon.add_function("update", new List<Parameter>());
            var if_scope = new Scope(update_function.scope);
@@ -21,8 +32,8 @@ namespace metahub.imperative.code
 
            update_function.expressions = new List<Expression>
             {
-                Imp.If(
-                Imp.operation(">", new Tie_Expression(conflicts, new Function_Call("count", null, true)), 
+                Overlord.If(
+                Overlord.operation(">", new Tie_Expression(conflicts, new Function_Call("count", null, true)), 
                 new Literal(0)), new List<Expression>
                 {
                     new Declare_Variable(conflict, new Tie_Expression(conflicts, 

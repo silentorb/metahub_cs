@@ -9,9 +9,9 @@ public class Target{
 	protected Railway railway;
 	protected Renderer render = new Renderer();
 	protected int line_count = 0;
-	protected Imp imp;
+	protected Overlord imp;
 	
-	public Target(Railway railway, Imp imp) {
+	public Target(Railway railway, Overlord imp) {
 		this.railway = railway;
 		this.imp = imp;
 	}

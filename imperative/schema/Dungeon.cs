@@ -25,15 +25,16 @@ namespace metahub.imperative.schema
         Dictionary<string, string[]> inserts;
         Dictionary<string, Block> blocks = new Dictionary<string, Block>();
         public List<Function_Definition> functions = new List<Function_Definition>();
-        public Imp imp;
-        public Dictionary<string, Lair> lairs = new Dictionary<string, Lair>();
+        public Overlord overlord;
+        List<Imp> imps = new List<Imp>(); 
+        public Dictionary<string, Portal> lairs = new Dictionary<string, Portal>();
         public Dictionary<string, Used_Function> used_functions = new Dictionary<string, Used_Function>();
         public Dictionary<string, Dependency> dependencies = new Dictionary<string, Dependency>();
 
-        public Dungeon(Rail rail, Imp imp)
+        public Dungeon(Rail rail, Overlord overlord)
         {
             this.rail = rail;
-            this.imp = imp;
+            this.overlord = overlord;
 
             name = rail.name;
             region = rail.region;
@@ -43,7 +44,7 @@ namespace metahub.imperative.schema
 
             foreach (var tie in rail.all_ties.Values)
             {
-                Lair lair = new Lair(tie, this);
+                Portal lair = new Portal(tie, this);
                 lairs[tie.name] = lair;
             }
         }
@@ -51,7 +52,7 @@ namespace metahub.imperative.schema
         public void initialize()
         {
             if (rail.parent != null)
-                parent = imp.get_dungeon(rail.parent);
+                parent = overlord.get_dungeon(rail.parent);
         }
 
         public Dependency add_dependency(Dungeon dungeon)
@@ -65,12 +66,12 @@ namespace metahub.imperative.schema
             return dependencies[dungeon.name];
         }
 
-        public Dependency add_dependency(Rail rail)
+        public Dependency add_dependency(Rail dependency_rail)
         {
-            if (rail == null)
+            if (dependency_rail == null)
                 return null;
 
-            var dungeon = imp.get_dungeon(rail);
+            var dungeon = overlord.get_dungeon(dependency_rail);
             if (dungeon == null)
                 return null;
 
@@ -110,13 +111,13 @@ namespace metahub.imperative.schema
         public void generate_code2()
         {
             var statements = blocks["class_definition"];
-            statements.add(generate_initialize(statements.scope));
+            statements.add(new Function_Definition(generate_initialize(statements.scope)));
 
             foreach (var tie in rail.all_ties.Values)
             {
                 if (tie.type == Kind.list)
                 {
-                    List_Code.common_functions(tie, imp, statements.scope);
+                    List_Code.common_functions(tie, overlord, statements.scope);
                 }
                 else
                 {
@@ -220,7 +221,7 @@ namespace metahub.imperative.schema
             {
                 var origin = function_scope.create_symbol("origin", new Signature(Kind.reference));
                 parameters.Add(new Parameter(origin, new Null_Value()));
-                var dungeon = imp.get_dungeon(tie.rail);
+                var dungeon = overlord.get_dungeon(tie.rail);
    
                 if (tie.other_tie.type == Kind.reference)
                 {
@@ -253,7 +254,7 @@ namespace metahub.imperative.schema
             return result;
         }
 
-        public Function_Definition generate_initialize(Scope scope)
+        public Imp generate_initialize(Scope scope)
         {
             var expressions = new List<Expression>();
             var block = create_block("initialize", scope, expressions);
@@ -276,14 +277,15 @@ namespace metahub.imperative.schema
                 block.add(new Function_Call("initialize_post"));
             }
 
-            return new Function_Definition("initialize", this, new List<Parameter>(), expressions);
+            //return new Function_Definition("initialize", this, new List<Parameter>(), expressions);
+            return spawn_imp("initialize", new List<Parameter>(), expressions);
         }
 
         public void analyze()
         {
             if (rail.parent != null && !rail.parent.trellis.is_abstract)
             {
-                add_dependency(imp.get_dungeon(rail.parent)).allow_partial = false;
+                add_dependency(overlord.get_dungeon(rail.parent)).allow_partial = false;
             }
 
             foreach (var lair in lairs.Values)
@@ -385,6 +387,18 @@ namespace metahub.imperative.schema
             definition.scope = new Scope(block.scope);
 
             return definition;
+        }
+
+        public Imp spawn_imp(string imp_name, List<Parameter> parameters, List<Expression> expressions, Signature return_type = null, Portal portal = null)
+        {
+            var imp = new Imp(imp_name, this, portal)
+                {
+                    parameters = parameters,
+                    expressions = expressions,
+                    return_type = return_type ?? new Signature(Kind.none)
+                };
+            imps.Add(imp);
+            return imp;
         }
     }
 }

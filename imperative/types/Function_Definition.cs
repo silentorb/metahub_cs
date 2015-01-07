@@ -12,12 +12,23 @@ namespace metahub.imperative.types
         public Dungeon dungeon;
         public Rail rail;
         public Scope scope;
+        public Imp imp;
 
         public Function_Definition(string name, Dungeon dungeon, List<Parameter> parameters, List<Expression> expressions, Signature return_type = null)
             : base(parameters, expressions, return_type)
         {
             this.name = name;
             this.dungeon = dungeon;
+            this.rail = dungeon.rail;
+            if (rail != null)
+                dungeon.functions.Add(this);
+        }
+
+        public Function_Definition(Imp imp)
+            : base(imp.parameters, imp.expressions, imp.return_type)
+        {
+            this.name = imp.name;
+            this.dungeon = imp.dungeon;
             this.rail = dungeon.rail;
             if (rail != null)
                 dungeon.functions.Add(this);

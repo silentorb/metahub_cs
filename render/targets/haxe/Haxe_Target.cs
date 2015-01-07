@@ -6,7 +6,7 @@ namespace metahub.render.targets.haxe
 
 public class Haxe_Target : Target{
 
-	public Haxe_Target(Railway railway, Imp imp)
+	public Haxe_Target(Railway railway, Overlord imp)
 :base(railway, imp) {
 	}
 

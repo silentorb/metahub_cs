@@ -43,7 +43,7 @@ namespace metahub.render.targets.cpp
             {"none", "void"}
         };
 
-        public Cpp(Railway railway, Imp imp)
+        public Cpp(Railway railway, Overlord imp)
             : base(railway, imp)
         {
         }

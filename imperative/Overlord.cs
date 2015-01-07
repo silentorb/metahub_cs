@@ -15,13 +15,13 @@ using Node = metahub.logic.types.Node;
 namespace metahub.imperative
 {
 
-    public class Imp
+    public class Overlord
     {
         public Railway railway;
         public List<Dungeon> dungeons = new List<Dungeon>();
         Dictionary<Rail, Dungeon> rail_map = new Dictionary<Rail, Dungeon>();
 
-        public Imp(Hub hub, string target_name)
+        public Overlord(Hub hub, string target_name)
         {
             railway = new Railway(hub, target_name);
         }

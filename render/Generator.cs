@@ -16,7 +16,7 @@ public class Generator {
 		this.hub = hub;
 	}
 	
-	public Target create_target (Imp imp, string target_name) {
+	public Target create_target (Overlord imp, string target_name) {
 		switch(target_name) {
 			case "cpp":
 				return new Cpp(imp.railway, imp);

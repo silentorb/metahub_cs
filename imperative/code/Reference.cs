@@ -112,19 +112,19 @@ namespace metahub.imperative.code
 				new Parameter(value)
 			}, new List<Expression>
 			    {
-			        Overlord.If(new Operation("==", new List<Expression>
+			        Imp.If(new Operation("==", new List<Expression>
 			            {
 			                new Tie_Expression(property_reference.tie.other_tie),
                             new Null_Value()
 			            }), new List<Expression>{ 
-                            new Statement("return", Overlord.True())
+                            new Statement("return", Imp.True())
                         }),
                     new Iterator(it, 
                         new Tie_Expression(property_reference.tie.other_tie, 
                             new Tie_Expression(property_reference.tie)), 
                         new List<Expression>
                         {
-                            Overlord.If(new Operation("==", new List<Expression>
+                            Imp.If(new Operation("==", new List<Expression>
                                 {
                                     new Variable(it), new Self(dungeon)
                                 }), new List<Expression>
@@ -176,7 +176,7 @@ namespace metahub.imperative.code
 
             return new List<Expression>
             {
-                Overlord.If(Overlord.operation(inverse_operators[constraint.op], 
+                Imp.If(Imp.operation(inverse_operators[constraint.op], 
                         new Variable(it, new Tie_Expression(constraint.endpoints.Last(),
                             new Function_Call("dist",
                                 new List<Expression> { new Variable(value) }, true))),
@@ -184,7 +184,7 @@ namespace metahub.imperative.code
                     ),
                     new List<Expression>
                     {
-                        new Declare_Variable(offset, Overlord.operation("/", Overlord.operation("+",
+                        new Declare_Variable(offset, Imp.operation("/", Imp.operation("+",
                             new Variable(it, new Tie_Expression(constraint.endpoints.Last())),
                             new Variable(value)
                         ), new Literal(2, new Signature(Kind.Float)))),
@@ -197,13 +197,13 @@ namespace metahub.imperative.code
 
                             new Declare_Variable(conflict, new Instantiate(conflict_rail)),
                             new Variable(conflict, new Function_Call("initialize")),
-                            new Variable(conflict,Overlord.setter(conflict_nodes, new Self(dungeon))),
-                            new Variable(conflict,Overlord.setter(conflict_nodes, new Variable(it))),
+                            new Variable(conflict,Imp.setter(conflict_nodes, new Self(dungeon))),
+                            new Variable(conflict,Imp.setter(conflict_nodes, new Variable(it))),
                             new Tie_Expression(mold_tie,
                                 new Tie_Expression(piecemaker_tie,
-                                    Overlord.setter(conflicts_tie, new Variable(conflict))
+                                    Imp.setter(conflicts_tie, new Variable(conflict))
                             )),
-                            new Statement("return", Overlord.False())
+                            new Statement("return", Imp.False())
 
                     })
             };

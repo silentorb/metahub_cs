@@ -55,5 +55,32 @@ namespace metahub.imperative.schema
             return child;
         }
 
+        public static Flow_Control If(Expression expression, List<Expression> children)
+        {
+            return new Flow_Control(Flow_Control_Type.If, expression, children);
+        }
+
+        public static Literal False()
+        {
+            return new Literal(false, new Signature(Kind.Bool));
+        }
+
+        public static Literal True()
+        {
+            return new Literal(true, new Signature(Kind.Bool));
+        }
+
+        public static Operation operation(string op, Expression first, Expression second)
+        {
+            return new Operation(op, new List<Expression> { first, second });
+        }
+
+        public static Property_Function_Call setter(Tie tie, Expression value, Expression origin = null)
+        {
+            return new Property_Function_Call(Property_Function_Type.set, tie, origin != null
+                ? new List<Expression> { value, origin }
+                : new List<Expression> { value }
+             );
+        }
     }
 }

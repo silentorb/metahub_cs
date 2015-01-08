@@ -1,13 +1,16 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using metahub.Properties;
 using metahub.imperative.code;
 using metahub.imperative.schema;
 using metahub.imperative.types;
 using metahub.logic.schema;
+using metahub.parser;
 using metahub.render;
 using metahub.schema;
 using Constraint = metahub.logic.schema.Constraint;
+using Literal = metahub.imperative.types.Literal;
 using Logician = metahub.logic.Logician;
 using Node_Type = metahub.logic.types.Node_Type;
 using Node = metahub.logic.types.Node;
@@ -20,6 +23,7 @@ namespace metahub.imperative
         public Railway railway;
         public List<Dungeon> dungeons = new List<Dungeon>();
         Dictionary<Rail, Dungeon> rail_map = new Dictionary<Rail, Dungeon>();
+        public Definition parser_definition;
 
         public Overlord(Hub hub, string target_name)
         {
@@ -274,32 +278,25 @@ namespace metahub.imperative
             return path.Where(t => t.type == Node_Type.property).ToArray();
         }
 
-        public static Flow_Control If(Expression expression, List<Expression> children)
+        public void load_parser()
         {
-            return new Flow_Control(Flow_Control_Type.If, expression, children);
-        }
+            Definition boot_definition = new Definition();
+            boot_definition.load_parser_schema();
+            Bootstrap context = new Bootstrap(boot_definition);
 
-        public static Literal False()
-        {
-            return new Literal(false, new Signature(Kind.Bool));
-        }
+            var result = context.parse(Resources.imp_grammar, false);
+            //Debug_Info.output(result);
+            if (result.success)
+            {
+                var match = (Match)result;
 
-        public static Literal True()
-        {
-            return new Literal(true, new Signature(Kind.Bool));
-        }
-
-        public static Operation operation(string op, Expression first, Expression second)
-        {
-            return new Operation(op, new List<Expression>{ first, second});
-        }
-
-        public static Property_Function_Call setter(Tie tie, Expression value, Expression origin = null)
-        {
-            return new Property_Function_Call(Property_Function_Type.set, tie, origin != null
-                ? new List<Expression>{value, origin}
-                : new List<Expression> { value }
-            );
+                parser_definition = new Definition();
+                parser_definition.load(match.get_data().dictionary);
+            }
+            else
+            {
+                throw new Exception("Error loading parser.");
+            }
         }
     }
 }

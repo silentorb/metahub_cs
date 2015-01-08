@@ -61,6 +61,43 @@ namespace metahub.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to start = trim @(class, newlines, 0, 0) final_trim
+        ///
+        ///none = /&amp;*/
+        ///ws = /\s+/
+        ///trim = /\s*/
+        ///final_trim = /\s*$/
+        ///newlines = /(\s*\n)+\s*/
+        ///comma = trim &quot;,&quot; trim
+        ///spaces = /[\r\n\t]+/
+        ///dot = &quot;.&quot;
+        ///path_function_separator = &quot;.&quot; | &quot;|&quot;
+        ///id = /[a-zA-Z0-9_]+/
+        ///
+        ///declare_symbol = id trim @(type_info, none, 0, 1)
+        ///
+        ///type_info = &quot;:&quot; trim id 
+        ///
+        ///function_statement =
+        ///	if
+        ///	| return
+        ///
+        ///expression_part =
+        ///	value
+        ///	| create_node
+        ///	| reference
+        ///	| long_block
+        ///	| array
+        ///
+        ///expression = @(expression_part, operation_separator, [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string imp_grammar {
+            get {
+                return ResourceManager.GetString("imp_grammar", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to start = trim @(statement, newlines, 0, 0) final_trim
         ///
         ///none = /&amp;*/
@@ -139,7 +176,28 @@ namespace metahub.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to 
+        ///class Conflict {
+        ///
+        ///	test() {
+        ///
+        ///	}
+        ///
+        ///}.
+        /// </summary>
+        internal static string piecemaker_imp {
+            get {
+                return ResourceManager.GetString("piecemaker_imp", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to {
+        ///  &quot;targets&quot;: {
+        ///    &quot;cpp&quot;: {
+        ///      &quot;class_export&quot;: &quot;CORE_API&quot;
+        ///    }
+        ///  },
         ///  &quot;trellises&quot;: {
         ///    &quot;Piece_Maker&quot;: {
         ///      &quot;properties&quot;: {
@@ -151,25 +209,20 @@ namespace metahub.Properties {
         ///    },
         ///    &quot;Conflict&quot;: {
         ///      &quot;properties&quot;: {
-        ///        &quot;piecemaker&quot;: {
+        ///        &quot;piece_maker&quot;: {
         ///          &quot;type&quot;: &quot;reference&quot;,
         ///          &quot;trellis&quot;: &quot;Piece_Maker&quot;
         ///        }
         ///      }
         ///    },
         ///    &quot;Distance_Conflict&quot;: {
+        ///      &quot;parent&quot;: &quot;Conflict&quot;,
         ///      &quot;properties&quot;: {
-        ///        &quot;nodes&quot;: {
-        ///          &quot;type&quot;: &quot;list&quot;,
-        ///          &quot;trellis&quot;: &quot;Spatial_Node&quot;
-        ///        }
-        ///      }
-        ///    },
-        ///    &quot;Sp [rest of string was truncated]&quot;;.
+        ///        &quot;node [rest of string was truncated]&quot;;.
         /// </summary>
-        internal static string piecemaker {
+        internal static string piecemaker_json {
             get {
-                return ResourceManager.GetString("piecemaker", resourceCulture);
+                return ResourceManager.GetString("piecemaker_json", resourceCulture);
             }
         }
     }

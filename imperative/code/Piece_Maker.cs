@@ -32,7 +32,7 @@ namespace metahub.imperative.code
            var dungeon = overlord.get_dungeon(region.rails["Distance_Conflict"]);
            var parent = conflict.summon_imp("is_resolved");
            var is_resolved = parent.spawn_child(dungeon);
-           is_resolved.expressions.Add(new Statement("return", Overlord.False()));
+           is_resolved.expressions.Add(new Statement("return", Imp.False()));
        }
 
        static void piece_maker_functions(Overlord overlord, Region region)
@@ -45,8 +45,8 @@ namespace metahub.imperative.code
 
            update_function.expressions = new List<Expression>
             {
-                Overlord.If(
-                Overlord.operation(">", new Tie_Expression(conflicts, new Function_Call("count", null, true)), 
+                Imp.If(
+                Imp.operation(">", new Tie_Expression(conflicts, new Function_Call("count", null, true)), 
                 new Literal(0)), new List<Expression>
                 {
                     new Declare_Variable(conflict, new Tie_Expression(conflicts, 

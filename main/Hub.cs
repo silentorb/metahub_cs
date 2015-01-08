@@ -37,7 +37,7 @@ namespace metahub
 
             metahub_namespace = schema.add_namespace("metahub");
 
-            core_schemas["piecemaker"] = Resources.piecemaker;
+            core_schemas["piecemaker"] = Resources.piecemaker_json;
         }
 
         public void load_parser()
@@ -136,12 +136,13 @@ namespace metahub
 
         public void generate(Pattern_Source source, string target_name, string destination)
         {
-            Overlord imp = new Overlord(this, target_name);
+            Overlord overlord = new Overlord(this, target_name);
+            overlord.load_parser();
             var logician = new Logician();
-            run_data(source, imp.railway, logician);
+            run_data(source, overlord.railway, logician);
             Generator generator = new Generator(this);
-            var target = generator.create_target(imp, target_name);
-            imp.run(logician, target);
+            var target = generator.create_target(overlord, target_name);
+            overlord.run(logician, target);
             generator.run(target, destination);
         }
 

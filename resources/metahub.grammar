@@ -32,8 +32,7 @@ statement =
 
 create_symbol = "let" ws id trim "=" trim expression
 
-expression =
-    @(expression_part, operation_separator, 1, 0)
+expression = @(expression_part, operation_separator, 1, 0)
 
 operation_separator = trim operator trim
 

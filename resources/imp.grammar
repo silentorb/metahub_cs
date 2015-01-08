@@ -1,0 +1,51 @@
+﻿start = trim @(class, newlines, 0, 0) final_trim
+
+none = /&*/
+ws = /\s+/
+trim = /\s*/
+final_trim = /\s*$/
+newlines = /(\s*\n)+\s*/
+comma = trim "," trim
+spaces = /[\r\n\t]+/
+dot = "."
+path_function_separator = "." | "|"
+id = /[a-zA-Z0-9_]+/
+semicolon_or_newline = /\s*((\s*\n)+|;)\s*/
+
+string = ('"' /[^"]*/ '"') | ("'" /[^']*/ "'")
+bool = "true" | "false"
+int = /-?[0-9]+/
+float = /-?([0-9]*\.)?[0-9]+f?/
+operator = '+' | '-' | '/' | '*' | '%' | "|"
+constraint_operator = '=' | '<=' | '>=' | '<' | '>' | '+=' | '-=' | '*=' | '/=' | "in"
+value = string | bool | int | float
+operation_separator = trim operator trim
+
+reference = @(id, path_function_separator, 1, 0)
+
+declare_symbol = id trim @(type_info, none, 0, 1)
+
+type_info = ":" trim id 
+
+function_statement =
+	if
+	| return
+
+expression_part =
+	value
+	| reference
+
+expression = @(expression_part, operation_separator, 1, 0)
+	
+function_definition = id trim "(" @(declare_symbol, comma, 0, 0) ")" trim @(type_info, none, 0, 1) trim long_block
+
+class = "class" ws id class_block
+
+class_block = "{" trim @(function_definition, newlines, 0, 0) trim "}"
+
+long_block = "{" trim @(function_statement, semicolon_or_newline, 0, 0) trim "}"
+
+if = "if" trim "(" trim expression trim ")" trim long_block
+
+optional_expression = spaces expression
+return = "return" @(optional_expression, none, 0, 1)

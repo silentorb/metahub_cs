@@ -118,13 +118,19 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+  <data name="imp_grammar" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\imp.grammar;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
+  </data>
   <data name="metahub" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\resources\metahub.grammar;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
   </data>
   <data name="parser" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\resources\parser.json;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
   </data>
-  <data name="piecemaker" type="System.Resources.ResXFileRef, System.Windows.Forms">
+  <data name="piecemaker_imp" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\piecemaker.imp;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
+  </data>
+  <data name="piecemaker_json" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\resources\piecemaker.json;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
   </data>
 </root>

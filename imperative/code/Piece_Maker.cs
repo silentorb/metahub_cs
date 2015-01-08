@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using metahub.Properties;
 using metahub.imperative.schema;
 using metahub.imperative.types;
 using metahub.logic.schema;
@@ -13,9 +14,10 @@ namespace metahub.imperative.code
     {
        public static void add_functions(Overlord overlord, Region region)
        {
-           conflict_functions(overlord, region);
-           distance_functions(overlord, region);
-           piece_maker_functions(overlord, region);
+           overlord.summon(Resources.piecemaker_imp);
+           //conflict_functions(overlord, region);
+           //distance_functions(overlord, region);
+           //piece_maker_functions(overlord, region);
        }
 
        static void conflict_functions(Overlord overlord, Region region)

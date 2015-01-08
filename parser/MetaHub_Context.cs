@@ -23,7 +23,8 @@ namespace metahub.parser
         public object expression;
         public List<object> inputs;
     }
-    public class MetaHub_Context : Context
+
+    public class MetaHub_Context : Parser_Context
     {
 
         //private static Map<string, Functions> function_Dictionary;

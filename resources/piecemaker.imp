@@ -1,8 +1,10 @@
 ﻿
-class Conflict {
+namespace piecemaker {
+	class Conflict {
 
-	test() {
+		test() {
+
+		}
 
 	}
-
 }

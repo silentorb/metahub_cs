@@ -1,4 +1,4 @@
-﻿start = trim @(class, newlines, 0, 0) final_trim
+﻿start = trim @(namespace, newlines, 0, 0) final_trim
 
 none = /&*/
 ws = /\s+/
@@ -36,12 +36,12 @@ expression_part =
 	| reference
 
 expression = @(expression_part, operation_separator, 1, 0)
+
+namespace = "namespace" ws id trim "{" trim @(class, newlines, 0, 0) trim "}"
 	
 function_definition = id trim "(" @(declare_symbol, comma, 0, 0) ")" trim @(type_info, none, 0, 1) trim long_block
 
-class = "class" ws id class_block
-
-class_block = "{" trim @(function_definition, newlines, 0, 0) trim "}"
+class = "class" ws id trim "{" trim @(function_definition, newlines, 0, 0) trim "}"
 
 long_block = "{" trim @(function_statement, semicolon_or_newline, 0, 0) trim "}"
 

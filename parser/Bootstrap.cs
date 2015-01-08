@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace metahub.parser
 {
-    public class Bootstrap : Context
+    public class Bootstrap : Parser_Context
     {
 
         //  public Bootstrap() { }

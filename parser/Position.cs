@@ -4,9 +4,9 @@ public class Position {
   int offset;
   public int y;
   public int x;
-  public Context context;
+  public Parser_Context context;
 
-  public Position(Context context, int offset = 0, int y = 1, int x = 1) {
+  public Position(Parser_Context context, int offset = 0, int y = 1, int x = 1) {
     this.context = context;
     this.offset = offset;
     this.y = y;

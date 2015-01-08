@@ -17,6 +17,7 @@ namespace metahub.imperative.schema
     public class Dungeon
     {
         public string name;
+        public Realm realm;
         public Rail rail;
         public Dungeon parent;
         public List<Expression> code;
@@ -31,10 +32,11 @@ namespace metahub.imperative.schema
         public Dictionary<string, Used_Function> used_functions = new Dictionary<string, Used_Function>();
         public Dictionary<string, Dependency> dependencies = new Dictionary<string, Dependency>();
 
-        public Dungeon(Rail rail, Overlord overlord)
+        public Dungeon(Rail rail, Overlord overlord, Realm realm)
         {
             this.rail = rail;
             this.overlord = overlord;
+            this.realm = realm;
 
             name = rail.name;
             region = rail.region;

@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace metahub.parser
 {
-    public class Context
+    public class Parser_Context
     {
 
         public string text;
@@ -14,7 +14,7 @@ namespace metahub.parser
         //  List<Match> history;
         public Match last_success;
 
-        public Context(Definition definition)
+        public Parser_Context(Definition definition)
         {
             this.definition = definition;
         }

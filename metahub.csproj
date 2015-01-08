@@ -46,10 +46,14 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="imperative\code\Piece_Maker.cs" />
+    <Compile Include="imperative\schema\Realm.cs" />
+    <Compile Include="imperative\summoner\Context.cs" />
+    <Compile Include="imperative\summoner\Pre_Summoner.cs" />
     <Compile Include="imperative\schema\Block.cs" />
     <Compile Include="imperative\schema\Division.cs" />
     <Compile Include="imperative\schema\Imp.cs" />
     <Compile Include="imperative\schema\Symbol.cs" />
+    <Compile Include="imperative\summoner\Summoner.cs" />
     <Compile Include="imperative\types\Operation.cs" />
     <Compile Include="imperative\types\Property_Function_Call.cs" />
     <Compile Include="imperative\types\Iterator.cs" />
@@ -118,7 +122,7 @@
     <Compile Include="logic\types\Scope_Expression.cs" />
     <Compile Include="logic\types\Variable.cs" />
     <Compile Include="parser\Bootstrap.cs" />
-    <Compile Include="parser\Context.cs" />
+    <Compile Include="parser\Parser_Context.cs" />
     <Compile Include="parser\Definition.cs" />
     <Compile Include="parser\Failure.cs" />
     <Compile Include="parser\Group.cs" />

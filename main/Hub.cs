@@ -23,7 +23,7 @@ namespace metahub
     {
         public Schema schema;
         public Definition parser_definition;
-        static Regex remove_comments = new Regex("#[^\n]*");
+        public static Regex remove_comments = new Regex("#[^\n]*");
         public Namespace metahub_namespace;
         public int max_steps = 100;
         public Dictionary<string, string> core_schemas = new Dictionary<string, string>(); 
@@ -137,7 +137,6 @@ namespace metahub
         public void generate(Pattern_Source source, string target_name, string destination)
         {
             Overlord overlord = new Overlord(this, target_name);
-            overlord.load_parser();
             var logician = new Logician();
             run_data(source, overlord.railway, logician);
             Generator generator = new Generator(this);

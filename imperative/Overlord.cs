@@ -4,6 +4,7 @@ using System.Linq;
 using metahub.Properties;
 using metahub.imperative.code;
 using metahub.imperative.schema;
+using metahub.imperative.summoner;
 using metahub.imperative.types;
 using metahub.logic.schema;
 using metahub.parser;
@@ -23,7 +24,8 @@ namespace metahub.imperative
         public Railway railway;
         public List<Dungeon> dungeons = new List<Dungeon>();
         Dictionary<Rail, Dungeon> rail_map = new Dictionary<Rail, Dungeon>();
-        public Definition parser_definition;
+        private Summoner summoner;
+        public Dictionary<string, Realm> realms = new Dictionary<string, Realm>(); 
 
         public Overlord(Hub hub, string target_name)
         {
@@ -47,19 +49,22 @@ namespace metahub.imperative
 
         public void generate_code(Target target)
         {
-
             foreach (var region in railway.regions.Values)
             {
                 if (region.is_external)
                     continue;
+
+                var realm = new Realm(region);
+                realms[realm.name] = realm;
 
                 foreach (var rail in region.rails.Values)
                 {
                     if (rail.is_external || rail.trellis.is_abstract)
                         continue;
 
-                    Dungeon dungeon = new Dungeon(rail, this);
+                    Dungeon dungeon = new Dungeon(rail, this, realm);
                     dungeons.Add(dungeon);
+                    realm.dungeons[dungeon.name] = dungeon;
                     rail_map[rail] = dungeon;
                 }
             }
@@ -278,25 +283,12 @@ namespace metahub.imperative
             return path.Where(t => t.type == Node_Type.property).ToArray();
         }
 
-        public void load_parser()
+        public void summon(string code)
         {
-            Definition boot_definition = new Definition();
-            boot_definition.load_parser_schema();
-            Bootstrap context = new Bootstrap(boot_definition);
+            if (summoner == null)
+                summoner = new Summoner(this);
 
-            var result = context.parse(Resources.imp_grammar, false);
-            //Debug_Info.output(result);
-            if (result.success)
-            {
-                var match = (Match)result;
-
-                parser_definition = new Definition();
-                parser_definition.load(match.get_data().dictionary);
-            }
-            else
-            {
-                throw new Exception("Error loading parser.");
-            }
+            summoner.summon(code);
         }
     }
 }

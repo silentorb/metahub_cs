@@ -19,6 +19,7 @@ namespace metahub.parser
 
         public Pattern_Source pattern;
         public Pattern_Source divider;
+        public string[] dividers;
         public Pattern_Source[] patterns;
         public Pattern_Source value;
         public Dictionary<string, Pattern_Source> dictionary;

@@ -58,7 +58,7 @@ namespace metahub.parser
                     return new Repetition();
 
                 case "literal":
-                    return new Literal(source.text);
+                    return new Literal_Pattern(source.text);
 
             }
 

@@ -28,6 +28,13 @@ namespace metahub.imperative.summoner
                 {
                     case "start":
                         return data.patterns[1];
+
+                    case "optional_expression":
+                        return data.patterns[1];
+
+                    case "expression":
+                        data.dividers = ((Repetition_Match) match).dividers.Select(d => d.get_data().patterns[1].text).ToArray();
+                        break;
                 }
 
                 return data;

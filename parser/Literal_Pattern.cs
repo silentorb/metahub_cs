@@ -1,11 +1,11 @@
 namespace metahub.parser
 {
-    public class Literal : Pattern
+    public class Literal_Pattern : Pattern
     {
         string value;
         string text;
 
-        public Literal(string text)
+        public Literal_Pattern(string text)
         {
             this.text = text;
         }

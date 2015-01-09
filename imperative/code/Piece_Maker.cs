@@ -45,7 +45,7 @@ namespace metahub.imperative.code
            var if_scope = new Scope(update_function.scope);
            var conflict = if_scope.create_symbol("conflict", new Signature(Kind.reference, conflicts.other_rail));
 
-           update_function.expressions = new List<Expression>
+           update_function.imp.expressions = new List<Expression>
             {
                 Imp.If(
                 Imp.operation(">", new Tie_Expression(conflicts, new Function_Call("count", null, true)), 

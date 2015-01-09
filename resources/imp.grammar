@@ -6,7 +6,7 @@ trim = /\s*/
 final_trim = /\s*$/
 newlines = /(\s*\n)+\s*/
 comma = trim "," trim
-spaces = /[\r\n\t]+/
+spaces = /[ \t]+/
 dot = "."
 path_function_separator = "." | "|"
 id = /[a-zA-Z0-9_]+/
@@ -16,8 +16,8 @@ string = ('"' /[^"]*/ '"') | ("'" /[^']*/ "'")
 bool = "true" | "false"
 int = /-?[0-9]+/
 float = /-?([0-9]*\.)?[0-9]+f?/
-operator = '+' | '-' | '/' | '*' | '%' | "|"
-constraint_operator = '=' | '<=' | '>=' | '<' | '>' | '+=' | '-=' | '*=' | '/=' | "in"
+operator = '+' | '-' | '/' | '*' | '<=' | '>=' | '<' | '>'
+constraint_operator = '=' | '<=' | '>=' | '<' | '>' | '+=' | '-=' | '*=' | '/='
 value = string | bool | int | float
 operation_separator = trim operator trim
 
@@ -39,7 +39,9 @@ expression = @(expression_part, operation_separator, 1, 0)
 
 namespace = "namespace" ws id trim "{" trim @(class, newlines, 0, 0) trim "}"
 	
-function_definition = id trim "(" @(declare_symbol, comma, 0, 0) ")" trim @(type_info, none, 0, 1) trim long_block
+function_definition = @(function_attribute, none, 0, 1) id trim "(" @(declare_symbol, comma, 0, 0) ")" trim @(type_info, none, 0, 1) trim long_block
+
+function_attribute =  "abstract" ws
 
 class = "class" ws id trim "{" trim @(function_definition, newlines, 0, 0) trim "}"
 
@@ -48,4 +50,5 @@ long_block = "{" trim @(function_statement, semicolon_or_newline, 0, 0) trim "}"
 if = "if" trim "(" trim expression trim ")" trim long_block
 
 optional_expression = spaces expression
+
 return = "return" @(optional_expression, none, 0, 1)

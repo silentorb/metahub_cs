@@ -128,7 +128,7 @@
     <Compile Include="parser\Group.cs" />
     <Compile Include="parser\Group_And.cs" />
     <Compile Include="parser\Group_Or.cs" />
-    <Compile Include="parser\Literal.cs" />
+    <Compile Include="parser\Literal_Pattern.cs" />
     <Compile Include="parser\Match.cs" />
     <Compile Include="parser\MetaHub_Context.cs" />
     <Compile Include="parser\Pattern.cs" />

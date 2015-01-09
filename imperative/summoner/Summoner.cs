@@ -96,15 +96,120 @@ namespace metahub.imperative.summoner
         void process_function_definitions(Pattern_Source source, Context context)
         {
             var imp = context.dungeon.spawn_imp(
-                source.patterns[0].text,
-                source.patterns[3].patterns.Select(p => process_parameter(p, context)).ToList()
+                source.patterns[1].text,
+                source.patterns[4].patterns.Select(p => process_parameter(p, context)).ToList()
             );
+
+            var attributes = source.patterns[0];
+            if (attributes.patterns.Length > 0)
+                imp.is_abstract = attributes.patterns[0].patterns[0].text == "abstract";
+
+            var return_type = source.patterns[7];
+            if (return_type.patterns.Length > 0)
+                imp.return_type = parse_type(return_type.patterns[0].patterns[2].text);
+
+            imp.expressions = process_block(source.patterns[9], context);
+        }
+
+        List<Expression> process_block(Pattern_Source source, Context context)
+        {
+            return source.patterns[2].patterns.Select(p => process_statement(p, context)).ToList();
+        }
+
+        Expression process_statement(Pattern_Source source, Context context)
+        {
+            switch (source.type)
+            {
+                case "if":
+                    return new Flow_Control(Flow_Control_Type.If, process_expressions(source.patterns[4], context),
+                        process_block(source.patterns[8], context)
+                    );
+
+                case "return":
+                    return new Statement("return", source.patterns[1].patterns.Length == 0
+                        ? null
+                        : process_expressions(source.patterns[1].patterns[0], context)
+                    );
+            }
+
+            throw new Exception("Unsupported statement type: " + source.type + ".");
+        }
+
+        Expression process_expressions(Pattern_Source source, Context context)
+        {
+            if (source.patterns.Length == 1)
+            return process_expression(source.patterns[0], context);
             
+            return new Operation(source.dividers[0], source.patterns.Select(p=>process_expression(p, context)));
+        }
+
+        Expression process_expression(Pattern_Source source, Context context)
+        {
+            switch (source.type)
+            {
+                case "bool":
+                    return new Literal(source.text == "true", new Signature(Kind.Bool));
+
+                case "int":
+                    return new Literal(int.Parse(source.text), new Signature(Kind.Int));
+
+                case "reference":
+                    return process_reference(source, context);
+            }
+
+            throw new Exception("Unsupported statement type: " + source.type + ".");
+        }
+
+        Expression process_reference(Pattern_Source source, Context context)
+        {
+            var dungeon = context.dungeon;
+            Expression result = null;
+            Expression last = null;
+            foreach (var pattern in source.patterns)
+            {
+                var token = pattern.text;
+                Tie tie = null;
+                if (dungeon != null)
+                    tie = dungeon.rail.get_tie_or_null(token);
+
+                Expression next;
+                if (tie != null)
+                    next = new Tie_Expression(tie);
+                else
+                {
+                    var imp = context.dungeon.summon_imp(token);
+                    next = imp != null 
+                        ? new Function_Call(imp) 
+                        : new Function_Call(token, null, true);
+                }
+
+                if (result == null)
+                    result = next;
+                else
+                    last.child = next;
+
+                last = next;
+            }
+
+            return result;
         }
 
         Parameter process_parameter(Pattern_Source source, Context context)
         {
             return new Parameter(new Symbol(source.patterns[1].text, new Signature(Kind.unknown), null));
+        }
+
+        Signature parse_type(string text)
+        {
+            switch (text)
+            {
+                case "bool": return new Signature(Kind.Bool);
+                case "string": return new Signature(Kind.String);
+                case "float": return new Signature(Kind.Float);
+                case "int": return new Signature(Kind.Int);
+            }
+
+            throw new Exception("Invalid type: " + text + ".");
         }
     }
 }

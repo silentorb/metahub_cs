@@ -412,7 +412,7 @@ namespace metahub.imperative.schema
 
         public Imp summon_imp(string imp_name)
         {
-            return imps.First(i => i.name == imp_name);
+            return imps.FirstOrDefault(i => i.name == imp_name);
         }
     }
 }

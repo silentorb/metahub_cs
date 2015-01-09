@@ -2,8 +2,26 @@
 namespace piecemaker {
 	class Conflict {
 
-		test() {
+		abstract is_resolved():bool {
 
+		}
+
+	}
+
+	class Distance_Conflict {
+
+		is_resolved():bool {
+			return false
+		}
+
+	}
+
+	class Piece_Maker {
+
+		update() {
+			if (conflicts.count > 0) {
+				
+			}
 		}
 
 	}

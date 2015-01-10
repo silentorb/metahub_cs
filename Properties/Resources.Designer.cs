@@ -61,7 +61,7 @@ namespace metahub.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to start = trim @(class, newlines, 0, 0) final_trim
+        ///   Looks up a localized string similar to start = trim @(namespace, newlines, 0, 0) final_trim
         ///
         ///none = /&amp;*/
         ///ws = /\s+/
@@ -69,31 +69,41 @@ namespace metahub.Properties {
         ///final_trim = /\s*$/
         ///newlines = /(\s*\n)+\s*/
         ///comma = trim &quot;,&quot; trim
-        ///spaces = /[\r\n\t]+/
+        ///spaces = /[ \t]+/
         ///dot = &quot;.&quot;
         ///path_function_separator = &quot;.&quot; | &quot;|&quot;
         ///id = /[a-zA-Z0-9_]+/
+        ///comma_or_newline = /\s*((\s*\n)+|,)\s*/
+        ///semicolon_or_newline = /\s*((\s*\n)+|;)\s*/
         ///
-        ///declare_symbol = id trim @(type_info, none, 0, 1)
-        ///
-        ///type_info = &quot;:&quot; trim id 
-        ///
-        ///function_statement =
-        ///	if
-        ///	| return
-        ///
-        ///expression_part =
-        ///	value
-        ///	| create_node
-        ///	| reference
-        ///	| long_block
-        ///	| array
-        ///
-        ///expression = @(expression_part, operation_separator, [rest of string was truncated]&quot;;.
+        ///string = (&apos;&quot;&apos; /[^&quot;]*/ &apos;&quot;&apos;) | (&quot;&apos;&quot; /[^&apos;]*/ &quot;&apos;&quot;)
+        ///bool = &quot;true&quot; | &quot;false&quot;
+        ///int = /-?[0-9]+/
+        ///float = /-?([0-9]*\.)?[0-9]+f?/
+        ///operator = &apos;+&apos; | &apos;-&apos; | &apos;/&apos; | &apos;*&apos; | &apos;&lt;=&apos; | &apos;&gt;=&apos; [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string imp_grammar {
             get {
                 return ResourceManager.GetString("imp_grammar", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to #include &lt;vector.h&gt;
+        ///
+        ///namespace metahub {
+        ///	
+        ///	class List&lt;T&gt; {
+        ///		static T remove&lt;T&gt;(std::vector
+        ///
+        ///
+        ///
+        ///	}
+        ///}.
+        /// </summary>
+        internal static string list_h {
+            get {
+                return ResourceManager.GetString("list_h", resourceCulture);
             }
         }
         
@@ -177,12 +187,33 @@ namespace metahub.Properties {
         
         /// <summary>
         ///   Looks up a localized string similar to 
-        ///class Conflict {
+        ///namespace piecemaker {
+        ///	class Conflict {
         ///
-        ///	test() {
+        ///		abstract is_resolved():bool {
+        ///
+        ///		}
         ///
         ///	}
         ///
+        ///	class Distance_Conflict {
+        ///
+        ///		is_resolved():bool {
+        ///			return false
+        ///		}
+        ///
+        ///	}
+        ///
+        ///	class Piece_Maker {
+        ///
+        ///		update() {
+        ///			if (conflicts.count &gt; 0) {
+        ///				var conflict:Conflict = conflicts.last
+        ///				conflicts.pop
+        ///			}
+        ///		}
+        ///
+        ///	}
         ///}.
         /// </summary>
         internal static string piecemaker_imp {

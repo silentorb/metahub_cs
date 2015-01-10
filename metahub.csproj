@@ -145,7 +145,9 @@
     <Compile Include="render\String_Extensions.cs" />
     <Compile Include="render\Target.cs" />
     <Compile Include="render\targets\cpp\Cpp.cs" />
+    <Compile Include="render\targets\cpp\Cpp_Transmuter.cs" />
     <Compile Include="render\targets\haxe\Haxe_Target.cs" />
+    <Compile Include="render\Transmuter.cs" />
     <Compile Include="schema\Kind.cs" />
     <Compile Include="schema\Load_Settings.cs" />
     <Compile Include="schema\Namespace.cs" />
@@ -176,7 +178,9 @@
       <SubType>Designer</SubType>
     </EmbeddedResource>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Content Include="resources\cpp\list.h" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

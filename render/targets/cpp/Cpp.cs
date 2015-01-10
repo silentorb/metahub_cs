@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using metahub.Properties;
 using metahub.imperative;
 using metahub.imperative.schema;
 using metahub.imperative.types;
@@ -58,7 +59,7 @@ namespace metahub.render.targets.cpp
                         continue;
 
                     Console.WriteLine(rail.region.name + "." + rail.name);
-                   
+
                     var space = Generator.get_namespace_path(rail.region);
                     var dir = output_folder + "/" + space.join("/");
                     Utility.create_folder(dir);
@@ -68,6 +69,12 @@ namespace metahub.render.targets.cpp
                     create_header_file(dungeon, dir);
                     create_class_file(dungeon, dir);
                 }
+            }
+
+            {
+                var dir = output_folder + "/metahub";
+                Utility.create_folder(dir);
+                Utility.create_file(dir + "/" + "list.h", Resources.list_h);
             }
         }
 
@@ -831,17 +838,24 @@ namespace metahub.render.targets.cpp
             if (expression.is_platform_specific)
             {
                 //var args = Node.args.map((a)=> a).join(", ");
+                var ref_string = expression.reference != null
+                    ? render_expression(expression.reference)
+                    : "";
+
+                var ref_full = ref_string.Length > 0
+                    ? ref_string + "."
+                    : "";
 
                 switch (expression.name)
                 {
                     case "count":
-                        return "size()";
+                        return ref_full + "size()";
 
                     case "add":
                         {
                             var first = render_expression(expression.args[0]);
                             //var dereference = is_pointer(expression.args.Last().get_signature()) ? "*" : "";
-                            return "push_back(" + first + ")";
+                            return ref_full + "push_back(" + first + ")";
                         }
 
                     case "dist":
@@ -849,14 +863,21 @@ namespace metahub.render.targets.cpp
                             var signature = expression.args[0].get_signature();
                             var first = render_expression(expression.args[0]);
                             //var dereference = is_pointer(signature) ? "*" : "";
-                            return "distance(" + first + ")";
+                            return ref_full + "distance(" + first + ")";
                         }
 
                     case "last":
-                        return "back()";
+                        return ref_full + "back()";
 
                     case "pop":
-                        return "pop_back()";
+                        return ref_full + "pop_back()";
+
+                    case "remove":
+                        {
+                            var first = render_expression(expression.args[0]);
+                            return ref_full + "erase(std::remove(" + ref_full + "begin(), "
+                                + ref_full + "end(), " + first + "), " + ref_full + "end());";
+                        }
 
                     case "rand":
                         float min = (float)((Literal)expression.args[0]).value;

@@ -19,8 +19,9 @@ namespace piecemaker {
 	class Piece_Maker {
 
 		update() {
-			if (conflicts.count > 0) {
-				
+			if (conflicts.count() > 0) {
+				var conflict:Conflict = conflicts.last()
+				conflicts.pop()
 			}
 		}
 

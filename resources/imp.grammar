@@ -8,8 +8,9 @@ newlines = /(\s*\n)+\s*/
 comma = trim "," trim
 spaces = /[ \t]+/
 dot = "."
-path_function_separator = "." | "|"
+path_separator = "."
 id = /[a-zA-Z0-9_]+/
+comma_or_newline = /\s*((\s*\n)+|,)\s*/
 semicolon_or_newline = /\s*((\s*\n)+|;)\s*/
 
 string = ('"' /[^"]*/ '"') | ("'" /[^']*/ "'")
@@ -21,19 +22,27 @@ constraint_operator = '=' | '<=' | '>=' | '<' | '>' | '+=' | '-=' | '*=' | '/='
 value = string | bool | int | float
 operation_separator = trim operator trim
 
-reference = @(id, path_function_separator, 1, 0)
+parameters = "(" trim @(expression, comma_or_newline, 0, 0) trim ")"
+
+optional_parameters = trim parameters
+
+reference_token = id @(parameters, none, 0, 1)
+
+reference = @(id, path_separator, 1, 0) @(optional_parameters, none, 0, 1)
 
 declare_symbol = id trim @(type_info, none, 0, 1)
 
 type_info = ":" trim id 
 
 function_statement =
-	if
+	declare_variable
+	| if
 	| return
+	| expression
 
 expression_part =
 	value
-	| reference
+	| reference	
 
 expression = @(expression_part, operation_separator, 1, 0)
 
@@ -52,3 +61,7 @@ if = "if" trim "(" trim expression trim ")" trim long_block
 optional_expression = spaces expression
 
 return = "return" @(optional_expression, none, 0, 1)
+
+optional_assignment = trim "=" trim expression
+
+declare_variable = "var" ws id trim type_info @(optional_assignment, none, 0, 1)

@@ -11,6 +11,7 @@ namespace metahub.imperative.types
         public Expression[] args;
         public bool is_platform_specific;
         public Imp imp;
+        public Expression reference;
 
         public Function_Call(string name, IEnumerable<Expression> args = null, bool is_platform_specific = false)
             : base(Expression_Type.function_call)

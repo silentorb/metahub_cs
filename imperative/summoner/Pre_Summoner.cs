@@ -35,6 +35,19 @@ namespace metahub.imperative.summoner
                     case "expression":
                         data.dividers = ((Repetition_Match) match).dividers.Select(d => d.get_data().patterns[1].text).ToArray();
                         break;
+
+                    case "reference_token":
+                        data.text = data.patterns[0].text;
+                        break;
+
+                    case "optional_assignment":
+                        return data.patterns[3];
+
+                    case "type_info":
+                        return data.patterns[2];
+
+                    case "optional_parameters":
+                        return data.patterns[1];
                 }
 
                 return data;

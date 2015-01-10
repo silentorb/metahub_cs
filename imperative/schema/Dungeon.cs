@@ -299,11 +299,82 @@ namespace metahub.imperative.schema
                 }
             }
 
+            transform_expressions(code, null);
             analyze_expressions(code);
         }
 
+        void transform_expression(Expression expression, Expression parent)
+        {
+            expression.parent = parent;
+            if (overlord.target.transmuter != null)
+                overlord.target.transmuter.transform(expression);
+
+            switch (expression.type)
+            {
+                case Expression_Type.space:
+                    transform_expressions(((Namespace)expression).expressions, expression);
+                    break;
+
+                case Expression_Type.class_definition:
+                    transform_expressions(((Class_Definition)expression).expressions, expression);
+                    break;
+
+                case Expression_Type.function_definition:
+                    transform_expressions(((Function_Definition)expression).expressions, expression);
+                    break;
+
+                case Expression_Type.operation:
+                    transform_expressions(((Operation)expression).expressions, expression);
+                    break;
+
+                case Expression_Type.flow_control:
+                    transform_expression(((Flow_Control)expression).expression, expression);
+                    transform_expressions(((Flow_Control)expression).children, expression);
+                    break;
+
+                case Expression_Type.function_call:
+                    var definition = (Function_Call)expression;
+                    transform_expressions(definition.args, expression);
+                    break;
+
+                case Expression_Type.property_function_call:
+                    var property_function = (Property_Function_Call)expression;
+                    transform_expressions(property_function.args, expression);
+                    break;
+
+                case Expression_Type.assignment:
+                    transform_expression(((Assignment)expression).expression, expression);
+                    break;
+
+                case Expression_Type.declare_variable:
+                    var declare_variable = (Declare_Variable)expression;
+                    transform_expression(declare_variable.expression, expression);
+                    break;
+
+                case Expression_Type.iterator:
+                    var iterator = (Iterator)expression;
+                    transform_expression(iterator.expression, expression);
+                    transform_expressions(iterator.children, expression);
+                    break;
+            }
+
+            if (expression.child != null)
+                transform_expression(expression.child, expression);
+        }
+
+        void transform_expressions(IEnumerable<Expression> expressions, Expression parent_expression)
+        {
+            foreach (var expression in expressions)
+            {
+                transform_expression(expression, parent_expression);
+            }
+        }
+
+
         void analyze_expression(Expression expression)
         {
+            overlord.target.analyze_expression(expression);
+
             switch (expression.type)
             {
                 case Expression_Type.space:

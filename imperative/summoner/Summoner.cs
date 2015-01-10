@@ -89,16 +89,17 @@ namespace metahub.imperative.summoner
             var dungeon_context = new Context(context.realm, dungeon);
             foreach (var statement in statements)
             {
-                process_function_definitions(statement, dungeon_context);
+                process_function_definition(statement, dungeon_context);
             }
         }
 
-        void process_function_definitions(Pattern_Source source, Context context)
+        void process_function_definition(Pattern_Source source, Context context)
         {
             var imp = context.dungeon.spawn_imp(
                 source.patterns[1].text,
                 source.patterns[4].patterns.Select(p => process_parameter(p, context)).ToList()
             );
+            var new_context = new Context(context) { scope = imp.scope };
 
             var attributes = source.patterns[0];
             if (attributes.patterns.Length > 0)
@@ -106,9 +107,9 @@ namespace metahub.imperative.summoner
 
             var return_type = source.patterns[7];
             if (return_type.patterns.Length > 0)
-                imp.return_type = parse_type(return_type.patterns[0].patterns[2].text);
+                imp.return_type = parse_type(return_type.patterns[0].text, context);
 
-            imp.expressions = process_block(source.patterns[9], context);
+            imp.expressions = process_block(source.patterns[9], new_context);
         }
 
         List<Expression> process_block(Pattern_Source source, Context context)
@@ -120,6 +121,9 @@ namespace metahub.imperative.summoner
         {
             switch (source.type)
             {
+                case "expression":
+                    return process_expressions(source, context);
+
                 case "if":
                     return new Flow_Control(Flow_Control_Type.If, process_expressions(source.patterns[4], context),
                         process_block(source.patterns[8], context)
@@ -130,6 +134,13 @@ namespace metahub.imperative.summoner
                         ? null
                         : process_expressions(source.patterns[1].patterns[0], context)
                     );
+
+                case "declare_variable":
+                    var symbol = context.scope.create_symbol(source.patterns[2].text, parse_type(source.patterns[4].text, context));
+                    return new Declare_Variable(symbol, source.patterns[5].patterns.Length == 0
+                        ? null
+                        : process_expressions(source.patterns[5].patterns[0], context)
+                    );
             }
 
             throw new Exception("Unsupported statement type: " + source.type + ".");
@@ -138,9 +149,9 @@ namespace metahub.imperative.summoner
         Expression process_expressions(Pattern_Source source, Context context)
         {
             if (source.patterns.Length == 1)
-            return process_expression(source.patterns[0], context);
-            
-            return new Operation(source.dividers[0], source.patterns.Select(p=>process_expression(p, context)));
+                return process_expression(source.patterns[0], context);
+
+            return new Operation(source.dividers[0], source.patterns.Select(p => process_expression(p, context)));
         }
 
         Expression process_expression(Pattern_Source source, Context context)
@@ -165,7 +176,7 @@ namespace metahub.imperative.summoner
             var dungeon = context.dungeon;
             Expression result = null;
             Expression last = null;
-            foreach (var pattern in source.patterns)
+            foreach (var pattern in source.patterns[0].patterns)
             {
                 var token = pattern.text;
                 Tie tie = null;
@@ -178,9 +189,12 @@ namespace metahub.imperative.summoner
                 else
                 {
                     var imp = context.dungeon.summon_imp(token);
-                    next = imp != null 
-                        ? new Function_Call(imp) 
+                    var func = imp != null
+                        ? new Function_Call(imp)
                         : new Function_Call(token, null, true);
+
+                    func.reference = last;
+                    return func;
                 }
 
                 if (result == null)
@@ -199,7 +213,7 @@ namespace metahub.imperative.summoner
             return new Parameter(new Symbol(source.patterns[1].text, new Signature(Kind.unknown), null));
         }
 
-        Signature parse_type(string text)
+        Signature parse_type(string text, Context context)
         {
             switch (text)
             {
@@ -208,6 +222,9 @@ namespace metahub.imperative.summoner
                 case "float": return new Signature(Kind.Float);
                 case "int": return new Signature(Kind.Int);
             }
+
+            if (context.realm.dungeons.ContainsKey(text))
+                return new Signature(Kind.reference, context.realm.dungeons[text].rail);
 
             throw new Exception("Invalid type: " + text + ".");
         }

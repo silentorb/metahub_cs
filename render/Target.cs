@@ -1,15 +1,17 @@
 using metahub.imperative;
 using metahub.imperative.schema;
+using metahub.imperative.types;
 using metahub.logic.schema;
 
 namespace metahub.render
 {
 
-public class Target{
+public class Target {
 	protected Railway railway;
 	protected Renderer render = new Renderer();
 	protected int line_count = 0;
 	protected Overlord imp;
+    public Transmuter transmuter;
 	
 	public Target(Railway railway, Overlord imp) {
 		this.railway = railway;
@@ -51,5 +53,8 @@ public class Target{
 		: newline() + content;
 	}
 
+    public virtual void analyze_expression(Expression expression)
+    {
+    }
 }
 }

@@ -17,6 +17,12 @@ namespace metahub.imperative.code
     {
         public static void common_functions(Tie tie, Overlord imp, Scope scope)
         {
+            add_function(tie, imp, scope);
+            remove_function(tie, imp, scope);
+        }
+
+        public static void add_function(Tie tie, Overlord imp, Scope scope)
+        {
             var rail = tie.rail;
             var dungeon = imp.get_dungeon(tie.rail);
             var root_block = dungeon.get_block("class_definition");
@@ -55,6 +61,48 @@ namespace metahub.imperative.code
                 }));
             }
             
+            root_block.add(definition);
+        }
+
+
+        public static void remove_function(Tie tie, Overlord imp, Scope scope)
+        {
+            var rail = tie.rail;
+            var dungeon = imp.get_dungeon(tie.rail);
+            var root_block = dungeon.get_block("class_definition");
+
+            var function_name = "remove_" + tie.tie_name;
+            var function_scope = new Scope(scope);
+            var item = function_scope.create_symbol("item", tie.get_other_signature());
+            var origin = function_scope.create_symbol("origin", new Signature(Kind.reference));
+            Function_Definition definition = new Function_Definition(function_name, dungeon, new List<Parameter> {
+			    new Parameter(item),
+			    new Parameter(origin, new Null_Value())
+            }, new List<Expression>());
+
+            var block = dungeon.create_block(function_name, scope, definition.expressions);
+            var mid = block.divide(null, new List<Expression> { 
+                new Function_Call("remove", new Expression[] {new Variable(item)}, true)
+                { reference = new Tie_Expression(tie) } });
+            var post = block.divide("post");
+
+            if (tie.other_tie != null)
+            {
+                mid.add(
+                    new Flow_Control(Flow_Control_Type.If, new Operation("!=", new List<Expression>
+                {
+                    new Variable(origin), new Variable(item)
+                }), new List<Expression> {
+                    new Variable(item, 
+                        new Function_Call("remove_" + tie.other_tie.name,
+                            new List<Expression>
+                                {
+                                    new Self(dungeon),
+                                    new Self(dungeon)
+                                }) { reference = new Tie_Expression(tie.other_tie) })
+                }));
+            }
+
             root_block.add(definition);
         }
 

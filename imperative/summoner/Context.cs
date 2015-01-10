@@ -12,11 +12,21 @@ namespace metahub.imperative.summoner
         {
             public Realm realm;
             public Dungeon dungeon;
+            public Scope scope;
+            public Context parent;
 
             public Context(Realm realm, Dungeon dungeon = null)
             {
                 this.realm = realm;
                 this.dungeon = dungeon;
+            }
+
+            public Context(Context parent)
+            {
+                this.parent = parent;
+                realm = parent.realm;
+                dungeon = parent.dungeon;
+                scope = parent.scope;
             }
         }
     }

@@ -12,6 +12,7 @@ namespace metahub.imperative.types
 public class Expression {
     public Expression_Type type;
 	public Expression child = null;
+    public Expression parent = null;
 	
 	protected Expression(Expression_Type type, Expression child = null) {
 		this.type = type;

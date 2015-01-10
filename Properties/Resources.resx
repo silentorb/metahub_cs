@@ -121,6 +121,9 @@
   <data name="imp_grammar" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\resources\imp.grammar;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
   </data>
+  <data name="list_h" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\cpp\list.h;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
+  </data>
   <data name="metahub" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\resources\metahub.grammar;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
   </data>

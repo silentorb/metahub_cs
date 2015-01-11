@@ -53,15 +53,15 @@ namespace metahub.imperative
         {
             foreach (var region in railway.regions.Values)
             {
-                if (region.is_external)
-                    continue;
+                //if (region.is_external)
+                //    continue;
 
                 var realm = new Realm(region);
                 realms[realm.name] = realm;
 
                 foreach (var rail in region.rails.Values)
                 {
-                    if (rail.is_external || rail.trellis.is_abstract)
+                    if (rail.trellis.is_abstract)
                         continue;
 
                     Dungeon dungeon = new Dungeon(rail, this, realm);
@@ -78,7 +78,7 @@ namespace metahub.imperative
 
             finalize();
 
-            foreach (var dungeon in dungeons)
+            foreach (var dungeon in dungeons.Where(d => !d.is_external))
             {
                 dungeon.generate_code1();
                 target.generate_rail_code(dungeon);
@@ -94,7 +94,7 @@ namespace metahub.imperative
 
         void finalize()
         {
-            foreach (var dungeon in dungeons)
+            foreach (var dungeon in dungeons.Where(d => !d.is_external))
             {
                 dungeon.rail.finalize();
             }
@@ -102,7 +102,7 @@ namespace metahub.imperative
 
         void post_analyze()
         {
-            foreach (var dungeon in dungeons)
+            foreach (var dungeon in dungeons.Where(d => !d.is_external))
             {
                 dungeon.analyze();
             }
@@ -110,7 +110,7 @@ namespace metahub.imperative
 
         public void flatten()
         {
-            foreach (var dungeon in dungeons)
+            foreach (var dungeon in dungeons.Where(d => !d.is_external))
             {
                 dungeon.flatten();
             }
@@ -180,9 +180,9 @@ namespace metahub.imperative
                     return new Create_Array(translate_many(((metahub.logic.types.Block)expression).children, scope));
 
                 case Node_Type.variable:
-                    var variable = (metahub.logic.types.Variable) expression;
+                    var variable = (metahub.logic.types.Variable)expression;
                     return scope.resolve(variable.name);
-                    
+
                 case Node_Type.lambda:
                     return null;
                 //metahub.logic.types.Lambda lambda = Node;
@@ -194,10 +194,10 @@ namespace metahub.imperative
                 //return create_lambda_constraint(Node, scope);
 
                 case Node_Type.property:
-                    return convert_path(new List<Node> {expression});
+                    return convert_path(new List<Node> { expression });
 
                 case Node_Type.operation:
-                    var operation = (metahub.logic.types.Operation_Node) expression;
+                    var operation = (metahub.logic.types.Operation_Node)expression;
                     return new Operation(operation.op, translate_many(operation.children, scope));
 
                 default:
@@ -226,7 +226,7 @@ namespace metahub.imperative
             if (path.Count() == 1)
                 return path.First();
 
-            return new Path(path);  
+            return new Path(path);
         }
 
         public Expression convert_path(List<metahub.logic.types.Node> path, Scope scope = null)

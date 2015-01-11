@@ -30,6 +30,12 @@ namespace metahub.imperative.types
             name = imp.name;
             is_platform_specific = imp.is_platform_specific;
         }
+
+        public Function_Call set_reference(Expression reference)
+        {
+            this.reference = reference;
+            return this;
+        }
     }
 
 }

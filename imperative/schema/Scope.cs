@@ -44,13 +44,24 @@ namespace metahub.imperative.schema
             return symbols.ContainsKey(name) || (parent != null && parent.exists(name));
         }
 
-        public Symbol find(string name)
+        public Symbol find_or_null(string name)
         {
             if (symbols.ContainsKey(name))
                 return symbols[name];
 
             if (parent != null)
-                return parent.find(name);
+                return parent.find_or_null(name);
+
+            return null;
+        }
+
+        public Symbol find_or_exception(string name)
+        {
+            if (symbols.ContainsKey(name))
+                return symbols[name];
+
+            if (parent != null)
+                return parent.find_or_exception(name);
 
             throw new Exception("Could not find symbol " + name + ".");
             //return null;

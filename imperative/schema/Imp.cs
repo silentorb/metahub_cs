@@ -82,5 +82,15 @@ namespace metahub.imperative.schema
                 : new List<Expression> { value }
              );
         }
+
+        public static Expression call_remove(Tie tie, Expression reference, Expression item )
+        {
+            return tie.type == Kind.reference
+                ? setter(tie, new Null_Value()).set_reference(reference)
+                : new Property_Function_Call(Property_Function_Type.remove, tie, new List<Expression>
+                    {
+                     item   
+                    }) { reference = reference };
+        }
     }
 }

@@ -81,26 +81,22 @@ namespace metahub.imperative.code
             }, new List<Expression>());
 
             var block = dungeon.create_block(function_name, scope, definition.expressions);
-            var mid = block.divide(null, new List<Expression> { 
-                new Function_Call("remove", new Expression[] {new Variable(item)}, true)
-                { reference = new Tie_Expression(tie) } });
+            var mid = block.divide(null, new List<Expression>{
+                new Flow_Control(Flow_Control_Type.If, new Function_Call("contains", new List<Expression>
+                    {
+                      new Variable(item)  
+                    }, true).set_reference(new Tie_Expression(tie)), 
+                new List<Expression> {
+                    new Statement("return")
+                 }),
+                 new Function_Call("remove", new Expression[] {new Variable(item)}, true)
+                { reference = new Tie_Expression(tie) }
+            });
             var post = block.divide("post");
 
             if (tie.other_tie != null)
             {
-                mid.add(
-                    new Flow_Control(Flow_Control_Type.If, new Operation("!=", new List<Expression>
-                {
-                    new Variable(origin), new Variable(item)
-                }), new List<Expression> {
-                    new Variable(item, 
-                        new Function_Call("remove_" + tie.other_tie.name,
-                            new List<Expression>
-                                {
-                                    new Self(dungeon),
-                                    new Self(dungeon)
-                                }) { reference = new Tie_Expression(tie.other_tie) })
-                }));
+                mid.add(Imp.call_remove(tie.other_tie, new Variable(item), new Self(dungeon)));
             }
 
             root_block.add(definition);

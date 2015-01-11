@@ -195,7 +195,7 @@ namespace metahub.parser
             return data;
         }
 
-        static Pattern_Source expression(Pattern_Source data, Repetition_Match match)
+        public static Pattern_Source expression(Pattern_Source data, Repetition_Match match)
         {
             if (data.patterns.Length < 2)
                 //return data;
@@ -233,7 +233,7 @@ namespace metahub.parser
             return data;
         }
 
-       static void group_operators(string[] operators, List<Pattern_Source> patterns, List<string> dividers)
+       public static void group_operators(string[] operators, List<Pattern_Source> patterns, List<string> dividers)
         {
             var i = 0;
             for (var d = 0; d < dividers.Count; ++d)

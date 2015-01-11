@@ -5,6 +5,7 @@ ws = /\s+/
 trim = /\s*/
 final_trim = /\s*$/
 newlines = /(\s*\n)+\s*/
+one_or_no_newline = /[ \t]*(\r\n)?[ \t]*/
 comma = trim "," trim
 spaces = /[ \t]+/
 dot = "."
@@ -18,31 +19,40 @@ bool = "true" | "false"
 int = /-?[0-9]+/
 float = /-?([0-9]*\.)?[0-9]+f?/
 operator = '+' | '-' | '/' | '*' | '<=' | '>=' | '<' | '>'
-constraint_operator = '=' | '<=' | '>=' | '<' | '>' | '+=' | '-=' | '*=' | '/='
+set_operator = '=' | '+=' | '-=' | '*=' | '/='
 value = string | bool | int | float
 operation_separator = trim operator trim
 
-parameters = "(" trim @(expression, comma_or_newline, 0, 0) trim ")"
+arguments = "(" trim @(expression, comma_or_newline, 0, 0) trim ")"
 
-optional_parameters = trim parameters
+optional_arguments = trim arguments
 
-reference_token = id @(parameters, none, 0, 1)
+reference_token = id @(arguments, none, 0, 1)
 
-reference = @(id, path_separator, 1, 0) @(optional_parameters, none, 0, 1)
+optional_array = "[" trim expression trim "]"
+
+id_with_optional_array = id @(optional_array, none, 0, 1)
+
+reference = @(id_with_optional_array, path_separator, 1, 0) @(optional_arguments, none, 0, 1)
 
 declare_symbol = id trim @(type_info, none, 0, 1)
 
-type_info = ":" trim id 
+type_info = ":" trim @(id, path_separator, 1, 0)
 
 function_statement =
 	declare_variable
 	| if
 	| return
+	| assignment
 	| expression
+
 
 expression_part =
 	value
 	| reference	
+	| closed_expression
+
+closed_expression = "(" trim expression ")"
 
 expression = @(expression_part, operation_separator, 1, 0)
 
@@ -54,9 +64,13 @@ function_attribute =  "abstract" ws
 
 class = "class" ws id trim "{" trim @(function_definition, newlines, 0, 0) trim "}"
 
+block = long_block | short_block
+
+short_block = one_or_no_newline function_statement
+
 long_block = "{" trim @(function_statement, semicolon_or_newline, 0, 0) trim "}"
 
-if = "if" trim "(" trim expression trim ")" trim long_block
+if = "if" trim "(" trim expression trim ")" trim block
 
 optional_expression = spaces expression
 
@@ -65,3 +79,5 @@ return = "return" @(optional_expression, none, 0, 1)
 optional_assignment = trim "=" trim expression
 
 declare_variable = "var" ws id trim type_info @(optional_assignment, none, 0, 1)
+
+assignment = reference trim set_operator trim expression

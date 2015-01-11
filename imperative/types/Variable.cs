@@ -9,6 +9,7 @@ namespace metahub.imperative.types
     public class Variable : Expression
     {
         public Symbol symbol;
+        public Expression index;
 
         public Variable(Symbol symbol, Expression child = null)
             : base(Expression_Type.variable, child)

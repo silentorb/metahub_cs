@@ -152,7 +152,7 @@ namespace metahub.imperative.code
                     new Operation("==", new List<Expression>{ 
                     new Function_Call(function_name, new Expression[]
                         {
-                            new Variable(scope.find("value"))
+                            new Variable(scope.find_or_exception("value"))
                         }),
                     new Literal(false, new Signature(Kind.Bool))
                     }), new List<Expression>

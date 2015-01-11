@@ -31,6 +31,7 @@ namespace metahub.imperative.schema
         public Dictionary<string, Portal> lairs = new Dictionary<string, Portal>();
         public Dictionary<string, Used_Function> used_functions = new Dictionary<string, Used_Function>();
         public Dictionary<string, Dependency> dependencies = new Dictionary<string, Dependency>();
+        public bool is_external = false;
 
         public Dungeon(Rail rail, Overlord overlord, Realm realm)
         {
@@ -41,6 +42,7 @@ namespace metahub.imperative.schema
             name = rail.name;
             region = rail.region;
             trellis = rail.trellis;
+            is_external = rail.is_external;
 
             map_additional();
 
@@ -233,10 +235,17 @@ namespace metahub.imperative.schema
                 }
                 else
                 {
-                    mid.add(new Flow_Control(Flow_Control_Type.If, new Operation("!=", new List<Expression>
-                {
-                    new Variable(origin), new Variable(value)
-                }), new List<Expression> {
+                    mid.add(new Flow_Control(Flow_Control_Type.If, new Operation("&&", new List<Expression>
+                        {
+                            new Operation("!=", new List<Expression>
+                            {
+                                new Variable(origin), new Variable(value)
+                            }),
+                            new Operation("!=", new List<Expression>
+                            {
+                                new Tie_Expression(tie), new Null_Value()
+                            }),
+                        }), new List<Expression> {
                         new Tie_Expression(tie,
                         new Function_Call("add_" + tie.other_tie.tie_name, new List<Expression> { new Self(dungeon), new Self(dungeon) }))
                     

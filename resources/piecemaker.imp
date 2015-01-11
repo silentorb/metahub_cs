@@ -6,14 +6,22 @@ namespace piecemaker {
 
 		}
 
+		abstract resolve() {
+
+		}
 	}
 
 	class Distance_Conflict {
 
 		is_resolved():bool {
-			return false
+			return nodes[0].position.dist(nodes[1].position) > nodes[0].radius + nodes[1].radius
 		}
 
+		resolve() {
+			var offset:ogre.Vector3 = (nodes[0].position - nodes[1].position) / 2
+			nodes[0].position = nodes[0].position + offset
+			nodes[1].position = nodes[0].position - offset
+		}
 	}
 
 	class Piece_Maker {
@@ -22,6 +30,10 @@ namespace piecemaker {
 			if (conflicts.count() > 0) {
 				var conflict:Conflict = conflicts.last()
 				conflicts.pop()
+				if (conflict.is_resolved)
+					return
+
+				conflict.resolve
 			}
 		}
 

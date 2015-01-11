@@ -540,7 +540,7 @@ namespace metahub.render.targets.cpp
             if (signature.type == Kind.reference)
             {
                 return
-                signature.is_value ? is_parameter ? name + "&" : name :
+                signature.rail.trellis.is_value ? is_parameter ? name + "&" : name :
                         name + "*";
             }
             else
@@ -658,7 +658,7 @@ namespace metahub.render.targets.cpp
 
         string render_iterator(Symbol parameter, Expression expression)
         {
-            var signature = expression.get_signature();
+            var signature = Expression.get_end(expression).get_signature();
             var path_string = render_expression(expression);
             return
                render_signature(signature)
@@ -683,7 +683,11 @@ namespace metahub.render.targets.cpp
                     break;
 
                 case Expression_Type.property:
-                    result = ((Tie_Expression)expression).tie.tie_name;
+                    var tie_expression = (Tie_Expression) expression;
+                    result = tie_expression.tie.tie_name;
+                    if (tie_expression.index != null)
+                        result += "[" + render_expression(tie_expression.index) + "]";
+
                     break;
 
                 case Expression_Type.function_call:
@@ -711,6 +715,9 @@ namespace metahub.render.targets.cpp
                     //    throw new Exception("Could not find variable: " + variable_expression.symbol.name + ".");
 
                     result = variable_expression.symbol.name;
+                    if (variable_expression.index != null)
+                        result += "[" + render_expression(variable_expression.index) + "]";
+
                     break;
 
                 case Expression_Type.parent_class:
@@ -777,13 +784,13 @@ namespace metahub.render.targets.cpp
         {
             switch (expression.type)
             {
-                case Expression_Type.variable:
-                    var variable_expression = (Variable)expression;
-                    return variable_expression.symbol.signature;
+                //case Expression_Type.variable:
+                //    var variable_expression = (Variable)expression;
+                //    return variable_expression.symbol.signature;
 
-                case Expression_Type.property:
-                    var property_expression = (Tie_Expression)expression;
-                    return property_expression.tie.get_signature();
+                //case Expression_Type.property:
+                //    var property_expression = (Tie_Expression)expression;
+                //    return property_expression.tie.get_signature();
 
                 default:
                     return expression.get_signature();
@@ -824,28 +831,32 @@ namespace metahub.render.targets.cpp
 
         private string render_property_function_call(Property_Function_Call expression, Expression parent)
         {
+            var ref_full = expression.reference != null
+                ? render_expression(expression.reference) + get_connector(expression.reference)
+                : "";
+
             var name = expression.tie.get_signature().type == Kind.list
                 ? "add"
                 : expression.function_type.ToString();
 
-            return name + "_" + expression.tie.tie_name + "("
+            return ref_full + name + "_" + expression.tie.tie_name + "("
                 + expression.args.Select(e => render_expression(e)).join(", ")
                 + ")";
         }
 
         string render_function_call(Function_Call expression, Expression parent)
         {
+            var ref_string = expression.reference != null
+               ? render_expression(expression.reference)
+               : "";
+
+            var ref_full = ref_string.Length > 0
+                ? ref_string + get_connector(Expression.get_end(expression.reference))
+                : "";
+
             if (expression.is_platform_specific)
             {
                 //var args = Node.args.map((a)=> a).join(", ");
-                var ref_string = expression.reference != null
-                    ? render_expression(expression.reference)
-                    : "";
-
-                var ref_full = ref_string.Length > 0
-                    ? ref_string + "."
-                    : "";
-
                 switch (expression.name)
                 {
                     case "count":
@@ -858,9 +869,16 @@ namespace metahub.render.targets.cpp
                             return ref_full + "push_back(" + first + ")";
                         }
 
+                    case "contains":
+                        {
+                            var first = render_expression(expression.args[0]);
+                            return "std::find(" + ref_full + "begin(), "
+                                   + ref_full + "end(), " + first + ") != " + ref_full + "end()";
+                        }
+
                     case "dist":
                         {
-                            var signature = expression.args[0].get_signature();
+                            //var signature = expression.args[0].get_signature();
                             var first = render_expression(expression.args[0]);
                             //var dereference = is_pointer(signature) ? "*" : "";
                             return ref_full + "distance(" + first + ")";
@@ -876,7 +894,7 @@ namespace metahub.render.targets.cpp
                         {
                             var first = render_expression(expression.args[0]);
                             return ref_full + "erase(std::remove(" + ref_full + "begin(), "
-                                + ref_full + "end(), " + first + "), " + ref_full + "end());";
+                                + ref_full + "end(), " + first + "), " + ref_full + "end())";
                         }
 
                     case "rand":
@@ -889,7 +907,7 @@ namespace metahub.render.targets.cpp
                 }
             }
 
-            return expression.name + "(" +
+            return ref_full + expression.name + "(" +
                 expression.args.Select(a => render_expression(a))
                 .join(", ") + ")";
         }

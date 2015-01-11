@@ -6,21 +6,31 @@ using metahub.schema;
 
 namespace metahub.imperative.schema
 {
-    /**
-     * ...
-     * @author Christopher W. Johnson
-     */
     public class Portal
     {
+        public Kind type;
         public Tie tie;
         public Dungeon dungeon;
+        public Rail rail;
+        public Rail other_rail;
+        public Dungeon other_dungeon;
         public string name;
 
         public Portal(Tie tie, Dungeon dungeon)
         {
             this.tie = tie;
             this.dungeon = dungeon;
-            this.name = tie.name;
+            type = tie.type;
+            rail = tie.rail;
+            other_rail = tie.other_rail;
+            name = tie.name;
+        }
+
+        public Portal(string name, Kind type, Dungeon dungeon)
+        {
+            this.name = name;
+            this.dungeon = dungeon;
+            this.type = type;
         }
 
         public void customize_initialize(Block block)
@@ -52,6 +62,20 @@ namespace metahub.imperative.schema
         public Tie_Expression create_reference(Expression child = null)
         {
             return new Tie_Expression(tie, child);
+        }
+
+        public Signature get_signature()
+        {
+            return new Signature
+            {
+                type = type,
+                rail = other_rail
+            };
+        }
+
+        public Profession get_profession()
+        {
+            return new Profession(type, other_dungeon);
         }
     }
 }

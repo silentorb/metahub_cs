@@ -60,7 +60,7 @@ namespace metahub.imperative.code
                                 }))
                 }));
             }
-            
+
             root_block.add(definition);
         }
 
@@ -142,7 +142,7 @@ namespace metahub.imperative.code
             link(b, a, a.Take(a.Count - 1), constraint.lambda, imp);
         }
 
-        public static void link(List<Tie> a, List<Tie> b, IEnumerable<Tie> c, Lambda mapping, Overlord imp)
+        public static void link(List<Tie> a, List<Tie> b, IEnumerable<Tie> c, Lambda mapping, Overlord overlord)
         {
             var a_start = a[0];
             var a_end = a[a.Count - 1];
@@ -152,7 +152,7 @@ namespace metahub.imperative.code
 
             var item_name = second_end.rail.name.ToLower() + "_item";
 
-            var function_block = imp.get_dungeon(a_end.rail).get_block("add_" + a_end.tie_name);
+            var function_block = overlord.get_dungeon(a_end.rail).get_block("add_" + a_end.tie_name);
             var new_scope = new Scope(function_block.scope);
             var item = new_scope.create_symbol("item", second_end.get_other_signature());
             var item2 = new_scope.create_symbol("item", second_end.get_other_signature());
@@ -162,13 +162,51 @@ namespace metahub.imperative.code
                 new Instantiate(second_end.other_rail))
             );
 
+            var dungeon = overlord.get_dungeon(second_end.rail);
+            {
+                {
+                    var item_dungeon = overlord.get_dungeon(a_end.other_rail);
+                    var portal_name = second_end.other_rail.name + "_links";
+                    var portal = item_dungeon.all_portals.ContainsKey(portal_name)
+                                     ? item_dungeon.all_portals[portal_name]
+                                     : item_dungeon.add_portal(new Portal(portal_name, Kind.list, item_dungeon)
+                                         {
+                                             other_rail = second_end.other_rail,
+                                             other_dungeon = overlord.get_dungeon(second_end.other_rail)
+                                         });
+                    creation_block.Add(new Function_Call("add", new List<Expression>
+                        {
+                            new Variable(item2)
+                        }, true) { reference = new Variable(item, new Portal_Expression(portal)) });
+
+                }
+
+                {
+                    var item_dungeon = overlord.get_dungeon(second_end.other_rail);
+                    var portal_name = a_end.other_rail.name + "_links";
+                    var portal = item_dungeon.all_portals.ContainsKey(portal_name)
+                                     ? item_dungeon.all_portals[portal_name]
+                                     : item_dungeon.add_portal(new Portal(portal_name, Kind.list, item_dungeon)
+                                     {
+                                         other_rail = a_end.other_rail,
+                                         other_dungeon = overlord.get_dungeon(a_end.other_rail)
+                                     });
+                    creation_block.Add(new Function_Call("add", new List<Expression>
+                        {
+                            new Variable(item)
+                        }, true) { reference = new Variable(item2, new Portal_Expression(portal)) });
+                }
+            }
+
+            creation_block.Add(new Variable(item2, new Function_Call("initialize")));
+
             if (mapping != null)
             {
                 foreach (Constraint_Wrapper wrapper in mapping.expressions)
                 {
                     var constraint = wrapper.constraint;
                     var first = constraint.first;
-                    var first_tie = a_end.other_rail.get_tie_or_error(((Property_Reference) first[1]).tie.name);
+                    var first_tie = a_end.other_rail.get_tie_or_error(((Property_Reference)first[1]).tie.name);
                     var second = (Property_Reference)Overlord.simplify_path(constraint.second)[0];
                     //var second_tie = second.children[] as Property_Reference;
                     creation_block.Add(new Variable(item2, new Function_Call("set_" + first_tie.name, new Expression[]
@@ -177,12 +215,27 @@ namespace metahub.imperative.code
                         }
                        )
                     ));
+
+                    var setter_dungeon = overlord.get_dungeon(a_end.other_rail);
+                    var setter_block = setter_dungeon.get_block("set_" + first_tie.name);
+                    var value_symbol = setter_block.scope.find_or_exception("value");
+                    //var item_dungeon = overlord.get_dungeon(second_end.other_rail);
+                    //setter_block.add("post", Imp.setter(first_tie, new Variable(value_symbol), new Tie_Expression(a_end), null));
+                    var portal = setter_dungeon.all_portals[second_end.other_rail.name + "_links"];
+                    var iterator_scope = new Scope(setter_block.scope);
+                    var it = iterator_scope.create_symbol("item", new Signature(Kind.reference, portal.other_rail));
+
+                    setter_block.add("post", new Iterator(it,
+                        new Portal_Expression(portal), 
+                        new List<Expression>
+                        {
+                              Imp.setter(first_tie, new Variable(value_symbol), new Variable(it) , null)
+                        })
+                    );
                 }
             }
 
-            var dungeon = imp.get_dungeon(second_end.rail);
             creation_block = creation_block.Union(new List<Expression>{
-			new Variable(item2, new Function_Call("initialize")),
 			new Tie_Expression(c.First(),
 				new Function_Call("add_" + second_end.tie_name,
 				new Expression[] { new Variable(item2), new Self(dungeon)}))

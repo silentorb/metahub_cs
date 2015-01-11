@@ -23,7 +23,7 @@ namespace metahub.logic.schema
         public Dictionary<string, Tie_Addition> properties;
     }
 
-  public class Rail
+    public class Rail
     {
 
         public Trellis trellis;

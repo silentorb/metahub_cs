@@ -15,6 +15,7 @@ namespace metahub.imperative.types
         null_value,
         self,
         path,
+        portal,
 
         // Statements
         statement,

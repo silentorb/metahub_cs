@@ -197,11 +197,11 @@ namespace metahub.imperative.code
 
                             new Declare_Variable(conflict, new Instantiate(conflict_rail)),
                             new Variable(conflict, new Function_Call("initialize")),
-                            new Variable(conflict,Imp.setter(conflict_nodes, new Self(dungeon))),
-                            new Variable(conflict,Imp.setter(conflict_nodes, new Variable(it))),
+                            new Variable(conflict,Imp.setter(conflict_nodes, new Self(dungeon), null, null)),
+                            new Variable(conflict,Imp.setter(conflict_nodes, new Variable(it), null, null)),
                             new Tie_Expression(mold_tie,
                                 new Tie_Expression(piecemaker_tie,
-                                    Imp.setter(conflicts_tie, new Variable(conflict))
+                                    Imp.setter(conflicts_tie, new Variable(conflict), null, null)
                             )),
                             new Statement("return", Imp.False())
 

@@ -75,18 +75,18 @@ namespace metahub.imperative.schema
             return new Operation(op, new List<Expression> { first, second });
         }
 
-        public static Property_Function_Call setter(Tie tie, Expression value, Expression origin = null)
+        public static Property_Function_Call setter(Tie tie, Expression value, Expression reference, Expression origin)
         {
             return new Property_Function_Call(Property_Function_Type.set, tie, origin != null
                 ? new List<Expression> { value, origin }
                 : new List<Expression> { value }
-             );
+             ) { reference = reference };
         }
 
         public static Expression call_remove(Tie tie, Expression reference, Expression item )
         {
             return tie.type == Kind.reference
-                ? setter(tie, new Null_Value()).set_reference(reference)
+                ? setter(tie, new Null_Value(), null, null).set_reference(reference)
                 : new Property_Function_Call(Property_Function_Type.remove, tie, new List<Expression>
                     {
                      item   

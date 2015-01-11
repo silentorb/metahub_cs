@@ -28,5 +28,13 @@ public class Tie_Expression : Expression
             ? tie.get_signature()
             : new Signature(Kind.reference, tie.other_rail);
     }
+
+    public override Expression clone()
+    {
+        return new Tie_Expression(tie, child != null ? child.clone(): null)
+            {
+                index = index != null ? index.clone() : null
+            };
+    }
 	
 }}

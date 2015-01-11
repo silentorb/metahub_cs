@@ -27,11 +27,14 @@ namespace metahub.imperative.schema
         Dictionary<string, Block> blocks = new Dictionary<string, Block>();
         public List<Function_Definition> functions = new List<Function_Definition>();
         public Overlord overlord;
-        List<Imp> imps = new List<Imp>(); 
-        public Dictionary<string, Portal> lairs = new Dictionary<string, Portal>();
+        List<Imp> imps = new List<Imp>();
+        public Dictionary<string, Portal> all_portals = new Dictionary<string, Portal>();
+        public Dictionary<string, Portal> core_portals = new Dictionary<string, Portal>();
         public Dictionary<string, Used_Function> used_functions = new Dictionary<string, Used_Function>();
         public Dictionary<string, Dependency> dependencies = new Dictionary<string, Dependency>();
         public bool is_external = false;
+        public bool is_abstract = false;
+        public bool is_value = false;
 
         public Dungeon(Rail rail, Overlord overlord, Realm realm)
         {
@@ -43,13 +46,17 @@ namespace metahub.imperative.schema
             region = rail.region;
             trellis = rail.trellis;
             is_external = rail.is_external;
+            is_abstract = rail.trellis.is_abstract;
+            is_value = rail.trellis.is_value;
 
             map_additional();
 
             foreach (var tie in rail.all_ties.Values)
             {
-                Portal lair = new Portal(tie, this);
-                lairs[tie.name] = lair;
+                Portal portal = new Portal(tie, this);
+                all_portals[tie.name] = portal;
+                if (rail.core_ties.ContainsKey(tie.name))
+                    core_portals[tie.name] = portal;
             }
         }
 
@@ -57,6 +64,15 @@ namespace metahub.imperative.schema
         {
             if (rail.parent != null)
                 parent = overlord.get_dungeon(rail.parent);
+
+            foreach (var portal in core_portals.Values)
+            {
+                if (portal.rail != null)
+                    portal.dungeon = overlord.get_dungeon(portal.rail);
+
+                if (portal.other_rail != null)
+                    portal.other_dungeon = overlord.get_dungeon(portal.other_rail);
+            }
         }
 
         public Dependency add_dependency(Dungeon dungeon)
@@ -165,6 +181,13 @@ namespace metahub.imperative.schema
             return blocks[path];
         }
 
+        public Portal add_portal(Portal portal)
+        {
+            all_portals[portal.name] = portal;
+            core_portals[portal.name] = portal;
+            return portal;
+        }
+
         //public void add_to_block(string path, Expression code)
         //{
         //    var block = get_block(path);
@@ -226,7 +249,7 @@ namespace metahub.imperative.schema
                 var origin = function_scope.create_symbol("origin", new Signature(Kind.reference));
                 parameters.Add(new Parameter(origin, new Null_Value()));
                 var dungeon = overlord.get_dungeon(tie.rail);
-   
+
                 if (tie.other_tie.type == Kind.reference)
                 {
                     mid.add(new Tie_Expression(tie,
@@ -278,7 +301,7 @@ namespace metahub.imperative.schema
                 ));
             }
 
-            foreach (var lair in lairs.Values)
+            foreach (var lair in all_portals.Values)
             {
                 lair.customize_initialize(block);
             }
@@ -299,12 +322,12 @@ namespace metahub.imperative.schema
                 add_dependency(overlord.get_dungeon(rail.parent)).allow_partial = false;
             }
 
-            foreach (var lair in lairs.Values)
+            foreach (var portal in all_portals.Values)
             {
-                var tie = lair.tie;
-                if (tie.other_tie != null && !tie.other_rail.trellis.is_abstract)
+                if (portal.other_dungeon != null && !portal.other_dungeon.is_abstract)
+                //if (tie.other_tie != null && !tie.other_rail.trellis.is_abstract)
                 {
-                    add_dependency(tie.other_rail);
+                    add_dependency(portal.other_dungeon);
                 }
             }
 
@@ -425,13 +448,13 @@ namespace metahub.imperative.schema
                     break;
 
                 case Expression_Type.declare_variable:
-                    var declare_variable = (Declare_Variable) expression;
+                    var declare_variable = (Declare_Variable)expression;
                     add_dependency(declare_variable.symbol.signature.rail);
                     analyze_expression(declare_variable.expression);
                     break;
 
                 case Expression_Type.property:
-                    var property_expression =(Tie_Expression) expression;
+                    var property_expression = (Tie_Expression)expression;
                     add_dependency(property_expression.tie.other_rail);
                     break;
 
@@ -441,7 +464,7 @@ namespace metahub.imperative.schema
                     break;
 
                 case Expression_Type.iterator:
-                    var iterator = (Iterator) expression;
+                    var iterator = (Iterator)expression;
                     analyze_expression(iterator.expression);
                     analyze_expressions(iterator.children);
                     break;

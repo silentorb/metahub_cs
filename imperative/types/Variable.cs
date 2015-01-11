@@ -24,5 +24,13 @@ namespace metahub.imperative.types
         {
             return symbol.signature;
         }
+
+        public override Expression clone()
+        {
+            return new Variable(symbol, child != null ? child.clone() : null)
+            {
+                index = index != null ? index.clone() : null
+            };
+        }
     }
 }

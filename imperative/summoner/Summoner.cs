@@ -291,10 +291,16 @@ namespace metahub.imperative.summoner
         {
             var reference = process_reference(source.patterns[0], context);
             var expression = process_expression(source.patterns[4], context);
+            var op = source.patterns[2].text;
             var last = Expression.get_end(reference);
             if (last.type == Expression_Type.property)
             {
                 var tie_expression = (Tie_Expression) last;
+                if (op != "=")
+                {
+                    expression = Imp.operation(op[0].ToString(), reference.clone(), expression);
+                }
+
                 if (last != reference)
                 {
                     last.parent.child = null;
@@ -309,7 +315,7 @@ namespace metahub.imperative.summoner
 
             return new Assignment(
                         reference,
-                        source.patterns[2].text,
+                        op,
                         expression
                     );
         }

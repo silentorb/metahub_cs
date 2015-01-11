@@ -321,9 +321,9 @@ namespace metahub.render.targets.cpp
             + "public:" + newline();
             indent();
 
-            foreach (var tie in rail.core_ties.Values)
+            foreach (var portal in dungeon.core_portals.Values)
             {
-                result += property_declaration(tie);
+                result += property_declaration(portal);
             }
 
             result += pad(render_function_declarations(dungeon))
@@ -493,14 +493,14 @@ namespace metahub.render.targets.cpp
             return list.Any(header => header.name == name);
         }
 
-        string property_declaration(Tie tie)
+        string property_declaration(Portal portal)
         {
-            return line(get_property_type_string(tie) + " " + tie.tie_name + ";");
+            return line(render_profession(portal.get_profession()) + " " + portal.name + ";");
         }
 
-        string render_includes(List<External_Header> headers)
+        string render_includes(IEnumerable<External_Header> headers)
         {
-            return headers.Select((h) => line(h.is_standard
+            return headers.Select(h => line(h.is_standard
                 ? "#include <" + h.name + ".h>"
                 : "#include \"" + h.name + ".h\""
             )).join("");
@@ -517,11 +517,35 @@ namespace metahub.render.targets.cpp
 
         string get_property_type_string(Tie tie, bool is_parameter = false)
         {
-            //var other_rail = tie.other_rail;
-            //if (other_rail == null)
-            //    return types[tie.property.type.ToString().ToLower()];
-
             return render_signature(tie.get_signature(), is_parameter);
+        }
+
+        string render_profession(Profession signature, bool is_parameter = false)
+        {
+            if (signature.dungeon == null)
+            {
+                return signature.type == Kind.reference
+                    ? "void*"
+                    : types[signature.type.ToString().ToLower()];
+            }
+
+            var name = signature.dungeon.is_abstract
+                ? "void"
+                : get_rail_type_string(signature.dungeon);
+
+            if (signature.type == Kind.reference)
+            {
+                return
+                signature.dungeon.is_value ? is_parameter ? name + "&" : name :
+                        name + "*";
+            }
+            else
+            {
+                return "std::vector<" + (signature.dungeon.is_value
+                ? name
+                : name + "*")
+                + ">";
+            }
         }
 
         string render_signature(Signature signature, bool is_parameter = false)
@@ -690,6 +714,14 @@ namespace metahub.render.targets.cpp
 
                     break;
 
+                case Expression_Type.portal:
+                    var portal_expression = (Portal_Expression)expression;
+                    result = portal_expression.portal.name;
+                    if (portal_expression.index != null)
+                        result += "[" + render_expression(portal_expression.index) + "]";
+
+                    break;
+
                 case Expression_Type.function_call:
                     result = render_function_call((Function_Call)expression, parent);
                     break;
@@ -729,7 +761,7 @@ namespace metahub.render.targets.cpp
                     break;
 
                 default:
-                    throw new Exception("Unsupported Node type: " + expression.type + ".");
+                    throw new Exception("Unsupported Expression type: " + expression.type + ".");
             }
 
             if (expression.child != null)
@@ -805,11 +837,25 @@ namespace metahub.render.targets.cpp
 
             return !signature.is_value && signature.type != Kind.list;
         }
+        
+        bool is_pointer(Profession signature)
+        {
+            if (signature.type == null)
+                throw new Exception();
+
+            if (signature.dungeon == null)
+                return false;
+
+            return !signature.dungeon.is_value && signature.type != Kind.list;
+        }
 
         string get_connector(Expression expression)
         {
             if (expression.type == Expression_Type.parent_class)
                 return "::";
+
+            if (expression.type == Expression_Type.portal)
+                return is_pointer(expression.get_profession()) ? "->" : ".";
 
             return is_pointer(get_signature(expression)) ? "->" : ".";
         }
@@ -849,7 +895,7 @@ namespace metahub.render.targets.cpp
             var ref_string = expression.reference != null
                ? render_expression(expression.reference)
                : "";
-
+            
             var ref_full = ref_string.Length > 0
                 ? ref_string + get_connector(Expression.get_end(expression.reference))
                 : "";

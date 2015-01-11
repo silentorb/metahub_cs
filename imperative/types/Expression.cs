@@ -1,4 +1,5 @@
 using System;
+using metahub.imperative.schema;
 using metahub.logic.schema;
 using metahub.logic.types;
 
@@ -35,15 +36,25 @@ public class Expression {
         throw new Exception("Not implemented.");
     }
 
+    public virtual Profession get_profession()
+    {
+        throw new Exception("Not implemented.");
+    }
+
     public static Expression get_end(Expression expression)
     {
         var result = expression;
-        while (result.child != null && result.child.type == Expression_Type.property)
+        while (result.child != null && (result.child.type == Expression_Type.property || result.child.type == Expression_Type.portal))
         {
             result = result.child;
         }
 
         return result;
+    }
+
+    public virtual Expression clone()
+    {
+        throw new Exception("Not implemented.");
     }
 }
 //struct Node {

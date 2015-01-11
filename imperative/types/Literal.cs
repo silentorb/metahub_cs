@@ -49,5 +49,9 @@ public class Literal : Expression {
         this.value = value;
         signature = new Signature(Kind.Bool);
     }
-	
+
+    public override Expression clone()
+    {
+        return new Literal(value, signature);
+    }
 }}

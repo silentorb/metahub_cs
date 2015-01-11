@@ -46,6 +46,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="imperative\code\Piece_Maker.cs" />
+    <Compile Include="imperative\schema\Profession.cs" />
     <Compile Include="imperative\schema\Realm.cs" />
     <Compile Include="imperative\summoner\Context.cs" />
     <Compile Include="imperative\summoner\Pre_Summoner.cs" />
@@ -55,6 +56,7 @@
     <Compile Include="imperative\schema\Symbol.cs" />
     <Compile Include="imperative\summoner\Summoner.cs" />
     <Compile Include="imperative\types\Operation.cs" />
+    <Compile Include="imperative\types\Portal_Expression.cs" />
     <Compile Include="imperative\types\Property_Function_Call.cs" />
     <Compile Include="imperative\types\Iterator.cs" />
     <Compile Include="logic\Logician.cs" />

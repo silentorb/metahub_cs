@@ -27,6 +27,7 @@ namespace metahub.imperative
         private Summoner summoner;
         public Dictionary<string, Realm> realms = new Dictionary<string, Realm>();
         public Target target;
+        public Logician logician;
 
         public Overlord(Hub hub, string target_name)
         {
@@ -35,6 +36,7 @@ namespace metahub.imperative
 
         public void run(Logician logician, Target target)
         {
+            this.logician = logician;
             this.target = target;
             //process(root, null);
             generate_code(target);

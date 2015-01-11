@@ -13,6 +13,7 @@ public class Scope {
 	public Dictionary<string, Signature> variables = new Dictionary<string, Signature>();
     public bool is_map = false;
     public Node[] caller;
+    public Constraint_Group group;
 
 	public Scope(Scope parent = null) {
 		this.parent = parent;

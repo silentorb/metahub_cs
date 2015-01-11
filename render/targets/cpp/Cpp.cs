@@ -80,31 +80,30 @@ namespace metahub.render.targets.cpp
 
         override public void generate_rail_code(Dungeon dungeon)
         {
-            var rail = dungeon.rail;
             var root = dungeon.get_block("class_definition");
-            List<Tie> references = new List<Tie>();
-            List<Tie> scalars = new List<Tie>();
-            foreach (var tie in rail.core_ties.Values)
+            List<Portal> references = new List<Portal>();
+            List<Portal> scalars = new List<Portal>();
+            foreach (var portal in dungeon.core_portals.Values)
             {
-                if (tie.type == Kind.reference && !tie.is_value)
-                    references.Add(tie);
-                else if (tie.type != Kind.list)
-                    scalars.Add(tie);
+                if (portal.type == Kind.reference && !portal.is_value)
+                    references.Add(portal);
+                else if (portal.type != Kind.list)
+                    scalars.Add(portal);
             }
 
-            var block = references.Select((tie) => new Assignment(
-                new Tie_Expression(tie), "=", new Null_Value()))
-                .Union(scalars.Select((tie) => new Assignment(
-                new Tie_Expression(tie), "=",
-                new Literal(tie.get_default_value(),
-                            tie.get_signature())))
+            var block = references.Select(portal => new Assignment(
+                new Portal_Expression(portal), "=", new Null_Value()))
+                .Union(scalars.Select(portal => new Assignment(
+                new Portal_Expression(portal), "=",
+                new Literal(portal.get_default_value(),
+                            portal.get_signature())))
                 );
 
-            Function_Definition func = new Function_Definition(rail.rail_name, dungeon, new List<imperative.types.Parameter>(),
+            Function_Definition func = new Function_Definition(dungeon.name, dungeon, new List<imperative.types.Parameter>(),
                 ((IEnumerable<Expression>)block).ToList());
             func.imp.return_type = null;
             root.add(func);
-            func = new Function_Definition("~" + rail.rail_name, dungeon, new List<imperative.types.Parameter>(),
+            func = new Function_Definition("~" + dungeon.name, dungeon, new List<imperative.types.Parameter>(),
             new List<Expression>()	//references.map((tie)=> new Function_Call("SAFE_DELETE",
                 //[new Property_Reference(tie)])
                 //)

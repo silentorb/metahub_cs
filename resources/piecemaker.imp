@@ -11,6 +11,10 @@ namespace piecemaker {
 		}
 	}
 
+	class Conflict_Group {
+
+	}
+
 	class Distance_Conflict {
 
 		is_resolved():bool {

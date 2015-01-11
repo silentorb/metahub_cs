@@ -10,6 +10,7 @@ namespace metahub.logic
     public class Logician
     {
         public List<Constraint> constraints = new List<Constraint>();
+        public Dictionary<string, Constraint_Group> groups = new Dictionary<string, Constraint_Group>();
 
         public Constraint create_constraint(Node[] first, Node[] second, string op, Lambda lambda, Scope scope)
         {

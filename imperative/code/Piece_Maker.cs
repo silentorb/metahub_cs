@@ -18,6 +18,18 @@ namespace metahub.imperative.code
            //conflict_functions(overlord, region);
            //distance_functions(overlord, region);
            //piece_maker_functions(overlord, region);
+           add_groups(overlord, region);
+       }
+
+       private static void add_groups(Overlord overlord, Region region)
+       {
+           var dungeon = overlord.get_dungeon(region.rails["Piece_Maker"]);
+           var group_dungeon = overlord.get_dungeon(region.rails["Conflict_Group"]);
+
+           foreach (var pair in overlord.logician.groups)
+           {
+               dungeon.add_portal(new Portal(pair.Key + "_group", Kind.reference, dungeon) { other_dungeon = group_dungeon });
+           }
        }
 
        static void conflict_functions(Overlord overlord, Region region)

@@ -60,6 +60,7 @@
     <Compile Include="imperative\types\Property_Function_Call.cs" />
     <Compile Include="imperative\types\Iterator.cs" />
     <Compile Include="logic\Logician.cs" />
+    <Compile Include="logic\schema\Constraint_Group.cs" />
     <Compile Include="logic\types\Constraint_Wrapper.cs" />
     <Compile Include="logic\types\Operation_Node.cs" />
     <Compile Include="main\Hub.cs" />

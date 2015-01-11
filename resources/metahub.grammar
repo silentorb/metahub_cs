@@ -22,7 +22,9 @@ reference = @(id_or_array, path_function_separator, 1, 0)
 method = "|" id
 
 statement =
-    create_symbol
+	  create_group
+	| group_scope
+    | create_symbol
 	| if
     | constraint
 	| set_weight
@@ -37,9 +39,9 @@ expression = @(expression_part, operation_separator, 1, 0)
 operation_separator = trim operator trim
 
 expression_part =
-		value
-  | create_node
-  | reference
+	  value
+	| create_node
+	| reference
 	| long_block
 	| array
 
@@ -85,3 +87,7 @@ lambda = trim parameters trim long_block
 parameters = "[" trim @(id, comma_or_newline, 0, 0) trim "]"
 
 function_scope = expression lambda
+
+create_group = "@new" ws "group" ws id trim long_block
+
+group_scope = "@group" ws id trim long_block

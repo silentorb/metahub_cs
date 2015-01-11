@@ -14,7 +14,8 @@ namespace metahub.logic.schema
         public List<Constraint> other_constraints = new List<Constraint>();
         public Lambda lambda;
         public Node[] caller;
-        public List<Tie> endpoints; 
+        public List<Tie> endpoints;
+        public Constraint_Group group;
 
         public Constraint(Node[] first, Node[] second, string op, Lambda lambda, Node[] caller)
         {

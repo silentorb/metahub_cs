@@ -94,17 +94,31 @@ namespace metahub.logic
                 //case "symbol":
                 //return create_symbol(source, scope);
                 case "new_scope":
-                    return new_scope(source, scope);
+                    return create_scope(source, scope);
                 //case "create_node":
                 //return create_node(source, scope);
                 //case "if":
                 //return if_statement(source, scope);
+
                 case "constraint":
                     return constraint(source, scope);
+
                 case "function_scope":
                     return function_scope(source, scope);
-                //case "weight":
-                //return weight(source, scope);
+
+                case "create_group":
+                    create_group(source, scope);
+                    return null;
+
+                case "group_scope":
+                    var new_scope = new Scope(scope);
+                    scope.group = logician.groups[source.patterns[2].text];
+
+                    create_block(source.patterns[4].patterns, new_scope);
+                    return null;
+
+                    //case "weight":
+                    //return weight(source, scope);
             }
 
             throw new Exception("Invalid block: " + source.type);
@@ -291,7 +305,7 @@ namespace metahub.logic
             throw new Exception("Could not find type.");
         }
 
-        Node new_scope(Pattern_Source source, Scope scope)
+        Node create_scope(Pattern_Source source, Scope scope)
         {
             var path = source.patterns[0].patterns;
             if (path.Length == 0)
@@ -413,5 +427,11 @@ namespace metahub.logic
             throw new Exception("Could not find signature.");
         }
 
+        Constraint_Group create_group(Pattern_Source source, Scope scope)
+        {
+            var group = new Constraint_Group(source.patterns[4].text);
+            logician.groups[group.name] = group;
+            return group;
+        }
     }
 }

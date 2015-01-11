@@ -18,6 +18,18 @@
         "piece_maker": {
           "type": "reference",
           "trellis": "Piece_Maker"
+        },
+        "group": {
+          "type": "reference",
+          "trellis": "Conflict_Group"
+        }
+      }
+    },
+    "Conflict_Group": {
+      "properties": {
+        "conflicts": {
+          "type": "list",
+          "trellis": "Conflict"
         }
       }
     },

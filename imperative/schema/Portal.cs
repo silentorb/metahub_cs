@@ -15,6 +15,7 @@ namespace metahub.imperative.schema
         public Rail other_rail;
         public Dungeon other_dungeon;
         public string name;
+        public bool is_value = false;
 
         public Portal(Tie tie, Dungeon dungeon)
         {
@@ -24,6 +25,7 @@ namespace metahub.imperative.schema
             rail = tie.rail;
             other_rail = tie.other_rail;
             name = tie.name;
+            is_value = tie.is_value;
         }
 
         public Portal(string name, Kind type, Dungeon dungeon)
@@ -76,6 +78,35 @@ namespace metahub.imperative.schema
         public Profession get_profession()
         {
             return new Profession(type, other_dungeon);
+        }
+
+        public object get_default_value()
+        {
+            if (tie != null)
+            {
+                if (tie.other_rail != null && tie.other_rail.default_value != null)
+                    return tie.other_rail.default_value;
+
+                return tie.property.get_default();
+            }
+
+            switch (type)
+            {
+                case Kind.Int:
+                    return 0;
+
+                case Kind.Float:
+                    return 0;
+
+                case Kind.String:
+                    return "";
+
+                case Kind.Bool:
+                    return false;
+
+                default:
+                    return null;
+            }
         }
     }
 }

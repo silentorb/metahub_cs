@@ -92,6 +92,11 @@ namespace metahub.imperative
                 var piece_region = railway.regions["piecemaker"];
                 Piece_Maker.add_functions(this, piece_region);
             }
+
+            foreach (var dungeon in dungeons.Where(d => !d.is_external))
+            {
+                target.generate_code2(dungeon);
+            }
         }
 
         void finalize()

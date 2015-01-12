@@ -28,7 +28,9 @@ namespace metahub.imperative.code
 
            foreach (var pair in overlord.logician.groups)
            {
-               dungeon.add_portal(new Portal(pair.Key + "_group", Kind.reference, dungeon) { other_dungeon = group_dungeon });
+               var portal = dungeon.add_portal(new Portal(pair.Key + "_group", Kind.reference, dungeon) 
+               { other_dungeon = group_dungeon });
+               dungeon.get_block("initialize").add(new Assignment(new Portal_Expression(portal), "=",new Instantiate(group_dungeon)));
            }
        }
 

@@ -21,7 +21,12 @@ public class Target {
 	public virtual void generate_rail_code (Dungeon dungeon) {
 	
 	}
-	
+
+    public virtual void generate_code2(Dungeon dungeon)
+    {
+
+    }
+
 	public virtual void run (string output_folder) {
 
 	}

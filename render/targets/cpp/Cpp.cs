@@ -80,7 +80,21 @@ namespace metahub.render.targets.cpp
 
         override public void generate_rail_code(Dungeon dungeon)
         {
-            var root = dungeon.get_block("class_definition");
+            var func = dungeon.spawn_imp(dungeon.name);
+            //Function_Definition func = new Function_Definition(dungeon.name, dungeon, new List<imperative.types.Parameter>(),
+            //    new List<Expression>());
+            func.return_type = null;
+            func = dungeon.spawn_imp("~" + dungeon.name);
+            //func = new Function_Definition("~" + dungeon.name, dungeon, new List<imperative.types.Parameter>(),
+            //new List<Expression>()	//references.map((tie)=> new Function_Call("SAFE_DELETE",
+            //    //[new Property_Reference(tie)])
+            //    //)
+            //);
+            func.return_type = null;
+        }
+
+        public override void generate_code2(Dungeon dungeon)
+        {
             List<Portal> references = new List<Portal>();
             List<Portal> scalars = new List<Portal>();
             foreach (var portal in dungeon.core_portals.Values)
@@ -90,26 +104,16 @@ namespace metahub.render.targets.cpp
                 else if (portal.type != Kind.list)
                     scalars.Add(portal);
             }
-
             var block = references.Select(portal => new Assignment(
                 new Portal_Expression(portal), "=", new Null_Value()))
                 .Union(scalars.Select(portal => new Assignment(
                 new Portal_Expression(portal), "=",
                 new Literal(portal.get_default_value(),
                             portal.get_signature())))
-                );
-
-            Function_Definition func = new Function_Definition(dungeon.name, dungeon, new List<imperative.types.Parameter>(),
-                ((IEnumerable<Expression>)block).ToList());
-            func.imp.return_type = null;
-            root.add(func);
-            func = new Function_Definition("~" + dungeon.name, dungeon, new List<imperative.types.Parameter>(),
-            new List<Expression>()	//references.map((tie)=> new Function_Call("SAFE_DELETE",
-                //[new Property_Reference(tie)])
-                //)
             );
-            func.imp.return_type = null;
-            root.add(func);
+
+            var func = dungeon.summon_imp(dungeon.name);
+            func.expressions = ((IEnumerable<Expression>) block).ToList();
         }
 
         void push_scope()
@@ -213,7 +217,7 @@ namespace metahub.render.targets.cpp
                     return render_variable_declaration((Declare_Variable)statement);
 
                 case Expression_Type.statement:
-                    var state = (Statement) statement;
+                    var state = (Statement)statement;
                     return line(state.name + (state.child != null
                         ? " " + render_expression(state.child)
                         : "") + ";");
@@ -413,8 +417,8 @@ namespace metahub.render.targets.cpp
         string render_declaration_parameter(Parameter parameter)
         {
             return render_signature(parameter.symbol.signature, true) + " " + parameter.symbol.name
-                + (parameter.default_value != null 
-                    ? " = " + render_expression(parameter.default_value) 
+                + (parameter.default_value != null
+                    ? " = " + render_expression(parameter.default_value)
                     : ""
             );
         }
@@ -706,7 +710,7 @@ namespace metahub.render.targets.cpp
                     break;
 
                 case Expression_Type.property:
-                    var tie_expression = (Tie_Expression) expression;
+                    var tie_expression = (Tie_Expression)expression;
                     result = tie_expression.tie.tie_name;
                     if (tie_expression.index != null)
                         result += "[" + render_expression(tie_expression.index) + "]";
@@ -756,7 +760,7 @@ namespace metahub.render.targets.cpp
                     break;
 
                 case Expression_Type.insert:
-                    result = ((Insert) expression).code;
+                    result = ((Insert)expression).code;
                     break;
 
                 default:
@@ -825,7 +829,7 @@ namespace metahub.render.targets.cpp
 
                 default:
                     return expression.get_signature();
-                    //throw new Exception("Determining pointer is not yet implemented for Node type: " + expression.type + ".");
+                //throw new Exception("Determining pointer is not yet implemented for Node type: " + expression.type + ".");
             }
         }
 
@@ -836,7 +840,7 @@ namespace metahub.render.targets.cpp
 
             return !signature.is_value && signature.type != Kind.list;
         }
-        
+
         bool is_pointer(Profession signature)
         {
             if (signature.type == null)
@@ -871,7 +875,10 @@ namespace metahub.render.targets.cpp
 
         string render_instantiation(Instantiate expression)
         {
-            return "new " + get_rail_type_string(expression.rail) + "()";
+            return "new " + (expression.dungeon != null
+            ? expression.dungeon.name
+            : get_rail_type_string(expression.rail))
+                + "()";
         }
 
         private string render_property_function_call(Property_Function_Call expression, Expression parent)
@@ -894,7 +901,7 @@ namespace metahub.render.targets.cpp
             var ref_string = expression.reference != null
                ? render_expression(expression.reference)
                : "";
-            
+
             var ref_full = ref_string.Length > 0
                 ? ref_string + get_connector(Expression.get_end(expression.reference))
                 : "";

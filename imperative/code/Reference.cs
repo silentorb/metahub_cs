@@ -26,7 +26,7 @@ namespace metahub.imperative.code
             {"<=", ">"}
         };
 
-        public static List<Expression> constraint(Constraint constraint, Tie tie, Overlord imp, Scope scope)
+        public static List<Expression> constraint(Constraint constraint, Tie tie, Overlord overlord, Scope scope)
         {
             var op = constraint.op;
             //return new List<Expression>();
@@ -34,15 +34,15 @@ namespace metahub.imperative.code
             if (first_last.type == Node_Type.function_call
                 && ((metahub.logic.types.Function_Call)first_last).name == "dist")
             {
-                return cross(constraint, tie, imp, scope);
+                return cross(constraint, tie, overlord, scope);
             }
             else
             {
-                var reference = imp.convert_path(constraint.first, null);
+                var reference = overlord.convert_path(constraint.first, null);
 
                 //if (constraint.first.)
 
-                if (op == "in")
+                if (op == ">=<")
                 {
                     var args = ((metahub.logic.types.Array_Expression)constraint.second[0]).children;
                     return generate_constraint(reference, ">=", (metahub.logic.types.Literal_Value)args[0])
@@ -53,6 +53,23 @@ namespace metahub.imperative.code
 
                 return generate_constraint(reference, constraint.op, (Literal_Value)constraint.second.First());
             }
+        }
+
+        public static void not_null(Tie_Expression reference, Overlord overlord)
+        {
+            var tie = reference.tie;
+            var dungeon = overlord.get_dungeon(tie.rail);
+            var other_dungeon = overlord.get_dungeon(tie.other_rail);
+            var portal = dungeon.all_portals[tie.tie_name];
+            var block = dungeon.get_block("initialize");
+            var symbol = block.scope.create_symbol(tie.other_rail.name.ToLower(), 
+                new Signature(Kind.reference, tie.other_rail));
+
+            block.add_many("pre", new List<Expression>
+                {
+                  new Assignment(new Portal_Expression(portal), "=", new Instantiate(other_dungeon)),
+                  new Function_Call("initialize", new Variable(symbol)),
+                });
         }
 
         static List<Expression> generate_constraint(Expression reference, string op, Literal_Value literal)
@@ -139,7 +156,7 @@ namespace metahub.imperative.code
             );
 
             var setter_block = dungeon.get_block("set_" + property_reference.tie.other_tie.tie_name);
-            setter_block.add("post", new Function_Call(function_name, new Expression[]
+            setter_block.add("post", new Function_Call(function_name, null, new Expression[]
                 {
                     new Tie_Expression(constraint.endpoints.First())
                 })
@@ -150,7 +167,7 @@ namespace metahub.imperative.code
                 {
                     new Flow_Control(Flow_Control_Type.If, 
                     new Operation("==", new List<Expression>{ 
-                    new Function_Call(function_name, new Expression[]
+                    new Function_Call(function_name, null, new Expression[]
                         {
                             new Variable(scope.find_or_exception("value"))
                         }),
@@ -178,7 +195,7 @@ namespace metahub.imperative.code
             {
                 Imp.If(Imp.operation(inverse_operators[constraint.op], 
                         new Variable(it, new Tie_Expression(constraint.endpoints.Last(),
-                            new Function_Call("dist",
+                            new Function_Call("dist", null,
                                 new List<Expression> { new Variable(value) }, true))),
                         imp.translate(constraint.second.First(), scope)
                     ),

@@ -39,7 +39,7 @@ namespace metahub.imperative.code
             var block = dungeon.create_block(function_name, scope, definition.expressions);
             var mid = block.divide(null, new List<Expression> {
 			new Tie_Expression(tie,
-				new Function_Call("add",new Expression[]{ new Variable(item) }, true)
+				new Function_Call("add", null, new Expression[]{ new Variable(item) }, true)
 			)
 		});
             var post = block.divide("post");
@@ -82,15 +82,15 @@ namespace metahub.imperative.code
 
             var block = dungeon.create_block(function_name, scope, definition.expressions);
             var mid = block.divide(null, new List<Expression>{
-                new Flow_Control(Flow_Control_Type.If, new Function_Call("contains", new List<Expression>
+                new Flow_Control(Flow_Control_Type.If, new Function_Call("contains", new Tie_Expression(tie),
+                    new List<Expression>
                     {
                       new Variable(item)  
-                    }, true).set_reference(new Tie_Expression(tie)), 
+                    }, true), 
                 new List<Expression> {
                     new Statement("return")
                  }),
-                 new Function_Call("remove", new Expression[] {new Variable(item)}, true)
-                { reference = new Tie_Expression(tie) }
+                 new Function_Call("remove", new Tie_Expression(tie), new Expression[] {new Variable(item)}, true)
             });
             var post = block.divide("post");
 
@@ -174,10 +174,11 @@ namespace metahub.imperative.code
                                              other_rail = second_end.other_rail,
                                              other_dungeon = overlord.get_dungeon(second_end.other_rail)
                                          });
-                    creation_block.Add(new Function_Call("add", new List<Expression>
+                    creation_block.Add(new Function_Call("add", new Variable(item, new Portal_Expression(portal)),
+                        new List<Expression>
                         {
                             new Variable(item2)
-                        }, true) { reference = new Variable(item, new Portal_Expression(portal)) });
+                        }, true));
 
                 }
 
@@ -191,10 +192,11 @@ namespace metahub.imperative.code
                                          other_rail = a_end.other_rail,
                                          other_dungeon = overlord.get_dungeon(a_end.other_rail)
                                      });
-                    creation_block.Add(new Function_Call("add", new List<Expression>
+                    creation_block.Add(new Function_Call("add", new Variable(item2, new Portal_Expression(portal)),
+                        new List<Expression>
                         {
                             new Variable(item)
-                        }, true) { reference = new Variable(item2, new Portal_Expression(portal)) });
+                        }, true));
                 }
             }
 
@@ -209,7 +211,8 @@ namespace metahub.imperative.code
                     var first_tie = a_end.other_rail.get_tie_or_error(((Property_Reference)first[1]).tie.name);
                     var second = (Property_Reference)Overlord.simplify_path(constraint.second)[0];
                     //var second_tie = second.children[] as Property_Reference;
-                    creation_block.Add(new Variable(item2, new Function_Call("set_" + first_tie.name, new Expression[]
+                    creation_block.Add(new Variable(item2, new Function_Call("set_" + first_tie.name, null,
+                        new Expression[]
                         {
                         new Variable(item, new Tie_Expression(second_end.other_rail.get_tie_or_error(second.tie.name)))
                         }
@@ -237,7 +240,7 @@ namespace metahub.imperative.code
 
             creation_block = creation_block.Union(new List<Expression>{
 			new Tie_Expression(c.First(),
-				new Function_Call("add_" + second_end.tie_name,
+				new Function_Call("add_" + second_end.tie_name, null,
 				new Expression[] { new Variable(item2), new Self(dungeon)}))
 		}).ToList();
 
@@ -275,7 +278,7 @@ namespace metahub.imperative.code
             var child = new_scope.create_symbol("child", new Signature(Kind.reference, rail));
             var logic_scope = new Scope();
             var imp_ref = (Tie_Expression)imp.convert_path(Overlord.simplify_path(constraint.first), logic_scope);
-            imp_ref.child = new Function_Call("count", null, true);
+            imp_ref.child = new Function_Call("count", null, null, true);
             Flow_Control flow_control = new Flow_Control(Flow_Control_Type.While, new Operation("<",
             new List<Expression>{
 				imp_ref,
@@ -284,7 +287,7 @@ namespace metahub.imperative.code
         }), new List<Expression> {
 			new Declare_Variable(child, new Instantiate(rail)),
 			new Variable(child, new Function_Call("initialize")),
-			new Function_Call("add_" + reference.tie_name,
+			new Function_Call("add_" + reference.tie_name, null,
 			new List<Expression> { new Variable(child), new Null_Value() })
 	});
 

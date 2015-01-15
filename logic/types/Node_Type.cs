@@ -13,6 +13,7 @@ namespace metahub.logic.types
         path,
         lambda,
         operation,
+        Null,
 
         array,
 

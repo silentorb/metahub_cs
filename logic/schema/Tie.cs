@@ -152,7 +152,7 @@ namespace metahub.logic.schema
                     };
                 }
 
-                if (constraint.op == "in")
+                if (constraint.op == ">=<")
                 {
                     var args = (Array_Expression)constraint.second[0];
                     pairs[path_name].min = new[] { args.children[0] };

@@ -224,7 +224,7 @@ namespace metahub.imperative.summoner
 
                         var func = imp != null
                             ? new Function_Call(imp)
-                            : new Function_Call(token, null, true);
+                            : new Function_Call(token, null, null, true);
 
                         func.reference = result;
                         if (source.patterns[1].patterns.Length > 0)

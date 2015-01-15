@@ -50,7 +50,7 @@ bool = "true" | "false"
 int = /-?[0-9]+/
 float = /-?([0-9]*\.)?[0-9]+f?/
 operator = '+' | '-' | '/' | '*' | '%' | "|"
-constraint_operator = '=' | '<=' | '>=' | '<' | '>' | '+=' | '-=' | '*=' | '/=' | "in"
+constraint_operator = '=' | ">=<" | '<=' | '>=' | '<' | '>' | '+=' | '-=' | '*=' | '/=' | '!=' | "in"
 
 value = string | bool | int | float
 

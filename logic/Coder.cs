@@ -54,6 +54,9 @@ namespace metahub.logic
                     return new Literal_Value(int.Parse(source.text), Kind.Int);
 
                 case "id":
+                    if (source.text == "null")
+                        return new Null_Node();
+
                     var variable = scope.find(source.text);
                     if (variable != null)
                     {

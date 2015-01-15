@@ -158,9 +158,18 @@ namespace metahub.imperative
                 }
                 else
                 {
-                    var dungeon = get_dungeon(tie.rail);
-                    var block = dungeon.get_block("set_" + tie.tie_name);
-                    block.add_many("pre", Reference.constraint(constraint, tie, this, block.scope));
+
+                    if (constraint.op == "!="
+                        && constraint.second.Length == 1 && constraint.second[0].type == Node_Type.Null)
+                    {
+                        Reference.not_null((Tie_Expression)convert_path(constraint.first, null), this);
+                    }
+                    else
+                    {
+                        var dungeon = get_dungeon(tie.rail);
+                        var block = dungeon.get_block("set_" + tie.tie_name);
+                        block.add_many("pre", Reference.constraint(constraint, tie, this, block.scope));
+                    }
                 }
             }
         }
@@ -277,7 +286,8 @@ namespace metahub.imperative
                     case Node_Type.function_call:
                     case Node_Type.function_scope:
                         var function_token = (metahub.logic.types.Function_Call)token;
-                        result.Add(new Function_Call(function_token.name, new List<Expression>(), true));
+                        result.Add(new Function_Call(function_token.name, null,
+                            new List<Expression>(), true));
                         break;
 
                     default:

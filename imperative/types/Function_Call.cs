@@ -13,12 +13,13 @@ namespace metahub.imperative.types
         public Imp imp;
         public Expression reference;
 
-        public Function_Call(string name, IEnumerable<Expression> args = null, bool is_platform_specific = false)
+        public Function_Call(string name, Expression reference = null, IEnumerable<Expression> args = null, bool is_platform_specific = false)
             : base(Expression_Type.function_call)
         {
             this.name = name;
             this.is_platform_specific = is_platform_specific;
             this.args = args != null ? args.ToArray() : new Expression[0];
+            this.reference = reference;
         }
 
         public Function_Call(Imp imp, IEnumerable<Expression> args = null)

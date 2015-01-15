@@ -62,13 +62,13 @@ namespace metahub.imperative.code
            update_function.imp.expressions = new List<Expression>
             {
                 Imp.If(
-                Imp.operation(">", new Tie_Expression(conflicts, new Function_Call("count", null, true)), 
+                Imp.operation(">", new Tie_Expression(conflicts, new Function_Call("count", null, null, true)), 
                 new Literal(0)), new List<Expression>
                 {
                     new Declare_Variable(conflict, new Tie_Expression(conflicts, 
-                        new Function_Call("last", null, true))),
+                        new Function_Call("last", null, null, true))),
 
-                new Tie_Expression(conflicts, new Function_Call("pop", null, true))
+                new Tie_Expression(conflicts, new Function_Call("pop", null, null, true))
 
                 })
             };

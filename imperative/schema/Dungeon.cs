@@ -253,7 +253,8 @@ namespace metahub.imperative.schema
                 if (tie.other_tie.type == Kind.reference)
                 {
                     mid.add(new Tie_Expression(tie,
-                        new Function_Call("set_" + tie.other_tie.tie_name, new List<Expression> { new Self(dungeon) })
+                        new Function_Call("set_" + tie.other_tie.tie_name, null,
+                            new List<Expression> { new Self(dungeon) })
                     ));
                 }
                 else
@@ -270,7 +271,8 @@ namespace metahub.imperative.schema
                             }),
                         }), new List<Expression> {
                         new Tie_Expression(tie,
-                        new Function_Call("add_" + tie.other_tie.tie_name, new List<Expression> { new Self(dungeon), new Self(dungeon) }))
+                        new Function_Call("add_" + tie.other_tie.tie_name, null,
+                            new List<Expression> { new Self(dungeon), new Self(dungeon) }))
                     
                     }));
                 }
@@ -280,7 +282,8 @@ namespace metahub.imperative.schema
 
             if (tie.has_set_post_hook)
             {
-                post.add(new Function_Call(tie.get_setter_post_name(), new List<Expression> {
+                post.add(new Function_Call(tie.get_setter_post_name(), null,
+                    new List<Expression> {
 					new Variable(value)
 			    }));
             }

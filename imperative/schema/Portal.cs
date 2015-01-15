@@ -43,7 +43,7 @@ namespace metahub.imperative.schema
                                                      ? new Path(range.path.Select((t) => new Tie_Expression(t)))
                                                      : null
                     );
-                block.add(new Assignment(reference, "=", new Function_Call("rand",
+                block.add(new Assignment(reference, "=", new Function_Call("rand", null,
                     new Expression[]
 	                {
 	                    new Literal(range.min,

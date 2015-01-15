@@ -1,0 +1,5 @@
+﻿not_null ($type) {
+	auto $item = new Player();
+	player->initialize();
+	$world.$property = player;
+}

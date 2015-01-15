@@ -62,12 +62,12 @@ namespace metahub.imperative.schema
 
         public static Literal False()
         {
-            return new Literal(false, new Signature(Kind.Bool));
+            return new Literal(false);
         }
 
         public static Literal True()
         {
-            return new Literal(true, new Signature(Kind.Bool));
+            return new Literal(true);
         }
 
         public static Operation operation(string op, Expression first, Expression second)
@@ -78,6 +78,14 @@ namespace metahub.imperative.schema
         public static Property_Function_Call setter(Tie tie, Expression value, Expression reference, Expression origin)
         {
             return new Property_Function_Call(Property_Function_Type.set, tie, origin != null
+                ? new List<Expression> { value, origin }
+                : new List<Expression> { value }
+             ) { reference = reference };
+        }
+
+        public static Property_Function_Call setter(Portal portal, Expression value, Expression reference, Expression origin)
+        {
+            return new Property_Function_Call(Property_Function_Type.set, portal, origin != null
                 ? new List<Expression> { value, origin }
                 : new List<Expression> { value }
              ) { reference = reference };

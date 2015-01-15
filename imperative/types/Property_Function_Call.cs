@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using metahub.imperative.schema;
 using metahub.logic.schema;
 using metahub.logic.types;
 
@@ -14,6 +15,7 @@ namespace metahub.imperative.types
     public class Property_Function_Call : Expression
     {
         public Tie tie;
+        public Portal portal;
         public Property_Function_Type function_type;
         public List<Expression> args;
         public Expression reference;
@@ -23,6 +25,14 @@ namespace metahub.imperative.types
         {
             this.function_type = function_type;
             this.tie = tie;
+            this.args = args ?? new List<Expression>();
+        }
+
+        public Property_Function_Call(Property_Function_Type function_type, Portal portal, List<Expression> args = null)
+            : base(Expression_Type.property_function_call)
+        {
+            this.function_type = function_type;
+            this.portal = portal;
             this.args = args ?? new List<Expression>();
         }
 

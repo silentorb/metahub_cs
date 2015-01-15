@@ -11,9 +11,7 @@ namespace piecemaker {
 
 	class Distance_Conflict {
 
-		is_resolved():bool {
-			return nodes[0].position.dist(nodes[1].position) > nodes[0].radius + nodes[1].radius
-		}
+		abstract is_resolved():bool
 
 		resolve() {
 			var offset:ogre.Vector3 = (nodes[0].position - nodes[1].position) / 2

@@ -46,9 +46,8 @@ namespace metahub.imperative.schema
                 block.add(new Assignment(reference, "=", new Function_Call("rand", null,
                     new Expression[]
 	                {
-	                    new Literal(range.min,
-	                                new Signature {type = Kind.Float}),
-                                    new Literal(range.max, new Signature {type = Kind.Float})
+	                    new Literal(range.min),
+                                    new Literal(range.max)
 	                }, true)));
             }
 

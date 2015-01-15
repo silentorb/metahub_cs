@@ -35,6 +35,25 @@ namespace metahub.imperative.schema
         public bool is_external = false;
         public bool is_abstract = false;
         public bool is_value = false;
+        public string source_file;
+
+        public Dungeon(string name, Overlord overlord, Realm realm, Dungeon parent = null)
+        {
+            this.name = name;
+            this.overlord = overlord;
+            this.realm = realm;
+            this.parent = parent;
+            realm.dungeons[name] = this;
+            overlord.dungeons.Add(this);
+
+            if (parent != null)
+            {
+                foreach (var portal in parent.all_portals.Values)
+                {
+                    all_portals[portal.name] = portal;
+                }
+            }
+        }
 
         public Dungeon(Rail rail, Overlord overlord, Realm realm)
         {
@@ -48,6 +67,7 @@ namespace metahub.imperative.schema
             is_external = rail.is_external;
             is_abstract = rail.trellis.is_abstract;
             is_value = rail.trellis.is_value;
+            source_file = rail.source_file;
 
             map_additional();
 
@@ -120,7 +140,7 @@ namespace metahub.imperative.schema
             create_block("class_definition", root_scope, class_expressions);
 
             root.divide(null, new List<Expression> {
-			    new Namespace(region, new List<Expression> { 
+			    new Namespace(realm, new List<Expression> { 
                     new Class_Definition(rail, class_expressions)
                 })
             });
@@ -326,9 +346,17 @@ namespace metahub.imperative.schema
 
         public void analyze()
         {
-            if (rail.parent != null && !rail.parent.trellis.is_abstract)
+            if (rail != null)
             {
-                add_dependency(overlord.get_dungeon(rail.parent)).allow_partial = false;
+                if (rail.parent != null && !rail.parent.trellis.is_abstract)
+                {
+                    add_dependency(overlord.get_dungeon(rail.parent)).allow_partial = false;
+                }
+            }
+            else
+            {
+                if (parent != null && !parent.is_abstract)
+                    add_dependency(parent).allow_partial = false;
             }
 
             foreach (var portal in all_portals.Values)
@@ -339,6 +367,9 @@ namespace metahub.imperative.schema
                     add_dependency(portal.other_dungeon);
                 }
             }
+
+            if (code == null)
+                return;
 
             transform_expressions(code, null);
             analyze_expressions(code);
@@ -458,7 +489,11 @@ namespace metahub.imperative.schema
 
                 case Expression_Type.declare_variable:
                     var declare_variable = (Declare_Variable)expression;
-                    add_dependency(declare_variable.symbol.signature.rail);
+                    if (declare_variable.symbol.profession != null)
+                        add_dependency(declare_variable.symbol.profession.dungeon);
+                    else
+                        add_dependency(declare_variable.symbol.signature.rail);
+
                     analyze_expression(declare_variable.expression);
                     break;
 
@@ -469,7 +504,11 @@ namespace metahub.imperative.schema
 
                 case Expression_Type.variable:
                     var variable_expression = (Variable)expression;
-                    add_dependency(variable_expression.symbol.signature.rail);
+                    if (variable_expression.symbol.profession != null)
+                        add_dependency(variable_expression.symbol.profession.dungeon);
+                    else
+                        add_dependency(variable_expression.symbol.signature.rail);
+
                     break;
 
                 case Expression_Type.iterator:

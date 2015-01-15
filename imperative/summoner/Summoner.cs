@@ -105,7 +105,7 @@ namespace metahub.imperative.summoner
 
                 imp.is_abstract = true;
 
-                var return_type = source.patterns[7];
+                var return_type = source.patterns[8];
                 if (return_type.patterns.Length > 0)
                     imp.return_type = parse_type(return_type.patterns[0], context);
             }
@@ -183,10 +183,10 @@ namespace metahub.imperative.summoner
             switch (source.type)
             {
                 case "bool":
-                    return new Literal(source.text == "true", new Signature(Kind.Bool));
+                    return new Literal(source.text == "true");
 
                 case "int":
-                    return new Literal(int.Parse(source.text), new Signature(Kind.Int));
+                    return new Literal(int.Parse(source.text));
 
                 case "reference":
                     return process_reference(source, context);

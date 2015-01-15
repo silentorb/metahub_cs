@@ -29,10 +29,10 @@ namespace metahub.render.targets.cpp
     public class Cpp : Target
     {
 
-        Region current_region;
+        Realm current_realm;
         Rail current_rail;
-        List<Dictionary<string, Signature>> scopes = new List<Dictionary<string, Signature>>();
-        Dictionary<string, Signature> current_scope;
+        List<Dictionary<string, Profession>> scopes = new List<Dictionary<string, Profession>>();
+        Dictionary<string, Profession> current_scope;
         Dungeon current_dungeon;
 
         private static Dictionary<string, string> types = new Dictionary<string, string>
@@ -44,8 +44,8 @@ namespace metahub.render.targets.cpp
             {"none", "void"}
         };
 
-        public Cpp(Railway railway, Overlord imp)
-            : base(railway, imp)
+        public Cpp(Railway railway, Overlord overlord)
+            : base(railway, overlord)
         {
         }
 
@@ -60,12 +60,12 @@ namespace metahub.render.targets.cpp
 
                     Console.WriteLine(rail.region.name + "." + rail.name);
 
-                    var space = Generator.get_namespace_path(rail.region);
+                    var dungeon = overlord.get_dungeon(rail);
+                    var space = Generator.get_namespace_path(dungeon.realm);
                     var dir = output_folder + "/" + space.join("/");
                     Utility.create_folder(dir);
 
                     line_count = 0;
-                    var dungeon = imp.get_dungeon(rail);
                     create_header_file(dungeon, dir);
                     create_class_file(dungeon, dir);
                 }
@@ -109,7 +109,7 @@ namespace metahub.render.targets.cpp
                 .Union(scalars.Select(portal => new Assignment(
                 new Portal_Expression(portal), "=",
                 new Literal(portal.get_default_value(),
-                            portal.get_signature())))
+                            portal.get_profession())))
             );
 
             var func = dungeon.summon_imp(dungeon.name);
@@ -118,7 +118,7 @@ namespace metahub.render.targets.cpp
 
         void push_scope()
         {
-            current_scope = new Dictionary<string, Signature>();
+            current_scope = new Dictionary<string, Profession>();
             scopes.Add(current_scope);
         }
 
@@ -146,7 +146,7 @@ namespace metahub.render.targets.cpp
             var result = line("#pragma once")
             + render_includes(headers) + newline()
             + render_outer_dependencies(dungeon)
-            + render_region(rail.region, () => newline() + render_inner_dependencies(dungeon) + class_declaration(dungeon));
+            + render_region(dungeon.realm, () => newline() + render_inner_dependencies(dungeon) + class_declaration(dungeon));
             Utility.create_file(dir + "/" + rail.name + ".h", result);
         }
 
@@ -158,9 +158,9 @@ namespace metahub.render.targets.cpp
             foreach (var d in dungeon.dependencies.Values)
             {
                 var dependency = d.dungeon;
-                if (dependency != dungeon.parent && dependency.rail.source_file != null)
+                if (dependency != dungeon.parent && dependency.source_file != null)
                 {
-                    headers.Add(new External_Header(dependency.rail.source_file));
+                    headers.Add(new External_Header(dependency.source_file));
                 }
             }
 
@@ -192,7 +192,7 @@ namespace metahub.render.targets.cpp
             {
                 case Expression_Type.space:
                     var space = (Namespace)statement;
-                    return render_region(space.region, () => render_statements(space.expressions));
+                    return render_region(space.realm, () => render_statements(space.expressions));
 
                 case Expression_Type.class_definition:
                     var definition = (Class_Definition)statement;
@@ -233,17 +233,17 @@ namespace metahub.render.targets.cpp
 
         string render_variable_declaration(Declare_Variable declaration)
         {
-            var first = render_signature(declaration.symbol.signature) + " " + declaration.symbol.name;
+            var first = render_signature(declaration.symbol.profession) + " " + declaration.symbol.name;
             if (declaration.expression != null)
                 first += " = " + render_expression(declaration.expression);
 
-            current_scope[declaration.symbol.name] = declaration.symbol.signature;
+            current_scope[declaration.symbol.name] = declaration.symbol.profession;
             return line(first + ";");
         }
 
         private class Temp
         {
-            public Region region;
+            public Realm realm;
             public List<Dungeon> dependencies;
         }
 
@@ -259,22 +259,22 @@ namespace metahub.render.targets.cpp
                 var dependency = d.dungeon;
                 if (d.allow_partial && dependency.region != rail.region)
                 {
-                    if (!regions.ContainsKey(dependency.region.name))
+                    if (!regions.ContainsKey(dependency.realm.name))
                     {
-                        regions[dependency.region.name] = new Temp
+                        regions[dependency.realm.name] = new Temp
                             {
-                                region = dependency.region,
+                                realm = dependency.realm,
                                 dependencies = new List<Dungeon>()
                             };
                     }
-                    regions[dependency.region.name].dependencies.Add(dependency);
+                    regions[dependency.realm.name].dependencies.Add(dependency);
                     lines = true;
                 }
             }
 
             foreach (var r in regions.Values)
             {
-                result += render_region(r.region, () => r.dependencies.Select(d => line("class " + d.rail.rail_name + ";"))
+                result += render_region(r.realm, () => r.dependencies.Select(d => line("class " + d.name + ";"))
                         .join("")
                 );
             }
@@ -317,7 +317,7 @@ namespace metahub.render.targets.cpp
             first += rail.rail_name;
             if (rail.parent != null)
             {
-                first += " : public " + render_rail_name(rail.parent);
+                first += " : public " + render_rail_name(dungeon.parent);
             }
 
             result = line(first + " {")
@@ -327,6 +327,12 @@ namespace metahub.render.targets.cpp
             foreach (var portal in dungeon.core_portals.Values)
             {
                 result += property_declaration(portal);
+            }
+
+            foreach (var portal in dungeon.all_portals.Values.Except(dungeon.core_portals.Values))
+            {
+                if (portal.rail != null && portal.rail.trellis.is_abstract)
+                    result += property_declaration(portal);
             }
 
             result += pad(render_function_declarations(dungeon))
@@ -349,16 +355,16 @@ namespace metahub.render.targets.cpp
             return result;
         }
 
-        string render_region(Region region, String_Delegate action)
+        string render_region(Realm realm, String_Delegate action)
         {
-            var space = Generator.get_namespace_path(region);
+            var space = Generator.get_namespace_path(realm);
             var result = line("namespace " + space.join("::") + " {");
-            current_region = region;
+            current_realm = realm;
             indent();
             result += action()
             + unindent().line("}");
 
-            current_region = null;
+            current_realm = null;
             return result;
         }
 
@@ -375,15 +381,15 @@ namespace metahub.render.targets.cpp
         //return definitions.join(newline());
         //}
 
-        string render_rail_name(Rail rail)
+        string render_rail_name(Dungeon dungeon)
         {
-            if (rail.region != current_region)
-                return render_region_name(rail.region) + "::" + rail.rail_name;
+            if (dungeon.realm != current_realm)
+                return render_region_name(dungeon.realm) + "::" + dungeon.name;
 
-            return rail.rail_name;
+            return dungeon.name;
         }
 
-        string render_region_name(Region region)
+        string render_region_name(Realm region)
         {
             var path = Generator.get_namespace_path(region);
             return path.join("::");
@@ -402,7 +408,7 @@ namespace metahub.render.targets.cpp
             {
                 foreach (var parameter in definition.parameters)
                 {
-                    current_scope[parameter.symbol.name] = parameter.symbol.signature;
+                    current_scope[parameter.symbol.name] = parameter.symbol.profession;
                 }
 
                 return render_statements(definition.expressions);
@@ -474,7 +480,7 @@ namespace metahub.render.targets.cpp
             var name = rail.rail_name;
             if (rail.region.external_name != null)
                 name = rail.region.external_name + "::" + name;
-            else if (rail.region != current_region)
+            else if (rail.region.name != current_realm.name)
                 name = rail.region.name + "::" + name;
 
             return name;
@@ -483,10 +489,10 @@ namespace metahub.render.targets.cpp
         string get_rail_type_string(Dungeon dungeon)
         {
             var name = dungeon.rail.rail_name;
-            if (dungeon.region.external_name != null)
+            if (dungeon.realm.external_name != null)
                 name = dungeon.region.external_name + "::" + name;
-            else if (dungeon.region != current_region)
-                name = dungeon.region.name + "::" + name;
+            else if (dungeon.realm != current_realm)
+                name = dungeon.realm.name + "::" + name;
 
             return name;
         }
@@ -551,28 +557,35 @@ namespace metahub.render.targets.cpp
             }
         }
 
-        string render_signature(Signature signature, bool is_parameter = false)
+        private string render_signature(Signature signature, bool is_parameter = false)
         {
-            if (signature.rail == null)
+            return render_signature(new Profession(signature.type, signature.rail != null
+                ? overlord.get_dungeon(signature.rail)
+                : null));
+        }
+
+        string render_signature(Profession signature, bool is_parameter = false)
+        {
+            if (signature.dungeon == null)
             {
                 return signature.type == Kind.reference
                     ? "void*"
                     : types[signature.type.ToString().ToLower()];
             }
 
-            var name = signature.rail.trellis.is_abstract
+            var name = signature.dungeon.is_abstract
                 ? "void"
-                : get_rail_type_string(signature.rail);
+                : get_rail_type_string(signature.dungeon);
 
             if (signature.type == Kind.reference)
             {
                 return
-                signature.rail.trellis.is_value ? is_parameter ? name + "&" : name :
+                signature.dungeon.is_value ? is_parameter ? name + "&" : name :
                         name + "*";
             }
             else
             {
-                return "std::vector<" + (signature.rail.trellis.is_value
+                return "std::vector<" + (signature.dungeon.is_value
                 ? name
                 : name + "*")
                 + ">";
@@ -777,7 +790,7 @@ namespace metahub.render.targets.cpp
 
         string render_literal(Literal expression)
         {
-            var signature = expression.signature;
+            var signature = expression.profession;
             if (signature == null)
                 return expression.value.ToString();
 
@@ -802,16 +815,16 @@ namespace metahub.render.targets.cpp
                     return (bool)expression.value ? "true" : "false";
 
                 case Kind.reference:
-                    if (!signature.rail.trellis.is_value)
+                    if (!signature.dungeon.is_value)
                         throw new Exception("Literal expressions must be scalar values.");
 
                     if (expression.value != null)
                         return expression.value.ToString();
 
-                    return render_rail_name(signature.rail) + "()";
+                    return render_rail_name(signature.dungeon) + "()";
 
                 default:
-                    throw new Exception("Invalid literal " + expression.value + " type " + expression.signature.type + ".");
+                    throw new Exception("Invalid literal " + expression.value + " type " + expression.profession.type + ".");
             }
         }
 
@@ -887,11 +900,25 @@ namespace metahub.render.targets.cpp
                 ? render_expression(expression.reference) + get_connector(expression.reference)
                 : "";
 
-            var name = expression.tie.get_signature().type == Kind.list
+            string portal_name;
+            Kind portal_type;
+
+            if (expression.portal != null)
+            {
+                portal_name = expression.portal.name;
+                portal_type = expression.portal.type;
+            }
+            else
+            {
+                portal_name = expression.tie.name;
+                portal_type = expression.tie.type;   
+            }
+
+            var name = portal_type == Kind.list
                 ? "add"
                 : expression.function_type.ToString();
 
-            return ref_full + name + "_" + expression.tie.tie_name + "("
+            return ref_full + name + "_" + portal_name + "("
                 + expression.args.Select(e => render_expression(e)).join(", ")
                 + ")";
         }

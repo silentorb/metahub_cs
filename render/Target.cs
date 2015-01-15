@@ -10,12 +10,12 @@ public class Target {
 	protected Railway railway;
 	protected Renderer render = new Renderer();
 	protected int line_count = 0;
-	protected Overlord imp;
+	protected Overlord overlord;
     public Transmuter transmuter;
 	
-	public Target(Railway railway, Overlord imp) {
+	public Target(Railway railway, Overlord overlord) {
 		this.railway = railway;
-		this.imp = imp;
+		this.overlord = overlord;
 	}
 
 	public virtual void generate_rail_code (Dungeon dungeon) {

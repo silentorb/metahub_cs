@@ -34,6 +34,7 @@ namespace metahub.imperative.code
            }
        }
 
+       /*
        static void conflict_functions(Overlord overlord, Region region)
        {
            var dungeon = overlord.get_dungeon(region.rails["Conflict"]);
@@ -50,7 +51,7 @@ namespace metahub.imperative.code
            var is_resolved = parent.spawn_child(dungeon);
            is_resolved.expressions.Add(new Statement("return", Imp.False()));
        }
-
+       
        static void piece_maker_functions(Overlord overlord, Region region)
        {
            var dungeon = overlord.get_dungeon(region.rails["Piece_Maker"]);
@@ -73,5 +74,6 @@ namespace metahub.imperative.code
                 })
             };
        }
+       */
     }
 }

@@ -34,6 +34,23 @@ namespace metahub.imperative.schema
             return symbol;
         }
 
+        public Symbol create_symbol(string name, Profession profession)
+        {
+            if (exists(name))
+            {
+                var i = 2;
+                while (exists(name + i))
+                {
+                    ++i;
+                }
+
+                name = name + i;
+            }
+            var symbol = new Symbol(name, profession, this);
+            symbols[name] = symbol;
+            return symbol;
+        }
+
         public void add_map(string name, Expression_Generator generator)
         {
             map[name] = generator;

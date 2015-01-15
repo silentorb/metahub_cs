@@ -16,5 +16,13 @@ namespace metahub.imperative.schema
             this.type = type;
             this.dungeon = dungeon;
         }
+
+        public Profession(metahub.logic.schema.Signature signature, Overlord overlord)
+        {
+            type = signature.type;
+            dungeon = signature.rail != null
+                ? overlord.get_dungeon(signature.rail)
+                : null;
+        }
     }
 }

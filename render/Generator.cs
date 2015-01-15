@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using metahub.imperative;
+using metahub.imperative.schema;
 using metahub.logic.schema;
 using metahub.render.targets.cpp;
 using metahub.render.targets.haxe;
@@ -35,11 +36,12 @@ public class Generator {
 		target.run(output_folder);
 	}
 
-	public static List<string> get_namespace_path (Region region) {
+	public static List<string> get_namespace_path (Realm region) {
 		var tokens = new List<string>();
 		while(region != null && region.name != "root") {
 			tokens.Insert(0, region.external_name ?? region.name);
-			region = region.parent;
+            //region = region.parent;
+		    break;
 		}
 
 		return tokens;

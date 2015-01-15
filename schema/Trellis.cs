@@ -149,7 +149,7 @@ namespace metahub.schema
                 is_abstract = source.is_abstract.Value;
 
             if (source.is_interface.HasValue)
-                is_abstract = source.is_interface.Value;
+                is_interface = source.is_interface.Value;
 
             if (source.is_value.HasValue)
                 is_value = source.is_value.Value;
@@ -226,7 +226,7 @@ namespace metahub.schema
         void set_parent(Trellis parent)
         {
             this.parent = parent;
-            if (parent.is_abstract && !is_abstract)
+            if (parent.is_abstract && !is_abstract && is_value)
             {
                 parent.implementation = this;
                 //foreach (var child_space in schema.root_namespace.children)
@@ -239,7 +239,7 @@ namespace metahub.schema
                     if (property.other_property != null)
                     {
                         property.other_property.other_trellis = this;
-                        property.other_property.other_property = get_property_or_error(property.name);
+                        property.other_property.other_property = get_property_or_null(property.name);
                     }
                 }
             }

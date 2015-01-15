@@ -130,10 +130,10 @@ namespace metahub.imperative.code
             return new List<Expression> { new Flow_Control(Flow_Control_Type.If, new Operation(inverse,
 				new List<Expression> {
 					reference,
-				new Literal(limit, new Signature(Kind.Float))
+				new Literal(limit)
             }),
 		        new List<Expression>{
-				    new Assignment(reference, "=", new Literal(value, new Signature { type = Kind.Float }))
+				    new Assignment(reference, "=", new Literal(value))
                 }
 		    )};
         }
@@ -180,7 +180,7 @@ namespace metahub.imperative.code
                                     
                         }.Concat(dist(constraint, tie, imp, iterator_scope, it, value))
                         .ToList()),
-                    new Statement("return", new Literal(true, new Signature(Kind.Bool)))
+                    new Statement("return", new Literal(true))
 			    }, new Signature(Kind.Bool))
             );
 
@@ -200,7 +200,7 @@ namespace metahub.imperative.code
                         {
                             new Variable(scope.find_or_exception("value"))
                         }),
-                    new Literal(false, new Signature(Kind.Bool))
+                    new Literal(false)
                     }), new List<Expression>
                             {
                                 new Statement("return")
@@ -209,13 +209,13 @@ namespace metahub.imperative.code
 
         }
 
-        public static List<Expression> dist(Constraint constraint, Tie tie, Overlord imp, Scope scope, Symbol it, Symbol value)
+        public static List<Expression> dist(Constraint constraint, Tie tie, Overlord overlord, Scope scope, Symbol it, Symbol value)
         {
             var offset = scope.create_symbol("offset", value.signature);
-            var dungeon = imp.get_dungeon(tie.rail);
-            var conflict_rail = imp.railway.regions["piecemaker"].rails["Distance_Conflict"];
-            var conflict_nodes = conflict_rail.get_tie_or_error("nodes");
-            var conflict = scope.create_symbol("conflict", new Signature(Kind.reference, conflict_rail));
+            var dungeon = overlord.get_dungeon(tie.rail);
+            var conflict_dungeon = create_conflict_class(constraint, tie.rail, overlord);
+            var conflict_nodes = conflict_dungeon.all_portals["nodes"];
+            var conflict = scope.create_symbol("conflict", new Profession(Kind.reference, conflict_dungeon));
             var mold_tie = tie.rail.get_tie_or_error("mold");
             var piecemaker_tie = mold_tie.other_rail.get_tie_or_error("piece_maker");
             var conflicts_tie = piecemaker_tie.other_rail.get_tie_or_error("conflicts");
@@ -226,14 +226,14 @@ namespace metahub.imperative.code
                         new Variable(it, new Tie_Expression(constraint.endpoints.Last(),
                             new Function_Call("dist", null,
                                 new List<Expression> { new Variable(value) }, true))),
-                        imp.translate(constraint.second.First(), scope)
+                        overlord.translate(constraint.second.First(), scope)
                     ),
                     new List<Expression>
                     {
                         new Declare_Variable(offset, Imp.operation("/", Imp.operation("+",
                             new Variable(it, new Tie_Expression(constraint.endpoints.Last())),
                             new Variable(value)
-                        ), new Literal(2, new Signature(Kind.Float)))),
+                        ), new Literal(2, new Profession(Kind.Float)))),
                             //new Variable(it, new Property_Function_Call(Property_Function_Type.set, tie, new List<Expression>
                             //    { Imp.operation("+",
                             //        new Variable(it, new Property_Expression(constraint.endpoints.Last())),
@@ -241,7 +241,7 @@ namespace metahub.imperative.code
                             //new Property_Function_Call(Property_Function_Type.set, tie, new List<Expression>
                             //    { Imp.operation("+", new Variable(value), new Variable(offset)) }),
 
-                            new Declare_Variable(conflict, new Instantiate(conflict_rail)),
+                            new Declare_Variable(conflict, new Instantiate(conflict_dungeon)),
                             new Variable(conflict, new Function_Call("initialize")),
                             new Variable(conflict,Imp.setter(conflict_nodes, new Self(dungeon), null, null)),
                             new Variable(conflict,Imp.setter(conflict_nodes, new Variable(it), null, null)),
@@ -255,5 +255,12 @@ namespace metahub.imperative.code
             };
         }
 
+        static Dungeon create_conflict_class(Constraint constraint, Rail rail, Overlord overlord)
+        {
+            var base_class = overlord.realms["piecemaker"].dungeons["Distance_Conflict"];
+            var dungeon = overlord.get_dungeon(rail);
+            var result = new Dungeon("Distance_Conflict2", overlord, dungeon.realm, base_class);
+            return result;
+        }
     }
 }

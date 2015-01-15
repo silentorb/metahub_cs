@@ -63,7 +63,7 @@ namespace metahub.imperative
 
                 foreach (var rail in region.rails.Values)
                 {
-                    if (rail.trellis.is_abstract)
+                    if (rail.trellis.is_abstract && rail.trellis.is_value)
                         continue;
 
                     Dungeon dungeon = new Dungeon(rail, this, realm);
@@ -170,7 +170,7 @@ namespace metahub.imperative
             switch (expression.type)
             {
                 case Node_Type.literal:
-                    return new Literal(((metahub.logic.types.Literal_Value)expression).value, new Signature(Kind.unknown));
+                    return new Literal(((metahub.logic.types.Literal_Value)expression).value, new Profession(Kind.unknown));
 
                 case Node_Type.function_call:
                     //metahub.logic.types.Function_Call func = expression;

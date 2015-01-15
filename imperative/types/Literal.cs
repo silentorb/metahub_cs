@@ -1,3 +1,4 @@
+using metahub.imperative.schema;
 using metahub.logic.schema;
 using Kind = metahub.schema.Kind;
 
@@ -8,22 +9,31 @@ namespace metahub.imperative.types {
  */
 public class Literal : Expression {
 	public object value;
-	public Signature signature;
+    //public Signature signature;
+    public Profession profession;
 
-	public Literal(object value, Signature signature)
+    //public Literal(object value, Signature signature)
+
+    //    : base(Expression_Type.literal)
+    //{
+    //    this.value = value;
+    //    this.signature = signature;
+    //}
+
+    public Literal(object value, Profession profession)
 
         : base(Expression_Type.literal)
     {
-		this.value = value;
-		this.signature = signature;
-	}
+        this.value = value;
+        this.profession = profession;
+    }
 
     public Literal(int value)
 
         : base(Expression_Type.literal)
     {
         this.value = value;
-        signature = new Signature(Kind.Int);
+        profession = new Profession(Kind.Int);
     }
 
     public Literal(string value)
@@ -31,7 +41,7 @@ public class Literal : Expression {
         : base(Expression_Type.literal)
     {
         this.value = value;
-        signature = new Signature(Kind.String);
+        profession = new Profession(Kind.String);
     }
 
     public Literal(float value)
@@ -39,7 +49,7 @@ public class Literal : Expression {
         : base(Expression_Type.literal)
     {
         this.value = value;
-        signature = new Signature(Kind.Float);
+        profession = new Profession(Kind.Float);
     }
 
     public Literal(bool value)
@@ -47,11 +57,11 @@ public class Literal : Expression {
         : base(Expression_Type.literal)
     {
         this.value = value;
-        signature = new Signature(Kind.Bool);
+        profession = new Profession(Kind.Bool);
     }
 
     public override Expression clone()
     {
-        return new Literal(value, signature);
+        return new Literal(value, profession);
     }
 }}

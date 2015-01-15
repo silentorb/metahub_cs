@@ -171,6 +171,8 @@
     <None Include="main\app.config" />
     <None Include="resources\imp.grammar" />
     <None Include="resources\metahub.grammar" />
+    <None Include="resources\metahub.imp" />
+    <None Include="resources\metahub.json" />
     <None Include="resources\parser.json" />
     <None Include="resources\piecemaker.imp" />
     <None Include="resources\piecemaker.json" />

@@ -12,6 +12,8 @@ namespace metahub.schema
         public string primary_key;
         public bool? is_value;
         public bool? is_abstract;
+        public bool? is_interface = false;
+        public List<string> interfaces = new List<string>(); 
     }
 
     public class Trellis
@@ -32,6 +34,8 @@ namespace metahub.schema
         List<Trellis> _tree = null;
         public bool is_abstract = false;
         protected Trellis implementation;
+        public bool is_interface = false;
+        public List<Trellis> interfaces = new List<Trellis>(); 
 
         public Trellis(string name, Schema schema, Namespace space)
         {
@@ -144,6 +148,9 @@ namespace metahub.schema
             if (source.is_abstract.HasValue)
                 is_abstract = source.is_abstract.Value;
 
+            if (source.is_interface.HasValue)
+                is_abstract = source.is_interface.Value;
+
             if (source.is_value.HasValue)
                 is_value = source.is_value.Value;
 
@@ -209,6 +216,11 @@ namespace metahub.schema
             }
 
             is_numeric = properties.Any(p => p.type != Kind.Float && p.type != Kind.Int);
+
+            if (source.interfaces != null)
+            {
+                interfaces = source.interfaces.Select(i => schema.get_trellis(i, space, true)).ToList();
+            }
         }
 
         void set_parent(Trellis parent)

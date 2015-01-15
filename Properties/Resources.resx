@@ -124,8 +124,14 @@
   <data name="list_h" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\resources\cpp\list.h;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
   </data>
-  <data name="metahub" type="System.Resources.ResXFileRef, System.Windows.Forms">
+  <data name="metahub_grammar" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\resources\metahub.grammar;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
+  </data>
+  <data name="metahub_imp" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\metahub.imp;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
+  </data>
+  <data name="metahub_json" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\metahub.json;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
   </data>
   <data name="parser" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\resources\parser.json;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>

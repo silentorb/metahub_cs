@@ -96,21 +96,38 @@ namespace metahub.imperative.summoner
 
         void process_function_definition(Pattern_Source source, Context context)
         {
-            var imp = context.dungeon.spawn_imp(
-                source.patterns[1].text,
-                source.patterns[4].patterns.Select(p => process_parameter(p, context)).ToList()
-            );
-            var new_context = new Context(context) { scope = imp.scope };
+            if (source.type == "abstract_function")
+            {
+                var imp = context.dungeon.spawn_imp(
+                    source.patterns[2].text,
+                    source.patterns[5].patterns.Select(p => process_parameter(p, context)).ToList()
+                );
 
-            var attributes = source.patterns[0];
-            if (attributes.patterns.Length > 0)
-                imp.is_abstract = attributes.patterns[0].patterns[0].text == "abstract";
+                imp.is_abstract = true;
 
-            var return_type = source.patterns[7];
-            if (return_type.patterns.Length > 0)
-                imp.return_type = parse_type(return_type.patterns[0], context);
+                var return_type = source.patterns[7];
+                if (return_type.patterns.Length > 0)
+                    imp.return_type = parse_type(return_type.patterns[0], context);
+            }
+            else
+            {
+                var imp = context.dungeon.spawn_imp(
+                    source.patterns[1].text,
+                    source.patterns[4].patterns.Select(p => process_parameter(p, context)).ToList()
+                );
+                var new_context = new Context(context) { scope = imp.scope };
 
-            imp.expressions = process_block(source.patterns[9], new_context);
+                //var attributes = source.patterns[0];
+                //if (source.type == "abstract_function")
+                //    imp.is_abstract = true;
+
+                var return_type = source.patterns[7];
+                if (return_type.patterns.Length > 0)
+                    imp.return_type = parse_type(return_type.patterns[0], context);
+
+                imp.expressions = process_block(source.patterns[9], new_context);
+            }
+
         }
 
         List<Expression> process_block(Pattern_Source source, Context context)
@@ -295,7 +312,7 @@ namespace metahub.imperative.summoner
             var last = Expression.get_end(reference);
             if (last.type == Expression_Type.property)
             {
-                var tie_expression = (Tie_Expression) last;
+                var tie_expression = (Tie_Expression)last;
                 if (op != "=")
                 {
                     expression = Imp.operation(op[0].ToString(), reference.clone(), expression);

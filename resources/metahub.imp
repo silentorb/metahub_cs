@@ -1,0 +1,14 @@
+﻿
+namespace metahub {
+
+  class Hub {
+
+    tick() {
+
+    }
+  }
+
+  class Tick_Target {
+    abstract tick()
+  }
+}

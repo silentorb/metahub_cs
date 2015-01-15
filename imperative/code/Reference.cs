@@ -49,7 +49,7 @@ namespace metahub.imperative.code
         {
             var property_node = (metahub.logic.types.Property_Reference)constraint.first.First();
             var dungeon = overlord.get_dungeon(property_node.tie.rail);
-            var imp = dungeon.summon_imp("on_tick");
+            var imp = dungeon.summon_imp("tick");
             imp.expressions.Add(new Assignment(
                 overlord.convert_path(constraint.first, null),
                 constraint.op,

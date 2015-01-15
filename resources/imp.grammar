@@ -57,12 +57,16 @@ closed_expression = "(" trim expression ")"
 expression = @(expression_part, operation_separator, 1, 0)
 
 namespace = "namespace" ws id trim "{" trim @(class, newlines, 0, 0) trim "}"
-	
+
 function_definition = @(function_attribute, none, 0, 1) id trim "(" @(declare_symbol, comma, 0, 0) ")" trim @(type_info, none, 0, 1) trim long_block
 
-function_attribute =  "abstract" ws
+abstract_function = "abstract" ws id trim "(" @(declare_symbol, comma, 0, 0) ")" trim @(type_info, none, 0, 1)
 
-class = "class" ws id trim "{" trim @(function_definition, newlines, 0, 0) trim "}"
+function_attribute =  "private" ws
+
+class_statements = abstract_function | function_definition
+
+class = "class" ws id trim "{" trim @(class_statements, newlines, 0, 0) trim "}"
 
 block = long_block | short_block
 

@@ -87,6 +87,8 @@ namespace metahub.imperative
                 dungeon.generate_code2();
             }
 
+            summon(Resources.metahub_imp);
+
             if (railway.regions.ContainsKey("piecemaker"))
             {
                 var piece_region = railway.regions["piecemaker"];

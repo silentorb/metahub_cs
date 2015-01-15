@@ -29,6 +29,7 @@ namespace metahub
             var code = File.ReadAllText(Path.Combine(root, config.code[0]));
             var hub = new metahub.Hub();
             hub.load_parser();
+            hub.load_schema("metahub", root);
             foreach (var schema_name in config.schemas)
             {
                 hub.load_schema(schema_name, root);

@@ -20,8 +20,8 @@ public class Railway {
 
         foreach (var space in hub.schema.root_namespace.children.Values)
         {
-			if (space.name == "metahub")
-				continue;
+            //if (space.name == "metahub")
+            //    continue;
 
 			Region region = new Region(space, target_name);
 			regions[space.name] = region;

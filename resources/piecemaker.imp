@@ -1,14 +1,8 @@
 ﻿
 namespace piecemaker {
 	class Conflict {
-
-		abstract is_resolved():bool {
-
-		}
-
-		abstract resolve() {
-
-		}
+		abstract is_resolved():bool
+		abstract resolve()
 	}
 
 	class Conflict_Group {

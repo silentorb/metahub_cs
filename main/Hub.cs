@@ -38,6 +38,7 @@ namespace metahub
             metahub_namespace = schema.add_namespace("metahub");
 
             core_schemas["piecemaker"] = Resources.piecemaker_json;
+            core_schemas["metahub"] = Resources.metahub_json;
         }
 
         public void load_parser()
@@ -46,7 +47,7 @@ namespace metahub
             boot_definition.load_parser_schema();
             Bootstrap context = new Bootstrap(boot_definition);
 
-            var result = context.parse(Resources.metahub, false);
+            var result = context.parse(Resources.metahub_grammar, false);
             //Debug_Info.output(result);
             if (result.success)
             {
@@ -129,8 +130,7 @@ namespace metahub
         //public void load_internal_trellises () {
         //    var functions = Utility.get_string_resource("inserts/core_nodes.json");
         //var data =JsonConvert.DeserializeObject<RootObject>(functions);
-
-
+        
         //schema.load_trellises(data.trellises, new Load_Settings(metahub_namespace));
         //}
 

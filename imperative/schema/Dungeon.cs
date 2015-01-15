@@ -163,8 +163,7 @@ namespace metahub.imperative.schema
 
             if (rail != null && rail.needs_tick)
             {
-                spawn_imp("on_tick");
-                
+                spawn_imp("tick");
             }
         }
 

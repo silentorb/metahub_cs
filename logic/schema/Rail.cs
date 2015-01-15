@@ -41,6 +41,7 @@ namespace metahub.logic.schema
         public Dictionary<string, Tie_Addition> property_additional = new Dictionary<string, Tie_Addition>();
         public string class_export = "";
         public object default_value = null;
+        public bool needs_tick = false;
 
         public Rail(Trellis trellis, Railway railway)
         {

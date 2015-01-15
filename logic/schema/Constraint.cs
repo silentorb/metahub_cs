@@ -1,12 +1,20 @@
 using System.Collections.Generic;
 using System.Linq;
-using metahub.imperative;
+using metahub.imperative.types;
 using metahub.logic.types;
 
 namespace metahub.logic.schema
 {
     public class Constraint
     {
+        public static List<string> self_modifying_operators = new List<string>
+        {
+            "+=",
+            "-=",
+            "*=",
+            "/="
+        };
+
         public Node[] first;
         public Node[] second;
         public bool is_back_referencing = false;
@@ -25,6 +33,12 @@ namespace metahub.logic.schema
             this.lambda = lambda;
             this.caller = caller;
             endpoints = get_endpoints(first);
+
+            if (self_modifying_operators.Contains(op))
+            {
+                var property_node = (Property_Reference) first[0];
+                property_node.tie.rail.needs_tick = true;
+            }
         }
 
         public static List<Tie> get_endpoints(Node[] path)

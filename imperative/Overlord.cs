@@ -158,18 +158,7 @@ namespace metahub.imperative
                 }
                 else
                 {
-
-                    if (constraint.op == "!="
-                        && constraint.second.Length == 1 && constraint.second[0].type == Node_Type.Null)
-                    {
-                        Reference.not_null((Tie_Expression)convert_path(constraint.first, null), this);
-                    }
-                    else
-                    {
-                        var dungeon = get_dungeon(tie.rail);
-                        var block = dungeon.get_block("set_" + tie.tie_name);
-                        block.add_many("pre", Reference.constraint(constraint, tie, this, block.scope));
-                    }
+                    Reference.generate_constraint(constraint, tie, this);
                 }
             }
         }

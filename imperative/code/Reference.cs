@@ -26,6 +26,37 @@ namespace metahub.imperative.code
             {"<=", ">"}
         };
 
+        public static void generate_constraint(Constraint constraint, Tie tie, Overlord overlord)
+        {
+            if (constraint.op == "!="
+                        && constraint.second.Length == 1 && constraint.second[0].type == Node_Type.Null)
+            {
+                not_null((Tie_Expression)overlord.convert_path(constraint.first, null), overlord);
+            }
+            else if (Constraint.self_modifying_operators.Contains(constraint.op))
+            {
+                self_modifying(constraint, tie, overlord);
+            }
+            else
+            {
+                var dungeon = overlord.get_dungeon(tie.rail);
+                var block = dungeon.get_block("set_" + tie.tie_name);
+                block.add_many("pre", Reference.constraint(constraint, tie, overlord, block.scope));
+            }
+        }
+
+        public static void self_modifying(Constraint constraint, Tie tie, Overlord overlord)
+        {
+            var property_node = (metahub.logic.types.Property_Reference)constraint.first.First();
+            var dungeon = overlord.get_dungeon(property_node.tie.rail);
+            var imp = dungeon.summon_imp("on_tick");
+            imp.expressions.Add(new Assignment(
+                overlord.convert_path(constraint.first, null),
+                constraint.op,
+                overlord.convert_path(constraint.second, null)
+                ));
+        }
+
         public static List<Expression> constraint(Constraint constraint, Tie tie, Overlord overlord, Scope scope)
         {
             var op = constraint.op;
@@ -62,13 +93,11 @@ namespace metahub.imperative.code
             var other_dungeon = overlord.get_dungeon(tie.other_rail);
             var portal = dungeon.all_portals[tie.tie_name];
             var block = dungeon.get_block("initialize");
-            var symbol = block.scope.create_symbol(tie.other_rail.name.ToLower(), 
-                new Signature(Kind.reference, tie.other_rail));
 
             block.add_many("pre", new List<Expression>
                 {
                   new Assignment(new Portal_Expression(portal), "=", new Instantiate(other_dungeon)),
-                  new Function_Call("initialize", new Variable(symbol)),
+                  new Function_Call("initialize", new Portal_Expression(portal)),
                 });
         }
 

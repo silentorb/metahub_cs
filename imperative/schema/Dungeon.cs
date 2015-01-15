@@ -126,6 +126,7 @@ namespace metahub.imperative.schema
             });
 
             root.divide("post");
+
         }
 
         public void generate_code2()
@@ -158,6 +159,12 @@ namespace metahub.imperative.schema
                     else
                         get_block(tokens[0]).add_many(lines.Select(s => new Insert(s)));
                 }
+            }
+
+            if (rail != null && rail.needs_tick)
+            {
+                spawn_imp("on_tick");
+                
             }
         }
 

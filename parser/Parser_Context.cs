@@ -10,7 +10,7 @@ namespace metahub.parser
         public string text;
         public bool debug = false;
         public bool draw_offsets = false;
-        Definition definition;
+        protected Definition definition;
         //  List<Match> history;
         public Match last_success;
 
@@ -19,13 +19,13 @@ namespace metahub.parser
             this.definition = definition;
         }
 
-        public Result parse(string text, bool silent = true)
+        public Result parse(string text, Pattern start, bool silent = true)
         {
             this.text = text;
-            if (definition.patterns.Count == 0)
-                throw new Exception("Unable to parse; definition does not have any patterns.");
+            //if (definition.patterns.Count == 0)
+            //    throw new Exception("Unable to parse; definition does not have any patterns.");
 
-            var result = definition.patterns[0].test(new Position(this), 0);
+            var result = start.test(new Position(this), 0);
             if (result.success)
             {
                 var match = (metahub.parser.Match)result;

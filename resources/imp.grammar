@@ -1,5 +1,9 @@
 ﻿start = trim @(namespace, newlines, 0, 0) final_trim
 
+snippet = trim snippet_option
+
+snippet_option = class | abstract_function | function_definition 
+
 none = /&*/
 ws = /\s+/
 trim = /\s*/
@@ -37,7 +41,9 @@ reference = @(id_with_optional_array, path_separator, 1, 0) @(optional_arguments
 
 declare_symbol = id trim @(type_info, none, 0, 1)
 
-type_info = ":" trim @(id, path_separator, 1, 0)
+type_info = ":" trim @(id, path_separator, 1, 0) @(optional_list_suffix, none, 0, 1)
+
+optional_list_suffix = trim "[" trim "]"
 
 function_statement =
 	declare_variable
@@ -66,7 +72,9 @@ function_attribute =  "private" ws
 
 class_statements = abstract_function | function_definition
 
-class = "class" ws id trim "{" trim @(class_statements, newlines, 0, 0) trim "}"
+class = "class" ws id trim @(optional_parent_classes, none, 0, 1) "{" trim @(class_statements, newlines, 0, 0) trim "}"
+
+optional_parent_classes = ":" trim @(id, comma_or_newline, 1, 0) trim
 
 block = long_block | short_block
 

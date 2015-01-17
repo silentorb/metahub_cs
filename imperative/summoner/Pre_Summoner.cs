@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using metahub.Properties;
+using metahub.lab;
 using metahub.parser;
 
 namespace metahub.imperative.summoner
@@ -10,8 +11,13 @@ namespace metahub.imperative.summoner
 
     public class Pre_Summoner : Parser_Context
     {
-        public Definition parser_definition;
         public Pattern_Source output;
+
+        public enum Mode
+        {
+            full,
+            snippet
+        }
 
         public Pre_Summoner()
             : base(null)
@@ -19,16 +25,22 @@ namespace metahub.imperative.summoner
             load_parser();
         }
 
-        public void summon(string code)
+        public void summon(string code, Mode mode)
         {
             load_parser();
             var without_comments = Hub.remove_comments.Replace(code, "");
-            //trace("without_comments", without_comments);
-            var result = parse(without_comments);
+            var start = mode == Mode.full
+                ? definition.patterns[0]
+                : definition.patterns[1];
 
-            //Debug_Info.output(result);
+            //trace("without_comments", without_comments);
+            var result = parse(without_comments, start);
+
             if (!result.success)
+            {
+                Debug_Info.output(result);
                 throw new Exception("Syntax Error at " + result.end.y + ":" + result.end.x);
+            }
 
             var match = (Match)result;
             output = match.get_data();
@@ -40,14 +52,14 @@ namespace metahub.imperative.summoner
             boot_definition.load_parser_schema();
             Bootstrap context = new Bootstrap(boot_definition);
 
-            var result = context.parse(Resources.imp_grammar, false);
+            var result = context.parse(Resources.imp_grammar, boot_definition.patterns[0], false);
             //Debug_Info.output(result);
             if (result.success)
             {
                 var match = (Match)result;
 
-                parser_definition = new Definition();
-                parser_definition.load(match.get_data().dictionary);
+                definition = new Definition();
+                definition.load(match.get_data().dictionary);
             }
             else
             {

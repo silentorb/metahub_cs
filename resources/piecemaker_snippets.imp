@@ -1,0 +1,15 @@
+﻿@@@Distance_Conflict(Class_Name, Node_Type)
+	class Class_Name : Conflict {
+	
+		nodes: Node_Type[]
+
+		is_resolved():bool {
+		
+		}
+
+		resolve() {
+			var offset:Vector3 = (nodes[0].position - nodes[1].position) / 2
+			nodes[0].position += offset
+			nodes[1].position -= offset
+		}
+	}

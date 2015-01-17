@@ -47,7 +47,7 @@ namespace metahub
             boot_definition.load_parser_schema();
             Bootstrap context = new Bootstrap(boot_definition);
 
-            var result = context.parse(Resources.metahub_grammar, false);
+            var result = context.parse(Resources.metahub_grammar,boot_definition.patterns[0], false);
             //Debug_Info.output(result);
             if (result.success)
             {
@@ -124,7 +124,7 @@ namespace metahub
             MetaHub_Context context = new MetaHub_Context(parser_definition);
             var without_comments = remove_comments.Replace(code, "");
             //trace("without_comments", without_comments);
-            return context.parse(without_comments);
+            return context.parse(without_comments, parser_definition.patterns[0]);
         }
 
         //public void load_internal_trellises () {

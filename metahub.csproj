@@ -55,6 +55,7 @@
     <Compile Include="imperative\schema\Imp.cs" />
     <Compile Include="imperative\schema\Symbol.cs" />
     <Compile Include="imperative\summoner\Summoner.cs" />
+    <Compile Include="imperative\summoner\Template.cs" />
     <Compile Include="imperative\types\Operation.cs" />
     <Compile Include="imperative\types\Portal_Expression.cs" />
     <Compile Include="imperative\types\Property_Function_Call.cs" />
@@ -176,7 +177,7 @@
     <None Include="resources\parser.json" />
     <None Include="resources\piecemaker.imp" />
     <None Include="resources\piecemaker.json" />
-    <None Include="resources\snippets.imp" />
+    <None Include="resources\piecemaker_snippets.imp" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Properties\Resources.resx">

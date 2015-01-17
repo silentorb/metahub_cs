@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using metahub.imperative.schema;
+using metahub.imperative.summoner;
 using metahub.imperative.types;
 using metahub.logic.schema;
 //using metahub.logic.types;
@@ -257,25 +258,27 @@ namespace metahub.imperative.code
 
         static Dungeon create_conflict_class(Constraint constraint, Rail rail, Overlord overlord)
         {
-            var base_class = overlord.realms["piecemaker"].dungeons["Distance_Conflict"];
-            var dungeon = overlord.get_dungeon(rail);
-            var result = new Dungeon("Distance_Conflict2", overlord, dungeon.realm, base_class);
-            result.generate_code1();
+            var previous = overlord.get_dungeon(rail);
+            var context = new Summoner.Context(previous.realm);
+            //var result = overlord.summon_dungeon();
+            return null;
+            //var base_class = overlord.realms["piecemaker"[.dungeons["Conflict"];
+            //var result = new Dungeon("Distance_Conflict", overlord, dungeon.realm, base_class);
+            //var portal = result.add_portal(new Portal("nodes", Kind.list, result, dungeon));
+            //result.generate_code1();
 
-            var portal = result.all_portals["nodes"];
-            portal.other_dungeon = dungeon;
-            var scope = new Scope();
-            scope.add_map("a", () => new Portal_Expression(portal) { index = new Literal((int)0) });
-            scope.add_map("b", () => new Portal_Expression(portal) { index = new Literal((int)1) });
-            var imp = base_class.summon_imp("is_resolved").spawn_child(result);
-            imp.expressions.Add(new Statement("return", 
-                new Operation(constraint.op, new List<Expression>{ 
-                    overlord.translate(constraint.first.First(), scope),
-                    overlord.translate(constraint.second.First(), scope)
-                })
-            ));
+            //var scope = new Scope();
+            //scope.add_map("a", () => new Portal_Expression(portal) { index = new Literal((int)0) });
+            //scope.add_map("b", () => new Portal_Expression(portal) { index = new Literal((int)1) });
+            //var imp = base_class.summon_imp("is_resolved").spawn_child(result);
+            //imp.expressions.Add(new Statement("return", 
+            //    new Operation(constraint.op, new List<Expression>{ 
+            //        overlord.translate(constraint.first.First(), scope),
+            //        overlord.translate(constraint.second.First(), scope)
+            //    })
+            //));
 
-            return result;
+            //return result;
         }
     }
 }

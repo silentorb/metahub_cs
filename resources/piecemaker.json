@@ -42,25 +42,13 @@
         }
       }
     },
-    "Distance_Conflict": {
-      "parent": "Conflict",
-      "properties": {
-        "nodes": {
-          "type": "list",
-          "trellis": "Spatial_Node"
-        }
-      }
-    },
+
     "Spatial_Node": {
       "is_abstract": true,
       "properties": {
         "position": {
           "type": "reference",
           "trellis": "Vector3"
-        },
-        "conflicts": {
-          "type": "list",
-          "trellis": "Distance_Conflict"
         }
       }
     },

@@ -8,12 +8,13 @@ namespace metahub.imperative.summoner
 {
     partial class Summoner
     {
-        private class Context
+        public class Context
         {
             public Realm realm;
             public Dungeon dungeon;
             public Scope scope;
             public Context parent;
+            public Dictionary<string, string> inserts = new Dictionary<string, string>();
 
             public Context(Realm realm, Dungeon dungeon = null)
             {

@@ -31,6 +31,8 @@ namespace metahub.imperative
         public Overlord(Hub hub, string target_name)
         {
             railway = new Railway(hub, target_name);
+            if (Piece_Maker.templates == null)
+                Piece_Maker.initialize(this);
         }
 
         public void run(Logician logician, Target target)
@@ -57,7 +59,7 @@ namespace metahub.imperative
                 //if (region.is_external)
                 //    continue;
 
-                var realm = new Realm(region);
+                var realm = new Realm(region, this);
                 realms[realm.name] = realm;
 
                 foreach (var rail in region.rails.Values)
@@ -330,10 +332,10 @@ namespace metahub.imperative
             return path.Where(t => t.type == Node_Type.property).ToArray();
         }
 
-        public Pre_Summoner pre_summon(string code)
+        public Pre_Summoner pre_summon(string code, Pre_Summoner.Mode mode = Pre_Summoner.Mode.full)
         {
             var pre_summoner = new Pre_Summoner();
-            pre_summoner.summon(code);
+            pre_summoner.summon(code, mode);
             return pre_summoner;
         }
 
@@ -347,6 +349,13 @@ namespace metahub.imperative
         {
             var pre_summoner = pre_summon(code);
             summon(pre_summoner);
+        }
+
+        public void summon_dungeon(string code, Summoner.Context context)
+        {
+            var pre_summoner = pre_summon(code);
+            var summoner = new Summoner(this);
+            summoner.process_class(pre_summoner.output, context);
         }
     }
 }

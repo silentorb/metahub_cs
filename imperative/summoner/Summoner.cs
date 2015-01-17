@@ -41,10 +41,10 @@ namespace metahub.imperative.summoner
             }
         }
 
-        void process_class(Pattern_Source source, Context context)
+        public Dungeon process_class(Pattern_Source source, Context context)
         {
             var name = source.patterns[2].text;
-            var statements = source.patterns[6].patterns;
+            var statements = source.patterns[7].patterns;
             Dungeon dungeon = null;
 
             if (context.realm.dungeons.ContainsKey(name))
@@ -61,6 +61,8 @@ namespace metahub.imperative.summoner
             {
                 process_function_definition(statement, dungeon_context);
             }
+
+            return dungeon;
         }
 
         void process_function_definition(Pattern_Source source, Context context)

@@ -10,17 +10,6 @@ namespace piecemaker {
 
 	}
 
-	class Distance_Conflict {
-
-		abstract is_resolved():bool
-
-		resolve() {
-			var offset:ogre.Vector3 = (nodes[0].position - nodes[1].position) / 2
-			nodes[0].position += offset
-			nodes[1].position -= offset
-		}
-	}
-
 	class Piece_Maker {
 
 		update() {

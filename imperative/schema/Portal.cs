@@ -18,6 +18,7 @@ namespace metahub.imperative.schema
         public string name;
         public bool is_value = false;
         public Portal other_portal;
+        public Portal parent;
 
         public Portal(Tie tie, Dungeon dungeon)
         {
@@ -39,6 +40,20 @@ namespace metahub.imperative.schema
             this.dungeon = dungeon;
             this.type = type;
             this.other_dungeon = other_dungeon;
+        }
+
+        public Portal(Portal original, Dungeon new_dungeon)
+        {
+            tie = original.tie;
+            dungeon = new_dungeon;
+            type = original.type;
+            rail = original.rail;
+            other_rail = original.other_rail;
+            name = original.name;
+            is_value = original.is_value;
+            other_portal = original.other_portal;
+            other_dungeon = original.other_dungeon;
+            parent = original;
         }
 
         public void customize_initialize(Block block)

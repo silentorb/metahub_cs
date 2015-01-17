@@ -55,7 +55,7 @@ namespace metahub.imperative.schema
             {
                 foreach (var portal in parent.all_portals.Values)
                 {
-                    all_portals[portal.name] = portal;
+                    all_portals[portal.name] = new Portal(portal, this);
                 }
             }
         }

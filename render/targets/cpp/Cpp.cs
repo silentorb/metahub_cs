@@ -257,7 +257,7 @@ namespace metahub.render.targets.cpp
             foreach (var d in dungeon.dependencies.Values)
             {
                 var dependency = d.dungeon;
-                if (d.allow_partial && dependency.region != rail.region)
+                if (d.allow_partial && dependency.realm != dungeon.realm)
                 {
                     if (!regions.ContainsKey(dependency.realm.name))
                     {
@@ -762,6 +762,10 @@ namespace metahub.render.targets.cpp
 
                 case Expression_Type.null_value:
                     return "NULL";
+
+                case Expression_Type.create_array:
+                    result = "FOOO";
+                    break;
 
                 case Expression_Type.variable:
                     var variable_expression = (Variable)expression;

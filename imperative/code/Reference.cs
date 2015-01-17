@@ -261,7 +261,19 @@ namespace metahub.imperative.code
             var dungeon = overlord.get_dungeon(rail);
             var result = new Dungeon("Distance_Conflict2", overlord, dungeon.realm, base_class);
             result.generate_code1();
+
+            var portal = result.all_portals["nodes"];
+            portal.other_dungeon = dungeon;
+            var scope = new Scope();
+            scope.add_map("a", () => new Portal_Expression(portal) { index = new Literal((int)0) });
+            scope.add_map("b", () => new Portal_Expression(portal) { index = new Literal((int)1) });
             var imp = base_class.summon_imp("is_resolved").spawn_child(result);
+            imp.expressions.Add(new Statement("return", 
+                new Operation(constraint.op, new List<Expression>{ 
+                    overlord.translate(constraint.first.First(), scope),
+                    overlord.translate(constraint.second.First(), scope)
+                })
+            ));
 
             return result;
         }

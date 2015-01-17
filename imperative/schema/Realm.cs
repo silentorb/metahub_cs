@@ -12,12 +12,23 @@ namespace metahub.imperative.schema
         public string external_name;
         public Region region;
         public Dictionary<string, Dungeon> dungeons = new Dictionary<string, Dungeon>();
+        public Overlord overlord;
 
-        public Realm(Region region)
+        public Realm(Region region, Overlord overlord)
         {
             name = region.name;
+            this.overlord = overlord;
             external_name = region.external_name;
             this.region = region;
+        }
+
+        public Dungeon create_dungeon(string name)
+        {
+            var dungeon = new Dungeon(null, overlord, this);
+            dungeons[name] = dungeon;
+            overlord.dungeons.Add(dungeon);
+            
+            return dungeon;
         }
     }
 }

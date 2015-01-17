@@ -24,7 +24,6 @@ namespace metahub.imperative
         public Railway railway;
         public List<Dungeon> dungeons = new List<Dungeon>();
         Dictionary<Rail, Dungeon> rail_map = new Dictionary<Rail, Dungeon>();
-        private Summoner summoner;
         public Dictionary<string, Realm> realms = new Dictionary<string, Realm>();
         public Target target;
         public Logician logician;
@@ -246,14 +245,15 @@ namespace metahub.imperative
             return new Path(path);
         }
 
-        public Expression convert_path(List<metahub.logic.types.Node> path, Scope scope = null)
+        public Expression convert_path(IList<metahub.logic.types.Node> path, Scope scope = null)
         {
             List<Expression> result = new List<Expression>();
             Rail rail = null;
+            Dungeon dungeon = null;
 
-            if (path[0].type == Node_Type.property)
+            if (path.First().type == Node_Type.property)
             {
-                rail = ((metahub.logic.types.Property_Reference)path[0]).tie.get_abstract_rail();
+                rail = ((metahub.logic.types.Property_Reference)path.First()).tie.get_abstract_rail();
             }
             //else
             //{
@@ -265,12 +265,24 @@ namespace metahub.imperative
                 {
                     case Node_Type.property:
                         var property_token = (metahub.logic.types.Property_Reference)token;
-                        var tie = rail.all_ties[property_token.tie.name];
-                        if (tie == null)
-                            throw new Exception("tie is null: " + property_token.tie.fullname());
+                        if (dungeon != null)
+                        {
+                            var portal = dungeon.all_portals[property_token.tie.name];
+                            if (portal == null)
+                                throw new Exception("Portal is null: " + property_token.tie.fullname());
 
-                        result.Add(new Tie_Expression(tie));
-                        rail = tie.other_rail;
+                            result.Add(new Portal_Expression(portal));
+                            dungeon = portal.other_dungeon;
+                        }
+                        else
+                        {
+                            var tie = rail.all_ties[property_token.tie.name];
+                            if (tie == null)
+                                throw new Exception("tie is null: " + property_token.tie.fullname());
+
+                            result.Add(new Tie_Expression(tie));
+                            rail = tie.other_rail;
+                        }
                         break;
 
                     case Node_Type.array:
@@ -281,7 +293,22 @@ namespace metahub.imperative
                         var variable = (metahub.logic.types.Variable)token;
                         var variable_token = scope.resolve(variable.name);
                         result.Add(variable_token);
-                        rail = variable_token.get_signature().rail;
+                        var profession = variable_token.get_profession();
+                        if (profession == null)
+                        {
+                            rail = variable_token.get_signature().rail;
+                        }
+                        else if (profession.dungeon != null)
+                        {
+                            if (profession.dungeon.rail != null)
+                                rail = profession.dungeon.rail;
+
+                            dungeon = profession.dungeon;
+                        }
+                        else if (profession.type == Kind.list || profession.type == Kind.reference)
+                        {
+                            throw new Exception("Invalid profession.");
+                        }
                         break;
 
                     case Node_Type.function_call:
@@ -303,12 +330,23 @@ namespace metahub.imperative
             return path.Where(t => t.type == Node_Type.property).ToArray();
         }
 
+        public Pre_Summoner pre_summon(string code)
+        {
+            var pre_summoner = new Pre_Summoner();
+            pre_summoner.summon(code);
+            return pre_summoner;
+        }
+
+        public void summon(Pre_Summoner pre_summoner)
+        {
+            var summoner = new Summoner(this);
+            summoner.summon(pre_summoner.output);
+        }
+
         public void summon(string code)
         {
-            if (summoner == null)
-                summoner = new Summoner(this);
-
-            summoner.summon(code);
+            var pre_summoner = pre_summon(code);
+            summon(pre_summoner);
         }
     }
 }

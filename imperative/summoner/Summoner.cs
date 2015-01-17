@@ -14,7 +14,6 @@ namespace metahub.imperative.summoner
 {
     public partial class Summoner
     {
-        public Definition parser_definition;
         private Overlord overlord;
 
         public Summoner(Overlord overlord)
@@ -22,47 +21,7 @@ namespace metahub.imperative.summoner
             this.overlord = overlord;
         }
 
-        public void summon(string code)
-        {
-            if (parser_definition == null)
-            {
-                load_parser();
-            }
-            var context = new Pre_Summoner(parser_definition);
-            var without_comments = Hub.remove_comments.Replace(code, "");
-            //trace("without_comments", without_comments);
-            var result = context.parse(without_comments);
-
-            //Debug_Info.output(result);
-            if (!result.success)
-                throw new Exception("Syntax Error at " + result.end.y + ":" + result.end.x);
-
-            var match = (Match)result;
-            process_root(match.get_data());
-        }
-
-        public void load_parser()
-        {
-            Definition boot_definition = new Definition();
-            boot_definition.load_parser_schema();
-            Bootstrap context = new Bootstrap(boot_definition);
-
-            var result = context.parse(Resources.imp_grammar, false);
-            //Debug_Info.output(result);
-            if (result.success)
-            {
-                var match = (Match)result;
-
-                parser_definition = new Definition();
-                parser_definition.load(match.get_data().dictionary);
-            }
-            else
-            {
-                throw new Exception("Error loading parser.");
-            }
-        }
-
-        void process_root(Pattern_Source source)
+        public void summon(Pattern_Source source)
         {
             foreach (var pattern in source.patterns)
             {
@@ -86,7 +45,17 @@ namespace metahub.imperative.summoner
         {
             var name = source.patterns[2].text;
             var statements = source.patterns[6].patterns;
-            var dungeon = context.realm.dungeons[name];
+            Dungeon dungeon = null;
+
+            if (context.realm.dungeons.ContainsKey(name))
+            {
+                dungeon = context.realm.dungeons[name];
+            }
+            else
+            {
+                dungeon = context.realm.create_dungeon(name);
+            }
+
             var dungeon_context = new Context(context.realm, dungeon);
             foreach (var statement in statements)
             {

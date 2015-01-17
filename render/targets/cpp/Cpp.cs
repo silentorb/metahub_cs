@@ -51,24 +51,20 @@ namespace metahub.render.targets.cpp
 
         override public void run(string output_folder)
         {
-            foreach (var region in railway.regions.Values)
+            foreach (var dungeon in overlord.dungeons)
             {
-                foreach (var rail in region.rails.Values)
-                {
-                    if (rail.is_external || rail.trellis.is_abstract)
-                        continue;
+                if (dungeon.is_external || (dungeon.is_abstract && dungeon.is_external))
+                    continue;
 
-                    Console.WriteLine(rail.region.name + "." + rail.name);
+                //Console.WriteLine(dungeon.realm.name + "." + dungeon.name);
 
-                    var dungeon = overlord.get_dungeon(rail);
-                    var space = Generator.get_namespace_path(dungeon.realm);
-                    var dir = output_folder + "/" + space.join("/");
-                    Utility.create_folder(dir);
+                var space = Generator.get_namespace_path(dungeon.realm);
+                var dir = output_folder + "/" + space.join("/");
+                Utility.create_folder(dir);
 
-                    line_count = 0;
-                    create_header_file(dungeon, dir);
-                    create_class_file(dungeon, dir);
-                }
+                line_count = 0;
+                create_header_file(dungeon, dir);
+                create_class_file(dungeon, dir);
             }
 
             {
@@ -113,7 +109,7 @@ namespace metahub.render.targets.cpp
             );
 
             var func = dungeon.summon_imp(dungeon.name);
-            func.expressions = ((IEnumerable<Expression>) block).ToList();
+            func.expressions = ((IEnumerable<Expression>)block).ToList();
         }
 
         void push_scope()
@@ -133,36 +129,39 @@ namespace metahub.render.targets.cpp
         void create_header_file(Dungeon dungeon, string dir)
         {
             var rail = dungeon.rail;
-            List<External_Header> headers = new List<External_Header> { new External_Header("stdafx") };
-
-            foreach (var d in dungeon.dependencies.Values)
-            {
-                var dependency = d.dungeon;
-                if (!d.allow_partial)
-                    headers.Add(new External_Header(dependency.rail.source_file));
-            }
+            List<External_Header> headers = new List<External_Header> { new External_Header("stdafx") }.Concat(
+                dungeon.dependencies.Values.Where(d => !d.allow_partial)
+                .OrderBy(d => d.dungeon.source_file)
+                .Select(d => new External_Header(d.dungeon.source_file))
+            ).ToList();
 
             render = new Renderer();
             var result = line("#pragma once")
             + render_includes(headers) + newline()
             + render_outer_dependencies(dungeon)
             + render_region(dungeon.realm, () => newline() + render_inner_dependencies(dungeon) + class_declaration(dungeon));
-            Utility.create_file(dir + "/" + rail.name + ".h", result);
+            Utility.create_file(dir + "/" + dungeon.name + ".h", result);
         }
 
         void create_class_file(Dungeon dungeon, string dir)
         {
             var rail = dungeon.rail;
-            scopes = new List<Dictionary<string, Signature>>();
-            List<External_Header> headers = new List<External_Header> { new External_Header("stdafx"), new External_Header(rail.source_file) };
-            foreach (var d in dungeon.dependencies.Values)
-            {
-                var dependency = d.dungeon;
-                if (dependency != dungeon.parent && dependency.source_file != null)
-                {
-                    headers.Add(new External_Header(dependency.source_file));
-                }
-            }
+            scopes = new List<Dictionary<string, Profession>>();
+            List<External_Header> headers = new List<External_Header> { new External_Header("stdafx") }.Concat(
+                new List<External_Header>{ new External_Header(dungeon.source_file) }.Concat(
+                dungeon.dependencies.Values.Where(d => d.dungeon != dungeon.parent && d.dungeon.source_file != null)
+                .Select(d => new External_Header(d.dungeon.source_file)))
+                .OrderBy(h => h.name)
+            ).ToList();
+
+            //foreach (var d in dungeon.dependencies.Values)
+            //{
+            //    var dependency = d.dungeon;
+            //    if (dependency != dungeon.parent && dependency.source_file != null)
+            //    {
+            //        headers.Add(new External_Header(dependency.source_file));
+            //    }
+            //}
 
             foreach (var func in dungeon.used_functions.Values)
             {
@@ -177,7 +176,7 @@ namespace metahub.render.targets.cpp
             var result = render_includes(headers) + newline()
             + render_statements(dungeon.code);
 
-            Utility.create_file(dir + "/" + rail.name + ".cpp", result);
+            Utility.create_file(dir + "/" + dungeon.name + ".cpp", result);
         }
 
         string render_statements(IEnumerable<Expression> statements, string glue = "")
@@ -233,11 +232,12 @@ namespace metahub.render.targets.cpp
 
         string render_variable_declaration(Declare_Variable declaration)
         {
-            var first = render_signature(declaration.symbol.profession) + " " + declaration.symbol.name;
+            var profession = declaration.symbol.get_profession(overlord);
+            var first = render_signature(profession) + " " + declaration.symbol.name;
             if (declaration.expression != null)
                 first += " = " + render_expression(declaration.expression);
 
-            current_scope[declaration.symbol.name] = declaration.symbol.profession;
+            current_scope[declaration.symbol.name] = profession;
             return line(first + ";");
         }
 
@@ -307,15 +307,14 @@ namespace metahub.render.targets.cpp
 
         string class_declaration(Dungeon dungeon)
         {
-            var rail = dungeon.rail;
-            current_rail = rail;
+            current_dungeon = dungeon;
             var result = "";
             var first = "class ";
-            if (rail.class_export.Length > 0)
-                first += rail.class_export + " ";
+            if (dungeon.rail != null && dungeon.rail.class_export.Length > 0)
+                first += dungeon.rail.class_export + " ";
 
-            first += rail.rail_name;
-            if (rail.parent != null)
+            first += dungeon.name;
+            if (dungeon.parent != null)
             {
                 first += " : public " + render_rail_name(dungeon.parent);
             }
@@ -401,7 +400,7 @@ namespace metahub.render.targets.cpp
                 return "";
 
             var intro = (definition.return_type != null ? render_signature(definition.return_type) + " " : "")
-            + current_rail.rail_name + "::" + definition.name
+            + current_dungeon.name + "::" + definition.name
             + "(" + definition.parameters.Select(render_definition_parameter).join(", ") + ")";
 
             return render_scope(intro, () =>
@@ -431,17 +430,22 @@ namespace metahub.render.targets.cpp
 
         string render_function_declarations(Dungeon dungeon)
         {
-            var declarations = dungeon.rail.stubs.Select(line).ToList();
+            var declarations = dungeon.stubs.Select(line).ToList();
 
-            if (dungeon.rail.hooks.ContainsKey("initialize_post"))
+            if (dungeon.hooks.ContainsKey("initialize_post"))
             {
                 declarations.Add(line("void initialize_post(); // Externally defined."));
             }
 
-            foreach (var tie in dungeon.rail.all_ties.Values)
+            if (dungeon.rail != null)
             {
-                if (tie.has_set_post_hook)
-                    declarations.Add(line("void " + tie.get_setter_post_name() + "(" + get_property_type_string(tie, true) + " value);"));
+                foreach (var tie in dungeon.rail.all_ties.Values)
+                {
+                    if (tie.has_set_post_hook)
+                        declarations.Add(
+                            line("void " + tie.get_setter_post_name() + "(" + get_property_type_string(tie, true) +
+                                 " value);"));
+                }
             }
 
             //foreach (var tie in rail.all_ties) {
@@ -449,7 +453,8 @@ namespace metahub.render.targets.cpp
             //declarations.Add(line(render_signature_old("set_" + tie.tie_name, tie) + ";"));
             //}
 
-            declarations.AddRange(dungeon.functions.Select(render_function_declaration));
+            //declarations.AddRange(dungeon.functions.Select(render_function_declaration));
+            declarations.AddRange(dungeon.imps.Select(render_function_declaration));
 
             return declarations.join("");
         }
@@ -488,7 +493,7 @@ namespace metahub.render.targets.cpp
 
         string get_rail_type_string(Dungeon dungeon)
         {
-            var name = dungeon.rail.rail_name;
+            var name = dungeon.name;
             if (dungeon.realm.external_name != null)
                 name = dungeon.region.external_name + "::" + name;
             else if (dungeon.realm != current_realm)
@@ -509,13 +514,14 @@ namespace metahub.render.targets.cpp
 
         string render_includes(IEnumerable<External_Header> headers)
         {
-            return headers.Select(h => line(h.is_standard
+            return headers
+                .Select(h => line(h.is_standard
                 ? "#include <" + h.name + ".h>"
                 : "#include \"" + h.name + ".h\""
             )).join("");
         }
 
-        string render_function_declaration(Function_Definition definition)
+        string render_function_declaration(Imp definition)
         {
             return line((definition.return_type != null ? "virtual " : "")
             + (definition.return_type != null ? render_signature(definition.return_type) + " " : "")
@@ -828,23 +834,23 @@ namespace metahub.render.targets.cpp
             }
         }
 
-        Signature get_signature(Expression expression)
-        {
-            switch (expression.type)
-            {
-                //case Expression_Type.variable:
-                //    var variable_expression = (Variable)expression;
-                //    return variable_expression.symbol.signature;
+        //Signature get_signature(Expression expression)
+        //{
+        //    switch (expression.type)
+        //    {
+        //        //case Expression_Type.variable:
+        //        //    var variable_expression = (Variable)expression;
+        //        //    return variable_expression.symbol.signature;
 
-                //case Expression_Type.property:
-                //    var property_expression = (Tie_Expression)expression;
-                //    return property_expression.tie.get_signature();
+        //        //case Expression_Type.property:
+        //        //    var property_expression = (Tie_Expression)expression;
+        //        //    return property_expression.tie.get_signature();
 
-                default:
-                    return expression.get_signature();
-                //throw new Exception("Determining pointer is not yet implemented for Node type: " + expression.type + ".");
-            }
-        }
+        //        default:
+        //            return expression.get_signature();
+        //        //throw new Exception("Determining pointer is not yet implemented for Node type: " + expression.type + ".");
+        //    }
+        //}
 
         bool is_pointer(Signature signature)
         {
@@ -873,7 +879,10 @@ namespace metahub.render.targets.cpp
             if (expression.type == Expression_Type.portal)
                 return is_pointer(expression.get_profession()) ? "->" : ".";
 
-            return is_pointer(get_signature(expression)) ? "->" : ".";
+            var profession = expression.get_profession();
+            return profession == null
+                ? is_pointer(expression.get_signature()) ? "->" : "."
+                : is_pointer(expression.get_profession()) ? "->" : ".";
         }
 
         //Signature find_variable (string name) {
@@ -911,7 +920,7 @@ namespace metahub.render.targets.cpp
             else
             {
                 portal_name = expression.tie.name;
-                portal_type = expression.tie.type;   
+                portal_type = expression.tie.type;
             }
 
             var name = portal_type == Kind.list

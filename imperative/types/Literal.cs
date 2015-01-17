@@ -1,3 +1,4 @@
+using System;
 using metahub.imperative.schema;
 using metahub.logic.schema;
 using Kind = metahub.schema.Kind;
@@ -24,6 +25,9 @@ public class Literal : Expression {
 
         : base(Expression_Type.literal)
     {
+        //if (value == null)
+        //   throw new Exception("Literal value cannot be null.");
+
         this.value = value;
         this.profession = profession;
     }

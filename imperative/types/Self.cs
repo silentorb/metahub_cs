@@ -4,17 +4,11 @@ using metahub.schema;
 
 namespace metahub.imperative.types
 {
-
-    /**
-     * ...
-     * @author Christopher W. Johnson
-     */
     public class Self : Expression
     {
         public Dungeon dungeon;
 
         public Self(Dungeon dungeon, Expression child = null)
-
             : base(Expression_Type.self, child)
         {
             this.dungeon = dungeon;
@@ -23,6 +17,11 @@ namespace metahub.imperative.types
         public override logic.schema.Signature get_signature()
         {
             return new logic.schema.Signature(Kind.reference, dungeon.rail);
+        }
+
+        public override Profession get_profession()
+        {
+            return new Profession(Kind.reference, dungeon);
         }
     }
 }

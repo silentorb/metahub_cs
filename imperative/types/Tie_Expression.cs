@@ -29,6 +29,11 @@ public class Tie_Expression : Expression
             : new Signature(Kind.reference, tie.other_rail);
     }
 
+    public override schema.Profession get_profession()
+    {
+        return null;
+    }
+
     public override Expression clone()
     {
         return new Tie_Expression(tie, child != null ? child.clone(): null)

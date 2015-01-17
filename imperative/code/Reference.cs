@@ -260,6 +260,9 @@ namespace metahub.imperative.code
             var base_class = overlord.realms["piecemaker"].dungeons["Distance_Conflict"];
             var dungeon = overlord.get_dungeon(rail);
             var result = new Dungeon("Distance_Conflict2", overlord, dungeon.realm, base_class);
+            result.generate_code1();
+            var imp = base_class.summon_imp("is_resolved").spawn_child(result);
+
             return result;
         }
     }

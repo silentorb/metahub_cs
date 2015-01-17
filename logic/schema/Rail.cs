@@ -53,8 +53,7 @@ namespace metahub.logic.schema
             class_export = region.class_export;
             load_additional();
             if (!is_external && source_file == null)
-                source_file = trellis.space.
-            name + "/" + rail_name;
+                source_file = trellis.space.name + "/" + rail_name;
         }
 
         private void load_additional()

@@ -63,13 +63,15 @@ namespace metahub.imperative
 
                 foreach (var rail in region.rails.Values)
                 {
+
+                    Dungeon dungeon = new Dungeon(rail, this, realm);
+                    realm.dungeons[dungeon.name] = dungeon;
+                    rail_map[rail] = dungeon;
+
                     if (rail.trellis.is_abstract && rail.trellis.is_value)
                         continue;
 
-                    Dungeon dungeon = new Dungeon(rail, this, realm);
                     dungeons.Add(dungeon);
-                    realm.dungeons[dungeon.name] = dungeon;
-                    rail_map[rail] = dungeon;
                 }
             }
 
@@ -129,6 +131,14 @@ namespace metahub.imperative
         {
             if (!rail_map.ContainsKey(rail))
                 return null;
+
+            return rail_map[rail];
+        }
+
+        public Dungeon get_dungeon_or_error(Rail rail)
+        {
+            if (!rail_map.ContainsKey(rail))
+                throw new Exception("Could not find dungeon for rail " + rail.name + ".");
 
             return rail_map[rail];
         }

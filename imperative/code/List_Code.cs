@@ -169,10 +169,9 @@ namespace metahub.imperative.code
                     var portal_name = second_end.other_rail.name + "_links";
                     var portal = item_dungeon.all_portals.ContainsKey(portal_name)
                                      ? item_dungeon.all_portals[portal_name]
-                                     : item_dungeon.add_portal(new Portal(portal_name, Kind.list, item_dungeon)
+                                     : item_dungeon.add_portal(new Portal(portal_name, Kind.list, item_dungeon, overlord.get_dungeon(second_end.other_rail))
                                          {
-                                             other_rail = second_end.other_rail,
-                                             other_dungeon = overlord.get_dungeon(second_end.other_rail)
+                                             other_rail = second_end.other_rail
                                          });
                     creation_block.Add(new Function_Call("add", new Variable(item, new Portal_Expression(portal)),
                         new List<Expression>
@@ -187,10 +186,9 @@ namespace metahub.imperative.code
                     var portal_name = a_end.other_rail.name + "_links";
                     var portal = item_dungeon.all_portals.ContainsKey(portal_name)
                                      ? item_dungeon.all_portals[portal_name]
-                                     : item_dungeon.add_portal(new Portal(portal_name, Kind.list, item_dungeon)
+                                     : item_dungeon.add_portal(new Portal(portal_name, Kind.list, item_dungeon, overlord.get_dungeon(a_end.other_rail))
                                      {
-                                         other_rail = a_end.other_rail,
-                                         other_dungeon = overlord.get_dungeon(a_end.other_rail)
+                                         other_rail = a_end.other_rail
                                      });
                     creation_block.Add(new Function_Call("add", new Variable(item2, new Portal_Expression(portal)),
                         new List<Expression>

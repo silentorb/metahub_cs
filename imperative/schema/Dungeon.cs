@@ -27,7 +27,7 @@ namespace metahub.imperative.schema
         Dictionary<string, Block> blocks = new Dictionary<string, Block>();
         public List<Function_Definition> functions = new List<Function_Definition>();
         public Overlord overlord;
-        List<Imp> imps = new List<Imp>();
+        public List<Imp> imps = new List<Imp>();
         public Dictionary<string, Portal> all_portals = new Dictionary<string, Portal>();
         public Dictionary<string, Portal> core_portals = new Dictionary<string, Portal>();
         public Dictionary<string, Used_Function> used_functions = new Dictionary<string, Used_Function>();
@@ -36,6 +36,8 @@ namespace metahub.imperative.schema
         public bool is_abstract = false;
         public bool is_value = false;
         public string source_file;
+        public List<string> stubs = new List<string>();
+        public Dictionary<string, object> hooks = new Dictionary<string, object>();
 
         public Dungeon(string name, Overlord overlord, Realm realm, Dungeon parent = null)
         {
@@ -45,6 +47,9 @@ namespace metahub.imperative.schema
             this.parent = parent;
             realm.dungeons[name] = this;
             overlord.dungeons.Add(this);
+            code = new List<Expression>();
+            if (!is_external && source_file == null)
+                source_file = realm.name + "/" + name;
 
             if (parent != null)
             {
@@ -68,6 +73,8 @@ namespace metahub.imperative.schema
             is_abstract = rail.trellis.is_abstract;
             is_value = rail.trellis.is_value;
             source_file = rail.source_file;
+            stubs = rail.stubs;
+            hooks = rail.hooks;
 
             map_additional();
 
@@ -88,10 +95,10 @@ namespace metahub.imperative.schema
             foreach (var portal in core_portals.Values)
             {
                 if (portal.rail != null)
-                    portal.dungeon = overlord.get_dungeon(portal.rail);
+                    portal.dungeon = overlord.get_dungeon_or_error(portal.rail);
 
                 if (portal.other_rail != null)
-                    portal.other_dungeon = overlord.get_dungeon(portal.other_rail);
+                    portal.other_dungeon = overlord.get_dungeon_or_error(portal.other_rail);
             }
         }
 

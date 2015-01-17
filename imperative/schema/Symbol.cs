@@ -26,5 +26,10 @@ namespace metahub.imperative.schema
             this.profession = profession;
             this.scope = scope;
         }
+
+        public Profession get_profession(Overlord overlord)
+        {
+            return profession ?? new Profession(signature, overlord);
+        }
     }
 }

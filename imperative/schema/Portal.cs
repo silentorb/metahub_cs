@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using metahub.imperative.types;
@@ -16,6 +17,7 @@ namespace metahub.imperative.schema
         public Dungeon other_dungeon;
         public string name;
         public bool is_value = false;
+        public Portal other_portal;
 
         public Portal(Tie tie, Dungeon dungeon)
         {
@@ -28,11 +30,15 @@ namespace metahub.imperative.schema
             is_value = tie.is_value;
         }
 
-        public Portal(string name, Kind type, Dungeon dungeon)
+        public Portal(string name, Kind type, Dungeon dungeon, Dungeon other_dungeon = null)
         {
+            if (type == Kind.reference && other_dungeon == null)
+                throw new Exception("Invalid portal.");
+
             this.name = name;
             this.dungeon = dungeon;
             this.type = type;
+            this.other_dungeon = other_dungeon;
         }
 
         public void customize_initialize(Block block)
@@ -76,6 +82,9 @@ namespace metahub.imperative.schema
 
         public Profession get_profession()
         {
+            if (type == Kind.reference && other_dungeon == null)
+                throw new Exception("Invalid portal.");
+
             return new Profession(type, other_dungeon);
         }
 

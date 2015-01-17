@@ -25,6 +25,11 @@ namespace metahub.imperative.types
             return symbol.signature;
         }
 
+        public override Profession get_profession()
+        {
+            return symbol.profession;
+        }
+
         public override Expression clone()
         {
             return new Variable(symbol, child != null ? child.clone() : null)

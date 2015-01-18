@@ -36,9 +36,11 @@ namespace metahub
             }
 
             var result = hub.parse_code(code);
-            //Debug_Info.output(result);
             if (!result.success)
+            {
+                Debug_Info.output(result);
                 throw new Exception("Syntax Error at " + result.end.y + ":" + result.end.x);
+            }
 
             var match = (Match)result;
             hub.generate(match.get_data(), "cpp", Path.Combine(root, config.output.Replace("/", "\\")));

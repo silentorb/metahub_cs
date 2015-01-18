@@ -8,6 +8,7 @@ newlines = /(\s*\n)+\s*/
 comma_or_newline = /\s*((\s*\n)+|,)\s*/
 dot = "."
 path_function_separator = "." | "|"
+trim_same_line = /[ \t]*/
 
 id = /[a-zA-Z0-9_]+/
 
@@ -17,9 +18,9 @@ path_or_id = @(id, dot, 1, 0)
 
 id_or_array = id | array
 
-reference = @(id_or_array, path_function_separator, 1, 0)
+complex_token = id_or_array @(arguments, none, 0, 1)
 
-method = "|" id
+reference = @(complex_token, path_function_separator, 1, 0)
 
 statement =
 	  create_group
@@ -30,7 +31,7 @@ statement =
 	| set_weight
     | new_scope
 	| create_node
-	| function_scope
+	| expression
 
 create_symbol = "let" ws id trim "=" trim expression
 
@@ -41,9 +42,9 @@ operation_separator = trim operator trim
 expression_part =
 	  value
 	| create_node
-	| reference
 	| long_block
-	| array
+	| lambda
+	| reference
 
 string = ('"' /[^"]*/ '"') | ("'" /[^']*/ "'")
 bool = "true" | "false"
@@ -82,11 +83,11 @@ set_weight = /[\d\.]+/ trim "$" ws statement
 
 array = "[" trim @(expression, comma_or_newline, 0, 0) trim "]"
 
-lambda = trim parameters trim long_block
+lambda = parameters trim long_block
 
 parameters = "[" trim @(id, comma_or_newline, 0, 0) trim "]"
 
-function_scope = expression lambda
+arguments = trim_same_line "(" trim @(expression, comma_or_newline, 0, 0) trim ")"
 
 create_group = "@new" ws "group" ws id trim long_block
 

@@ -122,6 +122,8 @@ namespace metahub.imperative
 
         public void flatten()
         {
+            var temp = dungeons.Where(d => !d.is_external).Select(d=>d.name);
+
             foreach (var dungeon in dungeons.Where(d => !d.is_external))
             {
                 dungeon.flatten();
@@ -134,6 +136,17 @@ namespace metahub.imperative
                 return null;
 
             return rail_map[rail];
+        }
+
+        public Dungeon get_dungeon(string name)
+        {
+            foreach (var realm in realms.Values)
+            {
+                if (realm.dungeons.ContainsKey(name))
+                    return realm.dungeons[name];
+            }
+            
+            return null;
         }
 
         public Dungeon get_dungeon_or_error(Rail rail)
@@ -351,11 +364,10 @@ namespace metahub.imperative
             summon(pre_summoner);
         }
 
-        public void summon_dungeon(string code, Summoner.Context context)
+        public Dungeon summon_dungeon(Template template, Summoner.Context context)
         {
-            var pre_summoner = pre_summon(code);
             var summoner = new Summoner(this);
-            summoner.process_class(pre_summoner.output, context);
+            return summoner.process_dungeon(template.source, context);
         }
     }
 }

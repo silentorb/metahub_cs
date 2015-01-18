@@ -96,13 +96,16 @@ namespace metahub.imperative.summoner
                 case "optional_assignment":
                     return data.patterns[3];
 
-                case "type_info":
-                    return data.patterns[2];
+                //case "type_info":
+                //    return data.patterns[2];
 
                 case "optional_arguments":
                     return data.patterns[1];
 
                 case "closed_expression":
+                    return data.patterns[2];
+
+                case "optional_parent_classes":
                     return data.patterns[2];
 
                 case "arguments":

@@ -21,20 +21,22 @@ namespace metahub.imperative.code
             remove_function(tie, imp, scope);
         }
 
-        public static void add_function(Tie tie, Overlord imp, Scope scope)
+        public static void add_function(Tie tie, Overlord overlord, Scope scope)
         {
             var rail = tie.rail;
-            var dungeon = imp.get_dungeon(tie.rail);
-            var root_block = dungeon.get_block("class_definition");
+            var dungeon = overlord.get_dungeon(tie.rail);
 
             var function_name = "add_" + tie.tie_name;
             var function_scope = new Scope(scope);
             var item = function_scope.create_symbol("item", tie.get_other_signature());
             var origin = function_scope.create_symbol("origin", new Signature(Kind.reference));
-            Function_Definition definition = new Function_Definition(function_name, dungeon, new List<Parameter> {
-			    new Parameter(item),
-			    new Parameter(origin, new Null_Value())
-            }, new List<Expression>());
+            var imp = dungeon.spawn_imp(function_name, new List<Parameter>
+                {
+                    new Parameter(item),
+                    new Parameter(origin, new Null_Value())
+                }, new List<Expression>());
+
+            Function_Definition definition = new Function_Definition(imp);
 
             var block = dungeon.create_block(function_name, scope, definition.expressions);
             var mid = block.divide(null, new List<Expression> {
@@ -60,25 +62,24 @@ namespace metahub.imperative.code
                                 }))
                 }));
             }
-
-            root_block.add(definition);
         }
 
 
-        public static void remove_function(Tie tie, Overlord imp, Scope scope)
+        public static void remove_function(Tie tie, Overlord overlord, Scope scope)
         {
             var rail = tie.rail;
-            var dungeon = imp.get_dungeon(tie.rail);
-            var root_block = dungeon.get_block("class_definition");
+            var dungeon = overlord.get_dungeon(tie.rail);
 
             var function_name = "remove_" + tie.tie_name;
             var function_scope = new Scope(scope);
             var item = function_scope.create_symbol("item", tie.get_other_signature());
             var origin = function_scope.create_symbol("origin", new Signature(Kind.reference));
-            Function_Definition definition = new Function_Definition(function_name, dungeon, new List<Parameter> {
-			    new Parameter(item),
-			    new Parameter(origin, new Null_Value())
-            }, new List<Expression>());
+            var imp = dungeon.spawn_imp(function_name, new List<Parameter>
+                {
+                    new Parameter(item),
+                    new Parameter(origin, new Null_Value())
+                }, new List<Expression>());
+            Function_Definition definition = new Function_Definition(imp);
 
             var block = dungeon.create_block(function_name, scope, definition.expressions);
             var mid = block.divide(null, new List<Expression>{
@@ -98,8 +99,6 @@ namespace metahub.imperative.code
             {
                 mid.add(Imp.call_remove(tie.other_tie, new Variable(item), new Self(dungeon)));
             }
-
-            root_block.add(definition);
         }
 
         public static void generate_constraint(Constraint constraint, Overlord imp)

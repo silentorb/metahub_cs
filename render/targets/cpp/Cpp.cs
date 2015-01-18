@@ -95,9 +95,9 @@ namespace metahub.render.targets.cpp
             List<Portal> scalars = new List<Portal>();
             foreach (var portal in dungeon.core_portals.Values)
             {
-                if (portal.type == Kind.reference && !portal.is_value)
+                if (portal.type == Kind.reference && !portal.is_list && !portal.is_value)
                     references.Add(portal);
-                else if (portal.type != Kind.list)
+                else if (!portal.is_list)
                     scalars.Add(portal);
             }
             var block = references.Select(portal => new Assignment(
@@ -148,7 +148,7 @@ namespace metahub.render.targets.cpp
             var rail = dungeon.rail;
             scopes = new List<Dictionary<string, Profession>>();
             List<External_Header> headers = new List<External_Header> { new External_Header("stdafx") }.Concat(
-                new List<External_Header>{ new External_Header(dungeon.source_file) }.Concat(
+                new List<External_Header> { new External_Header(dungeon.source_file) }.Concat(
                 dungeon.dependencies.Values.Where(d => d.dungeon != dungeon.parent && d.dungeon.source_file != null)
                 .Select(d => new External_Header(d.dungeon.source_file)))
                 .OrderBy(h => h.name)
@@ -292,7 +292,7 @@ namespace metahub.render.targets.cpp
             foreach (var d in dungeon.dependencies.Values)
             {
                 var dependency = d.dungeon;
-                if (d.allow_partial && dependency.region == dungeon.region)
+                if (d.allow_partial && dependency.realm == dungeon.realm)
                 {
                     result += line("class " + get_rail_type_string(dependency) + ";");
                     lines = true;
@@ -495,7 +495,7 @@ namespace metahub.render.targets.cpp
         {
             var name = dungeon.name;
             if (dungeon.realm.external_name != null)
-                name = dungeon.region.external_name + "::" + name;
+                name = dungeon.realm.external_name + "::" + name;
             else if (dungeon.realm != current_realm)
                 name = dungeon.realm.name + "::" + name;
 
@@ -548,7 +548,7 @@ namespace metahub.render.targets.cpp
                 ? "void"
                 : get_rail_type_string(signature.dungeon);
 
-            if (signature.type == Kind.reference)
+            if (!signature.is_list)
             {
                 return
                 signature.dungeon.is_value ? is_parameter ? name + "&" : name :
@@ -579,7 +579,7 @@ namespace metahub.render.targets.cpp
                     : types[signature.type.ToString().ToLower()];
             }
 
-            var name = signature.dungeon.is_abstract
+            var name = signature.dungeon.is_abstract && !signature.dungeon.is_value
                 ? "void"
                 : get_rail_type_string(signature.dungeon);
 
@@ -872,7 +872,7 @@ namespace metahub.render.targets.cpp
             if (signature.dungeon == null)
                 return false;
 
-            return !signature.dungeon.is_value && signature.type != Kind.list;
+            return !signature.dungeon.is_value && !signature.is_list;
         }
 
         string get_connector(Expression expression)
@@ -880,13 +880,18 @@ namespace metahub.render.targets.cpp
             if (expression.type == Expression_Type.parent_class)
                 return "::";
 
-            if (expression.type == Expression_Type.portal)
-                return is_pointer(expression.get_profession()) ? "->" : ".";
-
+            if (expression.type == Expression_Type.portal && ((Portal_Expression) expression).index != null)
+                return "->";
+            
             var profession = expression.get_profession();
             return profession == null
                 ? is_pointer(expression.get_signature()) ? "->" : "."
-                : is_pointer(expression.get_profession()) ? "->" : ".";
+                : is_pointer(profession) ? "->" : ".";
+        }
+
+        string get_connector(Profession profession)
+        {
+            return is_pointer(profession) ? "->" : ".";
         }
 
         //Signature find_variable (string name) {
@@ -914,26 +919,44 @@ namespace metahub.render.targets.cpp
                 : "";
 
             string portal_name;
-            Kind portal_type;
+            bool is_list;
+            Dungeon other_dungeon;
 
             if (expression.portal != null)
             {
                 portal_name = expression.portal.name;
-                portal_type = expression.portal.type;
+                is_list = expression.portal.is_list;
+                other_dungeon = expression.portal.dungeon;
             }
             else
             {
                 portal_name = expression.tie.name;
-                portal_type = expression.tie.type;
+                is_list = expression.tie.type == Kind.list;
+                other_dungeon = overlord.get_dungeon(expression.tie.rail);
             }
 
-            var name = portal_type == Kind.list
+            var name = is_list
                 ? "add"
                 : expression.function_type.ToString();
 
-            return ref_full + name + "_" + portal_name + "("
-                + expression.args.Select(e => render_expression(e)).join(", ")
-                + ")";
+            var method_name = name + "_" + portal_name;
+            var imp = other_dungeon.summon_imp(method_name);
+            var args = expression.args.Select(e => render_expression(e)).join(", ");
+            if (imp != null)
+            {
+                return ref_full + method_name + "(" + args + ")";
+            }
+
+            if (expression.portal == null)
+            {
+                return expression.tie.type == Kind.list
+                ? ref_full + portal_name + get_connector(new Profession(expression.tie.get_signature(), overlord)) + "push_back(" + args + ")"
+                : ref_full + portal_name + " = " + args;
+            }
+
+            return expression.portal.is_list
+                ? ref_full + portal_name + get_connector(expression.portal.profession) + "push_back(" + args + ")"
+                : ref_full + portal_name + " = " + args;
         }
 
         string render_function_call(Function_Call expression, Expression parent)

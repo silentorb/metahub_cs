@@ -9,22 +9,38 @@ namespace metahub.imperative.schema
 {
     public class Portal
     {
-        public Kind type;
         public Tie tie;
         public Dungeon dungeon;
         public Rail rail;
         public Rail other_rail;
-        public Dungeon other_dungeon;
         public string name;
         public bool is_value = false;
         public Portal other_portal;
         public Portal parent;
+        public Profession profession;
+
+        public Kind type
+        {
+            get { return profession.type; }
+            set { profession.type = value; }
+        }
+
+        public Dungeon other_dungeon
+        {
+            get { return profession.dungeon; }
+            set { profession.dungeon = value; }
+        }
+
+        public bool is_list
+        {
+            get { return profession.is_list; }
+        }
 
         public Portal(Tie tie, Dungeon dungeon)
         {
             this.tie = tie;
             this.dungeon = dungeon;
-            type = tie.type;
+            profession = new Profession(tie.type);
             rail = tie.rail;
             other_rail = tie.other_rail;
             name = tie.name;
@@ -38,21 +54,26 @@ namespace metahub.imperative.schema
 
             this.name = name;
             this.dungeon = dungeon;
-            this.type = type;
-            this.other_dungeon = other_dungeon;
+            profession = new Profession(type, other_dungeon);
+        }
+
+        public Portal(string name, Profession profession, Dungeon dungeon = null)
+        {
+            this.name = name;
+            this.profession = profession;
+            this.dungeon = dungeon;
         }
 
         public Portal(Portal original, Dungeon new_dungeon)
         {
             tie = original.tie;
             dungeon = new_dungeon;
-            type = original.type;
+            profession = new Profession(original.type, original.other_dungeon);
             rail = original.rail;
             other_rail = original.other_rail;
             name = original.name;
             is_value = original.is_value;
             other_portal = original.other_portal;
-            other_dungeon = original.other_dungeon;
             parent = original;
         }
 
@@ -77,7 +98,7 @@ namespace metahub.imperative.schema
                 block.add("post", new Property_Function_Call(Property_Function_Type.set, tie, new List<Expression>
                     {
                         new Tie_Expression(tie)
-                    } ));
+                    }));
             }
         }
 
@@ -97,10 +118,7 @@ namespace metahub.imperative.schema
 
         public Profession get_profession()
         {
-            if (type == Kind.reference && other_dungeon == null)
-                throw new Exception("Invalid portal.");
-
-            return new Profession(type, other_dungeon);
+            return profession;
         }
 
         public object get_default_value()

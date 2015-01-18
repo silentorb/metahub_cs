@@ -37,13 +37,19 @@ namespace metahub.imperative.summoner
             var statements = source.patterns[6].patterns;
             foreach (var statement in statements)
             {
-                process_class(statement, context);
+                process_dungeon(statement, context);
             }
         }
 
-        public Dungeon process_class(Pattern_Source source, Context context)
+        public Dungeon process_dungeon(Pattern_Source source, Context context)
         {
             var name = source.patterns[2].text;
+            var parent_dungeons = source.patterns[4].patterns;
+
+            var replacement_name = context.get_string_pattern(name);
+            if (replacement_name != null)
+                name = replacement_name;
+
             var statements = source.patterns[7].patterns;
             Dungeon dungeon = null;
 
@@ -54,51 +60,72 @@ namespace metahub.imperative.summoner
             else
             {
                 dungeon = context.realm.create_dungeon(name);
+                if (parent_dungeons.Length > 0)
+                    dungeon.parent = overlord.get_dungeon(parent_dungeons[0].patterns[0].text);
+
+                dungeon.generate_code1();
             }
 
-            var dungeon_context = new Context(context.realm, dungeon);
+            var dungeon_context = new Context(context) { dungeon = dungeon };
             foreach (var statement in statements)
             {
-                process_function_definition(statement, dungeon_context);
+                process_dungeon_statement(statement, dungeon_context);
             }
 
             return dungeon;
         }
 
+        void process_dungeon_statement(Pattern_Source source, Context context)
+        {
+            switch (source.type)
+            {
+                case "abstract_function":
+                    process_abstract_function(source, context);
+                    break;
+
+                case "function_definition":
+                    process_function_definition(source, context);
+                    break;
+
+                case "property_declaration":
+                    process_property_declaration(source, context);
+                    break;
+            }
+        }
+
+        void process_abstract_function(Pattern_Source source, Context context)
+        {
+            var imp = context.dungeon.spawn_imp(
+                source.patterns[2].text,
+                source.patterns[5].patterns.Select(p => process_parameter(p, context)).ToList()
+            );
+
+            imp.is_abstract = true;
+
+            var return_type = source.patterns[8];
+            if (return_type.patterns.Length > 0)
+                imp.return_type = parse_type(return_type.patterns[0], context);
+        }
+
         void process_function_definition(Pattern_Source source, Context context)
         {
-            if (source.type == "abstract_function")
-            {
-                var imp = context.dungeon.spawn_imp(
-                    source.patterns[2].text,
-                    source.patterns[5].patterns.Select(p => process_parameter(p, context)).ToList()
-                );
+            var imp = context.dungeon.spawn_imp(
+                         source.patterns[1].text,
+                         source.patterns[4].patterns.Select(p => process_parameter(p, context)).ToList()
+                     );
+            var new_context = new Context(context) { scope = imp.scope };
 
-                imp.is_abstract = true;
+            var return_type = source.patterns[7];
+            if (return_type.patterns.Length > 0)
+                imp.return_type = parse_type(return_type.patterns[0], context);
 
-                var return_type = source.patterns[8];
-                if (return_type.patterns.Length > 0)
-                    imp.return_type = parse_type(return_type.patterns[0], context);
-            }
-            else
-            {
-                var imp = context.dungeon.spawn_imp(
-                    source.patterns[1].text,
-                    source.patterns[4].patterns.Select(p => process_parameter(p, context)).ToList()
-                );
-                var new_context = new Context(context) { scope = imp.scope };
+            imp.expressions = process_block(source.patterns[9], new_context);
+        }
 
-                //var attributes = source.patterns[0];
-                //if (source.type == "abstract_function")
-                //    imp.is_abstract = true;
-
-                var return_type = source.patterns[7];
-                if (return_type.patterns.Length > 0)
-                    imp.return_type = parse_type(return_type.patterns[0], context);
-
-                imp.expressions = process_block(source.patterns[9], new_context);
-            }
-
+        void process_property_declaration(Pattern_Source source, Context context)
+        {
+            var type_info = parse_type2(source.patterns[2], context);
+            context.dungeon.add_portal(new Portal(source.patterns[0].text, type_info));
         }
 
         List<Expression> process_block(Pattern_Source source, Context context)
@@ -181,7 +208,7 @@ namespace metahub.imperative.summoner
                     ? process_expression(pattern.patterns[0], context)
                     : null;
 
-                Tie tie = null;
+                Portal portal = null;
                 Expression next;
                 var symbol = context.scope.find_or_null(token);
                 if (symbol != null)
@@ -195,28 +222,38 @@ namespace metahub.imperative.summoner
                 else
                 {
                     if (dungeon != null)
-                        tie = dungeon.rail.get_tie_or_null(token);
+                        portal = dungeon.get_portal_or_null(token);
 
-                    if (tie != null)
+                    if (portal != null)
                     {
-                        next = new Tie_Expression(tie) { index = array_access };
-                        dungeon = tie.other_rail != null
-                            ? overlord.get_dungeon(tie.other_rail)
-                            : null;
+                        next = new Portal_Expression(portal) { index = array_access };
+                        dungeon = portal.other_dungeon;
                     }
                     else
                     {
+                        Function_Call func = null;
                         var imp = dungeon != null
-                            ? dungeon.summon_imp(token)
-                            : null;
+                                      ? dungeon.summon_imp(token)
+                                      : null;
 
-                        var func = imp != null
-                            ? new Function_Call(imp)
-                            : new Function_Call(token, null, null, true);
+                        if (imp != null)
+                        {
+                            func = new Function_Call(imp);
+                        }
+                        else if (Imp.platform_specific_functions.Contains(token))
+                        {
+                            func = new Function_Call(token, null, null, true);
+                        }
+                        else
+                        {
+                            throw new Exception("Invalid path token: " + token);
+                        }
 
                         func.reference = result;
                         if (source.patterns[1].patterns.Length > 0)
-                            func.args = source.patterns[1].patterns[0].patterns.Select(p => process_expression(p, context)).ToArray();
+                            func.args =
+                                source.patterns[1].patterns[0].patterns.Select(p => process_expression(p, context))
+                                                              .ToArray();
 
                         return func;
                     }
@@ -240,6 +277,7 @@ namespace metahub.imperative.summoner
 
         Signature parse_type(Pattern_Source source, Context context)
         {
+            source = source.patterns[2];
             var text = source.patterns.Last().text;
 
             if (source.patterns.Length == 1)
@@ -271,6 +309,61 @@ namespace metahub.imperative.summoner
 
             if (realm.dungeons.ContainsKey(text))
                 return new Signature(Kind.reference, realm.dungeons[text].rail);
+
+            var dungeon = overlord.get_dungeon(text);
+            if (dungeon != null)
+                return new Signature(Kind.reference, dungeon.rail);
+
+            throw new Exception("Invalid type: " + text + ".");
+        }
+
+        Profession parse_type2(Pattern_Source source, Context context)
+        {
+            var path = source.patterns[2].patterns;
+            var text = path.Last().text;
+            var is_list = source.patterns.Length > 1 && source.patterns[3].patterns.Length > 0;
+
+            if (path.Length == 1)
+            {
+                switch (text)
+                {
+                    case "bool":
+                        return new Profession(Kind.Bool) { is_list = is_list };
+                    case "string":
+                        return new Profession(Kind.String) { is_list = is_list };
+                    case "float":
+                        return new Profession(Kind.Float) { is_list = is_list };
+                    case "int":
+                        return new Profession(Kind.Int) { is_list = is_list };
+                }
+
+                var profession = context.get_profession_pattern(text);
+                if (profession != null)
+                {
+                    var result = profession.clone();
+                    result.is_list = is_list;
+                    return result;
+                }
+            }
+            
+            Realm realm = null;
+            for (var i = 0; i < path.Length - 1; ++i)
+            {
+                if (realm == null)
+                    realm = overlord.realms[path[i].text];
+                else
+                    throw new Exception("embedded namespaces are not supported yet.");
+            }
+
+            if (realm == null)
+                realm = context.realm;
+
+            if (realm.dungeons.ContainsKey(text))
+                return new Profession(Kind.reference, realm.dungeons[text]) { is_list = is_list };
+
+            var dungeon = overlord.get_dungeon(text);
+            if (dungeon != null)
+                return new Profession(Kind.reference, dungeon);
 
             throw new Exception("Invalid type: " + text + ".");
         }

@@ -28,7 +28,7 @@ namespace metahub.imperative.code
                 var parameters = Regex.Split(capture.Groups[2].Value, @"\s*,\s*");
                 var block = capture.Groups[3].Value;
                 var pre_summoner = overlord.pre_summon(block, Pre_Summoner.Mode.snippet);
-                templates[name] = new Template(name, parameters, pre_summoner.output);
+                templates[name] = new Template(name, parameters, pre_summoner.output.patterns[1]);
             }
         }
 

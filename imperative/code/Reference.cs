@@ -139,12 +139,12 @@ namespace metahub.imperative.code
 		    )};
         }
 
-        public static List<Expression> cross(Constraint constraint, Tie tie, Overlord imp, Scope scope)
+        public static List<Expression> cross(Constraint constraint, Tie tie, Overlord overlord, Scope scope)
         {
             //var dungeon = imp.get_dungeon(tie.rail);
             //dungeon.concat_block(tie.tie_name + "_set_pre", Reference.constraint(constraint, this));
             var property_reference = (metahub.logic.types.Property_Reference)constraint.caller.First();
-            var dungeon = imp.get_dungeon(tie.rail);
+            var dungeon = overlord.get_dungeon(tie.rail);
 
             var iterator_scope = new Scope(scope);
             var it = iterator_scope.create_symbol("item", new Signature(Kind.reference, property_reference.tie.other_rail));
@@ -155,35 +155,37 @@ namespace metahub.imperative.code
             var function_scope = new Scope(class_block.scope);
             var value = function_scope.create_symbol("value", tie.get_signature());
             var function_name = "check_" + property_reference.tie.tie_name + "_" + property_reference.tie.other_tie.tie_name;
-            class_block.add(new Function_Definition(function_name, dungeon, new List<Parameter>{
-				new Parameter(value)
-			}, new List<Expression>
-			    {
-			        Imp.If(new Operation("==", new List<Expression>
-			            {
-			                new Tie_Expression(property_reference.tie.other_tie),
-                            new Null_Value()
-			            }), new List<Expression>{ 
-                            new Statement("return", Imp.True())
-                        }),
-                    new Iterator(it, 
-                        new Tie_Expression(property_reference.tie.other_tie, 
-                            new Tie_Expression(property_reference.tie)), 
-                        new List<Expression>
-                        {
-                            Imp.If(new Operation("==", new List<Expression>
+            var imp = dungeon.spawn_imp(function_name, new List<Parameter>
+                {
+                    new Parameter(value)
+                }, new List<Expression>
+                    {
+                        Imp.If(new Operation("==", new List<Expression>
+                            {
+                                new Tie_Expression(property_reference.tie.other_tie),
+                                new Null_Value()
+                            }), new List<Expression>
                                 {
-                                    new Variable(it), new Self(dungeon)
-                                }), new List<Expression>
-                                    {
-                                        new Statement("continue")
-                                    })
-                                    
-                        }.Concat(dist(constraint, tie, imp, iterator_scope, it, value))
-                        .ToList()),
-                    new Statement("return", new Literal(true))
-			    }, new Signature(Kind.Bool))
-            );
+                                    new Statement("return", Imp.True())
+                                }),
+                        new Iterator(it,
+                                     new Tie_Expression(property_reference.tie.other_tie,
+                                                        new Tie_Expression(property_reference.tie)),
+                                     new List<Expression>
+                                         {
+                                             Imp.If(new Operation("==", new List<Expression>
+                                                 {
+                                                     new Variable(it),
+                                                     new Self(dungeon)
+                                                 }), new List<Expression>
+                                                     {
+                                                         new Statement("continue")
+                                                     })
+
+                                         }.Concat(dist(constraint, tie, overlord, iterator_scope, it, value))
+                                          .ToList()),
+                        new Statement("return", new Literal(true))
+                    }, new Signature(Kind.Bool));
 
             var setter_block = dungeon.get_block("set_" + property_reference.tie.other_tie.tie_name);
             setter_block.add("post", new Function_Call(function_name, null, new Expression[]
@@ -243,7 +245,7 @@ namespace metahub.imperative.code
                             //    { Imp.operation("+", new Variable(value), new Variable(offset)) }),
 
                             new Declare_Variable(conflict, new Instantiate(conflict_dungeon)),
-                            new Variable(conflict, new Function_Call("initialize")),
+                            //new Variable(conflict, new Function_Call("initialize")),
                             new Variable(conflict,Imp.setter(conflict_nodes, new Self(dungeon), null, null)),
                             new Variable(conflict,Imp.setter(conflict_nodes, new Variable(it), null, null)),
                             new Tie_Expression(mold_tie,
@@ -259,24 +261,36 @@ namespace metahub.imperative.code
         static Dungeon create_conflict_class(Constraint constraint, Rail rail, Overlord overlord)
         {
             var previous = overlord.get_dungeon(rail);
+
             var context = new Summoner.Context(previous.realm);
-            //var result = overlord.summon_dungeon();
-            return null;
+            context.add_pattern("Node_Type", new Profession(Kind.reference, previous));
+            context.add_pattern("Class_Name", "Distance_Conflict");
+            context.add_pattern("Class_Name", "Distance_Conflict");
+
+            var result = overlord.summon_dungeon(Piece_Maker.templates["Distance_Conflict"], context);
+            var portal = result.all_portals["nodes"];
+            var scope = new Scope();
+            scope.add_map("a", () => new Portal_Expression(portal) { index = new Literal((int)0) });
+            scope.add_map("b", () => new Portal_Expression(portal) { index = new Literal((int)1) });
+            var imp = result.summon_imp("is_resolved");
+            imp.expressions.Add(new Statement("return",
+                new Operation(constraint.op, new List<Expression>{ 
+                    new Portal_Expression(portal, new Tie_Expression(constraint.endpoints.Last(),
+                            new Function_Call("dist", null,
+                                new List<Expression> { new Portal_Expression(portal, new Tie_Expression(constraint.endpoints.Last()
+                                    )) { index = new Literal((int)1) } }, true)))
+                                { index = new Literal((int)0) },
+                    overlord.translate(constraint.second.First(), scope)
+                })
+            ));
+            return result;
             //var base_class = overlord.realms["piecemaker"[.dungeons["Conflict"];
             //var result = new Dungeon("Distance_Conflict", overlord, dungeon.realm, base_class);
             //var portal = result.add_portal(new Portal("nodes", Kind.list, result, dungeon));
             //result.generate_code1();
 
             //var scope = new Scope();
-            //scope.add_map("a", () => new Portal_Expression(portal) { index = new Literal((int)0) });
-            //scope.add_map("b", () => new Portal_Expression(portal) { index = new Literal((int)1) });
-            //var imp = base_class.summon_imp("is_resolved").spawn_child(result);
-            //imp.expressions.Add(new Statement("return", 
-            //    new Operation(constraint.op, new List<Expression>{ 
-            //        overlord.translate(constraint.first.First(), scope),
-            //        overlord.translate(constraint.second.First(), scope)
-            //    })
-            //));
+
 
             //return result;
         }

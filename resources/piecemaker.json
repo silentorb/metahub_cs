@@ -48,22 +48,7 @@
       "properties": {
         "position": {
           "type": "reference",
-          "trellis": "Vector3"
-        }
-      }
-    },
-    "Vector3": {
-      "is_abstract": true,
-      "is_value": true,
-      "properties": {
-        "x": {
-          "type": "float"
-        },
-        "y": {
-          "type": "float"
-        },
-        "z": {
-          "type": "float"
+          "trellis": "ogre.Vector3"
         }
       }
     }

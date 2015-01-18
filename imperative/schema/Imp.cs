@@ -10,6 +10,18 @@ namespace metahub.imperative.schema
 {
     public class Imp
     {
+        public static string[] platform_specific_functions = new string[]
+            {
+                "count",
+                "add",
+                "contains",
+                "dist",
+                "last",
+                "pop",
+                "remove",
+                "rand"
+            };
+
         public string name;
         public Dungeon dungeon;
         public Portal portal;
@@ -49,7 +61,7 @@ namespace metahub.imperative.schema
 
         public Imp spawn_child(Dungeon new_dungeon)
         {
-            var child = new_dungeon.spawn_imp(name, parameters, expressions, return_type, portal);
+            var child = new_dungeon.spawn_imp(name, parameters, null, return_type, portal);
             child.parent = this;
             children.Add(child);
             return child;

@@ -1,6 +1,6 @@
 ﻿start = trim @(namespace, newlines, 0, 0) final_trim
 
-snippet = trim snippet_option
+snippet = trim snippet_option final_trim
 
 snippet_option = class | abstract_function | function_definition 
 
@@ -70,7 +70,9 @@ abstract_function = "abstract" ws id trim "(" @(declare_symbol, comma, 0, 0) ")"
 
 function_attribute =  "private" ws
 
-class_statements = abstract_function | function_definition
+class_statements = abstract_function | function_definition | property_declaration
+
+property_declaration = id trim type_info
 
 class = "class" ws id trim @(optional_parent_classes, none, 0, 1) "{" trim @(class_statements, newlines, 0, 0) trim "}"
 

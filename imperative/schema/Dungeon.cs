@@ -21,11 +21,10 @@ namespace metahub.imperative.schema
         public Rail rail;
         public Dungeon parent;
         public List<Expression> code;
-        public Region region;
         public Trellis trellis;
         Dictionary<string, string[]> inserts;
         Dictionary<string, Block> blocks = new Dictionary<string, Block>();
-        public List<Function_Definition> functions = new List<Function_Definition>();
+        //public List<Function_Definition> functions = new List<Function_Definition>();
         public Overlord overlord;
         public List<Imp> imps = new List<Imp>();
         public Dictionary<string, Portal> all_portals = new Dictionary<string, Portal>();
@@ -67,7 +66,6 @@ namespace metahub.imperative.schema
             this.realm = realm;
 
             name = rail.name;
-            region = rail.region;
             trellis = rail.trellis;
             is_external = rail.is_external;
             is_abstract = rail.trellis.is_abstract;
@@ -76,7 +74,7 @@ namespace metahub.imperative.schema
             stubs = rail.stubs;
             hooks = rail.hooks;
 
-            map_additional();
+            map_additional(rail.region);
 
             foreach (var tie in rail.all_ties.Values)
             {
@@ -125,7 +123,7 @@ namespace metahub.imperative.schema
             return add_dependency(dungeon);
         }
 
-        void map_additional()
+        void map_additional(Region region)
         {
             if (!region.trellis_additional.ContainsKey(trellis.name))
                 return;
@@ -170,8 +168,8 @@ namespace metahub.imperative.schema
                 else
                 {
                     var definition = generate_setter(tie, statements.scope);
-                    if (definition != null)
-                        statements.add(definition);
+                    //if (definition != null)
+                    //    statements.add(definition);
                 }
             }
 
@@ -181,10 +179,29 @@ namespace metahub.imperative.schema
                 {
                     var lines = inserts[path];
                     var tokens = path.Split('.');
+                    var block_name = tokens[0];
+                    if (!has_block(block_name))
+                    {
+                        var imp = summon_imp(block_name, true);
+                        var new_imp = imp.spawn_child(this);
+                        var new_block = create_block(block_name, new_imp.scope, new_imp.expressions);
+                        new_block.divide("pre").add(new Parent_Class(new Function_Call(imp.name, null, new List<Expression>
+                            {
+                               new Variable(new_imp.parameters[0].symbol)
+                            })));
+                        new_block.divide("post");
+
+                    }
+
+                    var block = get_block(block_name);
                     if (tokens.Length > 1)
-                        get_block(tokens[0]).add_many(tokens[1], lines.Select(s => new Insert(s)));
+                    {
+                        block.add_many(tokens[1], lines.Select(s => new Insert(s)));
+                    }
                     else
-                        get_block(tokens[0]).add_many(lines.Select(s => new Insert(s)));
+                    {
+                        block.add_many(lines.Select(s => new Insert(s)));
+                    }
                 }
             }
 
@@ -216,9 +233,18 @@ namespace metahub.imperative.schema
 
         public Portal add_portal(Portal portal)
         {
+            portal.dungeon = this;
             all_portals[portal.name] = portal;
             core_portals[portal.name] = portal;
             return portal;
+        }
+
+        public Portal get_portal_or_null(string portal_name)
+        {
+            if (all_portals.ContainsKey(portal_name))
+                return all_portals[portal_name];
+
+            return null;
         }
 
         //public void add_to_block(string path, Expression code)
@@ -259,9 +285,8 @@ namespace metahub.imperative.schema
                 {
                     new Parameter(value)
                 };
-
-            Function_Definition result = new Function_Definition("set_" + tie.tie_name, this,
-                    parameters, new List<Expression>());
+            var imp = spawn_imp("set_" + tie.tie_name, parameters);
+            Function_Definition result = new Function_Definition(imp);
 
             var block = create_block("set_" + tie.tie_name, new Scope(function_scope), result.expressions);
 
@@ -539,14 +564,8 @@ namespace metahub.imperative.schema
 
         public Function_Definition add_function(string function_name, List<Parameter> parameters, Signature return_type = null)
         {
-            var definition = new Function_Definition(
-                function_name, this, parameters, new List<Expression>(), return_type);
-
-            var block = get_block("class_definition");
-            block.add(definition);
-            definition.scope = new Scope(block.scope);
-
-            return definition;
+            var imp = spawn_imp(function_name, parameters, new List<Expression>(), return_type);
+            return new Function_Definition(imp);
         }
 
         public Imp spawn_imp(string imp_name, List<Parameter> parameters = null, List<Expression> expressions = null, Signature return_type = null, Portal portal = null)
@@ -568,9 +587,13 @@ namespace metahub.imperative.schema
             return imp;
         }
 
-        public Imp summon_imp(string imp_name)
+        public Imp summon_imp(string imp_name, bool check_ancestors = false)
         {
-            return imps.FirstOrDefault(i => i.name == imp_name);
+            var result = imps.FirstOrDefault(i => i.name == imp_name);
+            if (result != null || !check_ancestors || parent == null)
+                return result;
+
+            return parent.summon_imp(imp_name, true);
         }
     }
 }

@@ -24,9 +24,9 @@ namespace metahub.imperative.schema
 
         public Dungeon create_dungeon(string name)
         {
-            var dungeon = new Dungeon(null, overlord, this);
-            dungeons[name] = dungeon;
-            overlord.dungeons.Add(dungeon);
+            var dungeon = new Dungeon(name, overlord, this);
+            //dungeons[name] = dungeon;
+            //overlord.dungeons.Add(dungeon);
             
             return dungeon;
         }

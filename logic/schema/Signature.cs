@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using System.Linq;
 using metahub.schema;
 
 namespace metahub.logic.schema
@@ -12,6 +14,7 @@ namespace metahub.logic.schema
         public Rail rail;
         public bool is_value;
         public int is_numeric;
+        public Signature[] parameters;
 
         public Signature()
         {
@@ -22,6 +25,23 @@ namespace metahub.logic.schema
         {
             this.type = type;
             this.rail = rail;
+        }
+
+        public Signature(Kind type, Signature[] parameters)
+        {
+            this.type = type;
+            this.parameters = parameters;
+        }
+
+        public Signature clone()
+        {
+            var result = new Signature(type, rail);
+            if (parameters != null)
+            {
+                result.parameters = parameters.Select(p => p.clone()).ToArray();
+            }
+
+            return result;
         }
     }
 }

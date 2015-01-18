@@ -20,7 +20,7 @@ namespace metahub.logic
             if (tie != null)
                 tie.constraints.Add(constraint);
 
-            if (!scope.is_map)
+            //if (!scope.is_map)
                 constraints.Add(constraint);
 
             return constraint;

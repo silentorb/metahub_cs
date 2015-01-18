@@ -118,14 +118,18 @@ namespace metahub.imperative.code
             //}
 
             var other_path = expression;
-            if (other_path.Length > 0 && other_path[other_path.Length - 1].get_signature().type == Kind.list)
+            if (other_path.Length > 0)
             {
-                map(constraint, expression, imp);
+                var last = other_path.Last();
+                if (last.type == Node_Type.function_call && ((metahub.logic.types.Function_Call) last).name == "map")
+                {
+                    map(constraint, expression, imp);
+                    return;
+                }
             }
-            else
-            {
-                size(constraint, expression, imp);
-            }
+
+            size(constraint, expression, imp);
+
         }
 
         public static void map(Constraint constraint, Node[] expression, Overlord imp)
@@ -135,7 +139,7 @@ namespace metahub.imperative.code
             var path = constraint.second;
 
             var a = constraint.first.Select(i => ((Property_Reference)i).tie).ToList();
-            var b = path.Select(i => ((Property_Reference)i).tie).ToList();
+            var b = path.Where(t=>t.type == Node_Type.property).Select(i => ((Property_Reference)i).tie).ToList();
 
             link(a, b, Parse.reverse_path(b.Take(a.Count - 1)), constraint.lambda, imp);
             link(b, a, a.Take(a.Count - 1), constraint.lambda, imp);
@@ -226,7 +230,7 @@ namespace metahub.imperative.code
                     var it = iterator_scope.create_symbol("item", new Signature(Kind.reference, portal.other_rail));
 
                     setter_block.add("post", new Iterator(it,
-                        new Portal_Expression(portal), 
+                        new Portal_Expression(portal),
                         new List<Expression>
                         {
                               Imp.setter(first_tie, new Variable(value_symbol), new Variable(it) , null)
@@ -274,7 +278,7 @@ namespace metahub.imperative.code
             var new_scope = new Scope(block.scope);
             var child = new_scope.create_symbol("child", new Signature(Kind.reference, rail));
             var logic_scope = new Scope();
-            var imp_ref = (Tie_Expression)imp.convert_path(Overlord.simplify_path(constraint.first), logic_scope);
+            var imp_ref = imp.convert_path(Overlord.simplify_path(constraint.first), logic_scope);
             imp_ref.child = new Function_Call("count", null, null, true);
             Flow_Control flow_control = new Flow_Control(Flow_Control_Type.While, new Operation("<",
             new List<Expression>{

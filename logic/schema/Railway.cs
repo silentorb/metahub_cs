@@ -129,16 +129,44 @@ public class Railway {
 	void initialize_root_functions () {
 		root_region.add_functions(new List<Function_Info> {
 		
-			new Function_Info("count", new List<Function_Version> {
-				new Function_Version(new Signature(Kind.list), new Signature(Kind.Int))
+			new Function_Info("count", new List<Signature> {
+				new Signature(Kind.Int, new [] { new Signature(Kind.list)})
 			}),
 			
-			new Function_Info("cross", new List<Function_Version> {
-				new Function_Version(new Signature(Kind.list), new Signature(Kind.none))
+			new Function_Info("cross", new List<Signature> {
+                new Signature(Kind.none, new []
+                    {
+                        new Signature(Kind.list),
+                        new Signature(Kind.none, new []
+                            {
+                                new Signature(Kind.reference),
+                                new Signature(Kind.reference), 
+                            }), 
+                    })
 			}),
 			
-			new Function_Info("dist", new List<Function_Version> {
-				new Function_Version(new Signature(Kind.list), new Signature(Kind.none))
+			new Function_Info("dist", new List<Signature> {
+                new Signature(Kind.Float, new []
+                    {
+                        new Signature(Kind.reference),
+                        new Signature(Kind.Float, new []
+                            {
+                                new Signature(Kind.reference),
+                                new Signature(Kind.reference), 
+                            }), 
+                    })
+			}),
+
+            new Function_Info("map", new List<Signature> {
+                new Signature(Kind.none, new []
+                    {
+                        new Signature(Kind.list),
+                        new Signature(Kind.none, new []
+                            {
+                                new Signature(Kind.reference),
+                                new Signature(Kind.reference), 
+                            }), 
+                    })
 			}),
 		});
 	}

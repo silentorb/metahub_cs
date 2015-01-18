@@ -25,11 +25,11 @@ reference = @(complex_token, path_function_separator, 1, 0)
 statement =
 	  create_group
 	| group_scope
-    | create_symbol
+  | create_symbol
 	| if
-    | constraint
+  | constraint
 	| set_weight
-    | new_scope
+  | new_scope
 	| create_node
 	| expression
 

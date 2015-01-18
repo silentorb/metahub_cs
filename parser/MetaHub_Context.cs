@@ -54,8 +54,19 @@ namespace metahub.parser
                     data = data.patterns[2];
                     break;
 
+                case "arguments":
+                    data = data.patterns[3];
+                    break;
+
                 case "expression":
                     expression(data, (Repetition_Match)match);
+                    break;
+
+                case "complex_token":
+                    if (data.patterns[1].patterns.Length == 0)
+                    {
+                        return data.patterns[0];
+                    }
                     break;
             }
 

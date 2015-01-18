@@ -14,6 +14,7 @@ public class Scope {
     public bool is_map = false;
     public Node[] caller;
     public Constraint_Group group;
+    public Signature[] parameters;
 
 	public Scope(Scope parent = null) {
 		this.parent = parent;

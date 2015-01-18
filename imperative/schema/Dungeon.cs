@@ -167,7 +167,8 @@ namespace metahub.imperative.schema
                 }
                 else
                 {
-                    var definition = generate_setter(tie, statements.scope);
+                    if (tie.has_setter())
+                        generate_setter(tie, statements.scope);
                     //if (definition != null)
                     //    statements.add(definition);
                 }
@@ -183,12 +184,27 @@ namespace metahub.imperative.schema
                     if (!has_block(block_name))
                     {
                         var imp = summon_imp(block_name, true);
-                        var new_imp = imp.spawn_child(this);
-                        var new_block = create_block(block_name, new_imp.scope, new_imp.expressions);
-                        new_block.divide("pre").add(new Parent_Class(new Function_Call(imp.name, null, new List<Expression>
+                        Imp new_imp;
+                        Block new_block;
+
+                        if (imp == null)
+                        {
+                            var portal_name = block_name.Split('_').Last();
+                            var portal = all_portals[portal_name];
+                            generate_setter(portal.tie, statements.scope);
+                            new_imp = summon_imp(block_name, true);
+                            new_block = create_block(block_name, new_imp.scope, new_imp.expressions);
+                            new_block.divide("pre");
+                        }
+                        else
+                        {
+                            new_imp = imp.spawn_child(this);
+                            new_block = create_block(block_name, new_imp.scope, new_imp.expressions);
+                            new_block.divide("pre").add(new Parent_Class(new Function_Call(imp.name, null, new List<Expression>
                             {
                                new Variable(new_imp.parameters[0].symbol)
                             })));
+                        }
                         new_block.divide("post");
 
                     }
@@ -276,9 +292,6 @@ namespace metahub.imperative.schema
 
         private Function_Definition generate_setter(Tie tie, Scope scope)
         {
-            if (!tie.has_setter())
-                return null;
-
             var function_scope = new Scope(scope);
             var value = function_scope.create_symbol("value", tie.get_signature());
             var parameters = new List<Parameter>

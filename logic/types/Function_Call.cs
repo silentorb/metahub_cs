@@ -8,7 +8,7 @@ public class Function_Call : Node {
 	public Node input;
 	public Signature signature;
 
-	public Function_Call(string name, Node input, Railway railway)
+	public Function_Call(string name, Node input, Railway railway, Signature signature)
         : base(Node_Type.function_call)
     {
 		this.name = name;
@@ -16,8 +16,8 @@ public class Function_Call : Node {
 			throw new Exception("Function input cannot be null");
 			
 		this.input = input;
-		signature = railway.root_region.functions[name].get_signature(this);
-	}
+	    this.signature = signature;
+    }
 
 	override public Signature get_signature ()
 	{

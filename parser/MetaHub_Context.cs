@@ -49,9 +49,12 @@ namespace metahub.parser
                     break;
 
                 case "array":
-                case "parameters":
                 case "long_block":
                     data = data.patterns[2];
+                    break;
+
+                case "parameters":
+                    data = data.patterns[1];
                     break;
 
                 case "arguments":

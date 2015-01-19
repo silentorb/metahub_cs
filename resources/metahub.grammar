@@ -6,6 +6,7 @@ trim = /\s*/
 final_trim = /\s*$/
 newlines = /(\s*\n)+\s*/
 comma_or_newline = /\s*((\s*\n)+|,)\s*/
+colon_divider = trim ":" trim
 dot = "."
 path_function_separator = "." | "|"
 trim_same_line = /[ \t]*/
@@ -85,7 +86,7 @@ array = "[" trim @(expression, comma_or_newline, 0, 0) trim "]"
 
 lambda = parameters trim long_block
 
-parameters = "[" trim @(id, comma_or_newline, 0, 0) trim "]"
+parameters = trim @(id, colon_divider, 0, 0) trim "=>" trim
 
 arguments = trim_same_line "(" trim @(expression, comma_or_newline, 0, 0) trim ")"
 

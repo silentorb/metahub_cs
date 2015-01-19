@@ -64,7 +64,7 @@ namespace metahub
 
         string find_schema(string schema_name, string root)
         {
-            var path = Path.Combine(root, schema_name + ".json");
+            var path = Path.Combine(root, schema_name + ".json").Replace("\\", "/");
             if (File.Exists(path))
                 return File.ReadAllText(path);
 

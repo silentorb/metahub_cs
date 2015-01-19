@@ -4,7 +4,8 @@ using metahub.imperative;
 using metahub.imperative.schema;
 using metahub.logic.schema;
 using metahub.render.targets.cpp;
-using metahub.render.targets.haxe;
+using metahub.render.targets.js;
+using metahub.render.targets.php;
 
 namespace metahub.render
 {
@@ -22,8 +23,11 @@ public class Generator {
 			case "cpp":
 				return new Cpp(imp.railway, imp);
 
-			case "haxe":
-				return new Haxe_Target(imp.railway, imp);
+			case "js":
+				return new Js_Target(imp.railway, imp);
+
+            case "php":
+                return new Php_Target(imp.railway, imp);
 				
 			default:
 				throw new Exception("Unsupported target: " + target_name + ".");

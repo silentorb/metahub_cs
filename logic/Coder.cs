@@ -464,7 +464,7 @@ namespace metahub.logic
                     .Select(p => convert_expression(p, function_scope))
                     ).ToArray();
             }
-            return new Function_Call(name, new Array_Expression(args), railway, function_signature);
+            return new Function_Call(name, args, railway, function_signature);
             
         }
         static Signature get_path_signature(Node[] path)

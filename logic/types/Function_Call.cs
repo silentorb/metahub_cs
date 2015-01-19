@@ -5,10 +5,10 @@ namespace metahub.logic.types {
 
 public class Function_Call : Node {
 	public string name;
-	public Node input;
+	public Node[] input;
 	public Signature signature;
 
-	public Function_Call(string name, Node input, Railway railway, Signature signature)
+	public Function_Call(string name, Node[] input, Railway railway, Signature signature)
         : base(Node_Type.function_call)
     {
 		this.name = name;

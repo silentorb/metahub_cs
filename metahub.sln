@@ -5,10 +5,13 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "metahub", "metahub.csproj",
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug Vineyard|x86 = Debug Vineyard|x86
 		Debug|x86 = Debug|x86
 		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{2A71DED0-DCAD-476B-B7EB-F832C352BFB5}.Debug Vineyard|x86.ActiveCfg = Debug Vineyard|x86
+		{2A71DED0-DCAD-476B-B7EB-F832C352BFB5}.Debug Vineyard|x86.Build.0 = Debug Vineyard|x86
 		{2A71DED0-DCAD-476B-B7EB-F832C352BFB5}.Debug|x86.ActiveCfg = Debug|x86
 		{2A71DED0-DCAD-476B-B7EB-F832C352BFB5}.Debug|x86.Build.0 = Debug|x86
 		{2A71DED0-DCAD-476B-B7EB-F832C352BFB5}.Release|x86.ActiveCfg = Release|x86

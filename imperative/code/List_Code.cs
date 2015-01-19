@@ -141,7 +141,7 @@ namespace metahub.imperative.code
             var a = constraint.first.Where(i=>i.type == Node_Type.property).Select(i => ((Property_Reference)i).tie).ToList();
             var b = path.Where(t=>t.type == Node_Type.property).Select(i => ((Property_Reference)i).tie).ToList();
             var func = ((metahub.logic.types.Function_Call) constraint.second.Last());
-            var lambda = ((Array_Expression)func.input).children.Last() as Lambda;
+            var lambda = func.input.Last() as Lambda;
             link(a, b, Parse.reverse_path(b.Take(a.Count - 1)), lambda, imp);
             link(b, a, a.Take(a.Count - 1), lambda, imp);
         }

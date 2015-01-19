@@ -13,6 +13,11 @@ namespace metahub
     {
         public string[] code;
         public string[] schemas;
+        public Dictionary<string, Configuration_Target> targets;
+    }
+
+    class Configuration_Target
+    {
         public string output;
     }
 
@@ -43,7 +48,11 @@ namespace metahub
             }
 
             var match = (Match)result;
-            hub.generate(match.get_data(), "cpp", Path.Combine(root, config.output.Replace("/", "\\")));
+            foreach (var entry in config.targets)
+            {
+                hub.generate(match.get_data(), entry.Key, Path.Combine(root, entry.Value.output.Replace("/", "\\")));
+            }
+            
             Console.WriteLine("done.");
         }
 

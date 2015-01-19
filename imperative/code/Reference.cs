@@ -70,7 +70,7 @@ namespace metahub.imperative.code
             }
             else
             {
-                var reference = overlord.convert_path(constraint.first, null);
+                var reference = overlord.convert_path(constraint.first, scope);
 
                 //if (constraint.first.)
 
@@ -143,7 +143,7 @@ namespace metahub.imperative.code
         {
             //var dungeon = imp.get_dungeon(tie.rail);
             //dungeon.concat_block(tie.tie_name + "_set_pre", Reference.constraint(constraint, this));
-            var property_reference = (metahub.logic.types.Property_Reference)constraint.caller.First();
+            var property_reference = (metahub.logic.types.Property_Reference)constraint.constraint_scope.caller.First();
             var dungeon = overlord.get_dungeon(tie.rail);
 
             var iterator_scope = new Scope(scope);

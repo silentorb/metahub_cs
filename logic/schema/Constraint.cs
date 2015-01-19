@@ -21,17 +21,17 @@ namespace metahub.logic.schema
         public string op;
         public List<Constraint> other_constraints = new List<Constraint>();
         public Lambda lambda;
-        public Node[] caller;
+        //public Node[] caller;
         public List<Tie> endpoints;
         public Constraint_Group group;
+        public Constraint_Scope constraint_scope;
 
-        public Constraint(Node[] first, Node[] second, string op, Lambda lambda, Node[] caller)
+        public Constraint(Node[] first, Node[] second, string op, Lambda lambda)
         {
             this.op = op;
             this.first = first;
             this.second = second;
             this.lambda = lambda;
-            this.caller = caller;
             endpoints = get_endpoints(first);
 
             if (self_modifying_operators.Contains(op))

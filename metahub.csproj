@@ -62,6 +62,7 @@
     <Compile Include="imperative\types\Iterator.cs" />
     <Compile Include="logic\Logician.cs" />
     <Compile Include="logic\schema\Constraint_Group.cs" />
+    <Compile Include="logic\schema\Constraint_Scope.cs" />
     <Compile Include="logic\types\Constraint_Wrapper.cs" />
     <Compile Include="logic\types\Null_Node.cs" />
     <Compile Include="logic\types\Operation_Node.cs" />

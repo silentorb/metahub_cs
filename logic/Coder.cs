@@ -437,7 +437,7 @@ namespace metahub.logic
         Node process_function_call(Pattern_Source source, Node previous, Scope scope)
         {
             var name = source.text ?? source.patterns[0].text;
-            var function_scope = new Scope(scope);
+            var function_scope = new Scope(scope) { constraint_scope = new Constraint_Scope(name, new [] { previous })};
             var func = railway.root_region.functions[name];
             var previous_signature = previous.get_signature();
             var function_signature = func.get_signature(previous_signature).clone();

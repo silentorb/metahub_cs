@@ -381,7 +381,7 @@ namespace metahub.logic
             }
 
             return new Lambda(new_scope, parameters.Select(p => new Parameter(p.text, null))
-                , expressions.Select(e => convert_statement(e, new_scope))
+                , expressions.Select(e => ((Constraint_Wrapper)convert_statement(e, new_scope)).constraint)
             );
         }
 

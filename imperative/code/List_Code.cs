@@ -138,11 +138,12 @@ namespace metahub.imperative.code
             var end = constraint.first;
             var path = constraint.second;
 
-            var a = constraint.first.Select(i => ((Property_Reference)i).tie).ToList();
+            var a = constraint.first.Where(i=>i.type == Node_Type.property).Select(i => ((Property_Reference)i).tie).ToList();
             var b = path.Where(t=>t.type == Node_Type.property).Select(i => ((Property_Reference)i).tie).ToList();
-
-            link(a, b, Parse.reverse_path(b.Take(a.Count - 1)), constraint.lambda, imp);
-            link(b, a, a.Take(a.Count - 1), constraint.lambda, imp);
+            var func = ((metahub.logic.types.Function_Call) constraint.second.Last());
+            var lambda = ((Array_Expression)func.input).children.Last() as Lambda;
+            link(a, b, Parse.reverse_path(b.Take(a.Count - 1)), lambda, imp);
+            link(b, a, a.Take(a.Count - 1), lambda, imp);
         }
 
         public static void link(List<Tie> a, List<Tie> b, IEnumerable<Tie> c, Lambda mapping, Overlord overlord)
@@ -205,9 +206,8 @@ namespace metahub.imperative.code
 
             if (mapping != null)
             {
-                foreach (Constraint_Wrapper wrapper in mapping.expressions)
+                foreach (Constraint constraint in mapping.constraints)
                 {
-                    var constraint = wrapper.constraint;
                     var first = constraint.first;
                     var first_tie = a_end.other_rail.get_tie_or_error(((Property_Reference)first[1]).tie.name);
                     var second = (Property_Reference)Overlord.simplify_path(constraint.second)[0];

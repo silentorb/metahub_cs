@@ -62,29 +62,36 @@ namespace metahub.imperative.code
         {
             var op = constraint.op;
             //return new List<Expression>();
-            var first_last = constraint.first.Last();
-            if (first_last.type == Node_Type.function_call
-                && ((metahub.logic.types.Function_Call)first_last).name == "dist")
+            //var first_last = constraint.first.Last();
+            //if (first_last.type == Node_Type.function_call
+            //    && ((metahub.logic.types.Function_Call)first_last).name == "dist")
+            if (constraint.constraint_scope != null)
             {
-                return cross(constraint, tie, overlord, scope);
-            }
-            else
-            {
-                var reference = overlord.convert_path(constraint.first, scope);
-
-                //if (constraint.first.)
-
-                if (op == ">=<")
+                switch (constraint.constraint_scope.name)
                 {
-                    var args = ((metahub.logic.types.Array_Expression)constraint.second[0]).children;
-                    return generate_constraint(reference, ">=", (metahub.logic.types.Literal_Value)args[0])
-                        .Union(
-                            generate_constraint(reference, "<=", (metahub.logic.types.Literal_Value)args[1])
-                        ).ToList();
+                    case "cross":
+                        return cross(constraint, tie, overlord, scope);
+                    case "map":
+                        //List_Code.map(constraint, constraint.second, overlord);
+                        return new List<Expression>();
                 }
 
-                return generate_constraint(reference, constraint.op, (Literal_Value)constraint.second.First());
             }
+
+            var reference = overlord.convert_path(constraint.first, scope);
+
+            //if (constraint.first.)
+
+            if (op == ">=<")
+            {
+                var args = ((metahub.logic.types.Array_Expression)constraint.second[0]).children;
+                return generate_constraint(reference, ">=", (metahub.logic.types.Literal_Value)args[0])
+                    .Union(
+                        generate_constraint(reference, "<=", (metahub.logic.types.Literal_Value)args[1])
+                    ).ToList();
+            }
+
+            return generate_constraint(reference, constraint.op, (Literal_Value)constraint.second.First());
         }
 
         public static void not_null(Tie_Expression reference, Overlord overlord)

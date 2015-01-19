@@ -169,8 +169,6 @@ namespace metahub.imperative.schema
                 {
                     if (tie.has_setter())
                         generate_setter(tie, statements.scope);
-                    //if (definition != null)
-                    //    statements.add(definition);
                 }
             }
 
@@ -181,33 +179,6 @@ namespace metahub.imperative.schema
                     var lines = inserts[path];
                     var tokens = path.Split('.');
                     var block_name = tokens[0];
-                    if (!has_block(block_name))
-                    {
-                        var imp = summon_imp(block_name, true);
-                        Imp new_imp;
-                        Block new_block;
-
-                        if (imp == null)
-                        {
-                            var portal_name = block_name.Split('_').Last();
-                            var portal = all_portals[portal_name];
-                            generate_setter(portal.tie, statements.scope);
-                            new_imp = summon_imp(block_name, true);
-                            new_block = create_block(block_name, new_imp.scope, new_imp.expressions);
-                            new_block.divide("pre");
-                        }
-                        else
-                        {
-                            new_imp = imp.spawn_child(this);
-                            new_block = create_block(block_name, new_imp.scope, new_imp.expressions);
-                            new_block.divide("pre").add(new Parent_Class(new Function_Call(imp.name, null, new List<Expression>
-                            {
-                               new Variable(new_imp.parameters[0].symbol)
-                            })));
-                        }
-                        new_block.divide("post");
-
-                    }
 
                     var block = get_block(block_name);
                     if (tokens.Length > 1)
@@ -241,8 +212,44 @@ namespace metahub.imperative.schema
 
         public Block get_block(string path)
         {
-            if (!blocks.ContainsKey(path))
-                throw new Exception("Invalid rail block: " + path + ".");
+            if (!has_block(path))
+            {
+                var imp = summon_imp(path, true);
+                Imp new_imp;
+                Block new_block;
+                var tokens = path.Split('_');
+                var portal_name = tokens.Last();
+
+                if (imp == null || imp.portal != null)
+                {
+                    var portal = all_portals[portal_name];
+                    new_imp = generate_setter(portal.tie, blocks["class_definition"].scope);
+                    //new_block = create_block(path, new_imp.scope, new_imp.expressions);
+                    //new_block.divide("pre");
+                    new_block = blocks[path];
+                    if (imp != null)
+                    {
+                        new_block.add("pre", new Parent_Class(new Function_Call(imp.name, null, new List<Expression>
+                            {
+                               new Variable(new_imp.parameters[0].symbol)
+                            })));
+                    }
+                }
+                else
+                {
+                    new_imp = imp.spawn_child(this);
+                    new_block = create_block(path, new_imp.scope, new_imp.expressions);
+                    new_block.divide("pre").add(new Parent_Class(new Function_Call(imp.name, null, new List<Expression>
+                            {
+                               new Variable(new_imp.parameters[0].symbol)
+                            })));
+                }
+                new_block.divide("post");
+
+            }
+
+            //if (!blocks.ContainsKey(path))
+            //    throw new Exception("Invalid rail block: " + path + ".");
 
             return blocks[path];
         }
@@ -263,25 +270,6 @@ namespace metahub.imperative.schema
             return null;
         }
 
-        //public void add_to_block(string path, Expression code)
-        //{
-        //    var block = get_block(path);
-        //    block.Add(code);
-        //}
-
-        //public void concat_block(string path, IEnumerable<Expression> code)
-        //{
-        //    var block = get_block(path);
-        //    block.AddRange(code);
-        //}
-
-        //public Zone create_zone(Block target)
-        //{
-        //    Zone zone = new Zone(target, this);
-        //    zones.Add(zone);
-        //    return zone;
-        //}
-
         public void flatten()
         {
             foreach (var block in blocks.Values)
@@ -290,15 +278,13 @@ namespace metahub.imperative.schema
             }
         }
 
-        private Function_Definition generate_setter(Tie tie, Scope scope)
+        private Imp generate_setter(Tie tie, Scope scope)
         {
-            var function_scope = new Scope(scope);
+            var imp = spawn_imp("set_" + tie.tie_name);
+            var function_scope = imp.scope;
             var value = function_scope.create_symbol("value", tie.get_signature());
-            var parameters = new List<Parameter>
-                {
-                    new Parameter(value)
-                };
-            var imp = spawn_imp("set_" + tie.tie_name, parameters);
+            imp.parameters.Add(new Parameter(value));
+
             Function_Definition result = new Function_Definition(imp);
 
             var block = create_block("set_" + tie.tie_name, new Scope(function_scope), result.expressions);
@@ -306,19 +292,19 @@ namespace metahub.imperative.schema
             var pre = block.divide("pre");
 
             var mid = block.divide(null, new List<Expression> {
-			new Flow_Control(Flow_Control_Type.If, new Operation("==", new List<Expression> {
+			    new Flow_Control(Flow_Control_Type.If, new Operation("==", new List<Expression> {
 					new Tie_Expression(tie), new Variable(value)
-            }),
-				new List<Expression>{
-					new Statement("return")
                 }),
-			new Assignment(new Tie_Expression(tie), "=", new Variable(value))
-		});
+				    new List<Expression>{
+					    new Statement("return")
+                    }),
+			    new Assignment(new Tie_Expression(tie), "=", new Variable(value))
+		    });
 
             if (tie.type == Kind.reference && tie.other_tie != null)
             {
                 var origin = function_scope.create_symbol("origin", new Signature(Kind.reference));
-                parameters.Add(new Parameter(origin, new Null_Value()));
+                imp.parameters.Add(new Parameter(origin, new Null_Value()));
                 var dungeon = overlord.get_dungeon(tie.rail);
 
                 if (tie.other_tie.type == Kind.reference)
@@ -359,7 +345,7 @@ namespace metahub.imperative.schema
 			    }));
             }
 
-            return result;
+            return imp;
         }
 
         public Imp generate_initialize(Scope scope)

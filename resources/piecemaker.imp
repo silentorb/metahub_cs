@@ -12,7 +12,7 @@ namespace piecemaker {
 
 	class Piece_Maker {
 
-		update() {
+		tick() {
 			if (is_active)
 				return
 

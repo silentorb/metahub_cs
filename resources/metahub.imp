@@ -1,14 +1,17 @@
 ﻿
 namespace metahub {
 
-  class Hub {
-
-    tick() {
-
-    }
-  }
-
   class Tick_Target {
     abstract tick()
   }
+
+  class Hub {
+
+    tick() {
+		for (var target in tick_targets) {
+			target.tick()
+		}
+    }
+  }
+
 }

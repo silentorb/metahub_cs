@@ -45,10 +45,11 @@ type_info = ":" trim @(id, path_separator, 1, 0) @(optional_list_suffix, none, 0
 
 optional_list_suffix = trim "[" trim "]"
 
-function_statement =
+statement =
 	declare_variable
 	| if
 	| return
+	| for
 	| assignment
 	| expression
 
@@ -80,9 +81,9 @@ optional_parent_classes = ":" trim @(id, comma_or_newline, 1, 0) trim
 
 block = long_block | short_block
 
-short_block = one_or_no_newline function_statement
+short_block = one_or_no_newline statement
 
-long_block = "{" trim @(function_statement, semicolon_or_newline, 0, 0) trim "}"
+long_block = "{" trim @(statement, semicolon_or_newline, 0, 0) trim "}"
 
 if = "if" trim "(" trim expression trim ")" trim block
 
@@ -95,3 +96,5 @@ optional_assignment = trim "=" trim expression
 declare_variable = "var" ws id trim type_info @(optional_assignment, none, 0, 1)
 
 assignment = reference trim set_operator trim expression
+
+for = "for" trim "(" trim "var" ws id ws "in" ws reference trim ")" trim long_block

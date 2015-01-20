@@ -45,7 +45,6 @@ namespace metahub.render.targets.js
             return result;
         }
 
-
         string render_statements(IEnumerable<Expression> statements, string glue = "")
         {
             return statements.Select(render_statement).join(glue);
@@ -53,48 +52,50 @@ namespace metahub.render.targets.js
 
         string render_statement(Expression statement)
         {
-            Expression_Type type = statement.type;
-            switch (type)
-            {
-                case Expression_Type.space:
-                    var space = (Namespace)statement;
-                    return render_region(space.realm, () => render_statements(space.expressions));
+            throw new Exception("Not implemented.");
 
-                case Expression_Type.class_definition:
-                    var definition = (Class_Definition)statement;
-                    return class_definition(definition.rail, definition.expressions);
+            //Expression_Type type = statement.type;
+            //switch (type)
+            //{
+            //    case Expression_Type.space:
+            //        var space = (Namespace)statement;
+            //        return render_region(space.realm, () => render_statements(space.expressions));
 
-                case Expression_Type.function_definition:
-                    return render_function_definition((Function_Definition)statement);
+            //    case Expression_Type.class_definition:
+            //        var definition = (Class_Definition)statement;
+            //        return class_definition(definition.rail, definition.expressions);
 
-                case Expression_Type.flow_control:
-                    return render_flow_control((Flow_Control)statement);
+            //    case Expression_Type.function_definition:
+            //        return render_function_definition((Function_Definition)statement);
 
-                case Expression_Type.iterator:
-                    return render_iterator_block((Iterator)statement);
+            //    case Expression_Type.flow_control:
+            //        return render_flow_control((Flow_Control)statement);
 
-                case Expression_Type.function_call:
-                    return line(render_function_call((Function_Call)statement, null) + ";");
+            //    case Expression_Type.iterator:
+            //        return render_iterator_block((Iterator)statement);
 
-                case Expression_Type.assignment:
-                    return render_assignment((Assignment)statement);
+            //    case Expression_Type.function_call:
+            //        return line(render_function_call((Function_Call)statement, null) + ";");
 
-                case Expression_Type.declare_variable:
-                    return render_variable_declaration((Declare_Variable)statement);
+            //    case Expression_Type.assignment:
+            //        return render_assignment((Assignment)statement);
 
-                case Expression_Type.statement:
-                    var state = (Statement)statement;
-                    return line(state.name + (state.child != null
-                        ? " " + render_expression(state.child)
-                        : "") + ";");
+            //    case Expression_Type.declare_variable:
+            //        return render_variable_declaration((Declare_Variable)statement);
 
-                case Expression_Type.insert:
-                    return line(((Insert)statement).code);
+            //    case Expression_Type.statement:
+            //        var state = (Statement)statement;
+            //        return line(state.name + (state.child != null
+            //            ? " " + render_expression(state.child)
+            //            : "") + ";");
 
-                default:
-                    return line(render_expression(statement) + ";");
-                //throw new Exception("Unsupported statement type: " + statement.type + ".");
-            }
+            //    case Expression_Type.insert:
+            //        return line(((Insert)statement).code);
+
+            //    default:
+            //        return line(render_expression(statement) + ";");
+            //    //throw new Exception("Unsupported statement type: " + statement.type + ".");
+            //}
         }
 
     }

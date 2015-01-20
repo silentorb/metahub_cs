@@ -6,6 +6,7 @@
   },
   "trellises": {
     "Piece_Maker": {
+      "parent": "metahub.Tick_Target",
       "properties": {
         "hub": {
           "type": "reference",

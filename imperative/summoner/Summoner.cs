@@ -148,6 +148,9 @@ namespace metahub.imperative.summoner
                         process_block(source.patterns[8], context)
                     );
 
+                case "for":
+                    return process_iterator(source, context);
+
                 case "return":
                     return new Statement("return", source.patterns[1].patterns.Length == 0
                         ? null
@@ -214,10 +217,16 @@ namespace metahub.imperative.summoner
                 if (symbol != null)
                 {
                     next = new Variable(symbol) { index = array_access };
-
-                    var rail = next.get_signature().rail;
-                    if (rail != null)
-                        dungeon = overlord.get_dungeon(rail);
+                    var profession = next.get_profession();
+                    if (profession != null)
+                        dungeon = profession.dungeon;
+                    else
+                    {
+                        var rail = next.get_signature().rail;
+                        if (rail != null)
+                            dungeon = overlord.get_dungeon(rail);
+                    }
+ 
                 }
                 else
                 {
@@ -233,7 +242,7 @@ namespace metahub.imperative.summoner
                     {
                         Function_Call func = null;
                         var imp = dungeon != null
-                                      ? dungeon.summon_imp(token)
+                                      ? dungeon.summon_imp(token, true)
                                       : null;
 
                         if (imp != null)
@@ -399,6 +408,15 @@ namespace metahub.imperative.summoner
                         op,
                         expression
                     );
+        }
+
+        public Expression process_iterator(Pattern_Source source, Context context)
+        {
+            var reference = process_expression_part(source.patterns[10], context);
+            var profession = reference.get_profession().get_reference();
+            return new Iterator(context.scope.create_symbol(source.patterns[6].text, profession),
+                reference, process_block(source.patterns[14], context)
+                );
         }
     }
 }

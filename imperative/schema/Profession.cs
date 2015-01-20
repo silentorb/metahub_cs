@@ -32,5 +32,10 @@ namespace metahub.imperative.schema
         {
             return new Profession(type, dungeon) { is_list = is_list };
         }
+
+        public Profession get_reference()
+        {
+            return new Profession(Kind.reference, dungeon);
+        }
     }
 }

@@ -305,6 +305,15 @@ namespace metahub.render.targets.cpp
             return result;
         }
 
+        static List<Dungeon> get_dungeon_parents(Dungeon dungeon)
+        {
+            var parents = new List<Dungeon>();
+            if (dungeon.parent != null)
+                parents.Add(dungeon.parent);
+
+            return parents.Concat(dungeon.interfaces).ToList();
+        } 
+
         string class_declaration(Dungeon dungeon)
         {
             current_dungeon = dungeon;
@@ -314,9 +323,11 @@ namespace metahub.render.targets.cpp
                 first += dungeon.rail.class_export + " ";
 
             first += dungeon.name;
-            if (dungeon.parent != null)
+            var parents = get_dungeon_parents(dungeon);
+
+            if (parents.Count > 0)
             {
-                first += " : public " + render_rail_name(dungeon.parent);
+                first += " : " + parents.Select(p => "public " + render_rail_name(p)).join(", ");
             }
 
             result = line(first + " {")
@@ -416,12 +427,12 @@ namespace metahub.render.targets.cpp
 
         string render_definition_parameter(Parameter parameter)
         {
-            return render_signature(parameter.symbol.signature, true) + " " + parameter.symbol.name;
+            return render_symbol_signature(parameter.symbol, true) + " " + parameter.symbol.name;
         }
 
         string render_declaration_parameter(Parameter parameter)
         {
-            return render_signature(parameter.symbol.signature, true) + " " + parameter.symbol.name
+            return render_symbol_signature(parameter.symbol, true) + " " + parameter.symbol.name
                 + (parameter.default_value != null
                     ? " = " + render_expression(parameter.default_value)
                     : ""
@@ -561,6 +572,14 @@ namespace metahub.render.targets.cpp
                 : name + "*")
                 + ">";
             }
+        }
+
+        string render_symbol_signature(Symbol symbol, bool is_parameter = false)
+        {
+            if (symbol.profession != null)
+                return render_signature(symbol.profession, is_parameter);
+
+            return render_signature(symbol.signature, is_parameter);
         }
 
         private string render_signature(Signature signature, bool is_parameter = false)

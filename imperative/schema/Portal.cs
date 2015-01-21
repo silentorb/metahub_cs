@@ -79,6 +79,9 @@ namespace metahub.imperative.schema
 
         public void customize_initialize(Block block)
         {
+            if (tie == null)
+                return;
+
             foreach (Range_Float range in tie.ranges)
             {
                 var reference = create_reference(range.path.Count > 0

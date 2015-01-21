@@ -155,8 +155,8 @@ namespace metahub.imperative.code
             var second_end = b[b.Count - 1];
 
             var item_name = second_end.rail.name.ToLower() + "_item";
-
-            var function_block = overlord.get_dungeon(a_end.rail).get_block("add_" + a_end.tie_name);
+            var scope_dungeon = overlord.get_dungeon(a_end.rail);
+            var function_block = scope_dungeon.get_block("add_" + a_end.tie_name);
             var new_scope = new Scope(function_block.scope);
             var item = new_scope.create_symbol("item", second_end.get_other_signature());
             var item2 = new_scope.create_symbol("item", second_end.get_other_signature());
@@ -202,7 +202,7 @@ namespace metahub.imperative.code
                 }
             }
 
-            creation_block.Add(new Variable(item2, new Function_Call("initialize")));
+            creation_block.Add(Imp.call_initialize(scope_dungeon,overlord.get_dungeon(item2.signature.rail), new Variable(item2)));
 
             if (mapping != null)
             {
@@ -287,7 +287,7 @@ namespace metahub.imperative.code
 				imp.convert_path(expression, logic_scope)
         }), new List<Expression> {
 			new Declare_Variable(child, new Instantiate(rail)),
-			new Variable(child, new Function_Call("initialize")),
+            Imp.call_initialize(dungeon, imp.get_dungeon(rail), new Variable(child)),
 			new Function_Call("add_" + reference.tie_name, null,
 			new List<Expression> { new Variable(child), new Null_Value() })
 	});

@@ -7,7 +7,6 @@ using metahub.imperative.schema;
 using metahub.imperative.summoner;
 using metahub.imperative.types;
 using metahub.logic.schema;
-using metahub.parser;
 using metahub.render;
 using metahub.schema;
 using Constraint = metahub.logic.schema.Constraint;
@@ -18,7 +17,6 @@ using Node = metahub.logic.types.Node;
 
 namespace metahub.imperative
 {
-
     public class Overlord
     {
         public Railway railway;
@@ -39,7 +37,9 @@ namespace metahub.imperative
         {
             this.logician = logician;
             this.target = target;
-            //process(root, null);
+
+            logician.analyze();
+
             generate_code(target);
 
             foreach (var constraint in logician.constraints)

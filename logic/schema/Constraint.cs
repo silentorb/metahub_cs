@@ -7,7 +7,7 @@ namespace metahub.logic.schema
 {
     public class Constraint
     {
-        public static List<string> self_modifying_operators = new List<string>
+        public static List<string> circular_operators = new List<string>
         {
             "+=",
             "-=",
@@ -17,7 +17,7 @@ namespace metahub.logic.schema
 
         public Node[] first;
         public Node[] second;
-        public bool is_back_referencing = false;
+        public bool is_circular = false;
         public string op;
         public List<Constraint> other_constraints = new List<Constraint>();
         public Lambda lambda;
@@ -34,8 +34,9 @@ namespace metahub.logic.schema
             this.lambda = lambda;
             endpoints = get_endpoints(first);
 
-            if (self_modifying_operators.Contains(op))
+            if (circular_operators.Contains(op))
             {
+                is_circular = true;
                 var property_node = (Property_Reference) first[0];
                 property_node.tie.rail.needs_tick = true;
             }

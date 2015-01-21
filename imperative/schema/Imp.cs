@@ -43,21 +43,21 @@ namespace metahub.imperative.schema
             this.portal = portal;
         }
 
-        public Function_Call invoke(Imp invoker, IEnumerable<Expression> args = null)
-        {
-            var invocation = new Function_Call(this, args);
+        //public Function_Call invoke(Imp invoker, IEnumerable<Expression> args = null)
+        //{
+        //    var invocation = new Function_Call(this, null, args);
 
-            if (invoker != null)
-            {
-                if (!invoker.invokees.Contains(this))
-                    invoker.invokees.Add(this);
+        //    if (invoker != null)
+        //    {
+        //        if (!invoker.invokees.Contains(this))
+        //            invoker.invokees.Add(this);
 
-                if (!invokers.Contains(invoker))
-                    invokers.Add(invoker);
-            }
+        //        if (!invokers.Contains(invoker))
+        //            invokers.Add(invoker);
+        //    }
 
-            return invocation;
-        }
+        //    return invocation;
+        //}
 
         public Imp spawn_child(Dungeon new_dungeon)
         {
@@ -111,6 +111,16 @@ namespace metahub.imperative.schema
                     {
                      item   
                     }) { reference = reference };
+        }
+
+        public static Expression call_initialize(Dungeon caller, Dungeon target, Expression reference)
+        {
+            var args = new List<Expression>();
+            var imp = target.summon_imp("initialize");
+            if (imp.parameters.Count > 0)
+                args.Add(new Portal_Expression(caller.all_portals["hub"]));
+
+            return new Function_Call(imp, reference, args);
         }
     }
 }

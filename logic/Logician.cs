@@ -11,6 +11,7 @@ namespace metahub.logic
     {
         public List<Constraint> constraints = new List<Constraint>();
         public Dictionary<string, Constraint_Group> groups = new Dictionary<string, Constraint_Group>();
+        public bool needs_hub = false;
 
         public Constraint create_constraint(Node[] first, Node[] second, string op, Lambda lambda, Scope scope)
         {
@@ -24,6 +25,15 @@ namespace metahub.logic
                 constraints.Add(constraint);
 
             return constraint;
+        }
+
+        public void analyze()
+        {
+            foreach (var constraint in constraints)
+            {
+                if (constraint.is_circular)
+                    needs_hub = true;
+            }
         }
     }
 }

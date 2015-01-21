@@ -34,7 +34,7 @@ namespace metahub.imperative.code
             {
                 not_null((Tie_Expression)overlord.convert_path(constraint.first, null), overlord);
             }
-            else if (Constraint.self_modifying_operators.Contains(constraint.op))
+            else if (Constraint.circular_operators.Contains(constraint.op))
             {
                 self_modifying(constraint, tie, overlord);
             }
@@ -51,11 +51,29 @@ namespace metahub.imperative.code
             var property_node = (metahub.logic.types.Property_Reference)constraint.first.First();
             var dungeon = overlord.get_dungeon(property_node.tie.rail);
             var imp = dungeon.summon_imp("tick");
-            imp.expressions.Add(new Assignment(
-                overlord.convert_path(constraint.first, null),
-                constraint.op,
-                overlord.convert_path(constraint.second, null)
-                ));
+            var path = constraint.first.Take(constraint.first.Length - 1).ToArray();
+            var path1 = overlord.convert_path(path, null);
+            var path2 = overlord.convert_path(constraint.first, null);
+            var signature = path1.get_signature();
+            var other_dungeon = overlord.get_dungeon(signature.rail);
+            //var tie = ((metahub.logic.types.Property_Reference)first).tie;
+            var portal = other_dungeon.all_portals[tie.tie_name];
+            path1.child = new Property_Function_Call(Property_Function_Type.set,
+                portal, new List<Expression>
+                    {
+                      new Operation(constraint.op.Substring(0, 1), new List<Expression>
+                          {
+                              path2,
+                              overlord.convert_path(constraint.second, null)
+                          })  
+                    }
+                );
+            imp.expressions.Add(path1);
+            //imp.expressions.Add(new Assignment(
+            //    overlord.convert_path(constraint.first, null),
+            //    constraint.op,
+            //    overlord.convert_path(constraint.second, null)
+            //    ));
         }
 
         public static List<Expression> constraint(Constraint constraint, Tie tie, Overlord overlord, Scope scope)
@@ -105,7 +123,7 @@ namespace metahub.imperative.code
             block.add_many("pre", new List<Expression>
                 {
                   new Assignment(new Portal_Expression(portal), "=", new Instantiate(other_dungeon)),
-                  new Function_Call("initialize", new Portal_Expression(portal)),
+                  Imp.call_initialize(dungeon, other_dungeon, new Portal_Expression(portal))
                 });
         }
 
@@ -252,7 +270,6 @@ namespace metahub.imperative.code
                             //    { Imp.operation("+", new Variable(value), new Variable(offset)) }),
 
                             new Declare_Variable(conflict, new Instantiate(conflict_dungeon)),
-                            //new Variable(conflict, new Function_Call("initialize")),
                             new Variable(conflict,Imp.setter(conflict_nodes, new Self(dungeon), null, null)),
                             new Variable(conflict,Imp.setter(conflict_nodes, new Variable(it), null, null)),
                             new Tie_Expression(mold_tie,

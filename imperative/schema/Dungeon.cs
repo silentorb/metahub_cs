@@ -37,6 +37,7 @@ namespace metahub.imperative.schema
         public string source_file;
         public List<string> stubs = new List<string>();
         public Dictionary<string, object> hooks = new Dictionary<string, object>();
+        public List<Dungeon> interfaces = new List<Dungeon>(); 
 
         public Dungeon(string name, Overlord overlord, Realm realm, Dungeon parent = null)
         {
@@ -157,6 +158,11 @@ namespace metahub.imperative.schema
         public void generate_code2()
         {
             var statements = blocks["class_definition"];
+            if (overlord.logician.needs_hub)
+            {
+                var hub_dungeon = overlord.realms["metahub"].dungeons["Hub"];
+                add_portal(new Portal("hub", Kind.reference, this, hub_dungeon));
+            }            
             generate_initialize(statements.scope);
 
             foreach (var tie in rail.all_ties.Values)
@@ -195,6 +201,7 @@ namespace metahub.imperative.schema
             if (rail != null && rail.needs_tick)
             {
                 spawn_imp("tick");
+                interfaces.Add(overlord.realms["metahub"].dungeons["Tick_Target"]);
             }
         }
 
@@ -354,11 +361,9 @@ namespace metahub.imperative.schema
             var block = create_block("initialize", scope, expressions);
             block.divide("pre");
             block.divide("post");
-            if (rail.parent != null)
+            if (parent != null)
             {
-                block.add(new Parent_Class(
-                    new Function_Call("initialize")
-                ));
+                block.add(Imp.call_initialize(this, parent, new Parent_Class()));
             }
 
             foreach (var lair in all_portals.Values)
@@ -371,8 +376,31 @@ namespace metahub.imperative.schema
                 block.add(new Function_Call("initialize_post"));
             }
 
-            //return new Function_Definition("initialize", this, new List<Parameter>(), expressions);
-            return spawn_imp("initialize", new List<Parameter>(), expressions);
+            var imp = spawn_imp("initialize", new List<Parameter>(), expressions);
+
+            if (overlord.logician.needs_hub && (name != "Hub" || realm.name != "metahub"))
+            {
+                var hub_dungeon = overlord.realms["metahub"].dungeons["Hub"];
+                var symbol = imp.scope.create_symbol("hub", new Profession(Kind.reference, hub_dungeon));
+                imp.parameters.Add(new Parameter(symbol));
+                var hub_portal = all_portals["hub"];
+                block.add("pre", new Assignment(new Self(this, new Portal_Expression(hub_portal)),
+                   "=", new Variable(symbol)));
+
+                if (rail != null && rail.needs_tick)
+                {
+                    var tick_targets = hub_dungeon.all_portals["tick_targets"];
+                    block.add("pre", new Portal_Expression(hub_portal,
+                        new Property_Function_Call(Property_Function_Type.set,
+                            tick_targets, new List<Expression>
+                                {
+                                    new Self(this)
+                                })
+                        ));
+                }
+            }
+
+            return imp;
         }
 
         public void analyze()
@@ -388,6 +416,11 @@ namespace metahub.imperative.schema
             {
                 if (parent != null && !parent.is_abstract)
                     add_dependency(parent).allow_partial = false;
+            }
+
+            foreach (var @interface in interfaces)
+            {
+                add_dependency(@interface).allow_partial = false;
             }
 
             foreach (var portal in all_portals.Values)

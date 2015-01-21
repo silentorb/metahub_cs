@@ -22,7 +22,17 @@ namespace metahub.imperative.types
             this.reference = reference;
         }
 
-        public Function_Call(Imp imp, IEnumerable<Expression> args = null)
+        //public Function_Call(Imp imp, IEnumerable<Expression> args = null)
+        //    : base(Expression_Type.function_call)
+        //{
+        //    this.imp = imp;
+        //    this.args = args != null ? args.ToArray() : new Expression[0];
+
+        //    name = imp.name;
+        //    is_platform_specific = imp.is_platform_specific;
+        //}
+
+        public Function_Call(Imp imp, Expression reference = null, IEnumerable<Expression> args = null)
             : base(Expression_Type.function_call)
         {
             this.imp = imp;
@@ -30,6 +40,7 @@ namespace metahub.imperative.types
 
             name = imp.name;
             is_platform_specific = imp.is_platform_specific;
+            this.reference = reference;
         }
 
         public Function_Call set_reference(Expression reference)

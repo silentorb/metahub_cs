@@ -197,9 +197,14 @@ namespace metahub.imperative
                     return new Literal(((metahub.logic.types.Literal_Value)expression).value, new Profession(Kind.unknown));
 
                 case Node_Type.function_call:
+                    var function_call = (metahub.logic.types.Function_Call) expression;
+                    return new Function_Call(function_call.name, null, null, true)
+                        {
+                            profession = new Profession(function_call.signature, this)
+                        };
                     //metahub.logic.types.Function_Call func = expression;
                     //return new Function_Call(func.name, [translate(func.input)]);
-                    throw new Exception("Not implemented.");
+                    //throw new Exception("Not implemented.");
 
                 case Node_Type.path:
                     return convert_path(((metahub.logic.types.Reference_Path)expression).children, scope);

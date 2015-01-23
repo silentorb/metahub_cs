@@ -157,6 +157,10 @@ public class Railway {
                     })
 			}),
 
+            new Function_Info("first", new List<Signature> {
+				new Signature(Kind.reference, new [] { new Signature(Kind.list)})
+			}),
+
             new Function_Info("map", new List<Signature> {
                 new Signature(Kind.none, new []
                     {

@@ -12,6 +12,7 @@ namespace metahub.imperative.types
         public bool is_platform_specific;
         public Imp imp;
         public Expression reference;
+        public Profession profession;
 
         public Function_Call(string name, Expression reference = null, IEnumerable<Expression> args = null, bool is_platform_specific = false)
             : base(Expression_Type.function_call)
@@ -47,6 +48,13 @@ namespace metahub.imperative.types
         {
             this.reference = reference;
             return this;
+        }
+
+        public override Profession get_profession()
+        {
+            return imp != null
+                ? new Profession(imp.return_type, imp.dungeon.overlord)
+                : profession;
         }
     }
 

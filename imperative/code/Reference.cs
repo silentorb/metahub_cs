@@ -103,13 +103,13 @@ namespace metahub.imperative.code
             if (op == ">=<")
             {
                 var args = ((metahub.logic.types.Array_Expression)constraint.second[0]).children;
-                return generate_constraint(reference, ">=", (metahub.logic.types.Literal_Value)args[0])
+                return generate_constraint(reference, ">=", overlord.translate(args[0]))
                     .Union(
-                        generate_constraint(reference, "<=", (metahub.logic.types.Literal_Value)args[1])
+                        generate_constraint(reference, "<=", overlord.translate(args[1]))
                     ).ToList();
             }
 
-            return generate_constraint(reference, constraint.op, (Literal_Value)constraint.second.First());
+            return generate_constraint(reference, constraint.op, overlord.translate(constraint.second.First()));
         }
 
         public static void not_null(Tie_Expression reference, Overlord overlord)
@@ -127,39 +127,42 @@ namespace metahub.imperative.code
                 });
         }
 
-        static List<Expression> generate_constraint(Expression reference, string op, Literal_Value literal)
+        static List<Expression> generate_constraint(Expression reference, string op, Expression literal)
         {
-            var inverse = inverse_operators[op];
-            float limit = literal.get_float();
-
-            const float min = 0.0001f;
-            float value = 0;
-            switch (op)
+            Expression value = literal;
+            if (op != "=")
             {
-                case "<":
-                    value = limit - min;
-                    break;
+                //float limit = literal.get_float();
 
-                case ">":
-                    value = limit + min;
-                    break;
+                const float min = 0.0001f;
+                switch (op)
+                {
+                    case "<":
+                        value = new Operation("-", new List<Expression> {literal, new Literal(min)});
+                        break;
 
-                case "<=":
-                    value = limit;
-                    break;
+                    case ">":
+                        value = new Operation("+", new List<Expression> {literal, new Literal(min)});
+                        break;
 
-                case ">=":
-                    value = limit;
-                    break;
+                    //case "<=":
+                    //    value = literal;
+                    //    break;
+
+                    //case ">=":
+                    //    value = literal;
+                    //    break;
+                }
+
+                op = inverse_operators[op];
             }
 
-            return new List<Expression> { new Flow_Control(Flow_Control_Type.If, new Operation(inverse,
+            return new List<Expression> { new Flow_Control(Flow_Control_Type.If, new Operation(op,
 				new List<Expression> {
-					reference,
-				new Literal(limit)
+					reference, value
             }),
 		        new List<Expression>{
-				    new Assignment(reference, "=", new Literal(value))
+				    new Assignment(reference, "=", value)
                 }
 		    )};
         }

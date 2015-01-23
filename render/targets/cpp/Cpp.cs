@@ -1018,6 +1018,9 @@ namespace metahub.render.targets.cpp
                             return ref_full + "distance(" + first + ")";
                         }
 
+                    case "first":
+                        return "[0]";
+
                     case "last":
                         return ref_full + "back()";
 
@@ -1052,10 +1055,15 @@ namespace metahub.render.targets.cpp
             var result = "";
             foreach (var child in expression.children)
             {
+                var connector = "";
                 if (parent != null)
-                    result += get_connector(parent);
+                    connector = get_connector(parent);
 
-                result += render_expression(child, parent);
+                var new_part = render_expression(child, parent);
+                if (new_part.Length > 0 && new_part[0] == '[')
+                    connector = "";
+
+                result += connector + new_part;
                 parent = child;
             }
 

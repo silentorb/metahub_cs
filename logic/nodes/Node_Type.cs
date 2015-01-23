@@ -1,4 +1,4 @@
-namespace metahub.logic.types
+namespace metahub.logic.nodes
 {
     public enum Node_Type
     {

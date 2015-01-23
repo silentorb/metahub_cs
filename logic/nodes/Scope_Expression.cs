@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace metahub.logic.types
+namespace metahub.logic.nodes
 {
 
     public class Scope_Expression : Block

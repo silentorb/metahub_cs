@@ -1,7 +1,7 @@
 using metahub.logic.schema;
 using metahub.schema;
 
-namespace metahub.logic.types
+namespace metahub.logic.nodes
 {
     public class Literal_Value : Node
     {

@@ -1,7 +1,7 @@
 using System;
 using metahub.logic.schema;
 
-namespace metahub.logic.types {
+namespace metahub.logic.nodes {
 
 public class Function_Call : Node {
 	public string name;

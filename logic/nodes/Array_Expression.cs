@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using metahub.logic.schema;
 using metahub.schema;
 
-namespace metahub.logic.types {
+namespace metahub.logic.nodes {
 /**
  * @author Christopher W. Johnson
  */

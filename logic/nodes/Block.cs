@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace metahub.logic.types
+namespace metahub.logic.nodes
 {
     public class Block : Node
     {

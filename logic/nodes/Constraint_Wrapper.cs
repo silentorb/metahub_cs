@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using metahub.logic.schema;
 
-namespace metahub.logic.types
+namespace metahub.logic.nodes
 {
     public class Constraint_Wrapper : Node
     {

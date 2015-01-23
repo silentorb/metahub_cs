@@ -7,8 +7,8 @@ using metahub.logic.schema;
 //using metahub.logic.types;
 using metahub.schema;
 using Constraint = metahub.logic.schema.Constraint;
-using Literal_Value = metahub.logic.types.Literal_Value;
-using Node_Type = metahub.logic.types.Node_Type;
+using Literal_Value = metahub.logic.nodes.Literal_Value;
+using Node_Type = metahub.logic.nodes.Node_Type;
 
 namespace metahub.imperative.code
 {
@@ -48,7 +48,7 @@ namespace metahub.imperative.code
 
         public static void self_modifying(Constraint constraint, Tie tie, Overlord overlord)
         {
-            var property_node = (metahub.logic.types.Property_Reference)constraint.first.First();
+            var property_node = (metahub.logic.nodes.Property_Reference)constraint.first.First();
             var dungeon = overlord.get_dungeon(property_node.tie.rail);
             var imp = dungeon.summon_imp("tick");
             var path = constraint.first.Take(constraint.first.Length - 1).ToArray();
@@ -102,7 +102,7 @@ namespace metahub.imperative.code
 
             if (op == ">=<")
             {
-                var args = ((metahub.logic.types.Array_Expression)constraint.second[0]).children;
+                var args = ((metahub.logic.nodes.Array_Expression)constraint.second[0]).children;
                 return generate_constraint(reference, ">=", overlord.translate(args[0]))
                     .Union(
                         generate_constraint(reference, "<=", overlord.translate(args[1]))
@@ -171,7 +171,7 @@ namespace metahub.imperative.code
         {
             //var dungeon = imp.get_dungeon(tie.rail);
             //dungeon.concat_block(tie.tie_name + "_set_pre", Reference.constraint(constraint, this));
-            var property_reference = (metahub.logic.types.Property_Reference)constraint.constraint_scope.caller.First();
+            var property_reference = (metahub.logic.nodes.Property_Reference)constraint.constraint_scope.caller.First();
             var dungeon = overlord.get_dungeon(tie.rail);
 
             var iterator_scope = new Scope(scope);

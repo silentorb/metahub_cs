@@ -1,7 +1,7 @@
 using System;
 using metahub.imperative.schema;
 using metahub.logic.schema;
-using metahub.logic.types;
+using metahub.logic.nodes;
 using metahub.schema;
 
 namespace metahub.imperative.types

@@ -4,7 +4,7 @@ using System.Linq;
 using metahub.imperative.code;
 using metahub.imperative.types;
 using metahub.logic.schema;
-using metahub.logic.types;
+using metahub.logic.nodes;
 using metahub.schema;
 using Expression = metahub.imperative.types.Expression;
 using Function_Call = metahub.imperative.types.Function_Call;

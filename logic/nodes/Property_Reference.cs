@@ -1,6 +1,6 @@
 using metahub.logic.schema;
 
-namespace metahub.logic.types {
+namespace metahub.logic.nodes {
 /**
  * ...
  * @author Christopher W. Johnson

@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using metahub.imperative.types;
-using metahub.logic.types;
+using metahub.logic.nodes;
 
 namespace metahub.logic.schema
 {

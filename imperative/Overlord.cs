@@ -12,8 +12,8 @@ using metahub.schema;
 using Constraint = metahub.logic.schema.Constraint;
 using Literal = metahub.imperative.types.Literal;
 using Logician = metahub.logic.Logician;
-using Node_Type = metahub.logic.types.Node_Type;
-using Node = metahub.logic.types.Node;
+using Node_Type = metahub.logic.nodes.Node_Type;
+using Node = metahub.logic.nodes.Node;
 
 namespace metahub.imperative
 {
@@ -194,10 +194,10 @@ namespace metahub.imperative
             switch (expression.type)
             {
                 case Node_Type.literal:
-                    return new Literal(((metahub.logic.types.Literal_Value)expression).value, new Profession(Kind.unknown));
+                    return new Literal(((metahub.logic.nodes.Literal_Value)expression).value, new Profession(Kind.unknown));
 
                 case Node_Type.function_call:
-                    var function_call = (metahub.logic.types.Function_Call) expression;
+                    var function_call = (metahub.logic.nodes.Function_Call) expression;
                     return new Function_Call(function_call.name, null, null, true)
                         {
                             profession = new Profession(function_call.signature, this)
@@ -207,16 +207,16 @@ namespace metahub.imperative
                     //throw new Exception("Not implemented.");
 
                 case Node_Type.path:
-                    return convert_path(((metahub.logic.types.Reference_Path)expression).children, scope);
+                    return convert_path(((metahub.logic.nodes.Reference_Path)expression).children, scope);
 
                 case Node_Type.array:
-                    return new Create_Array(translate_many(((metahub.logic.types.Array_Expression)expression).children, scope));
+                    return new Create_Array(translate_many(((metahub.logic.nodes.Array_Expression)expression).children, scope));
 
                 case Node_Type.block:
-                    return new Create_Array(translate_many(((metahub.logic.types.Block)expression).children, scope));
+                    return new Create_Array(translate_many(((metahub.logic.nodes.Block)expression).children, scope));
 
                 case Node_Type.variable:
-                    var variable = (metahub.logic.types.Variable)expression;
+                    var variable = (metahub.logic.nodes.Variable)expression;
                     return scope.resolve(variable.name);
 
                 case Node_Type.lambda:
@@ -233,7 +233,7 @@ namespace metahub.imperative
                     return convert_path(new List<Node> { expression });
 
                 case Node_Type.operation:
-                    var operation = (metahub.logic.types.Operation_Node)expression;
+                    var operation = (metahub.logic.nodes.Operation_Node)expression;
                     return new Operation(operation.op, translate_many(operation.children, scope));
 
                 default:
@@ -265,7 +265,7 @@ namespace metahub.imperative
             return new Path(path);
         }
 
-        public Expression convert_path(IList<metahub.logic.types.Node> path, Scope scope = null)
+        public Expression convert_path(IList<metahub.logic.nodes.Node> path, Scope scope = null)
         {
             List<Expression> result = new List<Expression>();
             Rail rail = null;
@@ -273,7 +273,7 @@ namespace metahub.imperative
 
             if (path.First().type == Node_Type.property)
             {
-                rail = ((metahub.logic.types.Property_Reference)path.First()).tie.get_abstract_rail();
+                rail = ((metahub.logic.nodes.Property_Reference)path.First()).tie.get_abstract_rail();
             }
             //else
             //{
@@ -284,7 +284,7 @@ namespace metahub.imperative
                 switch (token.type)
                 {
                     case Node_Type.property:
-                        var property_token = (metahub.logic.types.Property_Reference)token;
+                        var property_token = (metahub.logic.nodes.Property_Reference)token;
                         if (dungeon != null)
                         {
                             var portal = dungeon.all_portals[property_token.tie.name];
@@ -310,7 +310,7 @@ namespace metahub.imperative
                         break;
 
                     case Node_Type.variable:
-                        var variable = (metahub.logic.types.Variable)token;
+                        var variable = (metahub.logic.nodes.Variable)token;
                         var variable_token = scope.resolve(variable.name);
                         result.Add(variable_token);
                         var profession = variable_token.get_profession();
@@ -333,7 +333,7 @@ namespace metahub.imperative
 
                     case Node_Type.function_call:
                     case Node_Type.function_scope:
-                        var function_token = (metahub.logic.types.Function_Call)token;
+                        var function_token = (metahub.logic.nodes.Function_Call)token;
                         result.Add(new Function_Call(function_token.name, null,
                             new List<Expression>(), true));
                         break;

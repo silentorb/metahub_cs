@@ -1,4 +1,4 @@
-using metahub.logic.types;
+using metahub.logic.nodes;
 
 namespace metahub.imperative.types
 {

@@ -3,7 +3,7 @@ using System.Linq;
 using metahub.imperative.schema;
 using metahub.imperative.types;
 using metahub.logic.schema;
-using metahub.logic.types;
+using metahub.logic.nodes;
 using metahub.schema;
 using Constraint = metahub.logic.schema.Constraint;
 using Expression = metahub.imperative.types.Expression;
@@ -121,7 +121,7 @@ namespace metahub.imperative.code
             if (other_path.Length > 0)
             {
                 var last = other_path.Last();
-                if (last.type == Node_Type.function_call && ((metahub.logic.types.Function_Call) last).name == "map")
+                if (last.type == Node_Type.function_call && ((metahub.logic.nodes.Function_Call) last).name == "map")
                 {
                     map(constraint, expression, imp);
                     return;
@@ -140,7 +140,7 @@ namespace metahub.imperative.code
 
             var a = constraint.first.Where(i=>i.type == Node_Type.property).Select(i => ((Property_Reference)i).tie).ToList();
             var b = path.Where(t=>t.type == Node_Type.property).Select(i => ((Property_Reference)i).tie).ToList();
-            var func = ((metahub.logic.types.Function_Call) constraint.second.Last());
+            var func = ((metahub.logic.nodes.Function_Call) constraint.second.Last());
             var lambda = func.input.Last() as Lambda;
             link(a, b, Parse.reverse_path(b.Take(a.Count - 1)), lambda, imp);
             link(b, a, a.Take(a.Count - 1), lambda, imp);

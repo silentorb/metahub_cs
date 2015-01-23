@@ -52,5 +52,30 @@ namespace metahub.logic.nodes
             other.inputs.Add(this);
             output = other;
         }
+
+        public List<Node> get_path()
+        {
+            var result = new List<Node>();
+            result.Add(this);
+            var current = this;
+            while (current.inputs.Count > 0)
+            {
+                current = current.inputs[0];
+                result.Add(current);
+            }
+
+            return result;
+        }
+
+        public Node get_last()
+        {
+            var current = this;
+            while (current.inputs.Count > 0)
+            {
+                current = current.inputs[0];
+            }
+
+            return current;
+        }
     }
 }

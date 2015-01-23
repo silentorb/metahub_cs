@@ -207,7 +207,10 @@ namespace metahub.render.targets.cpp
                     return render_iterator_block((Iterator)statement);
 
                 case Expression_Type.function_call:
-                    return line(render_function_call((Function_Call)statement, null) + ";");
+                    return line(render_function_call((Class_Function_Call)statement, null) + ";");
+
+                case Expression_Type.platform_function:
+                    return line(render_platform_function_call((Platform_Function)statement, null) + ";");
 
                 case Expression_Type.assignment:
                     return render_assignment((Assignment)statement);
@@ -764,7 +767,7 @@ namespace metahub.render.targets.cpp
                     break;
 
                 case Expression_Type.function_call:
-                    result = render_function_call((Function_Call)expression, parent);
+                    result = render_function_call((Class_Function_Call)expression, parent);
                     break;
 
                 case Expression_Type.property_function_call:
@@ -978,7 +981,70 @@ namespace metahub.render.targets.cpp
                 : ref_full + portal_name + " = " + args;
         }
 
-        string render_function_call(Function_Call expression, Expression parent)
+        private string render_platform_function_call(Platform_Function expression, Expression parent)
+        {
+            var ref_string = expression.reference != null
+          ? render_expression(expression.reference)
+          : "";
+
+            var ref_full = ref_string.Length > 0
+                ? ref_string + get_connector(Expression.get_end(expression.reference))
+                : "";
+
+            switch (expression.name)
+            {
+                case "count":
+                    return ref_full + "size()";
+
+                case "add":
+                    {
+                        var first = render_expression(expression.args[0]);
+                        //var dereference = is_pointer(expression.args.Last().get_signature()) ? "*" : "";
+                        return ref_full + "push_back(" + first + ")";
+                    }
+
+                case "contains":
+                    {
+                        var first = render_expression(expression.args[0]);
+                        return "std::find(" + ref_full + "begin(), "
+                               + ref_full + "end(), " + first + ") != " + ref_full + "end()";
+                    }
+
+                case "dist":
+                    {
+                        //var signature = expression.args[0].get_signature();
+                        var first = render_expression(expression.args[0]);
+                        //var dereference = is_pointer(signature) ? "*" : "";
+                        return ref_full + "distance(" + first + ")";
+                    }
+
+                case "first":
+                    return "[0]";
+
+                case "last":
+                    return ref_full + "back()";
+
+                case "pop":
+                    return ref_full + "pop_back()";
+
+                case "remove":
+                    {
+                        var first = render_expression(expression.args[0]);
+                        return ref_full + "erase(std::remove(" + ref_full + "begin(), "
+                            + ref_full + "end(), " + first + "), " + ref_full + "end())";
+                    }
+
+                case "rand":
+                    float min = (float)((Literal)expression.args[0]).value;
+                    float max = (float)((Literal)expression.args[1]).value;
+                    return "rand() % " + (max - min) + (min < 0 ? " - " + -min : " + " + min);
+
+                default:
+                    throw new Exception("Unsupported platform-specific function: " + expression.name + ".");
+            }
+        }
+
+        string render_function_call(Class_Function_Call expression, Expression parent)
         {
             var ref_string = expression.reference != null
                ? render_expression(expression.reference)
@@ -987,62 +1053,6 @@ namespace metahub.render.targets.cpp
             var ref_full = ref_string.Length > 0
                 ? ref_string + get_connector(Expression.get_end(expression.reference))
                 : "";
-
-            if (expression.is_platform_specific)
-            {
-                //var args = Node.args.map((a)=> a).join(", ");
-                switch (expression.name)
-                {
-                    case "count":
-                        return ref_full + "size()";
-
-                    case "add":
-                        {
-                            var first = render_expression(expression.args[0]);
-                            //var dereference = is_pointer(expression.args.Last().get_signature()) ? "*" : "";
-                            return ref_full + "push_back(" + first + ")";
-                        }
-
-                    case "contains":
-                        {
-                            var first = render_expression(expression.args[0]);
-                            return "std::find(" + ref_full + "begin(), "
-                                   + ref_full + "end(), " + first + ") != " + ref_full + "end()";
-                        }
-
-                    case "dist":
-                        {
-                            //var signature = expression.args[0].get_signature();
-                            var first = render_expression(expression.args[0]);
-                            //var dereference = is_pointer(signature) ? "*" : "";
-                            return ref_full + "distance(" + first + ")";
-                        }
-
-                    case "first":
-                        return "[0]";
-
-                    case "last":
-                        return ref_full + "back()";
-
-                    case "pop":
-                        return ref_full + "pop_back()";
-
-                    case "remove":
-                        {
-                            var first = render_expression(expression.args[0]);
-                            return ref_full + "erase(std::remove(" + ref_full + "begin(), "
-                                + ref_full + "end(), " + first + "), " + ref_full + "end())";
-                        }
-
-                    case "rand":
-                        float min = (float)((Literal)expression.args[0]).value;
-                        float max = (float)((Literal)expression.args[1]).value;
-                        return "rand() % " + (max - min) + (min < 0 ? " - " + -min : " + " + min);
-
-                    default:
-                        throw new Exception("Unsupported platform-specific function: " + expression.name + ".");
-                }
-            }
 
             return ref_full + expression.name + "(" +
                 expression.args.Select(a => render_expression(a))

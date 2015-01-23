@@ -198,7 +198,7 @@ namespace metahub.imperative
 
                 case Node_Type.function_call:
                     var function_call = (metahub.logic.nodes.Function_Call) expression;
-                    return new Function_Call(function_call.name, null, null, true)
+                    return new Platform_Function(function_call.name, null, null)
                         {
                             profession = new Profession(function_call.signature, this)
                         };
@@ -334,8 +334,8 @@ namespace metahub.imperative
                     case Node_Type.function_call:
                     case Node_Type.function_scope:
                         var function_token = (metahub.logic.nodes.Function_Call)token;
-                        result.Add(new Function_Call(function_token.name, null,
-                            new List<Expression>(), true));
+                        result.Add(new Platform_Function(function_token.name, null,
+                            new List<Expression>()));
                         break;
 
                     default:

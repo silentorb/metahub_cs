@@ -7,7 +7,7 @@ using metahub.logic.nodes;
 using metahub.schema;
 using Constraint = metahub.logic.schema.Constraint;
 using Expression = metahub.imperative.types.Expression;
-using Function_Call = metahub.imperative.types.Function_Call;
+using Function_Call = metahub.imperative.types.Class_Function_Call;
 using Parameter = metahub.imperative.types.Parameter;
 using Variable = metahub.imperative.types.Variable;
 
@@ -41,7 +41,7 @@ namespace metahub.imperative.code
             var block = dungeon.create_block(function_name, scope, definition.expressions);
             var mid = block.divide(null, new List<Expression> {
 			new Tie_Expression(tie,
-				new Function_Call("add", null, new Expression[]{ new Variable(item) }, true)
+				new Platform_Function("add", null, new Expression[]{ new Variable(item) })
 			)
 		});
             var post = block.divide("post");
@@ -83,15 +83,15 @@ namespace metahub.imperative.code
 
             var block = dungeon.create_block(function_name, scope, definition.expressions);
             var mid = block.divide(null, new List<Expression>{
-                new Flow_Control(Flow_Control_Type.If, new Function_Call("contains", new Tie_Expression(tie),
+                new Flow_Control(Flow_Control_Type.If, new Platform_Function("contains", new Tie_Expression(tie),
                     new List<Expression>
                     {
                       new Variable(item)  
-                    }, true), 
+                    }), 
                 new List<Expression> {
                     new Statement("return")
                  }),
-                 new Function_Call("remove", new Tie_Expression(tie), new Expression[] {new Variable(item)}, true)
+                 new Platform_Function("remove", new Tie_Expression(tie), new Expression[] {new Variable(item)})
             });
             var post = block.divide("post");
 
@@ -104,7 +104,7 @@ namespace metahub.imperative.code
         public static void generate_constraint(Constraint constraint, Overlord imp)
         {
             var path = constraint.first;
-            var property_expression = (Property_Reference)path[0];
+            var property_expression = (Property_Reference)path;
             var reference = property_expression.tie;
             //int amount = target.render_expression(constraint.Node, constraint.scope);
             var expression = constraint.second;
@@ -117,8 +117,8 @@ namespace metahub.imperative.code
             //}
             //}
 
-            var other_path = expression;
-            if (other_path.Length > 0)
+            var other_path = expression.get_path();
+            if (other_path.Count > 0)
             {
                 var last = other_path.Last();
                 if (last.type == Node_Type.function_call && ((metahub.logic.nodes.Function_Call) last).name == "map")
@@ -132,15 +132,15 @@ namespace metahub.imperative.code
 
         }
 
-        public static void map(Constraint constraint, Node[] expression, Overlord imp)
+        public static void map(Constraint constraint, Node expression, Overlord imp)
         {
-            var start = constraint.first.First();
+            var start = constraint.first;
             var end = constraint.first;
-            var path = constraint.second;
+            var path = constraint.second.get_path();
 
-            var a = constraint.first.Where(i=>i.type == Node_Type.property).Select(i => ((Property_Reference)i).tie).ToList();
+            var a = constraint.first.get_path().Where(i=>i.type == Node_Type.property).Select(i => ((Property_Reference)i).tie).ToList();
             var b = path.Where(t=>t.type == Node_Type.property).Select(i => ((Property_Reference)i).tie).ToList();
-            var func = ((metahub.logic.nodes.Function_Call) constraint.second.Last());
+            var func = ((metahub.logic.nodes.Function_Call) constraint.second.get_last());
             var lambda = func.input.Last() as Lambda;
             link(a, b, Parse.reverse_path(b.Take(a.Count - 1)), lambda, imp);
             link(b, a, a.Take(a.Count - 1), lambda, imp);
@@ -177,11 +177,11 @@ namespace metahub.imperative.code
                                          {
                                              other_rail = second_end.other_rail
                                          });
-                    creation_block.Add(new Function_Call("add", new Variable(item, new Portal_Expression(portal)),
+                    creation_block.Add(new Platform_Function("add", new Variable(item, new Portal_Expression(portal)),
                         new List<Expression>
                         {
                             new Variable(item2)
-                        }, true));
+                        }));
 
                 }
 
@@ -194,11 +194,11 @@ namespace metahub.imperative.code
                                      {
                                          other_rail = a_end.other_rail
                                      });
-                    creation_block.Add(new Function_Call("add", new Variable(item2, new Portal_Expression(portal)),
+                    creation_block.Add(new Platform_Function("add", new Variable(item2, new Portal_Expression(portal)),
                         new List<Expression>
                         {
                             new Variable(item)
-                        }, true));
+                        }));
                 }
             }
 
@@ -209,8 +209,8 @@ namespace metahub.imperative.code
                 foreach (Constraint constraint in mapping.constraints)
                 {
                     var first = constraint.first;
-                    var first_tie = a_end.other_rail.get_tie_or_error(((Property_Reference)first[1]).tie.name);
-                    var second = (Property_Reference)Overlord.simplify_path(constraint.second)[0];
+                    var first_tie = a_end.other_rail.get_tie_or_error(((Property_Reference)first.get_path()[1]).tie.name);
+                    var second = (Property_Reference)constraint.second.get_last();
                     //var second_tie = second.children[] as Property_Reference;
                     creation_block.Add(new Variable(item2, new Function_Call("set_" + first_tie.name, null,
                         new Expression[]
@@ -262,9 +262,9 @@ namespace metahub.imperative.code
             function_block.add_many("post", block);
         }
 
-        public static void size(Constraint constraint, Node[] expression, Overlord imp)
+        public static void size(Constraint constraint, Node expression, Overlord imp)
         {
-            var path = constraint.first;
+            var path = constraint.first.get_path();
             var property_expression = (Property_Reference)path[0];
             var reference = property_expression.tie;
 
@@ -278,13 +278,13 @@ namespace metahub.imperative.code
             var new_scope = new Scope(block.scope);
             var child = new_scope.create_symbol("child", new Signature(Kind.reference, rail));
             var logic_scope = new Scope();
-            var imp_ref = imp.convert_path(Overlord.simplify_path(constraint.first), logic_scope);
-            imp_ref.child = new Function_Call("count", null, null, true);
+            var imp_ref = imp.convert_path(constraint.first.get_path(), logic_scope);
+            imp_ref.child = new Platform_Function("count", null, null);
             Flow_Control flow_control = new Flow_Control(Flow_Control_Type.While, new Operation("<",
             new List<Expression>{
 				imp_ref,
 				//{ type: "path", path: constraint.reference },
-				imp.convert_path(expression, logic_scope)
+				imp.translate(expression, logic_scope)
         }), new List<Expression> {
 			new Declare_Variable(child, new Instantiate(rail)),
             Imp.call_initialize(dungeon, imp.get_dungeon(rail), new Variable(child)),

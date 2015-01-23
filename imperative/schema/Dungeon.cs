@@ -7,7 +7,7 @@ using metahub.logic.schema;
 using metahub.logic.nodes;
 using metahub.schema;
 using Expression = metahub.imperative.types.Expression;
-using Function_Call = metahub.imperative.types.Function_Call;
+using Function_Call = metahub.imperative.types.Class_Function_Call;
 using Namespace = metahub.imperative.types.Namespace;
 using Parameter = metahub.imperative.types.Parameter;
 using Variable = metahub.imperative.types.Variable;
@@ -535,11 +535,21 @@ namespace metahub.imperative.schema
                     break;
 
                 case Expression_Type.function_call:
-                    var definition = (Function_Call)expression;
-                    if (definition.is_platform_specific && !used_functions.ContainsKey(definition.name))
-                        used_functions[definition.name] = new Used_Function(definition.name, definition.is_platform_specific);
+                    {
+                        var definition = (Function_Call) expression;
+                        analyze_expressions(definition.args);
+                    }
+                    break;
 
-                    analyze_expressions(definition.args);
+                case Expression_Type.platform_function:
+                    {
+                        var definition = (Function_Call) expression;
+                        if (!used_functions.ContainsKey(definition.name))
+                            used_functions[definition.name] = new Used_Function(definition.name,
+                                                                                true);
+
+                        analyze_expressions(definition.args);
+                    }
                     break;
 
                 case Expression_Type.property_function_call:

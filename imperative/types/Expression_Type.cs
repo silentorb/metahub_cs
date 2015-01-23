@@ -8,6 +8,7 @@ namespace metahub.imperative.types
         variable,
         function_call,
         property_function_call,
+        platform_function,
         instantiate,
         parent_class,
         operation,

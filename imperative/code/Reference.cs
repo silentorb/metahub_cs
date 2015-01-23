@@ -30,9 +30,10 @@ namespace metahub.imperative.code
         public static void generate_constraint(Constraint constraint, Tie tie, Overlord overlord)
         {
             if (constraint.op == "!="
-                        && constraint.second.Length == 1 && constraint.second[0].type == Node_Type.Null)
+                        //&& constraint.second.Length == 1 
+                        && constraint.second.type == Node_Type.Null)
             {
-                not_null((Tie_Expression)overlord.convert_path(constraint.first, null), overlord);
+                not_null((Tie_Expression)overlord.convert_path(constraint.first.get_path(), null), overlord);
             }
             else if (Constraint.circular_operators.Contains(constraint.op))
             {
@@ -48,12 +49,14 @@ namespace metahub.imperative.code
 
         public static void self_modifying(Constraint constraint, Tie tie, Overlord overlord)
         {
-            var property_node = (metahub.logic.nodes.Property_Reference)constraint.first.First();
+            /*
+            var property_node = (metahub.logic.nodes.Property_Reference)constraint.first;
             var dungeon = overlord.get_dungeon(property_node.tie.rail);
             var imp = dungeon.summon_imp("tick");
-            var path = constraint.first.Take(constraint.first.Length - 1).ToArray();
+            var first_path = constraint.first.get_path();
+            var path = first_path.Take(first_path.Count - 1).ToArray();
             var path1 = overlord.convert_path(path, null);
-            var path2 = overlord.convert_path(constraint.first, null);
+            var path2 = overlord.convert_path(first_path, null);
             var signature = path1.get_signature();
             var other_dungeon = overlord.get_dungeon(signature.rail);
             //var tie = ((metahub.logic.types.Property_Reference)first).tie;
@@ -64,7 +67,7 @@ namespace metahub.imperative.code
                       new Operation(constraint.op.Substring(0, 1), new List<Expression>
                           {
                               path2,
-                              overlord.convert_path(constraint.second, null)
+                              overlord.convert_path(constraint.second.get_path(), null)
                           })  
                     }
                 );
@@ -74,6 +77,7 @@ namespace metahub.imperative.code
             //    constraint.op,
             //    overlord.convert_path(constraint.second, null)
             //    ));
+             * */
         }
 
         public static List<Expression> constraint(Constraint constraint, Tie tie, Overlord overlord, Scope scope)
@@ -96,20 +100,20 @@ namespace metahub.imperative.code
 
             }
 
-            var reference = overlord.convert_path(constraint.first, scope);
+            var reference = overlord.translate(constraint.first, scope);
 
             //if (constraint.first.)
 
             if (op == ">=<")
             {
-                var args = ((metahub.logic.nodes.Array_Expression)constraint.second[0]).children;
+                var args = ((metahub.logic.nodes.Array_Expression)constraint.second).children;
                 return generate_constraint(reference, ">=", overlord.translate(args[0]))
                     .Union(
                         generate_constraint(reference, "<=", overlord.translate(args[1]))
                     ).ToList();
             }
 
-            return generate_constraint(reference, constraint.op, overlord.translate(constraint.second.First()));
+            return generate_constraint(reference, constraint.op, overlord.translate(constraint.second));
         }
 
         public static void not_null(Tie_Expression reference, Overlord overlord)
@@ -216,7 +220,7 @@ namespace metahub.imperative.code
                     }, new Signature(Kind.Bool));
 
             var setter_block = dungeon.get_block("set_" + property_reference.tie.other_tie.tie_name);
-            setter_block.add("post", new Function_Call(function_name, null, new Expression[]
+            setter_block.add("post", new Class_Function_Call(function_name, null, new Expression[]
                 {
                     new Tie_Expression(constraint.endpoints.First())
                 })
@@ -227,7 +231,7 @@ namespace metahub.imperative.code
                 {
                     new Flow_Control(Flow_Control_Type.If, 
                     new Operation("==", new List<Expression>{ 
-                    new Function_Call(function_name, null, new Expression[]
+                    new Class_Function_Call(function_name, null, new Expression[]
                         {
                             new Variable(scope.find_or_exception("value"))
                         }),
@@ -255,9 +259,9 @@ namespace metahub.imperative.code
             {
                 Imp.If(Imp.operation(inverse_operators[constraint.op], 
                         new Variable(it, new Tie_Expression(constraint.endpoints.Last(),
-                            new Function_Call("dist", null,
-                                new List<Expression> { new Variable(value) }, true))),
-                        overlord.translate(constraint.second.First(), scope)
+                            new Platform_Function("dist", null,
+                                new List<Expression> { new Variable(value) }))),
+                        overlord.translate(constraint.second, scope)
                     ),
                     new List<Expression>
                     {
@@ -303,11 +307,11 @@ namespace metahub.imperative.code
             imp.expressions.Add(new Statement("return",
                 new Operation(constraint.op, new List<Expression>{ 
                     new Portal_Expression(portal, new Tie_Expression(constraint.endpoints.Last(),
-                            new Function_Call("dist", null,
+                            new Platform_Function("dist", null,
                                 new List<Expression> { new Portal_Expression(portal, new Tie_Expression(constraint.endpoints.Last()
-                                    )) { index = new Literal((int)1) } }, true)))
+                                    )) { index = new Literal((int)1) } })))
                                 { index = new Literal((int)0) },
-                    overlord.translate(constraint.second.First(), scope)
+                    overlord.translate(constraint.second, scope)
                 })
             ));
             return result;

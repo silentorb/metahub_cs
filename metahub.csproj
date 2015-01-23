@@ -72,6 +72,8 @@
     <Compile Include="imperative\schema\Symbol.cs" />
     <Compile Include="imperative\summoner\Summoner.cs" />
     <Compile Include="imperative\summoner\Template.cs" />
+    <Compile Include="imperative\types\Function_Call.cs" />
+    <Compile Include="imperative\types\Platform_Function.cs" />
     <Compile Include="imperative\types\Operation.cs" />
     <Compile Include="imperative\types\Portal_Expression.cs" />
     <Compile Include="imperative\types\Property_Function_Call.cs" />
@@ -101,7 +103,7 @@
     <Compile Include="imperative\types\Expression.cs" />
     <Compile Include="imperative\types\Expression_Type.cs" />
     <Compile Include="imperative\types\Flow_Control.cs" />
-    <Compile Include="imperative\types\Function_Call.cs" />
+    <Compile Include="imperative\types\Class_Function_Call.cs" />
     <Compile Include="imperative\types\Function_Definition.cs" />
     <Compile Include="imperative\types\Insert.cs" />
     <Compile Include="imperative\types\Instantiate.cs" />

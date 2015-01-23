@@ -13,7 +13,7 @@ namespace metahub.logic
         public Dictionary<string, Constraint_Group> groups = new Dictionary<string, Constraint_Group>();
         public bool needs_hub = false;
 
-        public Constraint create_constraint(Node[] first, Node[] second, string op, Lambda lambda, Scope scope)
+        public Constraint create_constraint(Node first, Node second, string op, Lambda lambda, Scope scope)
         {
             var constraint = new Constraint(first, second, op, lambda) { constraint_scope = scope.constraint_scope };
 

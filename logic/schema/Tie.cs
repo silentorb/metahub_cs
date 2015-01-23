@@ -119,8 +119,8 @@ namespace metahub.logic.schema
 
         class Temp
         {
-            public Node[] min;
-            public Node[] max;
+            public Node min;
+            public Node max;
             public List<Tie> path;
         }
 
@@ -138,7 +138,7 @@ namespace metahub.logic.schema
 
             foreach (var constraint in constraints)
             {
-                var path = constraint.first.Where(t=>t as Property_Reference != null)
+                var path = constraint.first.get_path().Where(t=>t as Property_Reference != null)
                     .Select(t => ((Property_Reference)t).tie).ToList();
                 path.RemoveAt(0);
                 var path_name = path.Select(t => t.name).join(".");
@@ -154,9 +154,9 @@ namespace metahub.logic.schema
 
                 if (constraint.op == ">=<")
                 {
-                    var args = (Array_Expression)constraint.second[0];
-                    pairs[path_name].min = new[] { args.children[0] };
-                    pairs[path_name].max = new[] { args.children[1] };
+                    var args = (Array_Expression)constraint.second;
+                    pairs[path_name].min = args.children[0];
+                    pairs[path_name].max = args.children[1];
                 }
                 else if (constraint.op == ">" || constraint.op == ">=")
                 {
@@ -174,8 +174,8 @@ namespace metahub.logic.schema
                 {
                     //trace("range", fullname());
                     ranges.Add(new Range_Float(
-                        get_expression_float(pair.min.Last()),
-                        get_expression_float(pair.max.Last()), pair.path));
+                        get_expression_float(pair.min.get_path().Last()),
+                        get_expression_float(pair.max.get_path().Last()), pair.path));
                 }
             }
         }

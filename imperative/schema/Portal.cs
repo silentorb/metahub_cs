@@ -88,12 +88,12 @@ namespace metahub.imperative.schema
                                                      ? new Path(range.path.Select((t) => new Tie_Expression(t)))
                                                      : null
                     );
-                block.add(new Assignment(reference, "=", new Function_Call("rand", null,
+                block.add(new Assignment(reference, "=", new Platform_Function("rand", null,
                     new Expression[]
 	                {
 	                    new Literal(range.min),
                                     new Literal(range.max)
-	                }, true)));
+	                })));
             }
 
             if (tie.has_setter())

@@ -120,7 +120,7 @@ namespace metahub.imperative.schema
             if (imp.parameters.Count > 0)
                 args.Add(new Portal_Expression(caller.all_portals["hub"]));
 
-            return new Function_Call(imp, reference, args);
+            return new Class_Function_Call(imp, reference, args);
         }
     }
 }

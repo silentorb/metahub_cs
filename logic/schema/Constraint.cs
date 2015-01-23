@@ -15,8 +15,8 @@ namespace metahub.logic.schema
             "/="
         };
 
-        public Node[] first;
-        public Node[] second;
+        public Node first;
+        public Node second;
         public bool is_circular = false;
         public string op;
         public List<Constraint> other_constraints = new List<Constraint>();
@@ -26,25 +26,26 @@ namespace metahub.logic.schema
         public Constraint_Group group;
         public Constraint_Scope constraint_scope;
 
-        public Constraint(Node[] first, Node[] second, string op, Lambda lambda)
+        public Constraint(Node first, Node second, string op, Lambda lambda)
         {
             this.op = op;
             this.first = first;
             this.second = second;
             this.lambda = lambda;
-            endpoints = get_endpoints(first);
+            endpoints = get_endpoints(first).Concat(get_endpoints(second)).Distinct().ToList();
 
             if (circular_operators.Contains(op))
             {
                 is_circular = true;
-                var property_node = (Property_Reference) first[0];
+                var property_node = (Property_Reference) first;
                 property_node.tie.rail.needs_tick = true;
             }
         }
 
-        public static List<Tie> get_endpoints(Node[] path)
+        public static List<Tie> get_endpoints(Node node)
         {
-            var i = path.Length;
+            var path = node.get_path();
+            var i = path.Count;
             while (--i >= 0)
             {
                 var token = path[i];
@@ -61,13 +62,13 @@ namespace metahub.logic.schema
                         var result = new List<Tie>();
                         foreach (var t in ((Array_Expression)token).children)
                         {
-                            result.AddRange(get_endpoints(new Node[] { t }));
+                            result.AddRange(get_endpoints(t));
                         }
                         return result.Distinct().ToList();
 
-                    case Node_Type.path:
-                        return get_endpoints(((Reference_Path)token).children.ToArray());
-                        break;
+                    //case Node_Type.path:
+                    //    return get_endpoints(token);
+                    //    break;
                 }
 
             }

@@ -247,11 +247,11 @@ namespace metahub.imperative.summoner
 
                         if (imp != null)
                         {
-                            func = new Function_Call(imp);
+                            func = new Class_Function_Call(imp);
                         }
                         else if (Imp.platform_specific_functions.Contains(token))
                         {
-                            func = new Function_Call(token, null, null, true);
+                            func = new Platform_Function(token, null, null);
                         }
                         else
                         {

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using metahub.logic.schema;
 using metahub.logic.nodes;
-using Function_Call = metahub.imperative.types.Function_Call;
+using Function_Call = metahub.imperative.types.Class_Function_Call;
 using Path = metahub.imperative.types.Path;
 
 namespace metahub.imperative.code
@@ -102,6 +102,8 @@ namespace metahub.imperative.code
 
         public static List<Tie> get_path(Node expression)
         {
+            return expression.get_path().OfType<Property_Reference>().Select(n => n.tie).ToList();
+
             switch (expression.type)
             {
 

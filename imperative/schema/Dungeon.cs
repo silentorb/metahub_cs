@@ -4,6 +4,7 @@ using System.Linq;
 using metahub.imperative.code;
 using metahub.imperative.types;
 using metahub.jackolantern;
+using metahub.jackolantern.code;
 using metahub.logic.schema;
 using metahub.logic.nodes;
 using metahub.schema;

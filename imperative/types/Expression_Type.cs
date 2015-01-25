@@ -17,6 +17,7 @@ namespace metahub.imperative.types
         self,
         path,
         portal,
+        comment,
 
         // Statements
         statement,

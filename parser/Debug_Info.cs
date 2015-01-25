@@ -2,10 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using metahub.parser;
 using metahub.render;
 
-namespace metahub.lab
+namespace metahub.parser
 {
 
     class Debug_Info

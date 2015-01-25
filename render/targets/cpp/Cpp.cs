@@ -206,14 +206,17 @@ namespace metahub.render.targets.cpp
                 case Expression_Type.iterator:
                     return render_iterator_block((Iterator)statement);
 
-                case Expression_Type.function_call:
-                    return line(render_function_call((Class_Function_Call)statement, null) + ";");
+                //case Expression_Type.function_call:
+                //    return line(render_function_call((Class_Function_Call)statement, null) + ";");
 
-                case Expression_Type.platform_function:
-                    return line(render_platform_function_call((Platform_Function)statement, null) + ";");
+                //case Expression_Type.platform_function:
+                //    return line(render_platform_function_call((Platform_Function)statement, null) + ";");
 
                 case Expression_Type.assignment:
                     return render_assignment((Assignment)statement);
+
+                case Expression_Type.comment:
+                    return line(render_comment((Comment)statement));
 
                 case Expression_Type.declare_variable:
                     return render_variable_declaration((Declare_Variable)statement);
@@ -792,6 +795,9 @@ namespace metahub.render.targets.cpp
                     result = "FOOO";
                     break;
 
+                case Expression_Type.comment:
+                    return render_comment((Comment) expression);
+
                 case Expression_Type.variable:
                     var variable_expression = (Variable)expression;
                     //if (find_variable(variable_expression.symbol.name) == null)
@@ -1086,6 +1092,13 @@ namespace metahub.render.targets.cpp
         string render_assignment(Assignment statement)
         {
             return line(render_expression(statement.target) + " " + statement.op + " " + render_expression(statement.expression) + ";");
+        }
+
+        string render_comment(Comment comment)
+        {
+            return comment.is_multiline 
+                ? "/* " + comment.text + "*/" 
+                : "// " + comment.text;
         }
 
         //public object render_expression (Node Node, Scope scope) {

@@ -1,23 +1,16 @@
 using System.Collections.Generic;
 using System.Linq;
+using metahub.imperative.code;
 using metahub.imperative.schema;
 using metahub.imperative.summoner;
 using metahub.imperative.types;
-using metahub.jackolantern;
 using metahub.logic.schema;
-//using metahub.logic.types;
 using metahub.schema;
 using Constraint = metahub.logic.schema.Constraint;
-using Literal_Value = metahub.logic.nodes.Literal_Value;
 using Node_Type = metahub.logic.nodes.Node_Type;
 
-namespace metahub.imperative.code
+namespace metahub.jackolantern.code
 {
-
-    /**
-     * ...
-     * @author Christopher W. Johnson
-     */
     public class Reference
     {
         public static Dictionary<string, string> inverse_operators = new Dictionary<string, string>

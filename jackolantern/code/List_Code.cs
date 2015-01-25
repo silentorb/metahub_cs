@@ -1,8 +1,8 @@
 using System.Collections.Generic;
 using System.Linq;
+using metahub.imperative.code;
 using metahub.imperative.schema;
 using metahub.imperative.types;
-using metahub.jackolantern;
 using metahub.logic.schema;
 using metahub.logic.nodes;
 using metahub.schema;
@@ -12,7 +12,7 @@ using Function_Call = metahub.imperative.types.Class_Function_Call;
 using Parameter = metahub.imperative.types.Parameter;
 using Variable = metahub.imperative.types.Variable;
 
-namespace metahub.imperative.code
+namespace metahub.jackolantern.code
 {
     public class List_Code
     {

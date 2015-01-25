@@ -7,6 +7,8 @@ using metahub.imperative;
 using metahub.imperative.code;
 using metahub.imperative.schema;
 using metahub.imperative.types;
+using metahub.jackolantern.code;
+using metahub.jackolantern.pumpkins;
 using metahub.logic;
 using metahub.logic.nodes;
 using metahub.logic.schema;
@@ -20,10 +22,19 @@ namespace metahub.jackolantern
         public Logician logician;
         public Overlord overlord;
 
+        public Dictionary<string, Carver> carvers = new Dictionary<string, Carver>();
+
         public JackOLantern(Logician logician, Overlord overlord)
         {
             this.logician = logician;
             this.overlord = overlord;
+            initialize_functions();
+        }
+
+        public void initialize_functions()
+        {
+            carvers["="] = new Equals(this);
+            carvers["contains"] = new Contains(this);
         }
 
         public void run(Target target)
@@ -35,10 +46,36 @@ namespace metahub.jackolantern
                implement_constraint(constraint);
             }
 
-            foreach (var func in logician.functions)
+            foreach (var pumpkin in logician.functions)
             {
-
+                carve_pumpkin(pumpkin);
             }
+        }
+
+        public void carve_pumpkin(Function_Call2 pumpkin)
+        {
+            if (pumpkin.name[0] == '@')
+                pumpkin.name = pumpkin.name.Substring(1);
+
+            var carver = carvers[pumpkin.name];
+            carver.carve(pumpkin);
+        }
+
+        public static string get_setter_name(Portal portal)
+        {
+            return portal.is_list
+                ? "add_" + portal.name
+                : "set_" + portal.name;
+        }
+
+        public Imp get_setter(Portal portal)
+        {
+            return portal.dungeon.summon_imp(get_setter_name(portal));
+        }
+
+        public Imp get_initialize(Dungeon dungeon)
+        {
+            return dungeon.summon_imp("initialize");
         }
 
         public void implement_constraint(Constraint constraint)
@@ -56,7 +93,6 @@ namespace metahub.jackolantern
                 }
             }
         }
-
 
         public void generate_code(Target target)
         {

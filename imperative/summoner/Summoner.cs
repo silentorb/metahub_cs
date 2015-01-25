@@ -5,7 +5,6 @@ using System.Text;
 using metahub.Properties;
 using metahub.imperative.schema;
 using metahub.imperative.types;
-using metahub.lab;
 using metahub.logic.schema;
 using metahub.parser;
 using metahub.schema;

@@ -774,6 +774,9 @@ namespace metahub.render.targets.cpp
                     result = render_property_function_call((Property_Function_Call)expression, parent);
                     break;
 
+                case Expression_Type.platform_function:
+                    return render_platform_function_call((Platform_Function)expression, null);
+
                 case Expression_Type.instantiate:
                     result = render_instantiation((Instantiate)expression);
                     break;

@@ -543,7 +543,7 @@ namespace metahub.imperative.schema
 
                 case Expression_Type.platform_function:
                     {
-                        var definition = (Function_Call) expression;
+                        var definition = (Platform_Function) expression;
                         if (!used_functions.ContainsKey(definition.name))
                             used_functions[definition.name] = new Used_Function(definition.name,
                                                                                 true);

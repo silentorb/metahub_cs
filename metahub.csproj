@@ -62,6 +62,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="imperative\code\Piece_Maker.cs" />
+    <Compile Include="imperative\schema\Platform_Function_Info.cs" />
     <Compile Include="imperative\schema\Profession.cs" />
     <Compile Include="imperative\schema\Realm.cs" />
     <Compile Include="imperative\summoner\Context.cs" />

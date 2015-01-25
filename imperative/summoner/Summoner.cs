@@ -247,18 +247,17 @@ namespace metahub.imperative.summoner
 
                         if (imp != null)
                         {
-                            func = new Class_Function_Call(imp);
+                            func = new Class_Function_Call(imp, result);
                         }
                         else if (Imp.platform_specific_functions.Contains(token))
                         {
-                            func = new Platform_Function(token, null, null);
+                            func = new Platform_Function(token, result, null);
                         }
                         else
                         {
                             throw new Exception("Invalid path token: " + token);
                         }
 
-                        func.reference = result;
                         if (source.patterns[1].patterns.Length > 0)
                             func.args =
                                 source.patterns[1].patterns[0].patterns.Select(p => process_expression(p, context))

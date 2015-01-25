@@ -33,7 +33,7 @@ namespace metahub.imperative.code
                         //&& constraint.second.Length == 1 
                         && constraint.second.type == Node_Type.Null)
             {
-                not_null((Tie_Expression)overlord.convert_path(constraint.first.get_path(), null), overlord);
+                not_null((Portal_Expression)overlord.convert_path(constraint.first.get_path(), null), overlord);
             }
             else if (Constraint.circular_operators.Contains(constraint.op))
             {
@@ -116,12 +116,11 @@ namespace metahub.imperative.code
             return generate_constraint(reference, constraint.op, overlord.translate(constraint.second));
         }
 
-        public static void not_null(Tie_Expression reference, Overlord overlord)
+        public static void not_null(Portal_Expression reference, Overlord overlord)
         {
-            var tie = reference.tie;
-            var dungeon = overlord.get_dungeon(tie.rail);
-            var other_dungeon = overlord.get_dungeon(tie.other_rail);
-            var portal = dungeon.all_portals[tie.tie_name];
+            var portal = reference.portal;
+            var dungeon = portal.dungeon;
+            var other_dungeon = portal.other_dungeon;
             var block = dungeon.get_block("initialize");
 
             block.add_many("pre", new List<Expression>
@@ -258,9 +257,8 @@ namespace metahub.imperative.code
             return new List<Expression>
             {
                 Imp.If(Imp.operation(inverse_operators[constraint.op], 
-                        new Variable(it, new Tie_Expression(constraint.endpoints.Last(),
-                            new Platform_Function("dist", null,
-                                new List<Expression> { new Variable(value) }))),
+                    new Platform_Function("dist", new Variable(it, new Tie_Expression(constraint.endpoints.Last())),
+                        new List<Expression> { new Variable(value) }),
                         overlord.translate(constraint.second, scope)
                     ),
                     new List<Expression>
@@ -306,11 +304,10 @@ namespace metahub.imperative.code
             var imp = result.summon_imp("is_resolved");
             imp.expressions.Add(new Statement("return",
                 new Operation(constraint.op, new List<Expression>{ 
-                    new Portal_Expression(portal, new Tie_Expression(constraint.endpoints.Last(),
-                            new Platform_Function("dist", null,
+                            new Platform_Function("dist", new Portal_Expression(portal, 
+                                new Tie_Expression(constraint.endpoints.Last())){ index = new Literal((int)0) },
                                 new List<Expression> { new Portal_Expression(portal, new Tie_Expression(constraint.endpoints.Last()
-                                    )) { index = new Literal((int)1) } })))
-                                { index = new Literal((int)0) },
+                                    )) { index = new Literal((int)1) } }),
                     overlord.translate(constraint.second, scope)
                 })
             ));

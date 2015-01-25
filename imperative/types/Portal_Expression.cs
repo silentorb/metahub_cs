@@ -8,7 +8,7 @@ using metahub.logic.schema;
 
 namespace metahub.imperative.types
 {
-    class Portal_Expression : Expression
+    public class Portal_Expression : Expression
     {
         public Portal portal;
         public Expression index;

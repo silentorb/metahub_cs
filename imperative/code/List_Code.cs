@@ -40,9 +40,7 @@ namespace metahub.imperative.code
 
             var block = dungeon.create_block(function_name, scope, definition.expressions);
             var mid = block.divide(null, new List<Expression> {
-			new Tie_Expression(tie,
-				new Platform_Function("add", null, new Expression[]{ new Variable(item) })
-			)
+				new Platform_Function("add", new Tie_Expression(tie), new Expression[]{ new Variable(item) })
 		});
             var post = block.divide("post");
 
@@ -83,7 +81,8 @@ namespace metahub.imperative.code
 
             var block = dungeon.create_block(function_name, scope, definition.expressions);
             var mid = block.divide(null, new List<Expression>{
-                new Flow_Control(Flow_Control_Type.If, new Platform_Function("contains", new Tie_Expression(tie),
+                new Flow_Control(Flow_Control_Type.If, new Platform_Function("contains",
+                    new Tie_Expression(tie),
                     new List<Expression>
                     {
                       new Variable(item)  
@@ -278,8 +277,8 @@ namespace metahub.imperative.code
             var new_scope = new Scope(block.scope);
             var child = new_scope.create_symbol("child", new Signature(Kind.reference, rail));
             var logic_scope = new Scope();
-            var imp_ref = imp.convert_path(constraint.first.get_path(), logic_scope);
-            imp_ref.child = new Platform_Function("count", null, null);
+            var path1 = constraint.first.get_path();
+            var imp_ref = imp.convert_path(path1.Take(path1.Count - 1).ToArray(), logic_scope);
             Flow_Control flow_control = new Flow_Control(Flow_Control_Type.While, new Operation("<",
             new List<Expression>{
 				imp_ref,

@@ -28,6 +28,9 @@ namespace metahub.imperative
 
         public Overlord(Hub hub, string target_name)
         {
+            if (Platform_Function_Info.functions == null)
+                Platform_Function_Info.initialize();
+
             railway = new Railway(hub, target_name);
             if (Piece_Maker.templates == null)
                 Piece_Maker.initialize(this);
@@ -191,6 +194,30 @@ namespace metahub.imperative
 
         public Expression translate(Node expression, Scope scope = null)
         {
+            var result = _translate(expression, scope);
+            if (expression.inputs.Count > 0)
+            {
+                if (result.child != null)
+                    throw new Exception("Looks like a bug.");
+
+                var input = expression.inputs[0];
+                if (input.type == Node_Type.function_call)
+                {
+                    var function_call = (metahub.logic.nodes.Function_Call)input;
+                    return new Platform_Function(function_call.name, result, null)
+                    {
+                        profession = new Profession(function_call.signature, this)
+                    };
+                }
+
+                result.child = translate(expression.inputs[0]);                    
+            }
+
+            return result;
+        }
+
+        Expression _translate(Node expression, Scope scope = null)
+        {
             switch (expression.type)
             {
                 case Node_Type.literal:
@@ -265,6 +292,12 @@ namespace metahub.imperative
             return new Path(path);
         }
 
+        public Portal get_portal(Tie tie)
+        {
+            var dungeon = get_dungeon(tie.rail);
+            return dungeon.all_portals[tie.tie_name];
+        }
+
         public Expression convert_path(IList<metahub.logic.nodes.Node> path, Scope scope = null)
         {
             List<Expression> result = new List<Expression>();
@@ -300,7 +333,7 @@ namespace metahub.imperative
                             if (tie == null)
                                 throw new Exception("tie is null: " + property_token.tie.fullname());
 
-                            result.Add(new Tie_Expression(tie));
+                            result.Add(new Portal_Expression(get_portal(tie)));
                             rail = tie.other_rail;
                         }
                         break;

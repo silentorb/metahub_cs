@@ -22,9 +22,12 @@ public class Expression {
         }
     }
 
+    public string stack_trace;
+
     public Expression parent = null;
 	
 	protected Expression(Expression_Type type, Expression child = null) {
+        stack_trace = Environment.StackTrace;
 		this.type = type;
 	    this.child = child;
 	    if (child != null)

@@ -137,7 +137,7 @@ namespace metahub
         public void generate(Pattern_Source source, string target_name, string destination)
         {
             Overlord overlord = new Overlord(this, target_name);
-            var logician = new Logician();
+            var logician = new Logician(overlord.railway);
             run_data(source, overlord.railway, logician);
             Generator generator = new Generator(this);
             var target = generator.create_target(overlord, target_name);

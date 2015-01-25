@@ -10,8 +10,15 @@ namespace metahub.logic
     public class Logician
     {
         public List<Constraint> constraints = new List<Constraint>();
+        public List<Function_Call2> functions = new List<Function_Call2>(); 
         public Dictionary<string, Constraint_Group> groups = new Dictionary<string, Constraint_Group>();
         public bool needs_hub = false;
+        private Railway railway;
+
+        public Logician(Railway railway)
+        {
+            this.railway = railway;
+        }
 
         public Constraint create_constraint(Node first, Node second, string op, Lambda lambda, Scope scope)
         {
@@ -25,6 +32,13 @@ namespace metahub.logic
                 constraints.Add(constraint);
 
             return constraint;
+        }
+
+        public Function_Call2 call(string name, IEnumerable<Node> inputs, Scope scope = null)
+        {
+            var result = new Function_Call2(name, inputs);
+            functions.Add(result);
+            return result;
         }
 
         public void analyze()

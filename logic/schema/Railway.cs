@@ -128,7 +128,15 @@ public class Railway {
 	
 	void initialize_root_functions () {
 		root_region.add_functions(new List<Function_Info> {
-		
+
+			new Function_Info("contains", new List<Signature> {
+				new Signature(Kind.Bool, new []
+				    {
+				        new Signature(Kind.list),
+				        new Signature(Kind.reference)
+				    })
+			}),
+
 			new Function_Info("count", new List<Signature> {
 				new Signature(Kind.Int, new [] { new Signature(Kind.list)})
 			}),

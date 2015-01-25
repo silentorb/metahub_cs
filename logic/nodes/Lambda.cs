@@ -8,9 +8,9 @@ namespace metahub.logic.nodes
     {
         public List<Parameter> parameters;
         public List<Constraint> constraints;
-        public Scope scope;
+        public Logic_Scope scope;
 
-        public Lambda(Scope scope, IEnumerable<Parameter> parameters, IEnumerable<Constraint> constraints)
+        public Lambda(Logic_Scope scope, IEnumerable<Parameter> parameters, IEnumerable<Constraint> constraints)
             : base(Node_Type.lambda)
         {
             this.scope = scope;

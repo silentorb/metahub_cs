@@ -147,6 +147,7 @@
     <Compile Include="logic\nodes\Property_Reference.cs" />
     <Compile Include="logic\nodes\Scope_Expression.cs" />
     <Compile Include="logic\nodes\Variable.cs" />
+    <Compile Include="jackolantern\JackOLantern.cs" />
     <Compile Include="parser\Bootstrap.cs" />
     <Compile Include="parser\Parser_Context.cs" />
     <Compile Include="parser\Definition.cs" />
@@ -211,6 +212,7 @@
   <ItemGroup>
     <Content Include="resources\cpp\list.h" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

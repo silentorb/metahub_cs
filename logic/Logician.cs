@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using metahub.imperative;
 using metahub.logic.schema;
 using metahub.logic.nodes;
 
@@ -13,14 +14,14 @@ namespace metahub.logic
         public List<Function_Call2> functions = new List<Function_Call2>(); 
         public Dictionary<string, Constraint_Group> groups = new Dictionary<string, Constraint_Group>();
         public bool needs_hub = false;
-        private Railway railway;
+        public Railway railway;
 
         public Logician(Railway railway)
         {
             this.railway = railway;
         }
 
-        public Constraint create_constraint(Node first, Node second, string op, Lambda lambda, Scope scope)
+        public Constraint create_constraint(Node first, Node second, string op, Lambda lambda, Logic_Scope scope)
         {
             var constraint = new Constraint(first, second, op, lambda) { constraint_scope = scope.constraint_scope };
 
@@ -34,7 +35,7 @@ namespace metahub.logic
             return constraint;
         }
 
-        public Function_Call2 call(string name, IEnumerable<Node> inputs, Scope scope = null)
+        public Function_Call2 call(string name, IEnumerable<Node> inputs, Logic_Scope scope = null)
         {
             var result = new Function_Call2(name, inputs);
             functions.Add(result);
@@ -48,6 +49,8 @@ namespace metahub.logic
                 if (constraint.is_circular)
                     needs_hub = true;
             }
+
         }
+
     }
 }

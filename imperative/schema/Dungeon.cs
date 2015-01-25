@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using metahub.imperative.code;
 using metahub.imperative.types;
+using metahub.jackolantern;
 using metahub.logic.schema;
 using metahub.logic.nodes;
 using metahub.schema;
@@ -155,7 +156,7 @@ namespace metahub.imperative.schema
 
         }
 
-        public void generate_code2()
+        public void generate_code2(JackOLantern jack)
         {
             var statements = blocks["class_definition"];
             if (overlord.logician.needs_hub)
@@ -169,7 +170,7 @@ namespace metahub.imperative.schema
             {
                 if (tie.type == Kind.list)
                 {
-                    List_Code.common_functions(tie, overlord, statements.scope);
+                    List_Code.common_functions(tie, jack, statements.scope);
                 }
                 else
                 {

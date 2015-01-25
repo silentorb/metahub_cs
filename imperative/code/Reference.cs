@@ -3,6 +3,7 @@ using System.Linq;
 using metahub.imperative.schema;
 using metahub.imperative.summoner;
 using metahub.imperative.types;
+using metahub.jackolantern;
 using metahub.logic.schema;
 //using metahub.logic.types;
 using metahub.schema;
@@ -27,27 +28,27 @@ namespace metahub.imperative.code
             {"<=", ">"}
         };
 
-        public static void generate_constraint(Constraint constraint, Tie tie, Overlord overlord)
+        public static void generate_constraint(Constraint constraint, Tie tie, JackOLantern jack)
         {
             if (constraint.op == "!="
                         //&& constraint.second.Length == 1 
                         && constraint.second.type == Node_Type.Null)
             {
-                not_null((Portal_Expression)overlord.convert_path(constraint.first.get_path(), null), overlord);
+                not_null((Portal_Expression)jack.convert_path(constraint.first.get_path(), null), jack);
             }
             else if (Constraint.circular_operators.Contains(constraint.op))
             {
-                self_modifying(constraint, tie, overlord);
+                self_modifying(constraint, tie, jack);
             }
             else
             {
-                var dungeon = overlord.get_dungeon(tie.rail);
+                var dungeon = jack.overlord.get_dungeon(tie.rail);
                 var block = dungeon.get_block("set_" + tie.tie_name);
-                block.add_many("pre", Reference.constraint(constraint, tie, overlord, block.scope));
+                block.add_many("pre", Reference.constraint(constraint, tie, jack, block.scope));
             }
         }
 
-        public static void self_modifying(Constraint constraint, Tie tie, Overlord overlord)
+        public static void self_modifying(Constraint constraint, Tie tie, JackOLantern jack)
         {
             /*
             var property_node = (metahub.logic.nodes.Property_Reference)constraint.first;
@@ -80,7 +81,7 @@ namespace metahub.imperative.code
              * */
         }
 
-        public static List<Expression> constraint(Constraint constraint, Tie tie, Overlord overlord, Scope scope)
+        public static List<Expression> constraint(Constraint constraint, Tie tie, JackOLantern jack, Scope scope)
         {
             var op = constraint.op;
             //return new List<Expression>();
@@ -92,7 +93,7 @@ namespace metahub.imperative.code
                 switch (constraint.constraint_scope.name)
                 {
                     case "cross":
-                        return cross(constraint, tie, overlord, scope);
+                        return cross(constraint, tie, jack, scope);
                     case "map":
                         //List_Code.map(constraint, constraint.second, overlord);
                         return new List<Expression>();
@@ -100,23 +101,23 @@ namespace metahub.imperative.code
 
             }
 
-            var reference = overlord.translate(constraint.first, scope);
+            var reference = jack.translate(constraint.first, scope);
 
             //if (constraint.first.)
 
             if (op == ">=<")
             {
                 var args = ((metahub.logic.nodes.Array_Expression)constraint.second).children;
-                return generate_constraint(reference, ">=", overlord.translate(args[0]))
+                return generate_constraint(reference, ">=", jack.translate(args[0]))
                     .Union(
-                        generate_constraint(reference, "<=", overlord.translate(args[1]))
+                        generate_constraint(reference, "<=", jack.translate(args[1]))
                     ).ToList();
             }
 
-            return generate_constraint(reference, constraint.op, overlord.translate(constraint.second));
+            return generate_constraint(reference, constraint.op, jack.translate(constraint.second));
         }
 
-        public static void not_null(Portal_Expression reference, Overlord overlord)
+        public static void not_null(Portal_Expression reference, JackOLantern jack)
         {
             var portal = reference.portal;
             var dungeon = portal.dungeon;
@@ -170,12 +171,12 @@ namespace metahub.imperative.code
 		    )};
         }
 
-        public static List<Expression> cross(Constraint constraint, Tie tie, Overlord overlord, Scope scope)
+        public static List<Expression> cross(Constraint constraint, Tie tie, JackOLantern jack, Scope scope)
         {
             //var dungeon = imp.get_dungeon(tie.rail);
             //dungeon.concat_block(tie.tie_name + "_set_pre", Reference.constraint(constraint, this));
             var property_reference = (metahub.logic.nodes.Property_Reference)constraint.constraint_scope.caller.First();
-            var dungeon = overlord.get_dungeon(tie.rail);
+            var dungeon = jack.overlord.get_dungeon(tie.rail);
 
             var iterator_scope = new Scope(scope);
             var it = iterator_scope.create_symbol("item", new Signature(Kind.reference, property_reference.tie.other_rail));
@@ -213,7 +214,7 @@ namespace metahub.imperative.code
                                                          new Statement("continue")
                                                      })
 
-                                         }.Concat(dist(constraint, tie, overlord, iterator_scope, it, value))
+                                         }.Concat(dist(constraint, tie, jack, iterator_scope, it, value))
                                           .ToList()),
                         new Statement("return", new Literal(true))
                     }, new Signature(Kind.Bool));
@@ -243,11 +244,11 @@ namespace metahub.imperative.code
 
         }
 
-        public static List<Expression> dist(Constraint constraint, Tie tie, Overlord overlord, Scope scope, Symbol it, Symbol value)
+        public static List<Expression> dist(Constraint constraint, Tie tie, JackOLantern jack, Scope scope, Symbol it, Symbol value)
         {
             var offset = scope.create_symbol("offset", value.signature);
-            var dungeon = overlord.get_dungeon(tie.rail);
-            var conflict_dungeon = create_conflict_class(constraint, tie.rail, overlord);
+            var dungeon = jack.overlord.get_dungeon(tie.rail);
+            var conflict_dungeon = create_conflict_class(constraint, tie.rail, jack);
             var conflict_nodes = conflict_dungeon.all_portals["nodes"];
             var conflict = scope.create_symbol("conflict", new Profession(Kind.reference, conflict_dungeon));
             var mold_tie = tie.rail.get_tie_or_error("mold");
@@ -259,7 +260,7 @@ namespace metahub.imperative.code
                 Imp.If(Imp.operation(inverse_operators[constraint.op], 
                     new Platform_Function("dist", new Variable(it, new Tie_Expression(constraint.endpoints.Last())),
                         new List<Expression> { new Variable(value) }),
-                        overlord.translate(constraint.second, scope)
+                        jack.translate(constraint.second, scope)
                     ),
                     new List<Expression>
                     {
@@ -287,16 +288,16 @@ namespace metahub.imperative.code
             };
         }
 
-        static Dungeon create_conflict_class(Constraint constraint, Rail rail, Overlord overlord)
+        static Dungeon create_conflict_class(Constraint constraint, Rail rail, JackOLantern jack)
         {
-            var previous = overlord.get_dungeon(rail);
+            var previous = jack.overlord.get_dungeon(rail);
 
             var context = new Summoner.Context(previous.realm);
             context.add_pattern("Node_Type", new Profession(Kind.reference, previous));
             context.add_pattern("Class_Name", "Distance_Conflict");
             context.add_pattern("Class_Name", "Distance_Conflict");
 
-            var result = overlord.summon_dungeon(Piece_Maker.templates["Distance_Conflict"], context);
+            var result = jack.overlord.summon_dungeon(Piece_Maker.templates["Distance_Conflict"], context);
             var portal = result.all_portals["nodes"];
             var scope = new Scope();
             scope.add_map("a", () => new Portal_Expression(portal) { index = new Literal((int)0) });
@@ -308,7 +309,7 @@ namespace metahub.imperative.code
                                 new Tie_Expression(constraint.endpoints.Last())){ index = new Literal((int)0) },
                                 new List<Expression> { new Portal_Expression(portal, new Tie_Expression(constraint.endpoints.Last()
                                     )) { index = new Literal((int)1) } }),
-                    overlord.translate(constraint.second, scope)
+                    jack.translate(constraint.second, scope)
                 })
             ));
             return result;

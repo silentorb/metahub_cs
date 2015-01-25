@@ -5,9 +5,9 @@ namespace metahub.logic.nodes
 
     public class Scope_Expression : Block
     {
-        public Scope scope;
+        public Logic_Scope scope;
 
-        public Scope_Expression(Scope scope, List<Node> expressions)
+        public Scope_Expression(Logic_Scope scope, List<Node> expressions)
             : base(expressions)
         {
             type = Node_Type.scope;

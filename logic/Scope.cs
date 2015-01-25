@@ -7,9 +7,9 @@ namespace metahub.logic {
  * ...
  * @author Christopher W. Johnson
  */
-public class Scope {
+public class Logic_Scope {
 	public Rail rail;
-	public Scope parent;
+	public Logic_Scope parent;
 	public Dictionary<string, Signature> variables = new Dictionary<string, Signature>();
     public bool is_map = false;
     public Node[] caller;
@@ -17,7 +17,7 @@ public class Scope {
     public Signature[] parameters;
     public Constraint_Scope constraint_scope;
 
-	public Scope(Scope parent = null) {
+	public Logic_Scope(Logic_Scope parent = null) {
 		this.parent = parent;
 	    if (parent != null)
 	    {

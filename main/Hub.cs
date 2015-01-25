@@ -6,6 +6,7 @@ using System.IO;
 using Newtonsoft.Json;
 using metahub.Properties;
 using metahub.imperative;
+using metahub.jackolantern;
 using metahub.logic.schema;
 using metahub.logic;
 using metahub.parser;
@@ -142,6 +143,12 @@ namespace metahub
             Generator generator = new Generator(this);
             var target = generator.create_target(overlord, target_name);
             overlord.run(logician, target);
+            logician.analyze();
+            var jack = new JackOLantern(logician, overlord);
+            jack.run(target);
+            overlord.flatten();
+            overlord.post_analyze();
+
             generator.run(target, destination);
         }
 

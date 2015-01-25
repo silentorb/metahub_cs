@@ -28,7 +28,7 @@ namespace metahub.logic
             this.logician = logician;
         }
 
-        public Node convert_expression(Pattern_Source source, Scope scope, Node previous = null)
+        public Node convert_expression(Pattern_Source source, Logic_Scope scope, Node previous = null)
         {
             switch (source.type)
             {
@@ -94,7 +94,7 @@ namespace metahub.logic
             throw new Exception("Invalid expression type: " + source.type);
         }
 
-        public Node convert_statement(Pattern_Source source, Scope scope, Signature type = null)
+        public Node convert_statement(Pattern_Source source, Logic_Scope scope, Signature type = null)
         {
             switch (source.type)
             {
@@ -126,7 +126,7 @@ namespace metahub.logic
                     return null;
 
                 case "group_scope":
-                    var new_scope = new Scope(scope);
+                    var new_scope = new Logic_Scope(scope);
                     scope.group = logician.groups[source.patterns[2].text];
 
                     create_block(source.patterns[4].patterns, new_scope);
@@ -139,7 +139,7 @@ namespace metahub.logic
             throw new Exception("Invalid block: " + source.type);
         }
 
-        Node constraint(Pattern_Source source, Scope scope)
+        Node constraint(Pattern_Source source, Logic_Scope scope)
         {
             //var reference = Reference.from_scope(source.path, scope);
             var reference = process_path(source.patterns[0], scope);
@@ -172,7 +172,7 @@ namespace metahub.logic
             return new Constraint_Wrapper(constraint);
         }
 
-        private Node new_constraint(Pattern_Source source, Scope scope)
+        private Node new_constraint(Pattern_Source source, Logic_Scope scope)
         {
             var name = source.patterns[2].text;
             return logician.call(name, new List<Node>
@@ -182,7 +182,7 @@ namespace metahub.logic
                 });
         }
 
-        Node create_block(Pattern_Source[] expressions, Scope scope)
+        Node create_block(Pattern_Source[] expressions, Logic_Scope scope)
         {
             var count = expressions.Length;
             if (count == 0)
@@ -204,14 +204,14 @@ namespace metahub.logic
             return block;
         }
 
-        Node create_literal(Pattern_Source source, Scope scope)
+        Node create_literal(Pattern_Source source, Logic_Scope scope)
         {
             var type = get_type(source.value);
             //return new metahub.code.expressions.Literal(source.value, type);
             return new Literal_Value(source.value, Kind.unknown);
         }
 
-        Node process_path(Pattern_Source source, Scope scope)
+        Node process_path(Pattern_Source source, Logic_Scope scope)
         {
             var token_scope = scope;
             Rail rail = token_scope.rail;
@@ -237,7 +237,7 @@ namespace metahub.logic
                     current = convert_expression(item, token_scope, previous);
                     var signature = current.get_signature();
                     if (signature.rail != null)
-                        token_scope = new Scope(scope) { rail = signature.rail };
+                        token_scope = new Logic_Scope(scope) { rail = signature.rail };
                 }
 
                 if (result == null)
@@ -278,14 +278,14 @@ namespace metahub.logic
             throw new Exception("Could not find type.");
         }
 
-        Node create_scope(Pattern_Source source, Scope scope)
+        Node create_scope(Pattern_Source source, Logic_Scope scope)
         {
             var path = source.patterns[0].patterns;
             if (path.Length == 0)
                 throw new Exception("Scope path is empty for node creation.");
 
             Node expression = null;
-            Scope new_scope = new Scope();
+            Logic_Scope new_scope = new Logic_Scope();
             if (path.Length == 1 && path[0].text == "new")
             {
                 //new_scope_definition.only_new = true;
@@ -308,14 +308,14 @@ namespace metahub.logic
         //return new Set_Weight(source.weight, convert_statement(source.statement, scope));
         //}
 
-        Node create_array(Pattern_Source source, Scope scope)
+        Node create_array(Pattern_Source source, Logic_Scope scope)
         {
             var sub_array = source.patterns.Select(i => convert_expression(i, scope)).ToArray();
             return new Array_Expression(sub_array);
             //return new Block(source.patterns.Select((e) => convert_expression(e, scope)));
         }
 
-        Node process_complex_token(Pattern_Source source, Scope scope)
+        Node process_complex_token(Pattern_Source source, Logic_Scope scope)
         {
             var reference = convert_expression(source.patterns[0], scope);
             if (source.patterns[1].patterns.Length > 0)
@@ -326,10 +326,10 @@ namespace metahub.logic
             return reference;
         }
 
-        Lambda create_lambda(Pattern_Source source, Scope scope)
+        Lambda create_lambda(Pattern_Source source, Logic_Scope scope)
         {
             var expressions = source.patterns[2].patterns;
-            Scope new_scope = new Scope(scope);
+            Logic_Scope new_scope = new Logic_Scope(scope);
             new_scope.is_map = true;
             var parameters = source.patterns[0].patterns;
             int i = 0;
@@ -359,7 +359,7 @@ namespace metahub.logic
         //    return new Function_Scope(expression, lambda);
         //}
 
-        Node process_expression(Pattern_Source source, Scope scope)
+        Node process_expression(Pattern_Source source, Logic_Scope scope)
         {
             if (source.patterns.Length < 2)
                 return convert_expression(source.patterns[0], scope);
@@ -394,10 +394,10 @@ namespace metahub.logic
             //}
         }
 
-        Node process_function_call(Pattern_Source source, Node previous, Scope scope)
+        Node process_function_call(Pattern_Source source, Node previous, Logic_Scope scope)
         {
             var name = source.text ?? source.patterns[0].text;
-            var function_scope = new Scope(scope.parent) { constraint_scope = new Constraint_Scope(name, new [] { previous })};
+            var function_scope = new Logic_Scope(scope.parent) { constraint_scope = new Constraint_Scope(name, new [] { previous })};
             var func = railway.root_region.functions[name];
             var previous_signature = previous.get_signature();
             var function_signature = func.get_signature(previous_signature).clone();
@@ -443,7 +443,7 @@ namespace metahub.logic
             throw new Exception("Could not find signature.");
         }
 
-        Constraint_Group create_group(Pattern_Source source, Scope scope)
+        Constraint_Group create_group(Pattern_Source source, Logic_Scope scope)
         {
             var group = new Constraint_Group(source.patterns[4].text);
             logician.groups[group.name] = group;

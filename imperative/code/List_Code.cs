@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using metahub.imperative.schema;
 using metahub.imperative.types;
+using metahub.jackolantern;
 using metahub.logic.schema;
 using metahub.logic.nodes;
 using metahub.schema;
@@ -15,16 +16,16 @@ namespace metahub.imperative.code
 {
     public class List_Code
     {
-        public static void common_functions(Tie tie, Overlord imp, Scope scope)
+        public static void common_functions(Tie tie, JackOLantern imp, Scope scope)
         {
             add_function(tie, imp, scope);
             remove_function(tie, imp, scope);
         }
 
-        public static void add_function(Tie tie, Overlord overlord, Scope scope)
+        public static void add_function(Tie tie, JackOLantern jack, Scope scope)
         {
             var rail = tie.rail;
-            var dungeon = overlord.get_dungeon(tie.rail);
+            var dungeon = jack.overlord.get_dungeon(tie.rail);
 
             var function_name = "add_" + tie.tie_name;
             var function_scope = new Scope(scope);
@@ -63,10 +64,10 @@ namespace metahub.imperative.code
         }
 
 
-        public static void remove_function(Tie tie, Overlord overlord, Scope scope)
+        public static void remove_function(Tie tie, JackOLantern jack, Scope scope)
         {
             var rail = tie.rail;
-            var dungeon = overlord.get_dungeon(tie.rail);
+            var dungeon = jack.overlord.get_dungeon(tie.rail);
 
             var function_name = "remove_" + tie.tie_name;
             var function_scope = new Scope(scope);
@@ -100,7 +101,7 @@ namespace metahub.imperative.code
             }
         }
 
-        public static void generate_constraint(Constraint constraint, Overlord imp)
+        public static void generate_constraint(Constraint constraint, JackOLantern imp)
         {
             var path = constraint.first;
             var property_expression = (Property_Reference)path;
@@ -131,7 +132,7 @@ namespace metahub.imperative.code
 
         }
 
-        public static void map(Constraint constraint, Node expression, Overlord imp)
+        public static void map(Constraint constraint, Node expression, JackOLantern imp)
         {
             var start = constraint.first;
             var end = constraint.first;
@@ -145,7 +146,7 @@ namespace metahub.imperative.code
             link(b, a, a.Take(a.Count - 1), lambda, imp);
         }
 
-        public static void link(List<Tie> a, List<Tie> b, IEnumerable<Tie> c, Lambda mapping, Overlord overlord)
+        public static void link(List<Tie> a, List<Tie> b, IEnumerable<Tie> c, Lambda mapping, JackOLantern jack)
         {
             var a_start = a[0];
             var a_end = a[a.Count - 1];
@@ -154,7 +155,7 @@ namespace metahub.imperative.code
             var second_end = b[b.Count - 1];
 
             var item_name = second_end.rail.name.ToLower() + "_item";
-            var scope_dungeon = overlord.get_dungeon(a_end.rail);
+            var scope_dungeon = jack.overlord.get_dungeon(a_end.rail);
             var function_block = scope_dungeon.get_block("add_" + a_end.tie_name);
             var new_scope = new Scope(function_block.scope);
             var item = new_scope.create_symbol("item", second_end.get_other_signature());
@@ -165,14 +166,14 @@ namespace metahub.imperative.code
                 new Instantiate(second_end.other_rail))
             );
 
-            var dungeon = overlord.get_dungeon(second_end.rail);
+            var dungeon = jack.overlord.get_dungeon(second_end.rail);
             {
                 {
-                    var item_dungeon = overlord.get_dungeon(a_end.other_rail);
+                    var item_dungeon = jack.overlord.get_dungeon(a_end.other_rail);
                     var portal_name = second_end.other_rail.name + "_links";
                     var portal = item_dungeon.all_portals.ContainsKey(portal_name)
                                      ? item_dungeon.all_portals[portal_name]
-                                     : item_dungeon.add_portal(new Portal(portal_name, Kind.list, item_dungeon, overlord.get_dungeon(second_end.other_rail))
+                                     : item_dungeon.add_portal(new Portal(portal_name, Kind.list, item_dungeon, jack.overlord.get_dungeon(second_end.other_rail))
                                          {
                                              other_rail = second_end.other_rail
                                          });
@@ -185,11 +186,11 @@ namespace metahub.imperative.code
                 }
 
                 {
-                    var item_dungeon = overlord.get_dungeon(second_end.other_rail);
+                    var item_dungeon = jack.overlord.get_dungeon(second_end.other_rail);
                     var portal_name = a_end.other_rail.name + "_links";
                     var portal = item_dungeon.all_portals.ContainsKey(portal_name)
                                      ? item_dungeon.all_portals[portal_name]
-                                     : item_dungeon.add_portal(new Portal(portal_name, Kind.list, item_dungeon, overlord.get_dungeon(a_end.other_rail))
+                                     : item_dungeon.add_portal(new Portal(portal_name, Kind.list, item_dungeon, jack.overlord.get_dungeon(a_end.other_rail))
                                      {
                                          other_rail = a_end.other_rail
                                      });
@@ -201,7 +202,7 @@ namespace metahub.imperative.code
                 }
             }
 
-            creation_block.Add(Imp.call_initialize(scope_dungeon,overlord.get_dungeon(item2.signature.rail), new Variable(item2)));
+            creation_block.Add(Imp.call_initialize(scope_dungeon,jack.overlord.get_dungeon(item2.signature.rail), new Variable(item2)));
 
             if (mapping != null)
             {
@@ -219,10 +220,10 @@ namespace metahub.imperative.code
                        )
                     ));
 
-                    var setter_dungeon = overlord.get_dungeon(a_end.other_rail);
+                    var setter_dungeon = jack.overlord.get_dungeon(a_end.other_rail);
                     var setter_block = setter_dungeon.get_block("set_" + first_tie.name);
                     var value_symbol = setter_block.scope.find_or_exception("value");
-                    //var item_dungeon = overlord.get_dungeon(second_end.other_rail);
+                    //var item_dungeon = jack.get_dungeon(second_end.other_rail);
                     //setter_block.add("post", Imp.setter(first_tie, new Variable(value_symbol), new Tie_Expression(a_end), null));
                     var portal = setter_dungeon.all_portals[second_end.other_rail.name + "_links"];
                     var iterator_scope = new Scope(setter_block.scope);
@@ -261,7 +262,7 @@ namespace metahub.imperative.code
             function_block.add_many("post", block);
         }
 
-        public static void size(Constraint constraint, Node expression, Overlord imp)
+        public static void size(Constraint constraint, Node expression, JackOLantern jack)
         {
             var path = constraint.first.get_path();
             var property_expression = (Property_Reference)path[0];
@@ -270,7 +271,7 @@ namespace metahub.imperative.code
             var instance_name = reference.other_rail.rail_name;
             var rail = reference.other_rail;
             Rail local_rail = reference.rail;
-            var dungeon = imp.get_dungeon(local_rail);
+            var dungeon = jack.overlord.get_dungeon(local_rail);
             var block = dungeon.get_block("initialize");
 
             //const string child = "child";
@@ -278,15 +279,15 @@ namespace metahub.imperative.code
             var child = new_scope.create_symbol("child", new Signature(Kind.reference, rail));
             var logic_scope = new Scope();
             var path1 = constraint.first.get_path();
-            var imp_ref = imp.convert_path(path1.Take(path1.Count - 1).ToArray(), logic_scope);
+            var imp_ref = jack.convert_path(path1.Take(path1.Count - 1).ToArray(), logic_scope);
             Flow_Control flow_control = new Flow_Control(Flow_Control_Type.While, new Operation("<",
             new List<Expression>{
 				imp_ref,
 				//{ type: "path", path: constraint.reference },
-				imp.translate(expression, logic_scope)
+				jack.translate(expression, logic_scope)
         }), new List<Expression> {
 			new Declare_Variable(child, new Instantiate(rail)),
-            Imp.call_initialize(dungeon, imp.get_dungeon(rail), new Variable(child)),
+            Imp.call_initialize(dungeon, jack.overlord.get_dungeon(rail), new Variable(child)),
 			new Function_Call("add_" + reference.tie_name, null,
 			new List<Expression> { new Variable(child), new Null_Value() })
 	});

@@ -1,0 +1,4 @@
+﻿@@@contains(list, item)
+if (item != null && list.contains(item) == false) {
+	list += item
+}

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using metahub.Properties;
 using metahub.imperative.code;
 using metahub.imperative.schema;
@@ -142,6 +143,29 @@ namespace metahub.imperative
         {
             var summoner = new Summoner(this);
             return summoner.process_dungeon(template.source, context);
+        }
+
+        public Expression summon_snippet(Template template, Summoner.Context context)
+        {
+            var summoner = new Summoner(this);
+            return summoner.process_statement(template.source, context);
+        }
+
+        public Dictionary<string, Template> summon_snippets(string code)
+        {
+            var templates = new Dictionary<string, Template>();
+            var match = Regex.Match(code,
+                @"@@@[ \t]*(\w+)[ \t]*\([ \t]*(.*?)[ \t]*\)[ \t]*\r\n(.*?)(?=@@@|\z)", RegexOptions.Singleline);
+            foreach (Match capture in match.Captures)
+            {
+                var name = capture.Groups[1].Value;
+                var parameters = Regex.Split(capture.Groups[2].Value, @"\s*,\s*");
+                var block = capture.Groups[3].Value;
+                var pre_summoner = pre_summon(block, Pre_Summoner.Mode.snippet);
+                templates[name] = new Template(name, parameters, pre_summoner.output.patterns[1]);
+            }
+
+            return templates;
         }
     }
 }

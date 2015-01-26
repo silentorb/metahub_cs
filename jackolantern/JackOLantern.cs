@@ -6,6 +6,7 @@ using metahub.Properties;
 using metahub.imperative;
 using metahub.imperative.code;
 using metahub.imperative.schema;
+using metahub.imperative.summoner;
 using metahub.imperative.types;
 using metahub.jackolantern.code;
 using metahub.jackolantern.pumpkins;
@@ -23,12 +24,14 @@ namespace metahub.jackolantern
         public Overlord overlord;
 
         public Dictionary<string, Carver> carvers = new Dictionary<string, Carver>();
+        public Dictionary<string, Template> templates = null;
 
         public JackOLantern(Logician logician, Overlord overlord)
         {
             this.logician = logician;
             this.overlord = overlord;
             initialize_functions();
+            templates = overlord.summon_snippets(Resources.jackolantern_snippets);
         }
 
         public void initialize_functions()

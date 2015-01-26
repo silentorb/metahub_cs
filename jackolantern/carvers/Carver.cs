@@ -50,6 +50,13 @@ namespace metahub.jackolantern.pumpkins
                 .OfType<Property_Reference>()
                 .Select(p=>jack.overlord.get_portal(p.tie));
         }
+
+        public IEnumerable<Portal> get_endpoints2(Node start)
+        {
+            return aggregate2(start)
+                .OfType<Property_Reference>()
+                .Select(p => jack.overlord.get_portal(p.tie));
+        }
     }
 
 }

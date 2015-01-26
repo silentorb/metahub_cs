@@ -2,7 +2,7 @@
 
 snippet = trim snippet_option final_trim
 
-snippet_option = class | abstract_function | function_definition 
+snippet_option = class | abstract_function | function_definition | statement
 
 none = /&*/
 ws = /\s+/
@@ -22,7 +22,7 @@ string = ('"' /[^"]*/ '"') | ("'" /[^']*/ "'")
 bool = "true" | "false"
 int = /-?[0-9]+/
 float = /-?([0-9]*\.)?[0-9]+f?/
-operator = '+' | '-' | '/' | '*' | '<=' | '>=' | '<' | '>'
+operator = '+' | '-' | '/' | '*' | '<=' | '>=' | '<' | '>' | '==' | '!=' | '&&' | '||'
 set_operator = '=' | '+=' | '-=' | '*=' | '/='
 value = string | bool | int | float
 operation_separator = trim operator trim

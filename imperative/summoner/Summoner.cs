@@ -132,7 +132,7 @@ namespace metahub.imperative.summoner
             return source.patterns.Select(p => process_statement(p, context)).ToList();
         }
 
-        Expression process_statement(Pattern_Source source, Context context)
+        public Expression process_statement(Pattern_Source source, Context context)
         {
             switch (source.type)
             {
@@ -203,7 +203,14 @@ namespace metahub.imperative.summoner
             var dungeon = context.dungeon;
             Expression result = null;
             Expression last = null;
-            foreach (var pattern in source.patterns[0].patterns)
+            var patterns = source.patterns[0].patterns;
+            if (patterns.Length == 1)
+            {
+                if (patterns[0].text == "null")
+                    return new Null_Value();
+            }
+
+            foreach (var pattern in patterns)
             {
                 var token = pattern.text;
                 Expression array_access = pattern.patterns.Length > 0
@@ -211,7 +218,7 @@ namespace metahub.imperative.summoner
                     : null;
 
                 Portal portal = null;
-                Expression next;
+                Expression next = null;
                 var symbol = context.scope.find_or_null(token);
                 if (symbol != null)
                 {
@@ -225,7 +232,7 @@ namespace metahub.imperative.summoner
                         if (rail != null)
                             dungeon = overlord.get_dungeon(rail);
                     }
- 
+
                 }
                 else
                 {
@@ -254,15 +261,28 @@ namespace metahub.imperative.summoner
                         }
                         else
                         {
-                            throw new Exception("Invalid path token: " + token);
+                            var insert = context.get_expression_pattern(token);
+                            if (insert != null)
+                            {
+                                next = insert;
+                            }
+                            else
+                            {
+                                throw new Exception("Invalid path token: " + token);
+                            }
                         }
 
-                        if (source.patterns[1].patterns.Length > 0)
-                            func.args =
-                                source.patterns[1].patterns[0].patterns.Select(p => process_expression(p, context))
-                                                              .ToArray();
+                        if (func != null)
+                        {
+                            if (source.patterns[1].patterns.Length > 0)
+                            {
+                                func.args =
+                                    source.patterns[1].patterns[0].patterns.Select(p => process_expression(p, context))
+                                                                  .ToArray();
+                            }
 
-                        return func;
+                            return func;
+                        }
                     }
                 }
 
@@ -352,7 +372,7 @@ namespace metahub.imperative.summoner
                     return result;
                 }
             }
-            
+
             Realm realm = null;
             for (var i = 0; i < path.Length - 1; ++i)
             {
@@ -381,21 +401,47 @@ namespace metahub.imperative.summoner
             var expression = process_expression(source.patterns[4], context);
             var op = source.patterns[2].text;
             var last = Expression.get_end(reference);
-            if (last.type == Expression_Type.property)
+            //if (last.type == Expression_Type.property)
+            //{
+            //    var tie_expression = (Tie_Expression)last;
+            //    if (tie_expression.tie.type != Kind.list && op != "=")
+            //    {
+            //        expression = Imp.operation(op[0].ToString(), reference.clone(), expression);
+            //    }
+
+            //    if (last != reference)
+            //    {
+            //        last.parent.child = null;
+            //        last.parent = null;
+            //    }
+
+            //    return new Property_Function_Call(Property_Function_Type.set, tie_expression.tie, new List<Expression>
+            //        {
+            //            expression
+            //        }) { reference = reference };
+            //}
+
+            if (last.type == Expression_Type.portal)
             {
-                var tie_expression = (Tie_Expression)last;
-                if (op != "=")
+                var portal_expression = (Portal_Expression)last;
+                var portal = portal_expression.portal;
+                if (portal.type != Kind.list && op != "=")
                 {
                     expression = Imp.operation(op[0].ToString(), reference.clone(), expression);
                 }
 
-                if (last != reference)
+                // The setter absorbs the portal token, so remove it from the reference.
+                if (last == reference)
+                {
+                    reference = null;
+                }
+                else
                 {
                     last.parent.child = null;
                     last.parent = null;
                 }
 
-                return new Property_Function_Call(Property_Function_Type.set, tie_expression.tie, new List<Expression>
+                return new Property_Function_Call(Property_Function_Type.set, portal, new List<Expression>
                     {
                         expression
                     }) { reference = reference };

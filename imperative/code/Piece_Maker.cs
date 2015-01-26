@@ -19,17 +19,19 @@ namespace metahub.imperative.code
 
         public static void initialize(Overlord overlord)
         {
-            templates = new Dictionary<string, Template>();
-            var match = Regex.Match(Resources.piecemaker_snippets,
-                @"@@@[ \t]*(\w+)[ \t]*\([ \t]*(.*?)[ \t]*\)[ \t]*\r\n(.*?)(?=@@@|\z)", RegexOptions.Singleline);
-            foreach (System.Text.RegularExpressions.Match capture in match.Captures)
-            {
-                var name = capture.Groups[1].Value;
-                var parameters = Regex.Split(capture.Groups[2].Value, @"\s*,\s*");
-                var block = capture.Groups[3].Value;
-                var pre_summoner = overlord.pre_summon(block, Pre_Summoner.Mode.snippet);
-                templates[name] = new Template(name, parameters, pre_summoner.output.patterns[1]);
-            }
+            templates = overlord.summon_snippets(Resources.piecemaker_snippets);
+
+            //templates = new Dictionary<string, Template>();
+            //var match = Regex.Match(Resources.piecemaker_snippets,
+            //    @"@@@[ \t]*(\w+)[ \t]*\([ \t]*(.*?)[ \t]*\)[ \t]*\r\n(.*?)(?=@@@|\z)", RegexOptions.Singleline);
+            //foreach (System.Text.RegularExpressions.Match capture in match.Captures)
+            //{
+            //    var name = capture.Groups[1].Value;
+            //    var parameters = Regex.Split(capture.Groups[2].Value, @"\s*,\s*");
+            //    var block = capture.Groups[3].Value;
+            //    var pre_summoner = overlord.pre_summon(block, Pre_Summoner.Mode.snippet);
+            //    templates[name] = new Template(name, parameters, pre_summoner.output.patterns[1]);
+            //}
         }
 
         public static void add_functions(Overlord overlord, Region region)

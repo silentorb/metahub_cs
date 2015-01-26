@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using metahub.imperative.schema;
+using metahub.imperative.types;
 
 namespace metahub.imperative.summoner
 {
@@ -16,10 +17,17 @@ namespace metahub.imperative.summoner
             public Context parent;
             protected Dictionary<string, string> string_inserts = new Dictionary<string, string>();
             protected Dictionary<string, Profession> profession_inserts = new Dictionary<string, Profession>();
+            protected Dictionary<string, Expression_Generator> expression_inserts = new Dictionary<string, Expression_Generator>();
 
             public Context(Realm realm, Dungeon dungeon = null)
             {
                 this.realm = realm;
+                this.dungeon = dungeon;
+            }
+
+            public Context(Dungeon dungeon)
+            {
+                realm = dungeon.realm;
                 this.dungeon = dungeon;
             }
 
@@ -43,6 +51,12 @@ namespace metahub.imperative.summoner
                 return text;
             }
 
+            public Expression_Generator add_pattern(string name, Expression_Generator generator)
+            {
+                expression_inserts[name] = generator;
+                return generator;
+            }
+
             public Profession get_profession_pattern(string name)
             {
                 if (profession_inserts.ContainsKey(name))
@@ -61,6 +75,17 @@ namespace metahub.imperative.summoner
 
                 if (parent != null)
                     return parent.get_string_pattern(name);
+
+                return null;
+            }
+
+            public Expression get_expression_pattern(string name)
+            {
+                if (expression_inserts.ContainsKey(name))
+                    return expression_inserts[name]();
+
+                if (parent != null)
+                    return parent.get_expression_pattern(name);
 
                 return null;
             }

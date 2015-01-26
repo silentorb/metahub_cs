@@ -35,6 +35,7 @@ namespace metahub.imperative.schema
         public List<Imp> children = new List<Imp>();
         public Scope scope;
         public bool is_abstract = false;
+        public Block block;
 
         public Imp(string name, Dungeon dungeon, Portal portal = null)
         {

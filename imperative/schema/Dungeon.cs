@@ -379,6 +379,7 @@ namespace metahub.imperative.schema
             }
 
             var imp = spawn_imp("initialize", new List<Parameter>(), expressions);
+            imp.block = block;
 
             if (overlord.logician.needs_hub && (name != "Hub" || realm.name != "metahub"))
             {

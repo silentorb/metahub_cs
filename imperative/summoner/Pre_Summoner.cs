@@ -149,6 +149,8 @@ namespace metahub.imperative.summoner
             var patterns = data.patterns.ToList();
             MetaHub_Context.group_operators(new[] { "/", "*" }, patterns, dividers);
             MetaHub_Context.group_operators(new[] { "+", "-" }, patterns, dividers);
+            MetaHub_Context.group_operators(new[] { "!=", "==" }, patterns, dividers);
+            MetaHub_Context.group_operators(new[] { "||", "&&" }, patterns, dividers);
             data.patterns = patterns.ToArray();
 
             if (dividers.Count > 0)

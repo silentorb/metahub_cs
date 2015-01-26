@@ -176,7 +176,7 @@ namespace metahub.imperative.schema
                 else
                 {
                     if (tie.has_setter())
-                        generate_setter(tie, statements.scope);
+                        generate_setter(overlord.get_portal(tie));
                 }
             }
 
@@ -232,7 +232,7 @@ namespace metahub.imperative.schema
                 if (imp == null || imp.portal != null)
                 {
                     var portal = all_portals[portal_name];
-                    new_imp = generate_setter(portal.tie, blocks["class_definition"].scope);
+                    new_imp = generate_setter(portal);
                     //new_block = create_block(path, new_imp.scope, new_imp.expressions);
                     //new_block.divide("pre");
                     new_block = blocks[path];
@@ -287,40 +287,39 @@ namespace metahub.imperative.schema
             }
         }
 
-        private Imp generate_setter(Tie tie, Scope scope)
+        public Imp generate_setter(Portal portal)
         {
-            var imp = spawn_imp("set_" + tie.tie_name);
+            var imp = spawn_imp("set_" + portal.name);
             var function_scope = imp.scope;
-            var value = function_scope.create_symbol("value", tie.get_signature());
+            var value = function_scope.create_symbol("value", portal.get_profession());
             imp.parameters.Add(new Parameter(value));
 
             Function_Definition result = new Function_Definition(imp);
 
-            var block = create_block("set_" + tie.tie_name, new Scope(function_scope), result.expressions);
+            var block = create_block("set_" + portal.name, new Scope(function_scope), result.expressions);
 
             var pre = block.divide("pre");
 
             var mid = block.divide(null, new List<Expression> {
 			    new Flow_Control(Flow_Control_Type.If, new Operation("==", new List<Expression> {
-					new Tie_Expression(tie), new Variable(value)
+					new Portal_Expression(portal), new Variable(value)
                 }),
 				    new List<Expression>{
 					    new Statement("return")
                     }),
-			    new Assignment(new Tie_Expression(tie), "=", new Variable(value))
+			    new Assignment(new Portal_Expression(portal), "=", new Variable(value))
 		    });
 
-            if (tie.type == Kind.reference && tie.other_tie != null)
+            if (portal.type == Kind.reference && portal.other_portal != null)
             {
                 var origin = function_scope.create_symbol("origin", new Signature(Kind.reference));
                 imp.parameters.Add(new Parameter(origin, new Null_Value()));
-                var dungeon = overlord.get_dungeon(tie.rail);
 
-                if (tie.other_tie.type == Kind.reference)
+                if (portal.other_portal.type == Kind.reference)
                 {
-                    mid.add(new Tie_Expression(tie,
-                        new Function_Call("set_" + tie.other_tie.tie_name, null,
-                            new List<Expression> { new Self(dungeon) })
+                    mid.add(new Portal_Expression(portal,
+                        new Function_Call("set_" + portal.other_portal.name, null,
+                            new List<Expression> { new Self(portal.dungeon) })
                     ));
                 }
                 else
@@ -333,12 +332,12 @@ namespace metahub.imperative.schema
                             }),
                             new Operation("!=", new List<Expression>
                             {
-                                new Tie_Expression(tie), new Null_Value()
+                                new Portal_Expression(portal), new Null_Value()
                             }),
                         }), new List<Expression> {
-                        new Tie_Expression(tie,
-                        new Function_Call("add_" + tie.other_tie.tie_name, null,
-                            new List<Expression> { new Self(dungeon), new Self(dungeon) }))
+                        new Portal_Expression(portal,
+                        new Function_Call("add_" + portal.other_portal.name, null,
+                            new List<Expression> { new Self(portal.dungeon), new Self(portal.dungeon) }))
                     
                     }));
                 }
@@ -346,13 +345,13 @@ namespace metahub.imperative.schema
 
             var post = block.divide("post");
 
-            if (tie.has_set_post_hook)
-            {
-                post.add(new Function_Call(tie.get_setter_post_name(), null,
-                    new List<Expression> {
-					new Variable(value)
-			    }));
-            }
+            //if (tie.has_set_post_hook)
+            //{
+            //    post.add(new Function_Call(tie.get_setter_post_name(), null,
+            //        new List<Expression> {
+            //        new Variable(value)
+            //    }));
+            //}
 
             return imp;
         }
@@ -582,7 +581,10 @@ namespace metahub.imperative.schema
                 case Expression_Type.variable:
                     var variable_expression = (Variable)expression;
                     if (variable_expression.symbol.profession != null)
+                    {
+                        if (variable_expression.symbol.profession.type == Kind.reference)
                         add_dependency(variable_expression.symbol.profession.dungeon);
+                    }
                     else
                         add_dependency(variable_expression.symbol.signature.rail);
 

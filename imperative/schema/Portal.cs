@@ -45,6 +45,9 @@ namespace metahub.imperative.schema
             other_rail = tie.other_rail;
             name = tie.name;
             is_value = tie.is_value;
+
+            if (tie.other_rail != null)
+                profession.dungeon = dungeon.overlord.get_dungeon(other_rail);
         }
 
         public Portal(string name, Kind type, Dungeon dungeon, Dungeon other_dungeon = null)

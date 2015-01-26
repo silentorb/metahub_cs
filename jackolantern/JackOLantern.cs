@@ -73,7 +73,11 @@ namespace metahub.jackolantern
 
         public Imp get_setter(Portal portal)
         {
-            return portal.dungeon.summon_imp(get_setter_name(portal));
+            var setter = portal.dungeon.summon_imp(get_setter_name(portal));
+            if (setter == null)
+                setter = portal.dungeon.generate_setter(portal);
+
+            return setter;
         }
 
         public Imp get_initialize(Dungeon dungeon)

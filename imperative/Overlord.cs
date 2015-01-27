@@ -154,15 +154,18 @@ namespace metahub.imperative
         public Dictionary<string, Template> summon_snippets(string code)
         {
             var templates = new Dictionary<string, Template>();
-            var match = Regex.Match(code,
+            var match = Regex.Matches(code,
                 @"@@@[ \t]*(\w+)[ \t]*\([ \t]*(.*?)[ \t]*\)[ \t]*\r\n(.*?)(?=@@@|\z)", RegexOptions.Singleline);
-            foreach (Match capture in match.Captures)
+            foreach (Match item in match)
             {
-                var name = capture.Groups[1].Value;
-                var parameters = Regex.Split(capture.Groups[2].Value, @"\s*,\s*");
-                var block = capture.Groups[3].Value;
-                var pre_summoner = pre_summon(block, Pre_Summoner.Mode.snippet);
-                templates[name] = new Template(name, parameters, pre_summoner.output.patterns[1]);
+                foreach (Match capture in item.Captures)
+                {
+                    var name = capture.Groups[1].Value;
+                    var parameters = Regex.Split(capture.Groups[2].Value, @"\s*,\s*");
+                    var block = capture.Groups[3].Value;
+                    var pre_summoner = pre_summon(block, Pre_Summoner.Mode.snippet);
+                    templates[name] = new Template(name, parameters, pre_summoner.output.patterns[1]);
+                }
             }
 
             return templates;

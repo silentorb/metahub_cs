@@ -14,6 +14,7 @@ namespace metahub.logic.nodes
         lambda,
         operation,
         Null,
+        scope_node,
 
         array,
 

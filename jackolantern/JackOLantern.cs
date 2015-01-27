@@ -190,10 +190,7 @@ namespace metahub.jackolantern
                     {
                         profession = new Profession(function_call.signature, overlord)
                     };
-                //metahub.logic.types.Function_Call func = expression;
-                //return new Function_Call(func.name, [translate(func.input)]);
-                //throw new Exception("Not implemented.");
-
+      
                 case Node_Type.path:
                     return convert_path(((metahub.logic.nodes.Reference_Path)expression).children, scope);
 
@@ -209,14 +206,7 @@ namespace metahub.jackolantern
 
                 case Node_Type.lambda:
                     return null;
-                //metahub.logic.types.Lambda lambda = Node;
-                //return new Anonymous_(lambda.parameters.map(function(p)=> new Parameter(p.name, p.signature)),
-                //lambda.expressions.map((e)=> translate(e, lambda.scope))
-                //);
-                //
-                //case metahub.logic.types.Expression_Type.constraint:
-                //return create_lambda_constraint(Node, scope);
-
+     
                 case Node_Type.property:
                     return convert_path(new List<Node> { expression });
 
@@ -333,10 +323,18 @@ namespace metahub.jackolantern
             return package_path(result);
         }
 
-        public static Node[] simplify_path(Node[] path)
+        /*
+                public Expression translate(Node expression, Scope scope = null)
         {
-            return path.Where(t => t.type == Node_Type.property).ToArray();
+            var swamp = new Swamp(this);
+            return swamp.translate(expression, scope);
         }
+        public Expression convert_path(IList<metahub.logic.nodes.Node> path, Scope scope = null)
+        {
+            var swamp = new Swamp(this);
+            return swamp.convert_path(path, scope);
+        }
+        */
 
     }
 }

@@ -295,8 +295,7 @@ namespace metahub.imperative.schema
             imp.parameters.Add(new Parameter(value));
 
             Function_Definition result = new Function_Definition(imp);
-
-            var block = create_block("set_" + portal.name, new Scope(function_scope), result.expressions);
+            var block = imp.block = create_block("set_" + portal.name, new Scope(function_scope), result.expressions);
 
             var pre = block.divide("pre");
 

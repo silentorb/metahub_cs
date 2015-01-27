@@ -94,6 +94,79 @@ namespace metahub.logic
             throw new Exception("Invalid expression type: " + source.type);
         }
 
+
+        public Node convert_expression2(Pattern_Source source, Logic_Scope scope, Node previous = null)
+        {
+            switch (source.type)
+            {
+                case "block":
+                    return create_block(source.patterns, scope);
+
+                case "literal":
+                    return create_literal(source, scope);
+
+                case "path":
+                    return process_path(source, scope);
+
+                case "function":
+                    return process_function_call2(source, previous, scope);
+
+                case "array":
+                    return create_array(source, scope);
+
+                case "expression":
+                    return process_expression2(source, scope);
+
+                case "bool":
+                    return new Literal_Value(bool.Parse(source.text), Kind.Bool);
+
+                case "int":
+                    return new Literal_Value(int.Parse(source.text), Kind.Int);
+
+                case "complex_token":
+                    return process_complex_token(source, scope);
+
+                case "lambda":
+                    return create_lambda(source, scope);
+
+                case "id":
+                    if (source.text == "null")
+                        return new Null_Node();
+
+                    var variable = scope.find(source.text);
+                    if (variable != null)
+                    {
+                        return new Variable(source.text, variable);
+                        //if (variable.rail == null)
+                        //throw new Exception("variabcle rail cannot be null.");
+                    }
+                    else
+                    {
+                        Tie tie = scope.rail.get_tie_or_error(source.text);
+                        var result = new Property_Reference(tie);
+                        var input = previous ?? scope.scope_node;
+                        if (input == null)
+                           throw new Exception("Could not find input node.");
+
+                        result.connect_input(input);
+                        return result;
+                        //if (tie.other_rail != null)
+                        //    rail = tie.other_rail;
+                    }
+                //{
+                //    Tie tie = scope.rail.get_tie_or_error(source.text);
+                //    return new Property_Reference(tie);
+                //}
+
+                case "reference":
+                    return source.patterns.Length < 2
+                        ? convert_expression2(source.patterns[0], scope)
+                        : process_path2(source, scope);
+            }
+
+            throw new Exception("Invalid expression type: " + source.type);
+        }
+
         public Node convert_statement(Pattern_Source source, Logic_Scope scope, Signature type = null)
         {
             switch (source.type)
@@ -175,11 +248,13 @@ namespace metahub.logic
 
         private Node new_constraint(Pattern_Source source, Logic_Scope scope)
         {
+            var new_scope = new Logic_Scope(scope) { scope_node = new Scope_Node(scope.rail) };
+
             var name = source.patterns[2].text;
             return logician.call(name, new List<Node>
                 {
-                    process_path(source.patterns[0], scope),
-                    process_path(source.patterns[4], scope)
+                    process_path2(source.patterns[0], new_scope),
+                    process_path2(source.patterns[4], new_scope)
                 });
         }
 
@@ -210,6 +285,49 @@ namespace metahub.logic
             var type = get_type(source.value);
             //return new metahub.code.expressions.Literal(source.value, type);
             return new Literal_Value(source.value, Kind.unknown);
+        }
+
+        Node process_path2(Pattern_Source source, Logic_Scope scope)
+        {
+            var token_scope = scope;
+            Rail rail = token_scope.rail;
+            Node expression = null;
+            var expressions = source.patterns;
+            if (expressions == null || expressions.Length == 0)
+            {
+                return convert_expression2(source, token_scope);
+            }
+
+            Node previous = null;
+
+            foreach (var item in expressions)
+            {
+                Node current = null;
+                if (item.text == null && item.type == "reference")
+                {
+                    current = process_path2(item, token_scope);
+                }
+                else
+                {
+                    current = convert_expression2(item, token_scope, previous);
+                    var signature = current.get_signature();
+                    if (signature.rail != null)
+                        token_scope = new Logic_Scope(scope) { rail = signature.rail };
+                }
+
+                if (previous == null)
+                {
+                    current.connect_input(scope.scope_node);
+                }
+                else
+                {
+                    previous.connect_output(current);
+                }
+                
+                previous = current;
+            }
+
+            return previous;
         }
 
         Node process_path(Pattern_Source source, Logic_Scope scope)
@@ -247,7 +365,7 @@ namespace metahub.logic
                 }
                 else
                 {
-                    if (current.type == Node_Type.function_call && current.GetType() == typeof (Function_Call2))
+                    if (current.type == Node_Type.function_call && current.GetType() == typeof(Function_Call2))
                     {
                         result = current;
                     }
@@ -361,6 +479,14 @@ namespace metahub.logic
             return new Operation_Node(source.text, source.patterns.Select(p=>convert_expression(p, scope)));
         }
 
+        Node process_expression2(Pattern_Source source, Logic_Scope scope)
+        {
+            if (source.patterns.Length < 2)
+                return convert_expression2(source.patterns[0], scope);
+
+            return new Operation_Node(source.text, source.patterns.Select(p => convert_expression2(p, scope)));
+        }
+
         Node process_function_call(Pattern_Source source, Node previous, Logic_Scope scope)
         {
             var name = source.text ?? source.patterns[0].text;
@@ -405,7 +531,7 @@ namespace metahub.logic
                      if (source.patterns != null)
             {
                 inputs = inputs.Concat(source.patterns[1].patterns[0].patterns
-                    .Select(p => convert_expression(p, scope.parent))
+                    .Select(p => convert_expression2(p, scope.parent))
                     ).ToArray();
             }
 

@@ -2,3 +2,5 @@
 if (item != null && list.contains(item) == false) {
 	list += item
 }
+@@@equals(first, second)
+first = second

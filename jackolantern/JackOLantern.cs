@@ -267,7 +267,7 @@ namespace metahub.jackolantern
                         {
                             var portal = dungeon.all_portals[property_token.tie.name];
                             if (portal == null)
-                                throw new Exception("Portal is null: " + property_token.tie.fullname());
+                                throw new Exception("Portal is null: " + property_token.tie.fullname);
 
                             result.Add(new Portal_Expression(portal));
                             dungeon = portal.other_dungeon;
@@ -276,7 +276,7 @@ namespace metahub.jackolantern
                         {
                             var tie = rail.all_ties[property_token.tie.name];
                             if (tie == null)
-                                throw new Exception("tie is null: " + property_token.tie.fullname());
+                                throw new Exception("tie is null: " + property_token.tie.fullname);
 
                             result.Add(new Portal_Expression(overlord.get_portal(tie)));
                             rail = tie.other_rail;

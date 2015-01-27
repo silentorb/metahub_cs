@@ -113,8 +113,13 @@ namespace metahub.jackolantern.schema
             throw new Exception("Couldn't find other node.");
         }
 
-        public Expression translate(Node node, Node previous, Dir dir, Scope scope)
+        public Expression translate(Node node, Node previous, Dir dir, Scope scope, int step = 0)
         {
+            if (node.type == Node_Type.scope_node && step == 0)
+            {
+                return translate(node.outputs.First(o => o != previous), node, Dir.Out, scope, 1);
+            }
+
             var expression = get_expression(node, previous, dir, scope);
             if (expression == null)
                 return null;
@@ -135,13 +140,22 @@ namespace metahub.jackolantern.schema
             if (next == null)
                 return expression;
 
-            expression.child = translate(next, node, dir, scope);
-            return expression;
+            var child = translate(next, node, dir, scope, step + 1);
+            if (child != null && child.type == Expression_Type.platform_function)
+            {
+                child.child = expression;
+                return child;
+            }
+            else
+            {
+                expression.child = child;
+                return expression;
+            }
         }
 
         Node get_next(Node node, Node previous, Dir dir)
         {
-            
+
             var result = dir == Dir.In
                 ? node.inputs[0]
                 : node.outputs[0];
@@ -157,8 +171,8 @@ namespace metahub.jackolantern.schema
             {
                 case Node_Type.property:
                     {
-                        var property_node = (Property_Reference) node;
-                        var tie = dir == Dir.In
+                        var property_node = (Property_Reference)node;
+                        var tie = dir == Dir.Out
                                       ? property_node.tie
                                       : property_node.tie.other_tie;
                         if (tie == null)
@@ -176,6 +190,13 @@ namespace metahub.jackolantern.schema
                         var property_node = (Property_Reference)previous;
                         var tie = property_node.tie.other_tie;
                         return new Portal_Expression(jack.overlord.get_portal(tie));
+                    }
+
+                case Node_Type.function_call:
+                    {
+                        var function_call = (Function_Call2)node;
+                        var args = function_call.inputs.Select(i => get_expression(i, null, Dir.In, scope));
+                        return new Platform_Function(function_call.name, null, args);
                     }
             }
 
@@ -206,7 +227,7 @@ namespace metahub.jackolantern.schema
                         {
                             var portal = dungeon.all_portals[property_token.tie.name];
                             if (portal == null)
-                                throw new Exception("Portal is null: " + property_token.tie.fullname());
+                                throw new Exception("Portal is null: " + property_token.tie.fullname);
 
                             result.Add(new Portal_Expression(portal));
                             dungeon = portal.other_dungeon;
@@ -215,7 +236,7 @@ namespace metahub.jackolantern.schema
                         {
                             var tie = rail.all_ties[property_token.tie.name];
                             if (tie == null)
-                                throw new Exception("tie is null: " + property_token.tie.fullname());
+                                throw new Exception("tie is null: " + property_token.tie.fullname);
 
                             result.Add(new Portal_Expression(jack.overlord.get_portal(tie)));
                             rail = tie.other_rail;

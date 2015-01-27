@@ -35,6 +35,10 @@ namespace metahub.logic.schema
 
         public List<Constraint> constraints = new List<Constraint>();
 
+        public string fullname 
+        {
+            get { return rail.name + "." + name; }
+        }
         public Tie(Rail rail, Property property)
         {
             this.rail = rail;
@@ -188,11 +192,6 @@ namespace metahub.logic.schema
         public Rail get_abstract_rail()
         {
             return rail;
-        }
-
-        public string fullname()
-        {
-            return rail.name + "." + name;
         }
 
         public object get_default_value()

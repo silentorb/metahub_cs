@@ -83,11 +83,11 @@ namespace metahub.jackolantern.pumpkins
             return result;
         }
 
-        public IEnumerable<Endpoint> get_endpoints4(Node start, bool include_self = false)
+        public List<Endpoint> get_endpoints4(Node start, bool include_self = false)
         {
             return aggregate2(start, include_self)
                 .OfType<Property_Reference>()
-                .Select(p => new Endpoint(p, jack.overlord.get_portal(p.tie)));
+                .Select(p => new Endpoint(p, jack.overlord.get_portal(p.tie))).ToList();
         }
     }
 

@@ -37,11 +37,19 @@ namespace metahub.imperative.schema
         public bool is_abstract = false;
         public Block block;
 
+#if DEBUG
+        public string stack_trace;
+#endif
+
         public Imp(string name, Dungeon dungeon, Portal portal = null)
         {
             this.name = name;
             this.dungeon = dungeon;
             this.portal = portal;
+
+#if DEBUG
+            stack_trace = Environment.StackTrace;
+#endif
         }
 
         //public Function_Call invoke(Imp invoker, IEnumerable<Expression> args = null)
@@ -104,7 +112,7 @@ namespace metahub.imperative.schema
              ) { reference = reference };
         }
 
-        public static Expression call_remove(Tie tie, Expression reference, Expression item )
+        public static Expression call_remove(Tie tie, Expression reference, Expression item)
         {
             return tie.type == Kind.reference
                 ? setter(tie, new Null_Value(), null, null).set_reference(reference)

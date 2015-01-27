@@ -20,6 +20,7 @@ namespace metahub.jackolantern.pumpkins
 
         public override void carve(Function_Call2 pumpkin)
         {
+            return;
             var list = pumpkin.inputs[0];
             var item = pumpkin.inputs[1];
 

@@ -105,7 +105,7 @@ namespace metahub.imperative.schema
 
         public Dependency add_dependency(Dungeon dungeon)
         {
-            if (dungeon == this)
+            if (dungeon == null || dungeon == this)
                 return null;
 
             if (!dependencies.ContainsKey(dungeon.name))
@@ -559,7 +559,11 @@ namespace metahub.imperative.schema
                     break;
 
                 case Expression_Type.assignment:
-                    analyze_expression(((Assignment)expression).expression);
+                    {
+                        var assignment = (Assignment) expression;
+                        analyze_expression(assignment.target);
+                        analyze_expression(assignment.expression);
+                    }
                     break;
 
                 case Expression_Type.declare_variable:
@@ -575,6 +579,11 @@ namespace metahub.imperative.schema
                 case Expression_Type.property:
                     var property_expression = (Tie_Expression)expression;
                     add_dependency(property_expression.tie.other_rail);
+                    break;
+
+                case Expression_Type.portal:
+                    var portal_expression = (Portal_Expression)expression;
+                    add_dependency(portal_expression.portal.other_dungeon);
                     break;
 
                 case Expression_Type.variable:

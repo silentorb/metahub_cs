@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using metahub.imperative.schema;
@@ -8,6 +9,7 @@ using metahub.logic.schema;
 
 namespace metahub.imperative.types
 {
+    [DebuggerDisplay("portal ref ({portal.fullname})")]
     public class Portal_Expression : Expression
     {
         public Portal portal;

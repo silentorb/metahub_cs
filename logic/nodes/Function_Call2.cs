@@ -1,11 +1,14 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using metahub.logic.schema;
 
 namespace metahub.logic.nodes {
 
-public class Function_Call2 : Node {
+    [DebuggerDisplay("func ({name})")]
+    public class Function_Call2 : Node
+    {
 	public string name;
 
 	public Function_Call2(string name, IEnumerable<Node> inputs)

@@ -36,6 +36,11 @@ namespace metahub.imperative.schema
             get { return profession.is_list; }
         }
 
+        public string fullname
+        {
+            get { return dungeon.name + "." + name; }
+        }
+
         public Portal(Tie tie, Dungeon dungeon)
         {
             this.tie = tie;
@@ -44,10 +49,19 @@ namespace metahub.imperative.schema
             rail = tie.rail;
             other_rail = tie.other_rail;
             name = tie.name;
-            is_value = tie.is_value;
 
             if (tie.other_rail != null)
                 profession.dungeon = dungeon.overlord.get_dungeon(other_rail);
+
+            if (tie.other_tie != null)
+            {
+                var d = dungeon.overlord.get_dungeon(tie.other_rail);
+                if (d != null)
+                    other_portal = dungeon.overlord.get_portal(tie.other_tie);
+            }
+
+            is_value = tie.is_value;
+
         }
 
         public Portal(string name, Kind type, Dungeon dungeon, Dungeon other_dungeon = null)

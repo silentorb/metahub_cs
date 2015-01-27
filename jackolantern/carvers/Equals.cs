@@ -19,23 +19,20 @@ namespace metahub.jackolantern.pumpkins
 
         public override void carve(Function_Call2 pumpkin)
         {
-            var endpoints = get_endpoints3(pumpkin);
+            //var endpoints = get_endpoints3(pumpkin);
             if (aggregate(pumpkin).Any(n => n.type == Node_Type.function_call))
                 return;
 
-            var first = pumpkin.inputs[0];
-            var second = pumpkin.inputs[1];
+            //var first = pumpkin.inputs[0];
+            //var second = pumpkin.inputs[1];
 
-            generate(pumpkin, first, second);
-            generate(pumpkin, second, first);
-        }
+            //generate(pumpkin, first, second);
+            //generate(pumpkin, second, first);
 
-        void generate(Function_Call2 pumpkin, Node first, Node second)
-        {
-            if (aggregate(first).Any(n => n.type == Node_Type.function_call))
-                return;
+            //if (aggregate(first).Any(n => n.type == Node_Type.function_call))
+            //    return;
 
-            var endpoints = get_endpoints4(first);
+            var endpoints = get_endpoints3(pumpkin, false);
             foreach (var endpoint in endpoints)
             {
                 var dungeon = endpoint.portal.dungeon;
@@ -44,8 +41,10 @@ namespace metahub.jackolantern.pumpkins
                 var context = new Summoner.Context(dungeon);
                 context.scope = setter.scope;
                 var swamp = new Swamp(jack, pumpkin);
-                context.add_pattern("first", () => swamp.translate(second.inputs[0], null, Swamp.Dir.In, context.scope));
-                context.add_pattern("second", () => swamp.translate(first.inputs[0], null, Swamp.Dir.In, context.scope));
+                var node = endpoint.node;
+                var parent = node.inputs[0];
+                context.add_pattern("first", () => swamp.translate(parent, node, Swamp.Dir.In, context.scope));
+                context.add_pattern("second", () => swamp.translate(parent, node, Swamp.Dir.Out, context.scope));
                 setter.block.add("post", jack.overlord.summon_snippet(jack.templates["equals"], context));
             }
         }

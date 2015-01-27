@@ -40,6 +40,7 @@ namespace metahub.jackolantern.code
             Function_Definition definition = new Function_Definition(imp);
 
             var block = dungeon.create_block(function_name, scope, definition.expressions);
+            imp.block = block;
             var mid = block.divide(null, new List<Expression> {
 				new Platform_Function("add", new Tie_Expression(tie), new Expression[]{ new Variable(item) })
 		});

@@ -22,6 +22,12 @@ namespace metahub.imperative.schema
             this.region = region;
         }
 
+        public Realm(string name, Overlord overlord)
+        {
+            this.name = name;
+            this.overlord = overlord;
+        }
+
         public Dungeon create_dungeon(string name)
         {
             var dungeon = new Dungeon(name, overlord, this);

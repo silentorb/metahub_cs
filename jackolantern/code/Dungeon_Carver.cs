@@ -7,11 +7,30 @@ using metahub.imperative.schema;
 using metahub.imperative.types;
 using metahub.logic.schema;
 using metahub.schema;
+using Namespace = metahub.imperative.types.Namespace;
 
 namespace metahub.jackolantern.code
 {
     public static class Dungeon_Carver
     {
+
+        public static void generate_code1(JackOLantern jack, Dungeon dungeon, Rail rail)
+        {
+            var class_definition = dungeon.get_block("class_definition");
+
+            foreach (var tie in rail.all_ties.Values)
+            {
+                if (tie.type == Kind.list)
+                {
+                    List_Code.common_functions_stub(tie, jack, class_definition.scope);
+                }
+                else
+                {
+                    if (tie.has_setter())
+                        Dungeon_Carver.generate_setter_stub(jack.overlord.get_portal(tie));
+                }
+            }
+        }
 
         public static void generate_code2(JackOLantern jack, Dungeon dungeon, Rail rail)
         {
@@ -33,7 +52,7 @@ namespace metahub.jackolantern.code
                 else
                 {
                     if (tie.has_setter())
-                        Dungeon_Carver.generate_setter(overlord.get_portal(tie));
+                        Dungeon_Carver.generate_setter(jack.overlord.get_portal(tie));
                 }
             }
 
@@ -71,7 +90,7 @@ namespace metahub.jackolantern.code
                 return;
 
             Imp new_imp;
-            Block new_block; 
+            Block new_block;
             var imp = dungeon.summon_imp(path, true);
             var tokens = path.Split('_');
             var portal_name = tokens.Last();
@@ -80,9 +99,8 @@ namespace metahub.jackolantern.code
 
             if (imp == null || imp.portal != null)
             {
-
-                new_block = dungeon.get_block(path);
                 new_imp = generate_setter(portal);
+                new_block = new_imp.block;
                 if (imp != null)
                 {
                     new_block.add("pre", Imp.setter(portal, new Variable(new_imp.parameters[0].symbol),
@@ -99,7 +117,7 @@ namespace metahub.jackolantern.code
             new_block.divide("post");
         }
 
-        public static Imp generate_setter(Portal portal)
+        public static Imp generate_setter_stub(Portal portal)
         {
             var dungeon = portal.dungeon;
             var imp = dungeon.spawn_imp("set_" + portal.name);
@@ -108,35 +126,56 @@ namespace metahub.jackolantern.code
             imp.parameters.Add(new Parameter(value));
 
             Function_Definition result = new Function_Definition(imp);
-            var block = imp.block = dungeon.create_block("set_" + portal.name, new Scope(function_scope), result.expressions);
+            var block =
+                imp.block = dungeon.create_block("set_" + portal.name, new Scope(function_scope), result.expressions);
 
             var pre = block.divide("pre");
 
-            var mid = block.divide(null, new List<Expression> {
-			    new Flow_Control(Flow_Control_Type.If, new Operation("==", new List<Expression> {
-					new Portal_Expression(portal), new Variable(value)
-                }),
-				    new List<Expression>{
-					    new Statement("return")
-                    }),
-			    new Assignment(new Portal_Expression(portal), "=", new Variable(value))
-		    });
+            var mid = block.divide("mid", new List<Expression>
+                {
+                    new Flow_Control(Flow_Control_Type.If, new Operation("==", new List<Expression>
+                        {
+                            new Portal_Expression(portal),
+                            new Variable(value)
+                        }),
+                                     new List<Expression>
+                                         {
+                                             new Statement("return")
+                                         }),
+                    new Assignment(new Portal_Expression(portal), "=", new Variable(value))
+                });
 
             if (portal.type == Kind.reference && portal.other_portal != null)
             {
-                var origin = function_scope.create_symbol("origin", new Profession(Kind.reference));
+                var origin = imp.scope.create_symbol("origin", new Profession(Kind.reference));
                 imp.parameters.Add(new Parameter(origin, new Null_Value()));
+            }
 
+            return imp;
+        }
+
+        public static Imp generate_setter(Portal portal)
+        {
+            var imp_name = "set_" + portal.name;
+            var imp = portal.dungeon.summon_imp(imp_name)
+                      ?? generate_setter_stub(portal);
+            
+            var block = imp.block;
+
+            if (portal.type == Kind.reference && portal.other_portal != null)
+            {
                 if (portal.other_portal.type == Kind.reference)
                 {
-                    mid.add(
+                    block.add("mid",
                         Imp.setter(portal.other_portal, new Self(portal.dungeon),
                         new Portal_Expression(portal), new Self(portal.dungeon))
                     );
                 }
                 else
                 {
-                    mid.add(new Flow_Control(Flow_Control_Type.If, new Operation("&&", new List<Expression>
+                    var origin = imp.scope.find_or_exception("origin");
+                    var value = imp.scope.find_or_exception("value"); 
+                    block.add("mid", new Flow_Control(Flow_Control_Type.If, new Operation("&&", new List<Expression>
                         {
                             new Operation("!=", new List<Expression>
                             {

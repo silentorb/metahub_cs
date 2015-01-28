@@ -31,40 +31,53 @@ namespace metahub.imperative.summoner
         void process_namespace(Pattern_Source source)
         {
             var name = source.patterns[2].text;
+            if (!overlord.realms.ContainsKey(name))
+            {
+                overlord.realms[name] = new Realm(name, overlord);
+            }
             var realm = overlord.realms[name];
             var context = new Context(realm);
             var statements = source.patterns[6].patterns;
+            
             foreach (var statement in statements)
             {
-                process_dungeon(statement, context);
+                process_dungeon1(statement, context);
+            }
+
+            foreach (var statement in statements)
+            {
+                process_dungeon2(statement, context);
             }
         }
 
-        public Dungeon process_dungeon(Pattern_Source source, Context context)
+        public void process_dungeon1(Pattern_Source source, Context context)
         {
             var name = source.patterns[2].text;
-            var parent_dungeons = source.patterns[4].patterns;
+
+            if (!context.realm.dungeons.ContainsKey(name))
+            {
+                var dungeon = context.realm.create_dungeon(name);
+                var parent_dungeons = source.patterns[4].patterns;
+                if (parent_dungeons.Length > 0)
+                    dungeon.parent = overlord.get_dungeon(parent_dungeons[0].patterns[0].text);
+
+                dungeon.generate_code();
+            }
+        }
+
+        public Dungeon process_dungeon2(Pattern_Source source, Context context)
+        {
+            var name = source.patterns[2].text;
 
             var replacement_name = context.get_string_pattern(name);
             if (replacement_name != null)
                 name = replacement_name;
 
             var statements = source.patterns[7].patterns;
-            Dungeon dungeon = null;
+            var dungeon = context.realm.dungeons[name];
 
-            if (context.realm.dungeons.ContainsKey(name))
-            {
-                dungeon = context.realm.dungeons[name];
-            }
-            else
-            {
-                dungeon = context.realm.create_dungeon(name);
-                if (parent_dungeons.Length > 0)
-                    dungeon.parent = overlord.get_dungeon(parent_dungeons[0].patterns[0].text);
-
-                dungeon.generate_code1();
-            }
-
+            dungeon = context.realm.create_dungeon(name);
+  
             var dungeon_context = new Context(context) { dungeon = dungeon };
             foreach (var statement in statements)
             {

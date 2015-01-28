@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using metahub.imperative.code;
 using metahub.imperative.types;
@@ -16,6 +17,7 @@ using Variable = metahub.imperative.types.Variable;
 
 namespace metahub.imperative.schema
 {
+    [DebuggerDisplay("dungeon ({name})")]
     public class Dungeon
     {
         public string name;
@@ -137,7 +139,7 @@ namespace metahub.imperative.schema
                 inserts = map.inserts;
         }
 
-        public void generate_code1()
+        public void generate_code()
         {
             var root_scope = new Scope();
             code = new List<Expression>();
@@ -154,7 +156,6 @@ namespace metahub.imperative.schema
             });
 
             root.divide("post");
-
         }
 
         public Block create_block(string path, Scope scope, List<Expression> expressions = null)
@@ -172,38 +173,39 @@ namespace metahub.imperative.schema
         public Block get_block(string path)
         {
             if (!has_block(path))
-            {
-                var imp = summon_imp(path, true);
-                Imp new_imp;
-                Block new_block;
-                var tokens = path.Split('_');
-                var portal_name = tokens.Last();
+                throw new Exception("Dungeon " + name + " does not have a block named " + path + ".");
+            //{
+            //    var imp = summon_imp(path, true);
+            //    Imp new_imp;
+            //    Block new_block;
+            //    var tokens = path.Split('_');
+            //    var portal_name = tokens.Last();
 
-                if (imp == null || imp.portal != null)
-                {
-                    var portal = all_portals[portal_name];
-                    new_imp = Dungeon_Carver.generate_setter(portal);
-                    new_block = blocks[path];
-                    if (imp != null)
-                    {
-                        new_block.add("pre", new Parent_Class(new Function_Call(imp.name, null, new List<Expression>
-                            {
-                               new Variable(new_imp.parameters[0].symbol)
-                            })));
-                    }
-                }
-                else
-                {
-                    new_imp = imp.spawn_child(this);
-                    new_block = create_block(path, new_imp.scope, new_imp.expressions);
-                    new_block.divide("pre").add(new Parent_Class(new Function_Call(imp.name, null, new List<Expression>
-                            {
-                               new Variable(new_imp.parameters[0].symbol)
-                            })));
-                }
-                new_block.divide("post");
+            //    if (imp == null || imp.portal != null)
+            //    {
+            //        var portal = all_portals[portal_name];
+            //        new_imp = Dungeon_Carver.generate_setter(portal);
+            //        new_block = blocks[path];
+            //        if (imp != null)
+            //        {
+            //            new_block.add("pre", new Parent_Class(new Function_Call(imp.name, null, new List<Expression>
+            //                {
+            //                   new Variable(new_imp.parameters[0].symbol)
+            //                })));
+            //        }
+            //    }
+            //    else
+            //    {
+            //        new_imp = imp.spawn_child(this);
+            //        new_block = create_block(path, new_imp.scope, new_imp.expressions);
+            //        new_block.divide("pre").add(new Parent_Class(new Function_Call(imp.name, null, new List<Expression>
+            //                {
+            //                   new Variable(new_imp.parameters[0].symbol)
+            //                })));
+            //    }
+            //    new_block.divide("post");
 
-            }
+            //}
 
             //if (!blocks.ContainsKey(path))
             //    throw new Exception("Invalid rail block: " + path + ".");
@@ -520,6 +522,15 @@ namespace metahub.imperative.schema
             definition.scope = imp.scope = new Scope(block.scope);
 
             return imp;
+        }
+
+        public bool has_imp(string imp_name, bool check_ancestors = false)
+        {
+            var result = imps.Any(i => i.name == imp_name);
+            if (result || !check_ancestors || parent == null)
+                return result;
+
+            return parent.has_imp(imp_name, true);
         }
 
         public Imp summon_imp(string imp_name, bool check_ancestors = false)

@@ -123,9 +123,16 @@ namespace metahub.jackolantern
 
             overlord.finalize();
 
-            foreach (var dungeon in overlord.dungeons.Where(d => !d.is_external))
+            var not_external = overlord.dungeons.Where(d => !d.is_external).ToArray();
+
+            foreach (var dungeon in not_external)
             {
-                dungeon.generate_code1();
+                dungeon.generate_code();
+                Dungeon_Carver.generate_code1(this, dungeon, dungeon.rail);
+            }
+
+            foreach (var dungeon in not_external)
+            {
                 target.generate_rail_code(dungeon);
                 Dungeon_Carver.generate_code2(this, dungeon, dungeon.rail);
             }
@@ -138,7 +145,7 @@ namespace metahub.jackolantern
                 Piece_Maker.add_functions(overlord, piece_region);
             }
 
-            foreach (var dungeon in overlord.dungeons.Where(d => !d.is_external))
+            foreach (var dungeon in not_external)
             {
                 target.generate_code2(dungeon);
             }
@@ -320,6 +327,17 @@ namespace metahub.jackolantern
                 }
             }
             return package_path(result);
+        }
+
+
+        public Property_Function_Call call_setter(Portal portal,Expression reference, Expression value, Expression origin)
+        {
+            var imp = get_setter(portal);
+            return new Property_Function_Call(Property_Function_Type.set, portal, 
+                origin != null && imp.parameters.Count > 1
+                ? new List<Expression> { value, origin }
+                : new List<Expression> { value }
+             ) { reference = reference };
         }
 
         /*

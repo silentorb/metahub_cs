@@ -142,7 +142,8 @@ namespace metahub.imperative
         public Dungeon summon_dungeon(Template template, Summoner.Context context)
         {
             var summoner = new Summoner(this);
-            return summoner.process_dungeon(template.source, context);
+            summoner.process_dungeon1(template.source, context);
+            return summoner.process_dungeon2(template.source, context);
         }
 
         public Expression summon_snippet(Template template, Summoner.Context context)

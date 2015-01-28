@@ -131,5 +131,13 @@ namespace metahub.imperative.schema
 
             return new Class_Function_Call(imp, reference, args);
         }
+
+        public Parameter add_parameter(string name, Profession profession, Expression default_value = null)
+        {
+            var symbol = scope.create_symbol(name, profession);
+            var parameter = new Parameter(symbol, default_value);
+            parameters.Add(parameter);
+            return parameter;
+        }
     }
 }

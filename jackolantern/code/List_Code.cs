@@ -16,6 +16,40 @@ namespace metahub.jackolantern.code
 {
     public class List_Code
     {
+        public static void common_functions_stub(Tie tie, JackOLantern imp, Scope scope)
+        {
+            add_function_stub(tie, imp, scope);
+            remove_function_stub(tie, imp, scope);
+        }
+
+        public static void add_function_stub(Tie tie, JackOLantern jack, Scope scope)
+        {
+            var rail = tie.rail;
+            var portal = jack.overlord.get_portal(tie);
+            var dungeon = jack.overlord.get_dungeon(tie.rail);
+
+            var function_name = "add_" + tie.tie_name;
+            var imp = dungeon.spawn_imp(function_name, null, new List<Expression>());
+            var signature = tie.get_other_signature();
+            var profession = new Profession(signature, jack.overlord);
+            var item = imp.add_parameter("item", profession).symbol;
+            var origin = imp.add_parameter("origin", profession, new Null_Value()).symbol;
+            
+            Function_Definition definition = new Function_Definition(imp);
+
+            var block = dungeon.create_block(function_name, scope, definition.expressions);
+            imp.block = block;
+            var mid = block.divide("mid", new List<Expression> {
+				new Platform_Function("add", new Tie_Expression(tie), new Expression[]{ new Variable(item) })
+		});
+            var post = block.divide("post");
+
+        }
+
+        public static void remove_function_stub(Tie tie, JackOLantern jack, Scope scope)
+        {
+        }
+
         public static void common_functions(Tie tie, JackOLantern imp, Scope scope)
         {
             add_function(tie, imp, scope);
@@ -24,42 +58,21 @@ namespace metahub.jackolantern.code
 
         public static void add_function(Tie tie, JackOLantern jack, Scope scope)
         {
-            var rail = tie.rail;
-            var dungeon = jack.overlord.get_dungeon(tie.rail);
-
-            var function_name = "add_" + tie.tie_name;
-            var function_scope = new Scope(scope);
-            var item = function_scope.create_symbol("item", tie.get_other_signature());
-            var origin = function_scope.create_symbol("origin", new Signature(Kind.reference));
-            var imp = dungeon.spawn_imp(function_name, new List<Parameter>
-                {
-                    new Parameter(item),
-                    new Parameter(origin, new Null_Value())
-                }, new List<Expression>());
-
-            Function_Definition definition = new Function_Definition(imp);
-
-            var block = dungeon.create_block(function_name, scope, definition.expressions);
-            imp.block = block;
-            var mid = block.divide(null, new List<Expression> {
-				new Platform_Function("add", new Tie_Expression(tie), new Expression[]{ new Variable(item) })
-		});
-            var post = block.divide("post");
-
+            var portal = jack.overlord.get_portal(tie);
+            var imp = jack.get_setter(portal);
+            var dungeon = portal.dungeon;
+            var origin = imp.scope.find_or_exception("origin");
+            var item = imp.scope.find_or_exception("item");
+            var block = imp.block;
             if (tie.other_tie != null)
             {
-                mid.add(
+                block.add("mid",
                     new Flow_Control(Flow_Control_Type.If, new Operation("!=", new List<Expression>
                 {
                     new Variable(origin), new Variable(item)
                 }), new List<Expression> {
-                    new Variable(item, 
-                        new Property_Function_Call(Property_Function_Type.set,  tie.other_tie,
-                            new List<Expression>
-                                {
-                                    new Self(dungeon),
-                                    new Self(dungeon)
-                                }))
+                    jack.call_setter(jack.overlord.get_portal(tie.other_tie), new Variable(item), 
+                    new Self(dungeon), new Self(dungeon))
                 }));
             }
         }
@@ -122,7 +135,7 @@ namespace metahub.jackolantern.code
             if (other_path.Count > 0)
             {
                 var last = other_path.Last();
-                if (last.type == Node_Type.function_call && ((metahub.logic.nodes.Function_Call) last).name == "map")
+                if (last.type == Node_Type.function_call && ((metahub.logic.nodes.Function_Call)last).name == "map")
                 {
                     map(constraint, expression, imp);
                     return;
@@ -139,9 +152,9 @@ namespace metahub.jackolantern.code
             var end = constraint.first;
             var path = constraint.second.get_path();
 
-            var a = constraint.first.get_path().Where(i=>i.type == Node_Type.property).Select(i => ((Property_Reference)i).tie).ToList();
-            var b = path.Where(t=>t.type == Node_Type.property).Select(i => ((Property_Reference)i).tie).ToList();
-            var func = ((metahub.logic.nodes.Function_Call) constraint.second.get_last());
+            var a = constraint.first.get_path().Where(i => i.type == Node_Type.property).Select(i => ((Property_Reference)i).tie).ToList();
+            var b = path.Where(t => t.type == Node_Type.property).Select(i => ((Property_Reference)i).tie).ToList();
+            var func = ((metahub.logic.nodes.Function_Call)constraint.second.get_last());
             var lambda = func.input.Last() as Lambda;
             link(a, b, Parse.reverse_path(b.Take(a.Count - 1)), lambda, imp);
             link(b, a, a.Take(a.Count - 1), lambda, imp);
@@ -203,7 +216,7 @@ namespace metahub.jackolantern.code
                 }
             }
 
-            creation_block.Add(Imp.call_initialize(scope_dungeon,jack.overlord.get_dungeon(item2.signature.rail), new Variable(item2)));
+            creation_block.Add(Imp.call_initialize(scope_dungeon, jack.overlord.get_dungeon(item2.signature.rail), new Variable(item2)));
 
             if (mapping != null)
             {

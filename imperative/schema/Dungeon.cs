@@ -24,7 +24,7 @@ namespace metahub.imperative.schema
         public Dungeon parent;
         public List<Expression> code;
         public Trellis trellis;
-        Dictionary<string, string[]> inserts;
+        public Dictionary<string, string[]> inserts;
         Dictionary<string, Block> blocks = new Dictionary<string, Block>();
         //public List<Function_Definition> functions = new List<Function_Definition>();
         public Overlord overlord;
@@ -157,56 +157,6 @@ namespace metahub.imperative.schema
 
         }
 
-        public void generate_code2(JackOLantern jack)
-        {
-            var statements = blocks["class_definition"];
-            if (overlord.logician.needs_hub)
-            {
-                var hub_dungeon = overlord.realms["metahub"].dungeons["Hub"];
-                add_portal(new Portal("hub", Kind.reference, this, hub_dungeon));
-            }            
-            generate_initialize(statements.scope);
-
-            foreach (var tie in rail.all_ties.Values)
-            {
-                if (tie.type == Kind.list)
-                {
-                    List_Code.common_functions(tie, jack, statements.scope);
-                }
-                else
-                {
-                    if (tie.has_setter())
-                        generate_setter(overlord.get_portal(tie));
-                }
-            }
-
-            if (inserts != null)
-            {
-                foreach (var path in inserts.Keys)
-                {
-                    var lines = inserts[path];
-                    var tokens = path.Split('.');
-                    var block_name = tokens[0];
-
-                    var block = get_block(block_name);
-                    if (tokens.Length > 1)
-                    {
-                        block.add_many(tokens[1], lines.Select(s => new Insert(s)));
-                    }
-                    else
-                    {
-                        block.add_many(lines.Select(s => new Insert(s)));
-                    }
-                }
-            }
-
-            if (rail != null && rail.needs_tick)
-            {
-                spawn_imp("tick");
-                interfaces.Add(overlord.realms["metahub"].dungeons["Tick_Target"]);
-            }
-        }
-
         public Block create_block(string path, Scope scope, List<Expression> expressions = null)
         {
             var block = new Block(path, scope, this, expressions);
@@ -232,9 +182,7 @@ namespace metahub.imperative.schema
                 if (imp == null || imp.portal != null)
                 {
                     var portal = all_portals[portal_name];
-                    new_imp = generate_setter(portal);
-                    //new_block = create_block(path, new_imp.scope, new_imp.expressions);
-                    //new_block.divide("pre");
+                    new_imp = Dungeon_Carver.generate_setter(portal);
                     new_block = blocks[path];
                     if (imp != null)
                     {
@@ -285,74 +233,6 @@ namespace metahub.imperative.schema
             {
                 block.flatten();
             }
-        }
-
-        public Imp generate_setter(Portal portal)
-        {
-            var imp = spawn_imp("set_" + portal.name);
-            var function_scope = imp.scope;
-            var value = function_scope.create_symbol("value", portal.get_profession());
-            imp.parameters.Add(new Parameter(value));
-
-            Function_Definition result = new Function_Definition(imp);
-            var block = imp.block = create_block("set_" + portal.name, new Scope(function_scope), result.expressions);
-
-            var pre = block.divide("pre");
-
-            var mid = block.divide(null, new List<Expression> {
-			    new Flow_Control(Flow_Control_Type.If, new Operation("==", new List<Expression> {
-					new Portal_Expression(portal), new Variable(value)
-                }),
-				    new List<Expression>{
-					    new Statement("return")
-                    }),
-			    new Assignment(new Portal_Expression(portal), "=", new Variable(value))
-		    });
-
-            if (portal.type == Kind.reference && portal.other_portal != null)
-            {
-                var origin = function_scope.create_symbol("origin", new Signature(Kind.reference));
-                imp.parameters.Add(new Parameter(origin, new Null_Value()));
-
-                if (portal.other_portal.type == Kind.reference)
-                {
-                    mid.add(new Portal_Expression(portal,
-                        new Function_Call("set_" + portal.other_portal.name, null,
-                            new List<Expression> { new Self(portal.dungeon) })
-                    ));
-                }
-                else
-                {
-                    mid.add(new Flow_Control(Flow_Control_Type.If, new Operation("&&", new List<Expression>
-                        {
-                            new Operation("!=", new List<Expression>
-                            {
-                                new Variable(origin), new Variable(value)
-                            }),
-                            new Operation("!=", new List<Expression>
-                            {
-                                new Portal_Expression(portal), new Null_Value()
-                            }),
-                        }), new List<Expression> {
-                        new Portal_Expression(portal,
-                        new Function_Call("add_" + portal.other_portal.name, null,
-                            new List<Expression> { new Self(portal.dungeon), new Self(portal.dungeon) }))
-                    
-                    }));
-                }
-            }
-
-            var post = block.divide("post");
-
-            //if (tie.has_set_post_hook)
-            //{
-            //    post.add(new Function_Call(tie.get_setter_post_name(), null,
-            //        new List<Expression> {
-            //        new Variable(value)
-            //    }));
-            //}
-
-            return imp;
         }
 
         public Imp generate_initialize(Scope scope)

@@ -71,15 +71,6 @@ namespace metahub.jackolantern
                 : "set_" + portal.name;
         }
 
-        public Imp get_setter(Portal portal)
-        {
-            var setter = portal.dungeon.summon_imp(get_setter_name(portal));
-            if (setter == null)
-                setter = portal.dungeon.generate_setter(portal);
-
-            return setter;
-        }
-
         public Imp get_initialize(Dungeon dungeon)
         {
             return dungeon.summon_imp("initialize");
@@ -136,7 +127,7 @@ namespace metahub.jackolantern
             {
                 dungeon.generate_code1();
                 target.generate_rail_code(dungeon);
-                dungeon.generate_code2(this);
+                Dungeon_Carver.generate_code2(this, dungeon, dungeon.rail);
             }
 
             overlord.summon(Resources.metahub_imp);
@@ -151,6 +142,14 @@ namespace metahub.jackolantern
             {
                 target.generate_code2(dungeon);
             }
+        }
+
+        public Imp get_setter(Portal portal)
+        {
+            var setter = portal.dungeon.summon_imp(get_setter_name(portal)) 
+                ?? Dungeon_Carver.generate_setter(portal);
+
+            return setter;
         }
 
         public Expression translate(Node expression, Scope scope = null)

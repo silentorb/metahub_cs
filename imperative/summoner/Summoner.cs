@@ -53,6 +53,9 @@ namespace metahub.imperative.summoner
         public void process_dungeon1(Pattern_Source source, Context context)
         {
             var name = source.patterns[2].text;
+            var replacement_name = context.get_string_pattern(name);
+            if (replacement_name != null)
+                name = replacement_name;
 
             if (!context.realm.dungeons.ContainsKey(name))
             {
@@ -75,9 +78,6 @@ namespace metahub.imperative.summoner
 
             var statements = source.patterns[7].patterns;
             var dungeon = context.realm.dungeons[name];
-
-            dungeon = context.realm.create_dungeon(name);
-  
             var dungeon_context = new Context(context) { dungeon = dungeon };
             foreach (var statement in statements)
             {

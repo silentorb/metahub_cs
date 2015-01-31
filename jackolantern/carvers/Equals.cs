@@ -43,12 +43,12 @@ namespace metahub.jackolantern.pumpkins
                 setter.block.add("post", new Comment("Carving equals: " + endpoint.portal.name));
                 var context = new Summoner.Context(dungeon);
                 context.scope = setter.scope;
-                var swamp = new Swamp(jack, pumpkin);
+                var swamp = new Swamp(jack, pumpkin, context);
                 var node = endpoint.node;
                 var parent = node.inputs[0];
                 //swamp.translate2(parent, node, Swamp.Dir.In, context);
-                context.add_pattern("first", () => swamp.translate2(parent, node, Swamp.Dir.In, context));
-                context.add_pattern("second", () => swamp.translate2(parent, node, Swamp.Dir.Out, context));
+                context.add_pattern("first", () => swamp.translate2(parent, node, Swamp.Dir.In));
+                context.add_pattern("second", () => swamp.translate2(parent, node, Swamp.Dir.Out));
                 setter.block.add("post", jack.overlord.summon_snippet(jack.templates["equals"], context));
             }
         }

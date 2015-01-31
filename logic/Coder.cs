@@ -317,7 +317,7 @@ namespace metahub.logic
 
                 if (previous == null)
                 {
-                    current.connect_input(scope.scope_node);
+                    //current.connect_input(scope.scope_node);
                 }
                 else
                 {

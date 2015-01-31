@@ -177,7 +177,7 @@ namespace metahub.jackolantern
                     };
                 }
 
-                result.child = translate(expression.inputs[0]);
+                result.child = translate(expression.inputs[0], scope);
             }
 
             return result;
@@ -218,7 +218,7 @@ namespace metahub.jackolantern
 
                 case Node_Type.operation:
                     var operation = (metahub.logic.nodes.Operation_Node)expression;
-                    return new Operation(operation.op, translate_many(operation.children, scope));
+                    return new Operation(operation.op, translate_many(operation.inputs, scope));
 
                 default:
                     throw new Exception("Cannot convert node " + expression.type + ".");

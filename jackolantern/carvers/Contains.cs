@@ -20,7 +20,6 @@ namespace metahub.jackolantern.pumpkins
 
         public override void carve(Function_Call2 pumpkin)
         {
-            return;
             var list = pumpkin.inputs[0];
             var item = pumpkin.inputs[1];
 
@@ -31,9 +30,9 @@ namespace metahub.jackolantern.pumpkins
                 var initialize = jack.get_initialize(endpoint.dungeon);
                 var context = new Summoner.Context(dungeon);
                 context.scope = initialize.scope;
-                var swamp = new Swamp(jack, pumpkin);
-                context.add_pattern("list", () => swamp.translate(list, null, Swamp.Dir.In, context));
-                context.add_pattern("item", () => swamp.translate(item, null, Swamp.Dir.In, context));
+                var swamp = new Swamp(jack, pumpkin, context);
+                context.add_pattern("list", () => swamp.translate(list, null, Swamp.Dir.Out));
+                context.add_pattern("item", () => swamp.translate(item, null, Swamp.Dir.Out));
                 initialize.block.add(jack.overlord.summon_snippet(jack.templates["contains"], context));
             }
         }

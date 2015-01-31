@@ -40,6 +40,14 @@ namespace metahub.logic.nodes
             other.outputs.Add(this);
         }
 
+        public void connect_many_inputs(IEnumerable<Node> inputs)
+        {
+            foreach (var input in inputs)
+            {
+                connect_input(input);
+            }
+        }
+
         public void connect_output(Node other)
         {
             if (connections.Contains(other))

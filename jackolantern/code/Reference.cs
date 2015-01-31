@@ -18,7 +18,12 @@ namespace metahub.jackolantern.code
             {">", "<="},
             {"<", ">="},
             {">=", "<"},
-            {"<=", ">"}
+            {"<=", ">"},
+
+            {"+", "-"},
+            {"-", "+"},
+            {"*", "/"},
+            {"/", "*"}
         };
 
         public static void generate_constraint(Constraint constraint, Tie tie, JackOLantern jack)

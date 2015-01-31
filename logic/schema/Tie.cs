@@ -55,7 +55,9 @@ namespace metahub.logic.schema
                 is_value = property.other_trellis.is_value;
                 if (other_rail != null && property.other_property != null && other_rail.all_ties.ContainsKey(property.other_property.name))
                 {
-                    other_tie = other_rail.all_ties[property.other_property.name];
+                    var other_ties = other_rail.all_ties.Values;
+                    other_tie = other_ties.FirstOrDefault(t=>t.other_rail == rail)
+                        ?? other_rail.all_ties[property.other_property.name];
                     //other_tie.other_rail = rail;
                     //other_tie.other_tie = this;
                 }

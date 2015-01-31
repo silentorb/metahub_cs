@@ -35,6 +35,9 @@ namespace metahub.jackolantern.pumpkins
             var endpoints = get_endpoints3(pumpkin, false);
             foreach (var endpoint in endpoints)
             {
+                //if (endpoint.portal.name != "dir")
+                //    continue;
+
                 var dungeon = endpoint.portal.dungeon;
                 var setter = jack.get_setter(endpoint.portal);
                 setter.block.add("post", new Comment("Carving equals: " + endpoint.portal.name));
@@ -43,8 +46,9 @@ namespace metahub.jackolantern.pumpkins
                 var swamp = new Swamp(jack, pumpkin);
                 var node = endpoint.node;
                 var parent = node.inputs[0];
-                context.add_pattern("first", () => swamp.translate(parent, node, Swamp.Dir.In, context.scope));
-                context.add_pattern("second", () => swamp.translate(parent, node, Swamp.Dir.Out, context.scope));
+                //swamp.translate2(parent, node, Swamp.Dir.In, context);
+                context.add_pattern("first", () => swamp.translate2(parent, node, Swamp.Dir.In, context));
+                context.add_pattern("second", () => swamp.translate2(parent, node, Swamp.Dir.Out, context));
                 setter.block.add("post", jack.overlord.summon_snippet(jack.templates["equals"], context));
             }
         }

@@ -32,8 +32,8 @@ namespace metahub.jackolantern.pumpkins
                 var context = new Summoner.Context(dungeon);
                 context.scope = initialize.scope;
                 var swamp = new Swamp(jack, pumpkin);
-                context.add_pattern("list", () => swamp.translate(list, null, Swamp.Dir.In, context.scope));
-                context.add_pattern("item", () => swamp.translate(item, null, Swamp.Dir.In, context.scope));
+                context.add_pattern("list", () => swamp.translate(list, null, Swamp.Dir.In, context));
+                context.add_pattern("item", () => swamp.translate(item, null, Swamp.Dir.In, context));
                 initialize.block.add(jack.overlord.summon_snippet(jack.templates["contains"], context));
             }
         }

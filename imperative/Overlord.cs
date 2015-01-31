@@ -117,6 +117,9 @@ namespace metahub.imperative
         public Portal get_portal(Tie tie)
         {
             var dungeon = get_dungeon(tie.rail);
+            if (!dungeon.all_portals.ContainsKey(tie.tie_name))
+                return null;
+
             return dungeon.all_portals[tie.tie_name];
         }
 

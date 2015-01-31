@@ -180,6 +180,7 @@ namespace metahub.jackolantern.code
             var function_scope = new Scope(class_block.scope);
             var value = function_scope.create_symbol("value", tie.get_signature());
             var function_name = "check_" + property_reference.tie.tie_name + "_" + property_reference.tie.other_tie.tie_name;
+            var portal = jack.overlord.get_portal(property_reference.tie);
             var imp = dungeon.spawn_imp(function_name, new List<Parameter>
                 {
                     new Parameter(value)
@@ -187,15 +188,15 @@ namespace metahub.jackolantern.code
                     {
                         Imp.If(new Operation("==", new List<Expression>
                             {
-                                new Tie_Expression(property_reference.tie.other_tie),
+                                new Portal_Expression(portal.other_portal),
                                 new Null_Value()
                             }), new List<Expression>
                                 {
                                     new Statement("return", Imp.True())
                                 }),
                         new Iterator(it,
-                                     new Tie_Expression(property_reference.tie.other_tie,
-                                                        new Tie_Expression(property_reference.tie)),
+                                     new Portal_Expression(portal.other_portal,
+                                                        new Portal_Expression(portal)), 
                                      new List<Expression>
                                          {
                                              Imp.If(new Operation("==", new List<Expression>
@@ -215,7 +216,7 @@ namespace metahub.jackolantern.code
             var setter_block = dungeon.get_block("set_" + property_reference.tie.other_tie.tie_name);
             setter_block.add("post", new Class_Function_Call(function_name, null, new Expression[]
                 {
-                    new Tie_Expression(constraint.endpoints.First())
+                    new Portal_Expression(jack.overlord.get_portal(constraint.endpoints.First()))
                 })
             );
 
@@ -251,14 +252,14 @@ namespace metahub.jackolantern.code
             return new List<Expression>
             {
                 Imp.If(Imp.operation(inverse_operators[constraint.op], 
-                    new Platform_Function("dist", new Variable(it, new Tie_Expression(constraint.endpoints.Last())),
+                    new Platform_Function("dist", new Variable(it, new Portal_Expression(jack.overlord.get_portal(constraint.endpoints.Last()))),
                         new List<Expression> { new Variable(value) }),
                         jack.translate(constraint.second, scope)
                     ),
                     new List<Expression>
                     {
                         new Declare_Variable(offset, Imp.operation("/", Imp.operation("+",
-                            new Variable(it, new Tie_Expression(constraint.endpoints.Last())),
+                            new Variable(it, new Portal_Expression(jack.overlord.get_portal(constraint.endpoints.Last()))),
                             new Variable(value)
                         ), new Literal(2, new Profession(Kind.Float)))),
                             //new Variable(it, new Property_Function_Call(Property_Function_Type.set, tie, new List<Expression>
@@ -271,8 +272,8 @@ namespace metahub.jackolantern.code
                             new Declare_Variable(conflict, new Instantiate(conflict_dungeon)),
                             new Variable(conflict,Imp.setter(conflict_nodes, new Self(dungeon), null, null)),
                             new Variable(conflict,Imp.setter(conflict_nodes, new Variable(it), null, null)),
-                            new Tie_Expression(mold_tie,
-                                new Tie_Expression(piecemaker_tie,
+                            new Portal_Expression(jack.overlord.get_portal(mold_tie),
+                                new Portal_Expression(jack.overlord.get_portal(piecemaker_tie),
                                     Imp.setter(conflicts_tie, new Variable(conflict), null, null)
                             )),
                             new Statement("return", Imp.False())
@@ -298,10 +299,11 @@ namespace metahub.jackolantern.code
             var imp = result.summon_imp("is_resolved");
             imp.expressions.Add(new Statement("return",
                 new Operation(constraint.op, new List<Expression>{ 
-                            new Platform_Function("dist", new Portal_Expression(portal, 
-                                new Tie_Expression(constraint.endpoints.Last())){ index = new Literal((int)0) },
-                                new List<Expression> { new Portal_Expression(portal, new Tie_Expression(constraint.endpoints.Last()
-                                    )) { index = new Literal((int)1) } }),
+                    new Platform_Function("dist", new Portal_Expression(portal, 
+                        new Portal_Expression(jack.overlord.get_portal(constraint.endpoints.Last())))
+                        { index = new Literal((int)0) },
+                        new List<Expression> { new Portal_Expression(portal, new Portal_Expression(jack.overlord.get_portal(constraint.endpoints.Last())
+                            )) { index = new Literal((int)1) } }),
                     jack.translate(constraint.second, scope)
                 })
             ));

@@ -57,7 +57,13 @@ namespace metahub.imperative.schema
             {
                 var d = dungeon.overlord.get_dungeon(tie.other_rail);
                 if (d != null)
+                {
                     other_portal = dungeon.overlord.get_portal(tie.other_tie);
+                    if (other_portal != null)
+                    {
+                        other_portal.other_portal = this;
+                    }
+                }
             }
 
             is_value = tie.is_value;
@@ -102,8 +108,8 @@ namespace metahub.imperative.schema
             foreach (Range_Float range in tie.ranges)
             {
                 var reference = create_reference(range.path.Count > 0
-                                                     ? new Path(range.path.Select((t) => new Tie_Expression(t)))
-                                                     : null
+                    ? new Path(range.path.Select((t) => new Portal_Expression(dungeon.overlord.get_portal(t))))
+                    : null
                     );
                 block.add(new Assignment(reference, "=", new Platform_Function("rand", null,
                     new Expression[]
@@ -117,14 +123,14 @@ namespace metahub.imperative.schema
             {
                 block.add("post", new Property_Function_Call(Property_Function_Type.set, tie, new List<Expression>
                     {
-                        new Tie_Expression(tie)
+                        new Portal_Expression(this)
                     }));
             }
         }
 
-        public Tie_Expression create_reference(Expression child = null)
+        public Portal_Expression create_reference(Expression child = null)
         {
-            return new Tie_Expression(tie, child);
+            return new Portal_Expression(this, child);
         }
 
         public Signature get_signature()

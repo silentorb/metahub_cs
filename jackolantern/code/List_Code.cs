@@ -33,14 +33,14 @@ namespace metahub.jackolantern.code
             var signature = tie.get_other_signature();
             var profession = new Profession(signature, jack.overlord);
             var item = imp.add_parameter("item", profession).symbol;
-            var origin = imp.add_parameter("origin", profession, new Null_Value()).symbol;
+            var origin = imp.add_parameter("origin", new Profession(Kind.reference), new Null_Value()).symbol;
             
             Function_Definition definition = new Function_Definition(imp);
 
             var block = dungeon.create_block(function_name, scope, definition.expressions);
             imp.block = block;
             var mid = block.divide("mid", new List<Expression> {
-				new Platform_Function("add", new Tie_Expression(tie), new Expression[]{ new Variable(item) })
+				new Platform_Function("add", new Portal_Expression(portal), new Expression[]{ new Variable(item) })
 		});
             var post = block.divide("post");
 
@@ -81,7 +81,8 @@ namespace metahub.jackolantern.code
         public static void remove_function(Tie tie, JackOLantern jack, Scope scope)
         {
             var rail = tie.rail;
-            var dungeon = jack.overlord.get_dungeon(tie.rail);
+            var portal = jack.overlord.get_portal(tie);
+            var dungeon = portal.dungeon;
 
             var function_name = "remove_" + tie.tie_name;
             var function_scope = new Scope(scope);
@@ -97,7 +98,7 @@ namespace metahub.jackolantern.code
             var block = dungeon.create_block(function_name, scope, definition.expressions);
             var mid = block.divide(null, new List<Expression>{
                 new Flow_Control(Flow_Control_Type.If, new Platform_Function("contains",
-                    new Tie_Expression(tie),
+                    new Portal_Expression(portal),
                     new List<Expression>
                     {
                       new Variable(item)  
@@ -105,7 +106,7 @@ namespace metahub.jackolantern.code
                 new List<Expression> {
                     new Statement("return")
                  }),
-                 new Platform_Function("remove", new Tie_Expression(tie), new Expression[] {new Variable(item)})
+                 new Platform_Function("remove", new Portal_Expression(portal), new Expression[] {new Variable(item)})
             });
             var post = block.divide("post");
 
@@ -226,10 +227,12 @@ namespace metahub.jackolantern.code
                     var first_tie = a_end.other_rail.get_tie_or_error(((Property_Reference)first.get_path()[1]).tie.name);
                     var second = (Property_Reference)constraint.second.get_last();
                     //var second_tie = second.children[] as Property_Reference;
+                    var variable_portal =
+                        jack.overlord.get_portal(second_end.other_rail.get_tie_or_error(second.tie.name));
                     creation_block.Add(new Variable(item2, new Function_Call("set_" + first_tie.name, null,
                         new Expression[]
                         {
-                        new Variable(item, new Tie_Expression(second_end.other_rail.get_tie_or_error(second.tie.name)))
+                        new Variable(item, new Portal_Expression(variable_portal))
                         }
                        )
                     ));
@@ -254,21 +257,21 @@ namespace metahub.jackolantern.code
             }
 
             creation_block = creation_block.Union(new List<Expression>{
-			new Tie_Expression(c.First(),
+			new Portal_Expression(jack.overlord.get_portal(c.First()),
 				new Function_Call("add_" + second_end.tie_name, null,
 				new Expression[] { new Variable(item2), new Self(dungeon)}))
 		}).ToList();
 
             List<Expression> block = new List<Expression> {
 				new Flow_Control(Flow_Control_Type.If, new Operation("!=", new List<Expression> {
-				new Variable(origin), new Tie_Expression(c.First())}), creation_block)
+				new Variable(origin), new Portal_Expression(jack.overlord.get_portal(c.First()))}), creation_block)
 		};
 
             if (a_start.other_tie.property.allow_null)
             {
                 block = new List<Expression> {
 				new Flow_Control(Flow_Control_Type.If, 
-					new Operation("!=", new List<Expression> { new Tie_Expression(a_start.other_tie),
+					new Operation("!=", new List<Expression> { new Portal_Expression(jack.overlord.get_portal(a_start.other_tie)),
 					new Null_Value() }), block
 				)
 			};

@@ -41,7 +41,7 @@ namespace metahub.imperative.schema
         public string source_file;
         public List<string> stubs = new List<string>();
         public Dictionary<string, object> hooks = new Dictionary<string, object>();
-        public List<Dungeon> interfaces = new List<Dungeon>(); 
+        public List<Dungeon> interfaces = new List<Dungeon>();
 
         public Dungeon(string name, Overlord overlord, Realm realm, Dungeon parent = null)
         {
@@ -80,20 +80,23 @@ namespace metahub.imperative.schema
             hooks = rail.hooks;
 
             map_additional(rail.region);
-
-            foreach (var tie in rail.all_ties.Values)
-            {
-                Portal portal = new Portal(tie, this);
-                all_portals[tie.name] = portal;
-                if (rail.core_ties.ContainsKey(tie.name))
-                    core_portals[tie.name] = portal;
-            }
         }
 
         public void initialize()
         {
             if (rail.parent != null)
                 parent = overlord.get_dungeon(rail.parent);
+
+            if (rail != null)
+            {
+                foreach (var tie in rail.all_ties.Values)
+                {
+                    Portal portal = new Portal(tie, this);
+                    all_portals[tie.name] = portal;
+                    if (rail.core_ties.ContainsKey(tie.name))
+                        core_portals[tie.name] = portal;
+                }
+            }
 
             foreach (var portal in core_portals.Values)
             {
@@ -419,14 +422,14 @@ namespace metahub.imperative.schema
 
                 case Expression_Type.function_call:
                     {
-                        var definition = (Function_Call) expression;
+                        var definition = (Function_Call)expression;
                         analyze_expressions(definition.args);
                     }
                     break;
 
                 case Expression_Type.platform_function:
                     {
-                        var definition = (Platform_Function) expression;
+                        var definition = (Platform_Function)expression;
                         if (!used_functions.ContainsKey(definition.name))
                             used_functions[definition.name] = new Used_Function(definition.name,
                                                                                 true);
@@ -437,12 +440,15 @@ namespace metahub.imperative.schema
 
                 case Expression_Type.property_function_call:
                     var property_function = (Property_Function_Call)expression;
+                    if (property_function.reference != null)
+                        analyze_expression(property_function.reference);
+
                     analyze_expressions(property_function.args);
                     break;
 
                 case Expression_Type.assignment:
                     {
-                        var assignment = (Assignment) expression;
+                        var assignment = (Assignment)expression;
                         analyze_expression(assignment.target);
                         analyze_expression(assignment.expression);
                     }
@@ -458,10 +464,10 @@ namespace metahub.imperative.schema
                     analyze_expression(declare_variable.expression);
                     break;
 
-                case Expression_Type.property:
-                    var property_expression = (Tie_Expression)expression;
-                    add_dependency(property_expression.tie.other_rail);
-                    break;
+                //case Expression_Type.property:
+                //    var property_expression = (Tie_Expression)expression;
+                //    add_dependency(property_expression.tie.other_rail);
+                //    break;
 
                 case Expression_Type.portal:
                     var portal_expression = (Portal_Expression)expression;
@@ -473,7 +479,7 @@ namespace metahub.imperative.schema
                     if (variable_expression.symbol.profession != null)
                     {
                         if (variable_expression.symbol.profession.type == Kind.reference)
-                        add_dependency(variable_expression.symbol.profession.dungeon);
+                            add_dependency(variable_expression.symbol.profession.dungeon);
                     }
                     else
                         add_dependency(variable_expression.symbol.signature.rail);

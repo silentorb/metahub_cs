@@ -1,12 +1,9 @@
 using metahub.logic.schema;
 using metahub.logic.nodes;
 using metahub.schema;
-
+/*
 namespace metahub.imperative.types {
-/**
- * ...
- * @author Christopher W. Johnson
- */
+
 public class Tie_Expression : Expression
 {
 	public Tie tie;
@@ -42,4 +39,4 @@ public class Tie_Expression : Expression
             };
     }
 	
-}}
+}}*/

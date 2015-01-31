@@ -19,6 +19,9 @@ namespace metahub.imperative.types
 
             : base(Expression_Type.portal, child)
         {
+            if (portal == null)
+                throw new Exception("portal cannot be null.");
+
             this.portal = portal;
         }
 

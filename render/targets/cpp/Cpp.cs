@@ -608,10 +608,9 @@ namespace metahub.render.targets.cpp
                 ? "void"
                 : get_rail_type_string(signature.dungeon);
 
-            if (signature.type == Kind.reference)
+            if (!signature.is_list)
             {
-                return
-                signature.dungeon.is_value ? is_parameter ? name + "&" : name :
+                return signature.dungeon.is_value ? is_parameter ? name + "&" : name :
                         name + "*";
             }
             else
@@ -729,7 +728,7 @@ namespace metahub.render.targets.cpp
 
         string render_iterator(Symbol parameter, Expression expression)
         {
-            var signature = Expression.get_end(expression).get_signature();
+            var signature = Expression.get_end(expression).get_profession();
             var path_string = render_expression(expression);
             return
                render_signature(signature)
@@ -753,13 +752,13 @@ namespace metahub.render.targets.cpp
                     result = render_path_old((Path)expression);
                     break;
 
-                case Expression_Type.property:
-                    var tie_expression = (Tie_Expression)expression;
-                    result = tie_expression.tie.tie_name;
-                    if (tie_expression.index != null)
-                        result += "[" + render_expression(tie_expression.index) + "]";
+                //case Expression_Type.property:
+                //    var tie_expression = (Tie_Expression)expression;
+                //    result = tie_expression.tie.tie_name;
+                //    if (tie_expression.index != null)
+                //        result += "[" + render_expression(tie_expression.index) + "]";
 
-                    break;
+                //    break;
 
                 case Expression_Type.portal:
                     var portal_expression = (Portal_Expression)expression;

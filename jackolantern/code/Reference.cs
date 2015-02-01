@@ -4,6 +4,7 @@ using metahub.imperative.code;
 using metahub.imperative.schema;
 using metahub.imperative.summoner;
 using metahub.imperative.types;
+using metahub.logic;
 using metahub.logic.schema;
 using metahub.schema;
 using Constraint = metahub.logic.schema.Constraint;
@@ -13,19 +14,6 @@ namespace metahub.jackolantern.code
 {
     public class Reference
     {
-        public static Dictionary<string, string> inverse_operators = new Dictionary<string, string>
-        {
-            {">", "<="},
-            {"<", ">="},
-            {">=", "<"},
-            {"<=", ">"},
-
-            {"+", "-"},
-            {"-", "+"},
-            {"*", "/"},
-            {"/", "*"}
-        };
-
         public static void generate_constraint(Constraint constraint, Tie tie, JackOLantern jack)
         {
             if (constraint.op == "!="
@@ -156,7 +144,7 @@ namespace metahub.jackolantern.code
                     //    break;
                 }
 
-                op = inverse_operators[op];
+                op = Logician.inverse_operators[op];
             }
 
             return new List<Expression> { new Flow_Control(Flow_Control_Type.If, new Operation(op,
@@ -256,7 +244,7 @@ namespace metahub.jackolantern.code
 
             return new List<Expression>
             {
-                Imp.If(Imp.operation(inverse_operators[constraint.op], 
+                Imp.If(Imp.operation(Logician.inverse_operators[constraint.op], 
                     new Platform_Function("dist", new Variable(it, new Portal_Expression(jack.overlord.get_portal(constraint.endpoints.Last()))),
                         new List<Expression> { new Variable(value) }),
                         jack.translate(constraint.second, scope)

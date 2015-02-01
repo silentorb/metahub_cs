@@ -1,10 +1,17 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using metahub.logic.schema;
 using metahub.schema;
 
 namespace metahub.logic.nodes
 {
+    public enum Dir
+    {
+        In,
+        Out
+    }
+
     public class Node
     {
         public Node_Type type;
@@ -30,14 +37,23 @@ namespace metahub.logic.nodes
             if (connections.Contains(other))
                 return;
 
-            //if (other.output != null)
-            //    throw new Exception("Other node already has a connected output node.");
-
             connections.Add(other);
             other.connections.Add(this);
 
             inputs.Add(other);
             other.outputs.Add(this);
+        }
+
+        public void connect(Node other, Dir dir)
+        {
+            if (dir == Dir.In)
+            {
+                connect_input(other);
+            }
+            else
+            {
+                connect_output(other);
+            }
         }
 
         public void connect_many_inputs(IEnumerable<Node> inputs)
@@ -86,6 +102,70 @@ namespace metahub.logic.nodes
             }
 
             return current;
+        }
+
+        public void disconnect(Node other)
+        {
+            if (!connections.Contains(other))
+                return;
+
+            connections.Remove(other);
+            inputs.Remove(other);
+            outputs.Remove(other);
+
+            other.connections.Remove(this);
+            other.inputs.Remove(this);
+            other.outputs.Remove(this);
+        }
+
+        public void replace(Node first, Node second)
+        {
+            if (!connections.Contains(first))
+                throw new Exception("Cannot replace node because there is no existing connection.");
+
+            if (connections.Contains(second))
+                throw new Exception("Already connected to replacement node.");
+
+            connections.Remove(first);
+
+            var index = inputs.IndexOf(first);
+            if (index > -1)
+            {
+                disconnect(first);
+                inputs.Insert(index, second);
+                second.outputs.Add(this);
+            }
+            else
+            {
+                index = outputs.IndexOf(first);
+                disconnect(first);
+                outputs.Insert(index, second);
+                second.inputs.Add(this);
+            }
+
+            connections.Add(second);
+            second.connections.Add(this);
+        }
+
+        public Node get_other_input(Node node)
+        {
+            if (inputs.Count != 2)
+                throw new Exception("Not yet supported.");
+
+            return inputs.First(n => n != node);
+        }
+
+        public Node get_other_output(Node node)
+        {
+            if (outputs.Count != 2)
+                throw new Exception("Not yet supported.");
+
+            return outputs.First(n => n != node);
+        }
+
+        public virtual Node clone()
+        {
+            throw new Exception("Not implemented.");
         }
     }
 }

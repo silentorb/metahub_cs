@@ -86,6 +86,7 @@
     <Compile Include="jackolantern\code\Dungeon_Carver.cs" />
     <Compile Include="jackolantern\schema\Endpoint.cs" />
     <Compile Include="jackolantern\schema\Swamp.cs" />
+    <Compile Include="jackolantern\tools\Transform.cs" />
     <Compile Include="logic\Logician.cs" />
     <Compile Include="logic\nodes\Function_Call2.cs" />
     <Compile Include="logic\nodes\Scope_Node.cs" />

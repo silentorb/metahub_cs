@@ -191,12 +191,20 @@ namespace metahub.jackolantern
                     return new Literal(((metahub.logic.nodes.Literal_Value)expression).value, new Profession(Kind.unknown));
 
                 case Node_Type.function_call:
-                    var function_call = (metahub.logic.nodes.Function_Call)expression;
-                    return new Platform_Function(function_call.name, null, null)
+                    var function_call = expression as metahub.logic.nodes.Function_Call;
+                    if (function_call != null)
                     {
-                        profession = new Profession(function_call.signature, overlord)
-                    };
-      
+                        return new Platform_Function(function_call.name, null, null)
+                            {
+                                profession = new Profession(function_call.signature, overlord)
+                            };
+                    }
+                    var function_call2 = (Function_Call2) expression;
+                    if (!function_call2.is_operation)
+                        throw new Exception("Not supported.");
+
+                    return new Operation(function_call2.name, translate_many(function_call2.inputs, scope));
+
                 case Node_Type.path:
                     return convert_path(((metahub.logic.nodes.Reference_Path)expression).children, scope);
 
@@ -216,9 +224,9 @@ namespace metahub.jackolantern
                 case Node_Type.property:
                     return convert_path(new List<Node> { expression });
 
-                case Node_Type.operation:
-                    var operation = (metahub.logic.nodes.Operation_Node)expression;
-                    return new Operation(operation.op, translate_many(operation.inputs, scope));
+                //case Node_Type.operation:
+                //    var operation = (metahub.logic.nodes.Operation_Node)expression;
+                //    return new Operation(operation.op, translate_many(operation.inputs, scope));
 
                 default:
                     throw new Exception("Cannot convert node " + expression.type + ".");

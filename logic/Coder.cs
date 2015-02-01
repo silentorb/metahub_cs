@@ -476,7 +476,7 @@ namespace metahub.logic
             if (source.patterns.Length < 2)
                 return convert_expression(source.patterns[0], scope);
 
-            return new Operation_Node(source.text, source.patterns.Select(p=>convert_expression(p, scope)));
+            return new Function_Call2(source.text, source.patterns.Select(p=>convert_expression(p, scope)), true);
         }
 
         Node process_expression2(Pattern_Source source, Logic_Scope scope)
@@ -484,7 +484,7 @@ namespace metahub.logic
             if (source.patterns.Length < 2)
                 return convert_expression2(source.patterns[0], scope);
 
-            return new Operation_Node(source.text, source.patterns.Select(p => convert_expression2(p, scope)));
+            return new Function_Call2(source.text, source.patterns.Select(p => convert_expression2(p, scope)), true);
         }
 
         Node process_function_call(Pattern_Source source, Node previous, Logic_Scope scope)

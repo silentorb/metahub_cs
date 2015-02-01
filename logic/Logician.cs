@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using metahub.imperative;
+using metahub.imperative.code;
 using metahub.logic.schema;
 using metahub.logic.nodes;
 
@@ -10,6 +11,21 @@ namespace metahub.logic
 {
     public class Logician
     {
+        public static Dictionary<string, string> inverse_operators = new Dictionary<string, string>
+            {
+                {"=", "="},
+
+                {">", "<="},
+                {"<", ">="},
+                {">=", "<"},
+                {"<=", ">"},
+
+                {"+", "-"},
+                {"-", "+"},
+                {"*", "/"},
+                {"/", "*"}
+            };
+
         public List<Constraint> constraints = new List<Constraint>();
         public List<Function_Call2> functions = new List<Function_Call2>(); 
         public Dictionary<string, Constraint_Group> groups = new Dictionary<string, Constraint_Group>();
@@ -25,7 +41,7 @@ namespace metahub.logic
         {
             var constraint = new Constraint(first, second, op, lambda) { constraint_scope = scope.constraint_scope };
 
-            var tie = imperative.code.Parse.get_end_tie(constraint.first);
+            var tie = Parse.get_end_tie(constraint.first);
             if (tie != null)
                 tie.constraints.Add(constraint);
 
@@ -51,6 +67,5 @@ namespace metahub.logic
             }
 
         }
-
     }
 }

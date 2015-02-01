@@ -6,6 +6,7 @@ using metahub.imperative.schema;
 using metahub.imperative.summoner;
 using metahub.imperative.types;
 using metahub.jackolantern.code;
+using metahub.logic;
 using metahub.logic.nodes;
 using metahub.logic.schema;
 using metahub.schema;
@@ -14,12 +15,6 @@ namespace metahub.jackolantern.schema
 {
     public class Swamp
     {
-        public enum Dir
-        {
-            In,
-            Out
-        }
-
         static Dir reverse(Dir dir)
         {
             return dir == Dir.Out
@@ -83,14 +78,14 @@ namespace metahub.jackolantern.schema
         */
         IEnumerable<Expression> translate_many(IEnumerable<Node> nodes, Node previous, Dir dir)
         {
-            return nodes.Select(n => translate(n, previous, dir));
+            return nodes.Select(n => translate_inclusive(n, previous, dir));
         }
 
-        public Expression translate(Node node, Node previous, Dir dir, int step = 0)
+        public Expression translate_inclusive(Node node, Node previous, Dir dir, int step = 0)
         {
             if (node.type == Node_Type.scope_node && step == 0)
             {
-                return translate(node.outputs.First(o => o != previous), node, Dir.Out, 1);
+                return translate_inclusive(node.outputs.First(o => o != previous), node, Dir.Out, 1);
             }
 
             var expression = get_expression(node, previous, dir);
@@ -101,7 +96,7 @@ namespace metahub.jackolantern.schema
             if (next == null)
                 return expression;
 
-            var child = translate(next, node, dir, step + 1);
+            var child = translate_inclusive(next, node, dir, step + 1);
             if (child != null && child.type == Expression_Type.platform_function)
             {
                 child.child = expression;
@@ -114,7 +109,7 @@ namespace metahub.jackolantern.schema
             }
         }
 
-        public Expression translate2(Node node, Node previous, Dir dir, int step = 0)
+        public Expression translate_exclusive(Node node, Node previous, Dir dir, int step = 0)
         {
             var next = get_next(node, previous, ref dir, step);
             if (next == null)
@@ -128,7 +123,7 @@ namespace metahub.jackolantern.schema
             if (expression == null)
                 throw new Exception();
 
-            var child = translate2(next, node, dir, step + 1);
+            var child = translate_exclusive(next, node, dir, step + 1);
             if (child != null && child.type == Expression_Type.platform_function)
             {
                 child.child = expression;
@@ -177,7 +172,8 @@ namespace metahub.jackolantern.schema
                                       ? property_node.tie
                                       : ((Property_Reference)previous).tie.other_tie;
                         if (tie == null)
-                            return null;
+                            throw new Exception("Not supported.");
+                            //return null;
 
                         return new Portal_Expression(jack.overlord.get_portal(tie));
                     }
@@ -193,27 +189,95 @@ namespace metahub.jackolantern.schema
                         return new Portal_Expression(jack.overlord.get_portal(tie));
                     }
 
-                case Node_Type.function_call:
-                    {
-                        var function_call = (Function_Call2)node;
-                        var args = function_call.inputs.Select(i => get_expression(i, null, Dir.In));
-                        return new Platform_Function(function_call.name, null, args);
-                    }
+                //case Node_Type.function_call:
+                //    {
+                //        var function_call = (Function_Call2)node;
+                //        var args = function_call.inputs.Select(i => get_expression(i, null, Dir.In));
+                //        return new Platform_Function(function_call.name, null, args);
+                //    }
 
                 case Node_Type.literal:
                     var literal = (Literal_Value)node;
                     return new Literal(literal.value, new Profession(literal.kind));
 
-                case Node_Type.operation:
-                    var operation = (Operation_Node)node;
+                case Node_Type.function_call:
+                    var operation = (Function_Call2)node;
                     var op = dir == Dir.Out
-                        ? operation.op
-                        : Reference.inverse_operators[operation.op];
+                        ? operation.name
+                        : Logician.inverse_operators[operation.name];
 
-                    return new Operation(op, operation.inputs.Select(i => translate2(i, operation, Dir.In)));
+                    return new Operation(op, operation.inputs.Select(i => translate_backwards(i, operation)));
             }
 
             throw new Exception("Not yet supported: " + node.type);
         }
+
+        public Expression translate_backwards(Node node, Node previous, int step = 0)
+        {
+            if (step > 10)
+                throw new Exception("Not supported.");
+
+            var dir = Dir.In;
+
+            var expression = get_expression(node, previous, Dir.Out);
+            if (expression == null)
+                throw new Exception();
+
+            if (node.type == Node_Type.literal)
+                return expression;
+
+            var next = get_next(node, previous, ref dir, step);
+
+            if (next.type == Node_Type.scope_node)
+                return expression;
+
+            if (next == null)
+            {
+                if (step == 0)
+                    throw new Exception("Empty node path.");
+
+                return null;
+            }
+
+            var child = translate_backwards(next, node, step + 1);
+            if (child != null && child.type == Expression_Type.platform_function)
+            {
+                expression.child = child;
+                return expression;
+            }
+            else
+            {
+                child.child = expression;
+                return child;
+            }
+        }
+
+        //public Expression translate_inclusive(Node node, Node previous, Dir dir, int step = 0)
+        //{
+        //    if (node.type == Node_Type.scope_node && step == 0)
+        //    {
+        //        return translate_inclusive(node.outputs.First(o => o != previous), node, Dir.Out, 1);
+        //    }
+
+        //    var expression = get_expression(node, previous, dir);
+        //    if (expression == null)
+        //        return null;
+
+        //    Node next = get_next(node, previous, ref dir);
+        //    if (next == null)
+        //        return expression;
+
+        //    var child = translate_inclusive(next, node, dir, step + 1);
+        //    if (child != null && child.type == Expression_Type.platform_function)
+        //    {
+        //        child.child = expression;
+        //        return child;
+        //    }
+        //    else
+        //    {
+        //        expression.child = child;
+        //        return expression;
+        //    }
+        //}
     }
 }

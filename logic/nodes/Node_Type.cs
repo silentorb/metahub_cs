@@ -12,7 +12,7 @@ namespace metahub.logic.nodes
         parent_class,
         path,
         lambda,
-        operation,
+        //operation,
         Null,
         scope_node,
 

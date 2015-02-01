@@ -24,5 +24,10 @@ namespace metahub.logic.nodes
         {
             return new Signature(kind);
         }
+
+        public override Node clone()
+        {
+            return new Literal_Value(value, kind);
+        }
     }
 }

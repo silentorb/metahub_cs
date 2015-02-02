@@ -127,7 +127,7 @@ namespace metahub.logic
                     return process_complex_token(source, scope);
 
                 case "lambda":
-                    return create_lambda(source, scope);
+                    return create_lambda2(source, scope);
 
                 case "id":
                     if (source.text == "null")
@@ -471,6 +471,25 @@ namespace metahub.logic
             );
         }
 
+        Lambda create_lambda2(Pattern_Source source, Logic_Scope scope)
+        {
+            var expressions = source.patterns[2].patterns;
+            Logic_Scope new_scope = new Logic_Scope(scope);
+            new_scope.is_map = true;
+            var parameters = source.patterns[0].patterns;
+            int i = 0;
+            foreach (var parameter in parameters)
+            {
+                var signature = scope.parameters[0].parameters[i];
+                new_scope.variables[parameter.text] = signature;
+                ++i;
+            }
+
+            return new Lambda(new_scope, parameters.Select(p => new Parameter(p.text, null))
+                , expressions.Select(e => ((Constraint_Wrapper)convert_statement(e, new_scope)).constraint)
+            );
+        }
+
         Node process_expression(Pattern_Source source, Logic_Scope scope)
         {
             if (source.patterns.Length < 2)
@@ -490,7 +509,7 @@ namespace metahub.logic
         Node process_function_call(Pattern_Source source, Node previous, Logic_Scope scope)
         {
             var name = source.text ?? source.patterns[0].text;
-            if (name == "contains")
+            if (name == "contains" || name == "cross")
                 return process_function_call2(source, previous, scope);
 
             var function_scope = new Logic_Scope(scope.parent) { constraint_scope = new Constraint_Scope(name, new [] { previous })};

@@ -29,7 +29,7 @@ namespace metahub.logic.nodes
             }
         }
 
-        public override Node clone(Transform transform)
+        public override Node clone()
         {
             return new Function_Call2(name, new List<Node>(), is_operation);
         }

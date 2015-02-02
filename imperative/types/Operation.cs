@@ -15,6 +15,8 @@ namespace metahub.imperative.types
        {
            this.op = op;
            this.expressions = expressions.ToArray();
+           if (this.expressions.Any(e=>e == null))
+               throw new Exception("Argument cannot be null");
        }
 
        public bool is_condition()

@@ -10,11 +10,6 @@ using Kind = metahub.schema.Kind;
 
 namespace metahub.render.targets.cpp
 {
-
-    /**
-     * ...
-     * @author Christopher W. Johnson
-     */
     public class External_Header
     {
         public string name;

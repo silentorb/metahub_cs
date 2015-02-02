@@ -27,7 +27,7 @@ namespace metahub.jackolantern.pumpkins
             var endpoints = get_endpoints3(pumpkin, false);
             foreach (var endpoint in endpoints)
             {
-                if (endpoint.portal.name != "dir")
+                if (endpoint.portal.name != "vector")
                     continue;
 
                 var portal = endpoint.portal;
@@ -39,12 +39,13 @@ namespace metahub.jackolantern.pumpkins
                 var swamp = new Swamp(jack, pumpkin, context);
 
                 var original_target = swamp.get_exclusive_chain(endpoint.node, Dir.In);
-                var center = Transform.center_on(original_target.Last());
-                var cloned_target = swamp.get_exclusive_chain(center, Dir.In);
-                var rvalue = cloned_target.Last().outputs[0].get_other_input(cloned_target.Last());
+                var transform = Transform.center_on(original_target.Last());
+                var lvalue = transform.get_out(endpoint.node);
+                var new_target = transform.get_out(original_target.Last());
+                var rvalue = new_target.outputs[0].get_other_input(new_target);
 
-                var parent = center.inputs[0];
-                context.add_pattern("first", swamp.translate_exclusive(parent, center, Dir.In));
+                var parent = lvalue.inputs[0];
+                context.add_pattern("first", swamp.translate_exclusive(parent, lvalue, Dir.In));
                 context.add_pattern("second", swamp.translate_backwards(rvalue, null));
                 setter.block.add("post", jack.overlord.summon_snippet(jack.templates["equals"], context));
             }

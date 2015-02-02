@@ -22,7 +22,7 @@ namespace metahub.logic.nodes
             return tie.get_signature();
         }
 
-        public override Node clone(Transform transform)
+        public override Node clone()
         {
             return new Property_Reference(tie);
         }

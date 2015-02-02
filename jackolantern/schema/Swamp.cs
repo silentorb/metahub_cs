@@ -236,7 +236,7 @@ namespace metahub.jackolantern.schema
             if (expression == null)
                 throw new Exception();
 
-            if (node.type == Node_Type.literal)
+            if (node.type != Node_Type.property)
                 return expression;
 
             var next = get_next(node, previous, ref dir, step);
@@ -244,12 +244,10 @@ namespace metahub.jackolantern.schema
             if (next.type == Node_Type.scope_node)
                 return expression;
 
-            if (next == null)
+            if (next.type == Node_Type.property
+                && ((Property_Reference)next).tie.other_rail == context.dungeon.rail)
             {
-                if (step == 0)
-                    throw new Exception("Empty node path.");
-
-                return null;
+                return expression;
             }
 
             var child = translate_backwards(next, node, step + 1);
@@ -258,11 +256,16 @@ namespace metahub.jackolantern.schema
                 expression.child = child;
                 return expression;
             }
-            else
+            else if (child != null)
             {
-                child.child = expression;
+                get_last_child(child).child = expression;
                 return child;
             }
+
+            if (expression == null)
+                throw new Exception("expression cannot be null.");
+
+            return expression;
         }
 
         public List<Node> get_exclusive_chain(Node node, Dir dir)
@@ -274,7 +277,7 @@ namespace metahub.jackolantern.schema
             {
                 ++step;
                 Node next = get_next(node, previous, ref dir, step);
-                if (next == null)
+                if (next == null || (next.type == Node_Type.function_call && ((Function_Call2)next).is_operation))
                     break;
 
                 result.Add(next);
@@ -285,32 +288,14 @@ namespace metahub.jackolantern.schema
             return result;
         }
 
-        //public Expression translate_inclusive(Node node, Node previous, Dir dir, int step = 0)
-        //{
-        //    if (node.type == Node_Type.scope_node && step == 0)
-        //    {
-        //        return translate_inclusive(node.outputs.First(o => o != previous), node, Dir.Out, 1);
-        //    }
+        static Expression get_last_child(Expression expression)
+        {
+            while (expression.child != null)
+            {
+                expression = expression.child;
+            }
+            return expression;
+        }
 
-        //    var expression = get_expression(node, previous, dir);
-        //    if (expression == null)
-        //        return null;
-
-        //    Node next = get_next(node, previous, ref dir);
-        //    if (next == null)
-        //        return expression;
-
-        //    var child = translate_inclusive(next, node, dir, step + 1);
-        //    if (child != null && child.type == Expression_Type.platform_function)
-        //    {
-        //        child.child = expression;
-        //        return child;
-        //    }
-        //    else
-        //    {
-        //        expression.child = child;
-        //        return expression;
-        //    }
-        //}
     }
 }

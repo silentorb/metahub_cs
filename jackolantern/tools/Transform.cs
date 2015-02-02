@@ -19,13 +19,22 @@ namespace metahub.jackolantern.tools
             new_origin = origin;
         }
 
+        public Node get_out(Node input)
+        {
+            if (map.Count == 0)
+                return input;
+
+            return map[input];
+        }
+
         public static Transform center_on(Node origin)
         {
             var transform = new Transform(origin);
+            //if (new[] { origin }.Concat(origin.outputs).OfType<Function_Call2>().All(n => !n.is_operation))
             if (origin.outputs.OfType<Function_Call2>().All(n => !n.is_operation))
                 return transform;
 
-            var node = clone_all(origin, new Dictionary<Node, Node>());
+            var node = clone_all(origin, transform.map);
             if (node.outputs.Count > 1)
                 throw new Exception("Not yet supported.");
 

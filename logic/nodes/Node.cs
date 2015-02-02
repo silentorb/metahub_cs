@@ -133,6 +133,7 @@ namespace metahub.logic.nodes
             if (index > -1)
             {
                 disconnect(first);
+                inputs.Remove(first);
                 inputs.Insert(index, second);
                 second.outputs.Add(this);
             }
@@ -140,6 +141,7 @@ namespace metahub.logic.nodes
             {
                 index = outputs.IndexOf(first);
                 disconnect(first);
+                outputs.Remove(first);
                 outputs.Insert(index, second);
                 second.inputs.Add(this);
             }
@@ -164,7 +166,7 @@ namespace metahub.logic.nodes
             return outputs.First(n => n != node);
         }
 
-        public virtual Node clone(Transform transform)
+        public virtual Node clone()
         {
             throw new Exception("Not implemented.");
         }

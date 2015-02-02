@@ -25,6 +25,8 @@ namespace metahub.jackolantern.schema
         JackOLantern jack;
         Node end;
         Summoner.Context context;
+        public Node previous_node;
+        public Node last_node;
 
         public Swamp(JackOLantern jack, Node end, Summoner.Context context)
         {
@@ -111,6 +113,8 @@ namespace metahub.jackolantern.schema
 
         public Expression translate_exclusive(Node node, Node previous, Dir dir, int step = 0)
         {
+            previous_node = previous;
+            last_node = node;
             var next = get_next(node, previous, ref dir, step);
             if (next == null)
             {
@@ -157,6 +161,15 @@ namespace metahub.jackolantern.schema
             if (result == end)
                 return null;
 
+            if (result.type == Node_Type.function_call)
+            {
+                if (((Function_Call2)result).name == "=")
+                {
+                    previous_node = node;
+                    last_node = result;
+                    return null;
+                }
+            }
 
             return result;
         }
@@ -173,7 +186,7 @@ namespace metahub.jackolantern.schema
                                       : ((Property_Reference)previous).tie.other_tie;
                         if (tie == null)
                             throw new Exception("Not supported.");
-                            //return null;
+                        //return null;
 
                         return new Portal_Expression(jack.overlord.get_portal(tie));
                     }
@@ -250,6 +263,26 @@ namespace metahub.jackolantern.schema
                 child.child = expression;
                 return child;
             }
+        }
+
+        public List<Node> get_exclusive_chain(Node node, Dir dir)
+        {
+            int step = -1;
+            List<Node> result = new List<Node>();
+            Node previous = null;
+            do
+            {
+                ++step;
+                Node next = get_next(node, previous, ref dir, step);
+                if (next == null)
+                    break;
+
+                result.Add(next);
+                previous = node;
+                node = next;
+            } while (true);
+
+            return result;
         }
 
         //public Expression translate_inclusive(Node node, Node previous, Dir dir, int step = 0)

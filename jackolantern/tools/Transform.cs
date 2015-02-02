@@ -7,60 +7,72 @@ using metahub.logic.nodes;
 
 namespace metahub.jackolantern.tools
 {
-   public static class Transform
+    public class Transform
     {
-       public static Node center_on(Node original)
-       {
-           if (original.outputs.All(n => n.type != Node_Type.function_call))
-               return original;
+        public Dictionary<Node, Node> map = new Dictionary<Node, Node>();
+        public Node origin;
+        public Node new_origin;
 
-           var node = clone_all(original, new Dictionary<Node, Node>());
-           if (node.outputs.Count > 1)
-               throw new Exception("Not yet supported.");
+        private Transform(Node origin)
+        {
+            this.origin = origin;
+            new_origin = origin;
+        }
 
-           var operation = (Function_Call2) node.outputs[0];
-           operation.name = Logician.inverse_operators[operation.name];
+        public static Transform center_on(Node origin)
+        {
+            var transform = new Transform(origin);
+            if (origin.outputs.OfType<Function_Call2>().All(n => !n.is_operation))
+                return transform;
 
-           if (operation.outputs.Count > 1)
-               throw new Exception("Not yet supported.");
+            var node = clone_all(origin, new Dictionary<Node, Node>());
+            if (node.outputs.Count > 1)
+                throw new Exception("Not yet supported.");
 
-           // Prepare for 
-           var join = (Function_Call2) operation.outputs[0];
-           join.name = Logician.inverse_operators[join.name];
-           var other_side = join.get_other_input(operation);
+            var operation = (Function_Call2)node.outputs[0];
+            operation.name = Logician.inverse_operators[operation.name];
 
-           // Perform the transformation, similar to rotating a rubix cube.
-           operation.replace(node, other_side);
-           join.replace(operation, node);
-           join.replace(other_side, operation);
+            if (operation.outputs.Count > 1)
+                throw new Exception("Not yet supported.");
 
-           return node;
-       }
+            // Prepare for 
+            var join = (Function_Call2)operation.outputs[0];
+            join.name = Logician.inverse_operators[join.name];
+            var other_side = join.get_other_input(operation);
 
-       public static Node clone_all(Node node, Dictionary<Node, Node> map)
-       {   
-           var result = node.clone();
-           map.Add(node, result);
+            // Perform the transformation, similar to rotating a rubix cube.
+            operation.replace(node, other_side);
+            join.replace(operation, node);
+            join.replace(other_side, operation);
 
-           foreach (var connection in node.inputs)
-           {
-               var other = map.ContainsKey(connection)
-                    ? map[connection]
-                    : clone_all(connection, map);
+            transform.new_origin = node;
+            return transform;
+        }
 
-               result.connect_input(other);
-           }
+        public static Node clone_all(Node node, Dictionary<Node, Node> map)
+        {
+            var result = node.clone();
+            map.Add(node, result);
 
-           foreach (var connection in node.outputs)
-           {
-               var other = map.ContainsKey(connection)
-                    ? map[connection]
-                    : clone_all(connection, map);
+            foreach (var connection in node.inputs)
+            {
+                var other = map.ContainsKey(connection)
+                     ? map[connection]
+                     : clone_all(connection, map);
 
-               result.connect_output(other);
-           }
+                result.connect_input(other);
+            }
 
-           return result;
-       }
+            foreach (var connection in node.outputs)
+            {
+                var other = map.ContainsKey(connection)
+                     ? map[connection]
+                     : clone_all(connection, map);
+
+                result.connect_output(other);
+            }
+
+            return result;
+        }
     }
 }

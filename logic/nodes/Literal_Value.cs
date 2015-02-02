@@ -1,3 +1,4 @@
+using metahub.jackolantern.tools;
 using metahub.logic.schema;
 using metahub.schema;
 
@@ -25,7 +26,7 @@ namespace metahub.logic.nodes
             return new Signature(kind);
         }
 
-        public override Node clone()
+        public override Node clone(Transform transform)
         {
             return new Literal_Value(value, kind);
         }

@@ -27,5 +27,10 @@ namespace metahub.imperative.types
                 || op == "<"
             ;
        }
+
+       public override Expression clone()
+       {
+           return new Operation(op, expressions.Select(e=>e.clone()));
+       }
     }
 }

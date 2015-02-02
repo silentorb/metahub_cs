@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using metahub.jackolantern.tools;
 using metahub.logic.schema;
 
 namespace metahub.logic.nodes
@@ -21,7 +22,7 @@ namespace metahub.logic.nodes
             return tie.get_signature();
         }
 
-        public override Node clone()
+        public override Node clone(Transform transform)
         {
             return new Property_Reference(tie);
         }

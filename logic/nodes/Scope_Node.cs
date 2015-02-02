@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using metahub.jackolantern.tools;
 using metahub.logic.schema;
 
 namespace metahub.logic.nodes
@@ -16,7 +17,7 @@ namespace metahub.logic.nodes
            this.rail = rail;
        }
 
-       public override Node clone()
+       public override Node clone(Transform transform)
        {
            return new Scope_Node(rail);
        }

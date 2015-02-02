@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using metahub.jackolantern.tools;
 using metahub.logic.schema;
 using metahub.schema;
 
@@ -163,9 +164,10 @@ namespace metahub.logic.nodes
             return outputs.First(n => n != node);
         }
 
-        public virtual Node clone()
+        public virtual Node clone(Transform transform)
         {
             throw new Exception("Not implemented.");
         }
+
     }
 }

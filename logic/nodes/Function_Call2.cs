@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using metahub.jackolantern.tools;
 using metahub.logic.schema;
 
 namespace metahub.logic.nodes
@@ -28,7 +29,7 @@ namespace metahub.logic.nodes
             }
         }
 
-        public override Node clone()
+        public override Node clone(Transform transform)
         {
             return new Function_Call2(name, new List<Node>(), is_operation);
         }

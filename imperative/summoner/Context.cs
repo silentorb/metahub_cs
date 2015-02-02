@@ -17,7 +17,8 @@ namespace metahub.imperative.summoner
             public Context parent;
             protected Dictionary<string, string> string_inserts = new Dictionary<string, string>();
             protected Dictionary<string, Profession> profession_inserts = new Dictionary<string, Profession>();
-            protected Dictionary<string, Expression_Generator> expression_inserts = new Dictionary<string, Expression_Generator>();
+            protected Dictionary<string, Expression_Generator> expression_lambda_inserts = new Dictionary<string, Expression_Generator>();
+            protected Dictionary<string, Expression> expression_inserts = new Dictionary<string, Expression>();
 
             public Context(Realm realm, Dungeon dungeon = null)
             {
@@ -53,6 +54,12 @@ namespace metahub.imperative.summoner
 
             public Expression_Generator add_pattern(string name, Expression_Generator generator)
             {
+                expression_lambda_inserts[name] = generator;
+                return generator;
+            }
+
+            public Expression add_pattern(string name, Expression generator)
+            {
                 expression_inserts[name] = generator;
                 return generator;
             }
@@ -81,8 +88,11 @@ namespace metahub.imperative.summoner
 
             public Expression get_expression_pattern(string name)
             {
+                if (expression_lambda_inserts.ContainsKey(name))
+                    return expression_lambda_inserts[name]();
+
                 if (expression_inserts.ContainsKey(name))
-                    return expression_inserts[name]();
+                    return expression_inserts[name].clone();
 
                 if (parent != null)
                     return parent.get_expression_pattern(name);

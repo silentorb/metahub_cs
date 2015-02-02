@@ -466,7 +466,7 @@ namespace metahub.render.targets.cpp
             //}
 
             //declarations.AddRange(dungeon.functions.Select(render_function_declaration));
-            declarations.AddRange(dungeon.imps.Select(render_function_declaration));
+            declarations.AddRange(dungeon.imps.Values.Select(render_function_declaration));
 
             return declarations.join("");
         }

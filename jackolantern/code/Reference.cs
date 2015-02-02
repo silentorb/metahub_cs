@@ -30,7 +30,9 @@ namespace metahub.jackolantern.code
             {
                 var dungeon = jack.overlord.get_dungeon(tie.rail);
                 var block = dungeon.get_block("set_" + tie.tie_name);
-                block.add_many("pre", Reference.constraint(constraint, tie, jack, block.scope));
+                var constraint_code = Reference.constraint(constraint, tie, jack, block.scope);
+                if (constraint_code != null)
+                    block.add_many("pre", constraint_code);
             }
         }
 
@@ -172,7 +174,7 @@ namespace metahub.jackolantern.code
             var class_block = dungeon.get_block("class_definition");
             var function_scope = new Scope(class_block.scope);
             var value = function_scope.create_symbol("value", tie.get_signature());
-            var function_name = "check_" + property_reference.tie.tie_name + "_" + property_reference.tie.other_tie.tie_name;
+            var function_name = "check_" + tie.tie_name + "_" + property_reference.tie.other_tie.tie_name;
             var portal = jack.overlord.get_portal(property_reference.tie);
             var imp = dungeon.spawn_imp(function_name, new List<Parameter>
                 {

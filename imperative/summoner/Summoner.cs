@@ -121,8 +121,11 @@ namespace metahub.imperative.summoner
 
         void process_function_definition(Pattern_Source source, Context context)
         {
-            var imp = context.dungeon.spawn_imp(
-                         source.patterns[1].text,
+            var name = source.patterns[1].text;
+            var imp = context.dungeon.has_imp(name)
+            ? context.dungeon.summon_imp(name)
+            : context.dungeon.spawn_imp(
+                         name,
                          source.patterns[4].patterns.Select(p => process_parameter(p, context)).ToList()
                      );
             var new_context = new Context(context) { scope = imp.scope };

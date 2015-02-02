@@ -27,8 +27,8 @@ namespace metahub.jackolantern.pumpkins
             var endpoints = get_endpoints3(pumpkin, false);
             foreach (var endpoint in endpoints)
             {
-                if (endpoint.portal.name != "vector")
-                    continue;
+                //if (endpoint.portal.name != "vector")
+                //    continue;
 
                 var portal = endpoint.portal;
                 var dungeon = portal.dungeon;

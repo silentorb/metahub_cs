@@ -127,13 +127,10 @@ namespace metahub.logic.nodes
             if (connections.Contains(second))
                 throw new Exception("Already connected to replacement node.");
 
-            connections.Remove(first);
-
             var index = inputs.IndexOf(first);
             if (index > -1)
             {
                 disconnect(first);
-                inputs.Remove(first);
                 inputs.Insert(index, second);
                 second.outputs.Add(this);
             }
@@ -141,7 +138,6 @@ namespace metahub.logic.nodes
             {
                 index = outputs.IndexOf(first);
                 disconnect(first);
-                outputs.Remove(first);
                 outputs.Insert(index, second);
                 second.inputs.Add(this);
             }

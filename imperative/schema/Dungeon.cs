@@ -30,7 +30,7 @@ namespace metahub.imperative.schema
         Dictionary<string, Block> blocks = new Dictionary<string, Block>();
         //public List<Function_Definition> functions = new List<Function_Definition>();
         public Overlord overlord;
-        public List<Imp> imps = new List<Imp>();
+        public Dictionary<string, Imp> imps = new Dictionary<string, Imp>();
         public Dictionary<string, Portal> all_portals = new Dictionary<string, Portal>();
         public Dictionary<string, Portal> core_portals = new Dictionary<string, Portal>();
         public Dictionary<string, Used_Function> used_functions = new Dictionary<string, Used_Function>();
@@ -513,13 +513,17 @@ namespace metahub.imperative.schema
 
         public Imp spawn_imp(string imp_name, List<Parameter> parameters = null, List<Expression> expressions = null, Signature return_type = null, Portal portal = null)
         {
+            if (imps.ContainsKey(imp_name))
+                throw new Exception("Dungeon " + name + " already contains an imp named " + imp_name + ".");
+
             var imp = new Imp(imp_name, this, portal)
                 {
                     parameters = parameters ?? new List<Parameter>(),
                     expressions = expressions ?? new List<Expression>(),
                     return_type = return_type ?? new Signature(Kind.none)
                 };
-            imps.Add(imp);
+
+            imps[imp_name] = imp;
 
             var definition = new Function_Definition(imp);
 
@@ -532,7 +536,7 @@ namespace metahub.imperative.schema
 
         public bool has_imp(string imp_name, bool check_ancestors = false)
         {
-            var result = imps.Any(i => i.name == imp_name);
+            var result = imps.ContainsKey(imp_name);
             if (result || !check_ancestors || parent == null)
                 return result;
 
@@ -541,9 +545,11 @@ namespace metahub.imperative.schema
 
         public Imp summon_imp(string imp_name, bool check_ancestors = false)
         {
-            var result = imps.FirstOrDefault(i => i.name == imp_name);
-            if (result != null || !check_ancestors || parent == null)
-                return result;
+            if (imps.ContainsKey(imp_name))
+                return imps[imp_name];
+
+            if (!check_ancestors || parent == null)
+                return null;
 
             return parent.summon_imp(imp_name, true);
         }

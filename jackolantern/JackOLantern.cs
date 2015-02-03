@@ -24,6 +24,7 @@ namespace metahub.jackolantern
         public Overlord overlord;
 
         public Dictionary<string, Carver> carvers = new Dictionary<string, Carver>();
+
         public Dictionary<string, Template> templates = null;
 
         public JackOLantern(Logician logician, Overlord overlord)
@@ -60,8 +61,11 @@ namespace metahub.jackolantern
             if (pumpkin.name[0] == '@')
                 pumpkin.name = pumpkin.name.Substring(1);
 
-            var carver = carvers[pumpkin.name];
-            carver.carve(pumpkin);
+            if (carvers.ContainsKey(pumpkin.name))
+            {
+                var carver = carvers[pumpkin.name];
+                carver.carve(pumpkin);
+            }
         }
 
         public static string get_setter_name(Portal portal)

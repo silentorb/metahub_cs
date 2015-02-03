@@ -221,39 +221,39 @@ namespace metahub.jackolantern.code
 
             if (mapping != null)
             {
-                foreach (Constraint constraint in mapping.constraints)
-                {
-                    var first = constraint.first;
-                    var first_tie = a_end.other_rail.get_tie_or_error(((Property_Reference)first.get_path()[1]).tie.name);
-                    var second = (Property_Reference)constraint.second.get_last();
-                    //var second_tie = second.children[] as Property_Reference;
-                    var variable_portal =
-                        jack.overlord.get_portal(second_end.other_rail.get_tie_or_error(second.tie.name));
-                    creation_block.Add(new Variable(item2, new Function_Call("set_" + first_tie.name, null,
-                        new Expression[]
-                        {
-                        new Variable(item, new Portal_Expression(variable_portal))
-                        }
-                       )
-                    ));
+                //foreach (Constraint constraint in mapping.constraints)
+                //{
+                //    var first = constraint.first;
+                //    var first_tie = a_end.other_rail.get_tie_or_error(((Property_Reference)first.get_path()[1]).tie.name);
+                //    var second = (Property_Reference)constraint.second.get_last();
+                //    //var second_tie = second.children[] as Property_Reference;
+                //    var variable_portal =
+                //        jack.overlord.get_portal(second_end.other_rail.get_tie_or_error(second.tie.name));
+                //    creation_block.Add(new Variable(item2, new Function_Call("set_" + first_tie.name, null,
+                //        new Expression[]
+                //        {
+                //        new Variable(item, new Portal_Expression(variable_portal))
+                //        }
+                //       )
+                //    ));
 
-                    var setter_dungeon = jack.overlord.get_dungeon(a_end.other_rail);
-                    var setter_block = setter_dungeon.get_block("set_" + first_tie.name);
-                    var value_symbol = setter_block.scope.find_or_exception("value");
-                    //var item_dungeon = jack.get_dungeon(second_end.other_rail);
-                    //setter_block.add("post", Imp.setter(first_tie, new Variable(value_symbol), new Tie_Expression(a_end), null));
-                    var portal = setter_dungeon.all_portals[second_end.other_rail.name + "_links"];
-                    var iterator_scope = new Scope(setter_block.scope);
-                    var it = iterator_scope.create_symbol("item", new Signature(Kind.reference, portal.other_rail));
+                //    var setter_dungeon = jack.overlord.get_dungeon(a_end.other_rail);
+                //    var setter_block = setter_dungeon.get_block("set_" + first_tie.name);
+                //    var value_symbol = setter_block.scope.find_or_exception("value");
+                //    //var item_dungeon = jack.get_dungeon(second_end.other_rail);
+                //    //setter_block.add("post", Imp.setter(first_tie, new Variable(value_symbol), new Tie_Expression(a_end), null));
+                //    var portal = setter_dungeon.all_portals[second_end.other_rail.name + "_links"];
+                //    var iterator_scope = new Scope(setter_block.scope);
+                //    var it = iterator_scope.create_symbol("item", new Signature(Kind.reference, portal.other_rail));
 
-                    setter_block.add("post", new Iterator(it,
-                        new Portal_Expression(portal),
-                        new List<Expression>
-                        {
-                              Imp.setter(first_tie, new Variable(value_symbol), new Variable(it) , null)
-                        })
-                    );
-                }
+                //    setter_block.add("post", new Iterator(it,
+                //        new Portal_Expression(portal),
+                //        new List<Expression>
+                //        {
+                //              Imp.setter(first_tie, new Variable(value_symbol), new Variable(it) , null)
+                //        })
+                //    );
+                //}
             }
 
             creation_block = creation_block.Union(new List<Expression>{

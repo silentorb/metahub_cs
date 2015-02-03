@@ -7,10 +7,10 @@ namespace metahub.logic.nodes
     public class Lambda : Node
     {
         public List<Parameter> parameters;
-        public List<Constraint> constraints;
+        public List<Function_Call2> constraints;
         public Logic_Scope scope;
 
-        public Lambda(Logic_Scope scope, IEnumerable<Parameter> parameters, IEnumerable<Constraint> constraints)
+        public Lambda(Logic_Scope scope, IEnumerable<Parameter> parameters, IEnumerable<Function_Call2> constraints)
             : base(Node_Type.lambda)
         {
             this.scope = scope;

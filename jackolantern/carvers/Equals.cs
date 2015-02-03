@@ -27,7 +27,7 @@ namespace metahub.jackolantern.pumpkins
             var endpoints = get_endpoints3(pumpkin, false);
             foreach (var endpoint in endpoints)
             {
-                //if (endpoint.portal.name != "vector")
+                //if (endpoint.portal.name == "position" || endpoint.portal.name == "radius")
                 //    continue;
 
                 var portal = endpoint.portal;
@@ -42,7 +42,8 @@ namespace metahub.jackolantern.pumpkins
                 var transform = Transform.center_on(original_target.Last());
                 var lvalue = transform.get_out(endpoint.node);
                 var new_target = transform.get_out(original_target.Last());
-                var rvalue = new_target.outputs[0].get_other_input(new_target);
+                var rvalue = transform.get_out(pumpkin).get_other_input(new_target);
+                //var rvalue = new_target.outputs[0].get_other_input(new_target);
 
                 var parent = lvalue.inputs[0];
                 context.add_pattern("first", swamp.translate_exclusive(parent, lvalue, Dir.In));

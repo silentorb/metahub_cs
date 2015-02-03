@@ -153,9 +153,20 @@ namespace metahub.jackolantern.schema
             }
             else
             {
-                result = dir == Dir.In
-                    ? node.inputs[0]
-                    : node.outputs[0];
+                if (dir == Dir.In)
+                {
+                    if (node.inputs.Count == 0)
+                        return null;
+
+                    result = node.inputs[0];
+                }
+                else
+                {
+                    if (node.outputs.Count == 0)
+                        return null;
+
+                    result = node.outputs[0];
+                }
             }
 
             if (result == end)

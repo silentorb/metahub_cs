@@ -109,7 +109,7 @@ namespace metahub.logic
                     return process_path(source, scope);
 
                 case "function":
-                    return process_function_call2(source, previous, scope);
+                    return process_function_call3(source, previous, scope);
 
                 case "array":
                     return create_array(source, scope);
@@ -138,7 +138,7 @@ namespace metahub.logic
                     {
                         return new Variable(source.text, variable);
                         //if (variable.rail == null)
-                        //throw new Exception("variabcle rail cannot be null.");
+                        //throw new Exception("variable rail cannot be null.");
                     }
                     else
                     {
@@ -218,18 +218,18 @@ namespace metahub.logic
             //Node back_reference = null;
             var operator_name = source.patterns[2].text;
 
-            if (operator_name == "@=")
+            //if (operator_name == "@=" || operator_name == ">")
             {
                 return new_constraint(source, scope);
             }
 
             var reference = process_path(source.patterns[0], scope);
 
-            if (new List<string> { "+=", "-=", "*=", "/=" }.Contains(operator_name))
-            {
-                //operator_name = operator_name.substring(0, operator_name.Count - 7);
-                //back_reference = reference;
-            }
+            //if (new List<string> { "+=", "-=", "*=", "/=" }.Contains(operator_name))
+            //{
+            //    //operator_name = operator_name.substring(0, operator_name.Count - 7);
+            //    //back_reference = reference;
+            //}
             var expression = process_path(source.patterns[4], scope);
             //var lambda_array = source.patterns[5].patterns;
             //var lambda_source = lambda_array != null && lambda_array.Length > 0 ? lambda_array[0] : null;
@@ -466,9 +466,10 @@ namespace metahub.logic
                 ++i;
             }
 
-            return new Lambda(new_scope, parameters.Select(p => new Parameter(p.text, null))
-                , expressions.Select(e => ((Constraint_Wrapper)convert_statement(e, new_scope)).constraint)
-            );
+            throw new Exception("No longer supported.");
+            //return new Lambda(new_scope, parameters.Select(p => new Parameter(p.text, null))
+            //    , expressions.Select(e => ((Constraint_Wrapper)convert_statement(e, new_scope)).constraint)
+            //);
         }
 
         Lambda create_lambda2(Pattern_Source source, Logic_Scope scope)
@@ -486,7 +487,7 @@ namespace metahub.logic
             }
 
             return new Lambda(new_scope, parameters.Select(p => new Parameter(p.text, null))
-                , expressions.Select(e => ((Constraint_Wrapper)convert_statement(e, new_scope)).constraint)
+                , expressions.Select(e => (Function_Call2)convert_statement(e, new_scope))
             );
         }
 
@@ -509,17 +510,56 @@ namespace metahub.logic
         Node process_function_call(Pattern_Source source, Node previous, Logic_Scope scope)
         {
             var name = source.text ?? source.patterns[0].text;
-            if (name == "contains" || name == "cross")
-                return process_function_call2(source, previous, scope);
+            //if (name == "contains" || name == "cross")
+                return process_function_call3(source, previous, scope);
 
             var function_scope = new Logic_Scope(scope.parent) { constraint_scope = new Constraint_Scope(name, new [] { previous })};
+            var function_signature = prepare_function_scope_signature(name, function_scope, previous);
+  
+            var args = new Node[] {previous};
+            if (source.patterns != null)
+            {
+                args = args.Concat(source.patterns[1].patterns[0].patterns
+                    .Select(p => convert_expression(p, function_scope))
+                    ).ToArray();
+            }
+            return new Function_Call(name, args, railway, function_signature);
+            
+        }
+
+        private Node process_function_call3(Pattern_Source source, Node previous, Logic_Scope scope)
+        {
+            var name = source.text ?? source.patterns[0].text;
+            var args = source.patterns != null ? source.patterns[1].patterns[0].patterns : null;
+            return process_function_call2(name, args, previous, scope);
+        }
+
+        private Node process_function_call2(string name, Pattern_Source[] args, Node previous, Logic_Scope scope)
+        {
+            var function_scope = new Logic_Scope(scope.parent) { 
+                constraint_scope = new Constraint_Scope(name, new [] { previous }),
+                scope_node = new Scope_Node(scope.parent.rail)
+            };
+            var function_signature = prepare_function_scope_signature(name, function_scope, previous);
+  
+            var inputs = new Node[] { previous };
+            if (args != null)
+            {
+                inputs = inputs.Concat(args.Select(p => convert_expression2(p, function_scope))).ToArray();
+            }
+
+            return logician.call(name, inputs);
+        }
+
+        Signature prepare_function_scope_signature(string name, Logic_Scope function_scope, Node previous)
+        {
             var func = railway.root_region.functions[name];
             var previous_signature = previous.get_signature();
             var function_signature = func.get_signature(previous_signature).clone();
             function_scope.parameters = function_signature.parameters.Skip(1).ToArray();
             if (previous.type == Node_Type.property)
             {
-                var previous_property = (Property_Reference) previous;
+                var previous_property = (Property_Reference)previous;
                 foreach (var parameter in function_scope.parameters)
                 {
                     if (parameter.parameters != null)
@@ -532,29 +572,8 @@ namespace metahub.logic
                     }
                 }
             }
-            var args = new Node[] {previous};
-            if (source.patterns != null)
-            {
-                args = args.Concat(source.patterns[1].patterns[0].patterns
-                    .Select(p => convert_expression(p, function_scope))
-                    ).ToArray();
-            }
-            return new Function_Call(name, args, railway, function_signature);
-            
-        }
 
-        private Node process_function_call2(Pattern_Source source, Node previous, Logic_Scope scope)
-        {
-            var name = source.text ?? source.patterns[0].text;
-            var inputs = new Node[] { previous };
-                     if (source.patterns != null)
-            {
-                inputs = inputs.Concat(source.patterns[1].patterns[0].patterns
-                    .Select(p => convert_expression2(p, scope.parent))
-                    ).ToArray();
-            }
-
-            return logician.call(name, inputs);
+            return function_signature;
         }
 
         static Signature get_path_signature(Node[] path)

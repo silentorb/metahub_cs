@@ -109,7 +109,7 @@ namespace metahub.logic
                     return process_path(source, scope);
 
                 case "function":
-                    return process_function_call3(source, previous, scope);
+                    return process_function_call(source, previous, scope);
 
                 case "array":
                     return create_array(source, scope);
@@ -507,27 +507,27 @@ namespace metahub.logic
             return new Function_Call2(source.text, source.patterns.Select(p => convert_expression2(p, scope)), true);
         }
 
-        Node process_function_call(Pattern_Source source, Node previous, Logic_Scope scope)
-        {
-            var name = source.text ?? source.patterns[0].text;
-            //if (name == "contains" || name == "cross")
-                return process_function_call3(source, previous, scope);
+        //Node process_function_call(Pattern_Source source, Node previous, Logic_Scope scope)
+        //{
+        //    var name = source.text ?? source.patterns[0].text;
+        //    //if (name == "contains" || name == "cross")
+        //        return process_function_call3(source, previous, scope);
 
-            var function_scope = new Logic_Scope(scope.parent) { constraint_scope = new Constraint_Scope(name, new [] { previous })};
-            var function_signature = prepare_function_scope_signature(name, function_scope, previous);
+        //    //var function_scope = new Logic_Scope(scope.parent) { constraint_scope = new Constraint_Scope(name, new [] { previous })};
+        //    //var function_signature = prepare_function_scope_signature(name, function_scope, previous);
   
-            var args = new Node[] {previous};
-            if (source.patterns != null)
-            {
-                args = args.Concat(source.patterns[1].patterns[0].patterns
-                    .Select(p => convert_expression(p, function_scope))
-                    ).ToArray();
-            }
-            return new Function_Call(name, args, railway, function_signature);
+        //    //var args = new Node[] {previous};
+        //    //if (source.patterns != null)
+        //    //{
+        //    //    args = args.Concat(source.patterns[1].patterns[0].patterns
+        //    //        .Select(p => convert_expression(p, function_scope))
+        //    //        ).ToArray();
+        //    //}
+        //    //return new Function_Call(name, args, railway, function_signature);
             
-        }
+        //}
 
-        private Node process_function_call3(Pattern_Source source, Node previous, Logic_Scope scope)
+        private Node process_function_call(Pattern_Source source, Node previous, Logic_Scope scope)
         {
             var name = source.text ?? source.patterns[0].text;
             var args = source.patterns != null ? source.patterns[1].patterns[0].patterns : null;
@@ -548,7 +548,7 @@ namespace metahub.logic
                 inputs = inputs.Concat(args.Select(p => convert_expression2(p, function_scope))).ToArray();
             }
 
-            return logician.call(name, inputs);
+            return logician.call(name, inputs, scope);
         }
 
         Signature prepare_function_scope_signature(string name, Logic_Scope function_scope, Node previous)

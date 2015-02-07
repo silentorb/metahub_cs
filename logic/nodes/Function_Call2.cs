@@ -13,7 +13,8 @@ namespace metahub.logic.nodes
     {
         public string name;
         public bool is_operation;
-
+        public List<Function_Call2> children = new List<Function_Call2>(); 
+        
         public Function_Call2(string name, IEnumerable<Node> inputs, bool is_operation = false)
             : base(Node_Type.function_call)
         {

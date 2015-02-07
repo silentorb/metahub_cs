@@ -54,7 +54,15 @@ namespace metahub.logic
         public Function_Call2 call(string name, IEnumerable<Node> inputs, Logic_Scope scope = null)
         {
             var result = new Function_Call2(name, inputs);
-            functions.Add(result);
+            if (scope != null && scope.parent_function != null)
+            {
+                scope.parent_function.children.Add(result);
+            }
+            else
+            {
+                functions.Add(result);
+                
+            }
             return result;
         }
 

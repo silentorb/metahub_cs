@@ -8,7 +8,7 @@ using metahub.jackolantern.schema;
 using metahub.jackolantern.tools;
 using metahub.logic.nodes;
 
-namespace metahub.jackolantern.pumpkins
+namespace metahub.jackolantern.carvers
 {
     public class Equals : Carver
     {
@@ -46,6 +46,7 @@ namespace metahub.jackolantern.pumpkins
                 //var rvalue = new_target.outputs[0].get_other_input(new_target);
 
                 var parent = lvalue.inputs[0];
+
                 context.add_pattern("first", swamp.translate_exclusive(parent, lvalue, Dir.In));
                 context.add_pattern("second", swamp.translate_backwards(rvalue, null));
                 setter.block.add("post", jack.overlord.summon_snippet(jack.templates["equals"], context));

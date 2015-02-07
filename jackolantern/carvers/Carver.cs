@@ -7,7 +7,7 @@ using metahub.jackolantern.schema;
 using metahub.logic.nodes;
 using metahub.logic.schema;
 
-namespace metahub.jackolantern.pumpkins
+namespace metahub.jackolantern.carvers
 {
     public abstract class Carver
     {

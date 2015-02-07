@@ -8,7 +8,7 @@ using metahub.imperative.types;
 using metahub.jackolantern.schema;
 using metahub.logic.nodes;
 
-namespace metahub.jackolantern.pumpkins
+namespace metahub.jackolantern.carvers
 {
     public class Contains : Carver
     {

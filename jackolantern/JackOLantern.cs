@@ -8,8 +8,8 @@ using metahub.imperative.code;
 using metahub.imperative.schema;
 using metahub.imperative.summoner;
 using metahub.imperative.types;
+using metahub.jackolantern.carvers;
 using metahub.jackolantern.code;
-using metahub.jackolantern.pumpkins;
 using metahub.logic;
 using metahub.logic.nodes;
 using metahub.logic.schema;
@@ -39,16 +39,17 @@ namespace metahub.jackolantern
         {
             carvers["="] = new Equals(this);
             carvers["contains"] = new Contains(this);
+            carvers["map"] = new Map(this);
         }
 
         public void run(Target target)
         {
             generate_code(target);
 
-            foreach (var constraint in logician.constraints)
-            {
-               implement_constraint(constraint);
-            }
+            //foreach (var constraint in logician.constraints)
+            //{
+            //   implement_constraint(constraint);
+            //}
 
             foreach (var pumpkin in logician.functions)
             {
@@ -65,6 +66,13 @@ namespace metahub.jackolantern
             {
                 var carver = carvers[pumpkin.name];
                 carver.carve(pumpkin);
+
+                // The main purpose of tracking scoping of functions is 
+                // to enforce a parent -> child carving order
+                foreach (var child in pumpkin.children)
+                {
+                    carve_pumpkin(child);
+                }
             }
         }
 
@@ -165,26 +173,27 @@ namespace metahub.jackolantern
 
         public Expression translate(Node expression, Scope scope = null)
         {
-            var result = _translate(expression, scope);
-            if (expression.inputs.Count > 0)
-            {
-                if (result.child != null)
-                    throw new Exception("Looks like a bug.");
+            throw new Exception("No longer implemented.");
+            //var result = _translate(expression, scope);
+            //if (expression.inputs.Count > 0)
+            //{
+            //    if (result.child != null)
+            //        throw new Exception("Looks like a bug.");
 
-                var input = expression.inputs[0];
-                if (input.type == Node_Type.function_call)
-                {
-                    var function_call = (metahub.logic.nodes.Function_Call)input;
-                    return new Platform_Function(function_call.name, result, null)
-                    {
-                        profession = new Profession(function_call.signature, overlord)
-                    };
-                }
+            //    var input = expression.inputs[0];
+            //    if (input.type == Node_Type.function_call)
+            //    {
+            //        var function_call = (metahub.logic.nodes.Function_Call)input;
+            //        return new Platform_Function(function_call.name, result, null)
+            //        {
+            //            profession = new Profession(function_call.signature, overlord)
+            //        };
+            //    }
 
-                result.child = translate(expression.inputs[0], scope);
-            }
+            //    result.child = translate(expression.inputs[0], scope);
+            //}
 
-            return result;
+            //return result;
         }
 
         Expression _translate(Node expression, Scope scope = null)
@@ -195,14 +204,14 @@ namespace metahub.jackolantern
                     return new Literal(((metahub.logic.nodes.Literal_Value)expression).value, new Profession(Kind.unknown));
 
                 case Node_Type.function_call:
-                    var function_call = expression as metahub.logic.nodes.Function_Call;
-                    if (function_call != null)
-                    {
-                        return new Platform_Function(function_call.name, null, null)
-                            {
-                                profession = new Profession(function_call.signature, overlord)
-                            };
-                    }
+                    //var function_call = expression as metahub.logic.nodes.Function_Call;
+                    //if (function_call != null)
+                    //{
+                    //    return new Platform_Function(function_call.name, null, null)
+                    //        {
+                    //            profession = new Profession(function_call.signature, overlord)
+                    //        };
+                    //}
                     var function_call2 = (Function_Call2) expression;
                     if (!function_call2.is_operation)
                         throw new Exception("Not supported.");
@@ -327,12 +336,12 @@ namespace metahub.jackolantern
                         }
                         break;
 
-                    case Node_Type.function_call:
-                    case Node_Type.function_scope:
-                        var function_token = (metahub.logic.nodes.Function_Call)token;
-                        result.Add(new Platform_Function(function_token.name, null,
-                            new List<Expression>()));
-                        break;
+                    //case Node_Type.function_call:
+                    //case Node_Type.function_scope:
+                    //    var function_token = (metahub.logic.nodes.Function_Call)token;
+                    //    result.Add(new Platform_Function(function_token.name, null,
+                    //        new List<Expression>()));
+                    //    break;
 
                     default:
                         throw new Exception("Invalid path token: " + token.type);

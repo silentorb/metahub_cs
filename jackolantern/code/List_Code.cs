@@ -135,12 +135,12 @@ namespace metahub.jackolantern.code
             var other_path = expression.get_path();
             if (other_path.Count > 0)
             {
-                var last = other_path.Last();
-                if (last.type == Node_Type.function_call && ((metahub.logic.nodes.Function_Call)last).name == "map")
-                {
-                    map(constraint, expression, imp);
-                    return;
-                }
+                //var last = other_path.Last();
+                //if (last.type == Node_Type.function_call && ((metahub.logic.nodes.Function_Call)last).name == "map")
+                //{
+                //    map(constraint, expression, imp);
+                //    return;
+                //}
             }
 
             size(constraint, expression, imp);
@@ -149,16 +149,16 @@ namespace metahub.jackolantern.code
 
         public static void map(Constraint constraint, Node expression, JackOLantern imp)
         {
-            var start = constraint.first;
-            var end = constraint.first;
-            var path = constraint.second.get_path();
+            //var start = constraint.first;
+            //var end = constraint.first;
+            //var path = constraint.second.get_path();
 
-            var a = constraint.first.get_path().Where(i => i.type == Node_Type.property).Select(i => ((Property_Reference)i).tie).ToList();
-            var b = path.Where(t => t.type == Node_Type.property).Select(i => ((Property_Reference)i).tie).ToList();
-            var func = ((metahub.logic.nodes.Function_Call)constraint.second.get_last());
-            var lambda = func.input.Last() as Lambda;
-            link(a, b, Parse.reverse_path(b.Take(a.Count - 1)), lambda, imp);
-            link(b, a, a.Take(a.Count - 1), lambda, imp);
+            //var a = constraint.first.get_path().Where(i => i.type == Node_Type.property).Select(i => ((Property_Reference)i).tie).ToList();
+            //var b = path.Where(t => t.type == Node_Type.property).Select(i => ((Property_Reference)i).tie).ToList();
+            //var func = ((metahub.logic.nodes.Function_Call)constraint.second.get_last());
+            //var lambda = func.input.Last() as Lambda;
+            //link(a, b, Parse.reverse_path(b.Take(a.Count - 1)), lambda, imp);
+            //link(b, a, a.Take(a.Count - 1), lambda, imp);
         }
 
         public static void link(List<Tie> a, List<Tie> b, IEnumerable<Tie> c, Lambda mapping, JackOLantern jack)

@@ -16,6 +16,7 @@ namespace metahub.logic
         public Signature[] parameters;
         public Constraint_Scope constraint_scope;
         public Scope_Node scope_node;
+        public Function_Call2 parent_function;
 
         public Logic_Scope(Logic_Scope parent = null)
         {

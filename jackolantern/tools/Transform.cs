@@ -50,9 +50,9 @@ namespace metahub.jackolantern.tools
             var other_side = join.get_other_input(operation);
 
             // Perform the transformation, similar to rotating a rubix cube.
-            operation.replace(node, other_side);
-            join.replace(operation, node);
-            join.replace(other_side, operation);
+            operation.replace_connection(node, other_side);
+            join.replace_connection(operation, node);
+            join.replace_connection(other_side, operation);
 
             transform.new_origin = node;
             return transform;

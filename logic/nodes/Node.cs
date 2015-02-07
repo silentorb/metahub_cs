@@ -19,12 +19,15 @@ namespace metahub.logic.nodes
         public List<Node> connections = new List<Node>();
         public List<Node> inputs = new List<Node>();
         public List<Node> outputs = new List<Node>();
+        public List<Node>[] ports;
+
         public string stack_trace;
 
         protected Node(Node_Type type)
         {
             stack_trace = Environment.StackTrace;
             this.type = type;
+            ports = new[] { inputs, outputs };
         }
 
         virtual public Signature get_signature()
@@ -119,31 +122,49 @@ namespace metahub.logic.nodes
             other.outputs.Remove(this);
         }
 
-        public void replace(Node first, Node second)
+        public void replace_connection(Node old_node, Node new_node)
         {
-            if (!connections.Contains(first))
+            if (!connections.Contains(old_node))
                 throw new Exception("Cannot replace node because there is no existing connection.");
 
-            if (connections.Contains(second))
+            if (connections.Contains(new_node))
                 throw new Exception("Already connected to replacement node.");
 
-            var index = inputs.IndexOf(first);
+            var index = inputs.IndexOf(old_node);
             if (index > -1)
             {
-                disconnect(first);
-                inputs.Insert(index, second);
-                second.outputs.Add(this);
+                disconnect(old_node);
+                inputs.Insert(index, new_node);
+                new_node.outputs.Add(this);
             }
             else
             {
-                index = outputs.IndexOf(first);
-                disconnect(first);
-                outputs.Insert(index, second);
-                second.inputs.Add(this);
+                index = outputs.IndexOf(old_node);
+                disconnect(old_node);
+                outputs.Insert(index, new_node);
+                new_node.inputs.Add(this);
             }
 
-            connections.Add(second);
-            second.connections.Add(this);
+            connections.Add(new_node);
+            new_node.connections.Add(this);
+        }
+
+        public void replace(Node new_node)
+        {
+            // Loop through both inputs and outputs
+            for (int i = 0; i < 2; ++i)
+            {
+                var j = 1 - i;
+                foreach (var port in ports[i])
+                {
+                    var index = port.ports[j].IndexOf(this);
+                    disconnect(port);
+                    port.ports[j].Insert(index, new_node);
+                    new_node.ports[i].Add(port);
+                    new_node.connections.Add(port);
+                    port.connections.Add(new_node);
+                }
+            }
         }
 
         public Node get_other_input(Node node)

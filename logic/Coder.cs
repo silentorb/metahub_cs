@@ -144,7 +144,7 @@ namespace metahub.logic
                     {
                         Tie tie = scope.rail.get_tie_or_error(source.text);
                         var result = new Property_Node(tie);
-                        var input = previous ?? scope.scope_node;
+                        var input = previous ?? scope.scope_node ?? new Scope_Node(scope.rail);
                         if (input == null)
                            throw new Exception("Could not find input node.");
 
@@ -425,7 +425,6 @@ namespace metahub.logic
 
             //if (rail != null) {
             new_scope.rail = rail;
-            new_scope.scope_node = new Scope_Node(rail);
             expression = convert_statement(source.patterns[2], new_scope);
             //return new Scope_Expression(Node, new_scope_definition);
             return new Scope_Expression(new_scope, new List<Node> { expression });
@@ -538,9 +537,11 @@ namespace metahub.logic
 
         private Node process_function_call2(string name, Pattern_Source[] args, Node previous, Logic_Scope scope)
         {
+            var property_root = previous.aggregate(Dir.In, n => n.type == Node_Type.property).Last();
+            var scope_node = (Scope_Node) property_root.inputs[0];
             var function_scope = new Logic_Scope(scope.parent) { 
                 constraint_scope = new Constraint_Scope(name, new [] { previous }),
-                scope_node = new Scope_Node(scope.parent.rail)
+                scope_node = scope_node
             };
             var function_signature = prepare_function_scope_signature(name, function_scope, previous);
   

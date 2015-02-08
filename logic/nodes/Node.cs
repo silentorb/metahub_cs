@@ -13,13 +13,14 @@ namespace metahub.logic.nodes
         Out
     }
 
+    public delegate bool Node_Filter(Node node);
+
     public class Node
     {
         public Node_Type type;
         public List<Node> connections = new List<Node>();
         public List<Node> inputs = new List<Node>();
         public List<Node> outputs = new List<Node>();
-        public List<Node>[] ports;
 
         public string stack_trace;
 
@@ -27,13 +28,22 @@ namespace metahub.logic.nodes
         {
             stack_trace = Environment.StackTrace;
             this.type = type;
-            ports = new[] { inputs, outputs };
         }
 
         virtual public Signature get_signature()
         {
             //throw new Exception(GetType().Name + " does not implement get_signature().");
             return new Signature(Kind.unknown);
+        }
+
+        public List<Node> ports(Dir dir)
+        {
+            return dir == Dir.In ? inputs : outputs;
+        }
+
+        public List<Node> ports(int dir)
+        {
+            return dir == 0 ? inputs : outputs;
         }
 
         public void connect_input(Node other)
@@ -155,12 +165,12 @@ namespace metahub.logic.nodes
             for (int i = 0; i < 2; ++i)
             {
                 var j = 1 - i;
-                foreach (var port in ports[i])
+                foreach (var port in ports(i))
                 {
-                    var index = port.ports[j].IndexOf(this);
+                    var index = port.ports(j).IndexOf(this);
                     disconnect(port);
-                    port.ports[j].Insert(index, new_node);
-                    new_node.ports[i].Add(port);
+                    port.ports(j).Insert(index, new_node);
+                    new_node.ports(i).Add(port);
                     new_node.connections.Add(port);
                     port.connections.Add(new_node);
                 }
@@ -187,6 +197,21 @@ namespace metahub.logic.nodes
         {
             throw new Exception("Not implemented.");
         }
+
+        public List<Node> aggregate(Dir dir, Node_Filter filter = null)
+        {
+            var result = new List<Node>();
+            if (filter == null || filter(this))
+            {
+                result.Add(this);
+
+                foreach (var node in ports(dir))
+                {
+                    result.AddRange(node.aggregate(dir, filter));
+                }
+            }
+            return result;
+        } 
 
     }
 }

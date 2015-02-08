@@ -55,30 +55,32 @@ namespace metahub.jackolantern.carvers
                 }
             }
 
-            var first_list_portal = jack.overlord.get_portal(first.tie);
             var second_list_portal = jack.overlord.get_portal(second.tie);
 
-            on_add_code(first_list_portal, second_list_portal, first_portal, second_portal);
-            on_add_code(second_list_portal, first_list_portal, second_portal, first_portal);
+            on_add_code(first, second, first_portal, second_portal);
+            on_add_code(second, first, second_portal, first_portal);
         }
 
-        void on_add_code(Portal list, Portal other_list, Portal first_portal, Portal second_portal)
+        void on_add_code(Node list, Node other_list, Portal first_portal, Portal second_portal)
         {
-            var setter = jack.get_setter(list);
+            var first_list_portal = jack.overlord.get_portal(((Property_Node)list).tie);
+
+            var setter = jack.get_setter(first_list_portal);
             var context = new Summoner.Context(setter);
+            var swamp = new Swamp(jack, null, context);
+
             context.add_pattern("T", second_portal.profession);
-            context.add_pattern("list", new Portal_Expression(other_list));
-            string template_name;
+            context.add_pattern("ref", swamp.translate_exclusive(list.inputs[0], list, Dir.In));
+            context.add_pattern("list", swamp.translate_inclusive(list.inputs[0], list, Dir.In));
             if (setter.parameters.Count > 0)
             {
                 context.add_pattern("hub", new Variable(setter.parameters[0].symbol));
-                template_name = "map_on_add_with_hub";
             }
             else
             {
-                template_name = "map_on_add";
+                context.add_pattern("hub", "");
             }
-            setter.block.add("post", jack.overlord.summon_snippet(jack.templates[template_name], context));
+            setter.block.add("post", jack.overlord.summon_snippet(jack.templates["map_on_add"], context));
         }
 
         static void point_at(Portal pointer, Portal target)

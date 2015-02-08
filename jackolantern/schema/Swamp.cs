@@ -149,7 +149,9 @@ namespace metahub.jackolantern.schema
                     throw new Exception("Infinite Loop!");
 
                 dir = Dir.Out;
-                result = node.outputs.First(o => o != previous);
+                result = node.outputs.FirstOrDefault(o => o != previous);
+                if (result == null)
+                    return null;
             }
             else
             {
@@ -230,7 +232,11 @@ namespace metahub.jackolantern.schema
                         ? operation.name
                         : Logician.inverse_operators[operation.name];
 
-                    return new Operation(op, operation.inputs.Select(i => translate_backwards(i, operation)));
+                    var inputs = operation.inputs
+                        .Where(i => i.type != Node_Type.lambda)
+                        .Select(i => translate_backwards(i, operation));
+
+                    return new Operation(op, inputs);
             }
 
             throw new Exception("Not yet supported: " + node.type);
@@ -252,7 +258,7 @@ namespace metahub.jackolantern.schema
 
             var next = get_next(node, previous, ref dir, step);
 
-            if (next.type == Node_Type.scope_node)
+            if (next == null || next.type == Node_Type.scope_node)
                 return expression;
 
             if (next.type == Node_Type.property

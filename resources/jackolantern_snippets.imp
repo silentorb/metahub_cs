@@ -4,14 +4,8 @@ if (item != null && list.contains(item) == false) {
 }
 @@@equals(first, second)
 first = second
-@@@map_on_add(T, list)
-if (list != null) {
-	var item:T = new T()
-	item.initialize()
-	list.add(item)
-}
-@@@map_on_add_with_hub(T, list, hub)
-if (list != null) {
+@@@map_on_add(T, ref, list, hub)
+if (ref != null) {
 	var item:T = new T()
 	item.initialize(hub)
 	list.add(item)

@@ -18,7 +18,7 @@ namespace metahub.jackolantern.carvers
             this.jack = jack;
         }
 
-        public abstract void carve(Function_Call2 pumpkin);
+        public abstract void carve(Function_Node pumpkin);
 
         //public List<Node> aggregate2(Node start)
         //{
@@ -50,7 +50,7 @@ namespace metahub.jackolantern.carvers
         public IEnumerable<Portal> get_endpoints(Node start, bool include_self = false)
         {
             return aggregate(start, include_self)
-                .OfType<Property_Reference>()
+                .OfType<Property_Node>()
                 .Select(p=>jack.overlord.get_portal(p.tie));
         }
 
@@ -64,7 +64,7 @@ namespace metahub.jackolantern.carvers
         public IEnumerable<Endpoint> get_endpoints3(Node start, bool include_self = false)
         {
             return aggregate(start, include_self)
-                .OfType<Property_Reference>()
+                .OfType<Property_Node>()
                 .Select(p => new Endpoint(p, jack.overlord.get_portal(p.tie)));
         }
 
@@ -86,7 +86,7 @@ namespace metahub.jackolantern.carvers
         public List<Endpoint> get_endpoints4(Node start, bool include_self = false)
         {
             return aggregate2(start, include_self)
-                .OfType<Property_Reference>()
+                .OfType<Property_Node>()
                 .Select(p => new Endpoint(p, jack.overlord.get_portal(p.tie))).ToList();
         }
     }

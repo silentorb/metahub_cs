@@ -2,7 +2,9 @@
 
 snippet = trim snippet_option final_trim
 
-snippet_option = class | abstract_function | function_definition | statement
+snippet_option = class | abstract_function | function_definition | statements
+
+statements = @(statement, semicolon_or_newline, 1, 0)
 
 none = /&*/
 ws = /\s+/
@@ -55,7 +57,8 @@ statement =
 
 
 expression_part =
-	value
+	  instantiate
+	| value
 	| reference	
 	| closed_expression
 
@@ -98,3 +101,5 @@ declare_variable = "var" ws id trim type_info @(optional_assignment, none, 0, 1)
 assignment = reference trim set_operator trim expression
 
 for = "for" trim "(" trim "var" ws id ws "in" ws reference trim ")" trim long_block
+
+instantiate = "new" ws id trim arguments

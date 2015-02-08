@@ -31,21 +31,21 @@ namespace metahub.jackolantern.tools
         {
             var transform = new Transform(origin);
             //if (new[] { origin }.Concat(origin.outputs).OfType<Function_Call2>().All(n => !n.is_operation))
-            if (origin.outputs.OfType<Function_Call2>().All(n => !n.is_operation))
+            if (origin.outputs.OfType<Function_Node>().All(n => !n.is_operation))
                 return transform;
 
             var node = clone_all(origin, transform.map);
             if (node.outputs.Count > 1)
                 throw new Exception("Not yet supported.");
 
-            var operation = (Function_Call2)node.outputs[0];
+            var operation = (Function_Node)node.outputs[0];
             operation.name = Logician.inverse_operators[operation.name];
 
             if (operation.outputs.Count > 1)
                 throw new Exception("Not yet supported.");
 
             // Prepare for 
-            var join = (Function_Call2)operation.outputs[0];
+            var join = (Function_Node)operation.outputs[0];
             join.name = Logician.inverse_operators[join.name];
             var other_side = join.get_other_input(operation);
 

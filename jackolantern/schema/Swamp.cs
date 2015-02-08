@@ -174,7 +174,7 @@ namespace metahub.jackolantern.schema
 
             if (result.type == Node_Type.function_call)
             {
-                if (((Function_Call2)result).name == "=")
+                if (((Function_Node)result).name == "=")
                 {
                     previous_node = node;
                     last_node = result;
@@ -191,10 +191,10 @@ namespace metahub.jackolantern.schema
             {
                 case Node_Type.property:
                     {
-                        var property_node = (Property_Reference)node;
+                        var property_node = (Property_Node)node;
                         var tie = dir == Dir.Out
                                       ? property_node.tie
-                                      : ((Property_Reference)previous).tie.other_tie;
+                                      : ((Property_Node)previous).tie.other_tie;
                         if (tie == null)
                             throw new Exception("Not supported.");
                         //return null;
@@ -203,12 +203,12 @@ namespace metahub.jackolantern.schema
                     }
 
                 case Node_Type.variable:
-                    var variable = (metahub.logic.nodes.Variable)node;
+                    var variable = (metahub.logic.nodes.Variable_Node)node;
                     return context.scope.resolve(variable.name);
 
                 case Node_Type.scope_node:
                     {
-                        var property_node = (Property_Reference)previous;
+                        var property_node = (Property_Node)previous;
                         var tie = property_node.tie.other_tie;
                         return new Portal_Expression(jack.overlord.get_portal(tie));
                     }
@@ -225,7 +225,7 @@ namespace metahub.jackolantern.schema
                     return new Literal(literal.value, new Profession(literal.kind));
 
                 case Node_Type.function_call:
-                    var operation = (Function_Call2)node;
+                    var operation = (Function_Node)node;
                     var op = dir == Dir.Out
                         ? operation.name
                         : Logician.inverse_operators[operation.name];
@@ -256,7 +256,7 @@ namespace metahub.jackolantern.schema
                 return expression;
 
             if (next.type == Node_Type.property
-                && ((Property_Reference)next).tie.other_rail == context.dungeon.rail)
+                && ((Property_Node)next).tie.other_rail == context.dungeon.rail)
             {
                 return expression;
             }
@@ -288,7 +288,7 @@ namespace metahub.jackolantern.schema
             {
                 ++step;
                 Node next = get_next(node, previous, ref dir, step);
-                if (next == null || (next.type == Node_Type.function_call && ((Function_Call2)next).is_operation))
+                if (next == null || (next.type == Node_Type.function_call && ((Function_Node)next).is_operation))
                     break;
 
                 result.Add(next);

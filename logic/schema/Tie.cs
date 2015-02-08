@@ -39,12 +39,21 @@ namespace metahub.logic.schema
         {
             get { return rail.name + "." + name; }
         }
+
         public Tie(Rail rail, Property property)
         {
             this.rail = rail;
             this.type = property.type;
             this.property = property;
             tie_name = name = property.name;
+        }
+
+        public Tie(string name, Rail rail, Kind type, Rail other_rail = null)
+        {
+            this.rail = rail;
+            this.type = type;
+            tie_name = name;
+            this.other_rail = other_rail;
         }
 
         public void initialize_links()
@@ -144,8 +153,8 @@ namespace metahub.logic.schema
 
             foreach (var constraint in constraints)
             {
-                var path = constraint.first.get_path().Where(t=>t as Property_Reference != null)
-                    .Select(t => ((Property_Reference)t).tie).ToList();
+                var path = constraint.first.get_path().Where(t=>t as Property_Node != null)
+                    .Select(t => ((Property_Node)t).tie).ToList();
                 path.RemoveAt(0);
                 var path_name = path.Select(t => t.name).join(".");
                 if (!pairs.ContainsKey(path_name))

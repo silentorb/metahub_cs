@@ -15,8 +15,8 @@ namespace metahub.logic.nodes
         //operation,
         Null,
         scope_node,
-
         array,
+        parameter,
 
         // Statements
         space,

@@ -6,11 +6,11 @@ namespace metahub.logic.nodes
 {
 
     [DebuggerDisplay("Tie Ref ({tie.fullname})")]
-    public class Property_Reference : Node
+    public class Property_Node : Node
     {
         public Tie tie;
 
-        public Property_Reference(Tie tie)
+        public Property_Node(Tie tie)
 
             : base(Node_Type.property)
         {
@@ -24,7 +24,7 @@ namespace metahub.logic.nodes
 
         public override Node clone()
         {
-            return new Property_Reference(tie);
+            return new Property_Node(tie);
         }
 
     }

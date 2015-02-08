@@ -55,9 +55,15 @@ namespace metahub.jackolantern
             {
                 carve_pumpkin(pumpkin);
             }
+
+            var not_external = overlord.dungeons.Where(d => !d.is_external).ToArray();
+            foreach (var dungeon in not_external)
+            {
+                target.generate_code2(dungeon);
+            }
         }
 
-        public void carve_pumpkin(Function_Call2 pumpkin)
+        public void carve_pumpkin(Function_Node pumpkin)
         {
             if (pumpkin.name[0] == '@')
                 pumpkin.name = pumpkin.name.Substring(1);
@@ -156,11 +162,6 @@ namespace metahub.jackolantern
                 var piece_region = logician.railway.regions["piecemaker"];
                 Piece_Maker.add_functions(overlord, piece_region);
             }
-
-            foreach (var dungeon in not_external)
-            {
-                target.generate_code2(dungeon);
-            }
         }
 
         public Imp get_setter(Portal portal)
@@ -212,7 +213,7 @@ namespace metahub.jackolantern
                     //            profession = new Profession(function_call.signature, overlord)
                     //        };
                     //}
-                    var function_call2 = (Function_Call2) expression;
+                    var function_call2 = (Function_Node) expression;
                     if (!function_call2.is_operation)
                         throw new Exception("Not supported.");
 
@@ -228,7 +229,7 @@ namespace metahub.jackolantern
                     return new Create_Array(translate_many(((metahub.logic.nodes.Block)expression).children, scope));
 
                 case Node_Type.variable:
-                    var variable = (metahub.logic.nodes.Variable)expression;
+                    var variable = (metahub.logic.nodes.Variable_Node)expression;
                     return scope.resolve(variable.name);
 
                 case Node_Type.lambda:
@@ -278,7 +279,7 @@ namespace metahub.jackolantern
 
             if (path.First().type == Node_Type.property)
             {
-                rail = ((metahub.logic.nodes.Property_Reference)path.First()).tie.get_abstract_rail();
+                rail = ((metahub.logic.nodes.Property_Node)path.First()).tie.get_abstract_rail();
             }
             //else
             //{
@@ -289,7 +290,7 @@ namespace metahub.jackolantern
                 switch (token.type)
                 {
                     case Node_Type.property:
-                        var property_token = (metahub.logic.nodes.Property_Reference)token;
+                        var property_token = (metahub.logic.nodes.Property_Node)token;
                         if (dungeon != null)
                         {
                             var portal = dungeon.all_portals[property_token.tie.name];
@@ -315,7 +316,7 @@ namespace metahub.jackolantern
                         break;
 
                     case Node_Type.variable:
-                        var variable = (metahub.logic.nodes.Variable)token;
+                        var variable = (metahub.logic.nodes.Variable_Node)token;
                         var variable_token = scope.resolve(variable.name);
                         result.Add(variable_token);
                         var profession = variable_token.get_profession();

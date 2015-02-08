@@ -11,10 +11,10 @@ namespace metahub.jackolantern.schema
     [DebuggerDisplay("Endpoint ({portal.fullname})")]
     public class Endpoint
     {
-        public Property_Reference node;
+        public Property_Node node;
         public Portal portal;
 
-        public Endpoint(Property_Reference node, Portal portal)
+        public Endpoint(Property_Node node, Portal portal)
         {
             this.node = node;
             this.portal = portal;

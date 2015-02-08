@@ -80,6 +80,7 @@
     <Compile Include="imperative\types\Portal_Expression.cs" />
     <Compile Include="imperative\types\Property_Function_Call.cs" />
     <Compile Include="imperative\types\Iterator.cs" />
+    <Compile Include="imperative\types\Statements.cs" />
     <Compile Include="jackolantern\carvers\Contains.cs" />
     <Compile Include="jackolantern\carvers\Equals.cs" />
     <Compile Include="jackolantern\carvers\Carver.cs" />
@@ -89,7 +90,7 @@
     <Compile Include="jackolantern\schema\Swamp.cs" />
     <Compile Include="jackolantern\tools\Transform.cs" />
     <Compile Include="logic\Logician.cs" />
-    <Compile Include="logic\nodes\Function_Call2.cs" />
+    <Compile Include="logic\nodes\Function_Node.cs" />
     <Compile Include="logic\nodes\Scope_Node.cs" />
     <Compile Include="logic\schema\Constraint_Group.cs" />
     <Compile Include="logic\schema\Constraint_Scope.cs" />
@@ -152,11 +153,11 @@
     <Compile Include="logic\nodes\Function_Scope.cs" />
     <Compile Include="logic\nodes\Lambda.cs" />
     <Compile Include="logic\nodes\Literal_Value.cs" />
-    <Compile Include="logic\nodes\Parameter.cs" />
+    <Compile Include="logic\nodes\Parameter_Node.cs" />
     <Compile Include="logic\nodes\Reference_Path.cs" />
-    <Compile Include="logic\nodes\Property_Reference.cs" />
+    <Compile Include="logic\nodes\Property_Node.cs" />
     <Compile Include="logic\nodes\Scope_Expression.cs" />
-    <Compile Include="logic\nodes\Variable.cs" />
+    <Compile Include="logic\nodes\Variable_Node.cs" />
     <Compile Include="jackolantern\JackOLantern.cs" />
     <Compile Include="parser\Bootstrap.cs" />
     <Compile Include="parser\Parser_Context.cs" />

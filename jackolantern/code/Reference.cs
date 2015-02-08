@@ -163,7 +163,7 @@ namespace metahub.jackolantern.code
         {
             //var dungeon = imp.get_dungeon(tie.rail);
             //dungeon.concat_block(tie.tie_name + "_set_pre", Reference.constraint(constraint, this));
-            var property_reference = (metahub.logic.nodes.Property_Reference)constraint.constraint_scope.caller.First();
+            var property_reference = (metahub.logic.nodes.Property_Node)constraint.constraint_scope.caller.First();
             var dungeon = jack.overlord.get_dungeon(tie.rail);
 
             var iterator_scope = new Scope(scope);

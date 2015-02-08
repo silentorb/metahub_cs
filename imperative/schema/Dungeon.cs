@@ -256,11 +256,6 @@ namespace metahub.imperative.schema
                 lair.customize_initialize(block);
             }
 
-            if (rail.hooks.ContainsKey("initialize_post"))
-            {
-                block.add(new Function_Call("initialize_post"));
-            }
-
             var imp = spawn_imp("initialize", new List<Parameter>(), expressions);
             imp.block = block;
 
@@ -552,6 +547,21 @@ namespace metahub.imperative.schema
                 return null;
 
             return parent.summon_imp(imp_name, true);
+        }
+
+        public string get_available_name(string key, int start = 0)
+        {
+            var result = "";
+            do
+            {
+                result = key;
+                if (start != 0)
+                    result += start;
+
+                ++start;
+            } while (has_imp(result) || all_portals.ContainsKey(result));
+
+            return result;
         }
     }
 }

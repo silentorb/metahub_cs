@@ -21,6 +21,7 @@ namespace metahub.imperative.types
 
         // Statements
         statement,
+        statements,
         space,
         class_definition,
         function_definition,

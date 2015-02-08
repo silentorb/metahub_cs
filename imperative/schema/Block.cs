@@ -56,7 +56,10 @@ namespace metahub.imperative.schema
 
         public void add(string division_name, Expression expression)
         {
-            division_map[division_name].add(expression);
+            if (expression.type == Expression_Type.statements)
+                add_many(division_name, ((Statements)expression).children);
+            else
+                division_map[division_name].add(expression);
         }
 
         public void add_many(string division_name, IEnumerable<Expression> expressions)

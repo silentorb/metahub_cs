@@ -69,14 +69,14 @@ namespace metahub.logic
                     var variable = scope.find(source.text);
                     if (variable != null)
                     {
-                        return new Variable(source.text, variable);
+                        return new Variable_Node(source.text, variable);
                         //if (variable.rail == null)
                         //throw new Exception("variabcle rail cannot be null.");
                     }
                     else
                     {
                         Tie tie = scope.rail.get_tie_or_error(source.text);
-                        return new Property_Reference(tie);
+                        return new Property_Node(tie);
                         //if (tie.other_rail != null)
                         //    rail = tie.other_rail;
                     }
@@ -136,14 +136,14 @@ namespace metahub.logic
                     var variable = scope.find(source.text);
                     if (variable != null)
                     {
-                        return new Variable(source.text, variable);
+                        return new Variable_Node(source.text, variable);
                         //if (variable.rail == null)
                         //throw new Exception("variable rail cannot be null.");
                     }
                     else
                     {
                         Tie tie = scope.rail.get_tie_or_error(source.text);
-                        var result = new Property_Reference(tie);
+                        var result = new Property_Node(tie);
                         var input = previous ?? scope.scope_node;
                         if (input == null)
                            throw new Exception("Could not find input node.");
@@ -365,7 +365,7 @@ namespace metahub.logic
                 }
                 else
                 {
-                    if (current.type == Node_Type.function_call && current.GetType() == typeof(Function_Call2))
+                    if (current.type == Node_Type.function_call && current.GetType() == typeof(Function_Node))
                     {
                         result = current;
                     }
@@ -485,10 +485,11 @@ namespace metahub.logic
                 new_scope.variables[parameter.text] = signature;
                 ++i;
             }
+            
+            var lambda = new Lambda(new_scope, parameters.Select(p => new Parameter_Node(p.text, null)));
+            expressions.Select(e => (Function_Node)convert_statement(e, new_scope));
 
-            return new Lambda(new_scope, parameters.Select(p => new Parameter(p.text, null))
-                , expressions.Select(e => (Function_Call2)convert_statement(e, new_scope))
-            );
+            return lambda;
         }
 
         Node process_expression(Pattern_Source source, Logic_Scope scope)
@@ -496,7 +497,7 @@ namespace metahub.logic
             if (source.patterns.Length < 2)
                 return convert_expression(source.patterns[0], scope);
 
-            return new Function_Call2(source.text, source.patterns.Select(p=>convert_expression(p, scope)), true);
+            return new Function_Node(source.text, source.patterns.Select(p=>convert_expression(p, scope)), true);
         }
 
         Node process_expression2(Pattern_Source source, Logic_Scope scope)
@@ -504,7 +505,7 @@ namespace metahub.logic
             if (source.patterns.Length < 2)
                 return convert_expression2(source.patterns[0], scope);
 
-            return new Function_Call2(source.text, source.patterns.Select(p => convert_expression2(p, scope)), true);
+            return new Function_Node(source.text, source.patterns.Select(p => convert_expression2(p, scope)), true);
         }
 
         //Node process_function_call(Pattern_Source source, Node previous, Logic_Scope scope)
@@ -559,7 +560,7 @@ namespace metahub.logic
             function_scope.parameters = function_signature.parameters.Skip(1).ToArray();
             if (previous.type == Node_Type.property)
             {
-                var previous_property = (Property_Reference)previous;
+                var previous_property = (Property_Node)previous;
                 foreach (var parameter in function_scope.parameters)
                 {
                     if (parameter.parameters != null)
@@ -581,7 +582,7 @@ namespace metahub.logic
             var i = path.Length;
             while (--i >= 0)
             {
-                var token = path[i] as Property_Reference;
+                var token = path[i] as Property_Node;
                 if (token == null)
                     continue;
 

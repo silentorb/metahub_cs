@@ -38,7 +38,7 @@ namespace metahub.imperative.summoner
             var realm = overlord.realms[name];
             var context = new Context(realm);
             var statements = source.patterns[6].patterns;
-            
+
             foreach (var statement in statements)
             {
                 process_dungeon1(statement, context);
@@ -173,11 +173,18 @@ namespace metahub.imperative.summoner
                     );
 
                 case "declare_variable":
-                    var symbol = context.scope.create_symbol(source.patterns[2].text, parse_type(source.patterns[4], context));
+                    var symbol = context.scope.create_symbol(source.patterns[2].text, parse_type2(source.patterns[4], context));
                     return new Declare_Variable(symbol, source.patterns[5].patterns.Length == 0
                         ? null
                         : process_expression(source.patterns[5].patterns[0], context)
                     );
+                case "statements":
+                    {
+                        var expressions = process_block(source, context);
+                        return expressions.Count == 1 
+                            ? expressions[0] 
+                            : new Statements(expressions);
+                    }
             }
 
             throw new Exception("Unsupported statement type: " + source.type + ".");
@@ -209,6 +216,9 @@ namespace metahub.imperative.summoner
 
                 case "expression":
                     return process_expression(source, context);
+
+                case "instantiate":
+                    return process_instantiate(source, context);
             }
 
             throw new Exception("Unsupported statement type: " + source.type + ".");
@@ -360,12 +370,16 @@ namespace metahub.imperative.summoner
             throw new Exception("Invalid type: " + text + ".");
         }
 
-        Profession parse_type2(Pattern_Source source, Context context)
+        private Profession parse_type2(Pattern_Source source, Context context)
         {
-            var path = source.patterns[2].patterns;
-            var text = path.Last().text;
+            var path = source.patterns[2].patterns.Select(p => p.text).ToArray();
             var is_list = source.patterns.Length > 1 && source.patterns[3].patterns.Length > 0;
+            return parse_type2(path, context, is_list);
+        }
 
+        Profession parse_type2(string[] path, Context context, bool is_list = false)
+        {
+            var text = path.Last();
             if (path.Length == 1)
             {
                 switch (text)
@@ -393,7 +407,7 @@ namespace metahub.imperative.summoner
             for (var i = 0; i < path.Length - 1; ++i)
             {
                 if (realm == null)
-                    realm = overlord.realms[path[i].text];
+                    realm = overlord.realms[path[i]];
                 else
                     throw new Exception("embedded namespaces are not supported yet.");
             }
@@ -477,6 +491,12 @@ namespace metahub.imperative.summoner
             return new Iterator(context.scope.create_symbol(source.patterns[6].text, profession),
                 reference, process_block(source.patterns[14], context)
                 );
+        }
+
+        private Expression process_instantiate(Pattern_Source source, Context context)
+        {
+            var type = parse_type2(new[] { source.patterns[2].text }, context);
+            return new Instantiate(type.dungeon);
         }
     }
 }

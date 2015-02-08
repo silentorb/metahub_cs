@@ -27,7 +27,7 @@ namespace metahub.logic
             };
 
         public List<Constraint> constraints = new List<Constraint>();
-        public List<Function_Call2> functions = new List<Function_Call2>(); 
+        public List<Function_Node> functions = new List<Function_Node>(); 
         public Dictionary<string, Constraint_Group> groups = new Dictionary<string, Constraint_Group>();
         public bool needs_hub = false;
         public Railway railway;
@@ -51,9 +51,9 @@ namespace metahub.logic
             return constraint;
         }
 
-        public Function_Call2 call(string name, IEnumerable<Node> inputs, Logic_Scope scope = null)
+        public Function_Node call(string name, IEnumerable<Node> inputs, Logic_Scope scope = null)
         {
-            var result = new Function_Call2(name, inputs);
+            var result = new Function_Node(name, inputs);
             if (scope != null && scope.parent_function != null)
             {
                 scope.parent_function.children.Add(result);
@@ -68,10 +68,17 @@ namespace metahub.logic
 
         public void analyze()
         {
-            foreach (var constraint in constraints)
+            analyze(functions);
+        }
+
+        public void analyze(List<Function_Node> funcs)
+        {
+            foreach (var function in funcs)
             {
-                if (constraint.is_circular)
+                if (function.is_circular)
                     needs_hub = true;
+
+                analyze(function.children);
             }
 
         }

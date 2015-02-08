@@ -15,7 +15,7 @@ namespace metahub.imperative.code
         public static Tie get_start_tie(Node expression)
         {
             var path = (Reference_Path)expression;
-            var property_expression = (Property_Reference)path.children[0];
+            var property_expression = (Property_Node)path.children[0];
             return property_expression.tie;
         }
 
@@ -37,7 +37,7 @@ namespace metahub.imperative.code
             var i = path.Length;
             while (--i >= 0)
             {
-                var token = path[i] as Property_Reference;
+                var token = path[i] as Property_Node;
                 if (token == null)
                     continue;
 
@@ -58,7 +58,7 @@ namespace metahub.imperative.code
                 switch (token.type)
                 {
                     case Node_Type.property:
-                        var prop = (Property_Reference)token;
+                        var prop = (Property_Node)token;
                         if (!prop.tie.rail.trellis.is_value)
                             return new List<Tie> { prop.tie };
 
@@ -102,7 +102,7 @@ namespace metahub.imperative.code
 
         public static List<Tie> get_path(Node expression)
         {
-            return expression.get_path().OfType<Property_Reference>().Select(n => n.tie).ToList();
+            return expression.get_path().OfType<Property_Node>().Select(n => n.tie).ToList();
 
             switch (expression.type)
             {
@@ -114,7 +114,7 @@ namespace metahub.imperative.code
                     return get_path_from_array(((Array_Expression)expression).children);
 
                 case Node_Type.property:
-                    return new List<Tie> { ((Property_Reference)expression).tie };
+                    return new List<Tie> { ((Property_Node)expression).tie };
 
                 case Node_Type.function_call:
                     //Function_Call function_call = expression;

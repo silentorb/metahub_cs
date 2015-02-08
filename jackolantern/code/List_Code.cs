@@ -119,7 +119,7 @@ namespace metahub.jackolantern.code
         public static void generate_constraint(Constraint constraint, JackOLantern imp)
         {
             var path = constraint.first;
-            var property_expression = (Property_Reference)path;
+            var property_expression = (Property_Node)path;
             var reference = property_expression.tie;
             //int amount = target.render_expression(constraint.Node, constraint.scope);
             var expression = constraint.second;
@@ -282,7 +282,7 @@ namespace metahub.jackolantern.code
         public static void size(Constraint constraint, Node expression, JackOLantern jack)
         {
             var path = constraint.first.get_path();
-            var property_expression = (Property_Reference)path[0];
+            var property_expression = (Property_Node)path[0];
             var reference = property_expression.tie;
 
             var instance_name = reference.other_rail.rail_name;

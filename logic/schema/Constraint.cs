@@ -37,7 +37,7 @@ namespace metahub.logic.schema
             if (circular_operators.Contains(op))
             {
                 is_circular = true;
-                var property_node = (Property_Reference) first;
+                var property_node = (Property_Node) first;
                 property_node.tie.rail.needs_tick = true;
             }
         }
@@ -52,7 +52,7 @@ namespace metahub.logic.schema
                 switch (token.type)
                 {
                     case Node_Type.property:
-                        var prop = (Property_Reference)token;
+                        var prop = (Property_Node)token;
                         if (!prop.tie.rail.trellis.is_value)
                             return new List<Tie> { prop.tie };
 

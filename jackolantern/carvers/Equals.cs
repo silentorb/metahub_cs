@@ -18,10 +18,10 @@ namespace metahub.jackolantern.carvers
 
         }
 
-        public override void carve(Function_Call2 pumpkin)
+        public override void carve(Function_Node pumpkin)
         {
             //var endpoints = get_endpoints3(pumpkin);
-            if (aggregate(pumpkin).OfType<Function_Call2>().Any(n => !n.is_operation))
+            if (aggregate(pumpkin).OfType<Function_Node>().Any(n => !n.is_operation))
                 return;
 
             var endpoints = get_endpoints3(pumpkin, false);

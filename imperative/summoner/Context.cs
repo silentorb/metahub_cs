@@ -36,7 +36,7 @@ namespace metahub.imperative.summoner
             {
                 realm = imp.dungeon.realm;
                 dungeon = imp.dungeon;
-                scope = imp.scope;
+                scope = new Scope(imp.scope);
             }
 
             public Context(Context parent)

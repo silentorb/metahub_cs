@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using metahub.jackolantern.tools;
 using metahub.logic.schema;
@@ -15,6 +16,7 @@ namespace metahub.logic.nodes
 
     public delegate bool Node_Filter(Node node);
 
+    [DebuggerDisplay("{debug_string}")]
     public class Node
     {
         public Node_Type type;
@@ -23,6 +25,11 @@ namespace metahub.logic.nodes
         public List<Node> outputs = new List<Node>();
 
         public string stack_trace;
+
+        public virtual string debug_string
+        {
+            get { return ToString(); }
+        }
 
         protected Node(Node_Type type)
         {

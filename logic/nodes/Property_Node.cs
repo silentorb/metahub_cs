@@ -4,8 +4,6 @@ using metahub.logic.schema;
 
 namespace metahub.logic.nodes
 {
-
-    [DebuggerDisplay("Tie Ref ({tie.fullname})")]
     public class Property_Node : Node
     {
         public Tie tie;
@@ -15,6 +13,11 @@ namespace metahub.logic.nodes
             : base(Node_Type.property)
         {
             this.tie = tie;
+        }
+
+        public override string debug_string
+        {
+            get { return tie.fullname; }
         }
 
         override public Signature get_signature()

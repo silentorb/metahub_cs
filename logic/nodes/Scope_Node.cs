@@ -17,6 +17,11 @@ namespace metahub.logic.nodes
            this.rail = rail;
        }
 
+       public override string debug_string
+       {
+           get { return "Scope " + rail.name; }
+       }
+
        public override Node clone()
        {
            return new Scope_Node(rail);

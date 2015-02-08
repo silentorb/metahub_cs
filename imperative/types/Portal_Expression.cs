@@ -9,7 +9,6 @@ using metahub.logic.schema;
 
 namespace metahub.imperative.types
 {
-    [DebuggerDisplay("portal ref ({portal.fullname})")]
     public class Portal_Expression : Expression
     {
         public Portal portal;

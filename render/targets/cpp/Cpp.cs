@@ -723,7 +723,7 @@ namespace metahub.render.targets.cpp
 
         string render_iterator(Symbol parameter, Expression expression)
         {
-            var signature = Expression.get_end(expression).get_profession();
+            var signature = expression.get_end().get_profession();
             var path_string = render_expression(expression);
             return
                render_signature(signature)
@@ -743,9 +743,9 @@ namespace metahub.render.targets.cpp
                 case Expression_Type.operation:
                     return render_operation((Operation)expression);
 
-                case Expression_Type.path:
-                    result = render_path_old((Path)expression);
-                    break;
+                //case Expression_Type.path:
+                //    result = render_path_old((Path)expression);
+                //    break;
 
                 //case Expression_Type.property:
                 //    var tie_expression = (Tie_Expression)expression;
@@ -988,7 +988,7 @@ namespace metahub.render.targets.cpp
           : "";
 
             var ref_full = ref_string.Length > 0
-                ? ref_string + get_connector(Expression.get_end(expression.reference))
+                ? ref_string + get_connector(expression.reference.get_end())
                 : "";
 
             switch (expression.name)
@@ -1051,7 +1051,7 @@ namespace metahub.render.targets.cpp
                : "";
 
             var ref_full = ref_string.Length > 0
-                ? ref_string + get_connector(Expression.get_end(expression.reference))
+                ? ref_string + get_connector(expression.reference.get_end())
                 : "";
 
             return ref_full + expression.name + "(" +

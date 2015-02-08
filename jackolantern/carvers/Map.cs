@@ -75,7 +75,7 @@ namespace metahub.jackolantern.carvers
                 var ref_expression = swamp.render_chain(chain.Take(chain.Count - 1).ToList());
                 context.add_pattern("ref", ref_expression);
             }
-            context.add_pattern("list", swamp.translate_inclusive(list.inputs[0], list, Dir.In));
+            context.add_pattern("list", swamp.translate_exclusive(list.inputs[0], list, Dir.In));
             if (setter.parameters.Count > 0)
             {
                 context.add_pattern("hub", new Variable(setter.parameters[0].symbol));

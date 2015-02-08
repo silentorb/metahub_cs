@@ -181,8 +181,8 @@ namespace metahub.imperative.summoner
                 case "statements":
                     {
                         var expressions = process_block(source, context);
-                        return expressions.Count == 1 
-                            ? expressions[0] 
+                        return expressions.Count == 1
+                            ? expressions[0]
                             : new Statements(expressions);
                     }
             }
@@ -235,6 +235,13 @@ namespace metahub.imperative.summoner
                 if (patterns[0].text == "null")
                     return new Null_Value();
             }
+            List<Expression> args = null;
+            if (source.patterns[1].patterns.Length > 0)
+            {
+                args = source.patterns[1].patterns[0].patterns
+                    .Select(p => process_expression(p, context))
+                    .ToList();
+            }
 
             foreach (var pattern in patterns)
             {
@@ -258,7 +265,6 @@ namespace metahub.imperative.summoner
                         if (rail != null)
                             dungeon = overlord.get_dungeon(rail);
                     }
-
                 }
                 else
                 {
@@ -272,25 +278,17 @@ namespace metahub.imperative.summoner
                     }
                     else
                     {
-                        Function_Call func = null;
-                        var imp = dungeon != null
-                                      ? dungeon.summon_imp(token, true)
-                                      : null;
-
-                        if (imp != null)
+                        var func = process_function_call(dungeon, token, result, last, args);
+                        if (func != null)
                         {
-                            func = new Class_Function_Call(imp, result);
-                        }
-                        else if (Imp.platform_specific_functions.Contains(token))
-                        {
-                            //if (token == "add")
-                            //{
-                            //    next = new Property_Function_Call(Property_Function_Type.set, ((Portal_Expression)last).portal);
-                            //}
-                            //else
+                            if (func.type == Expression_Type.property_function_call)
                             {
-                                func = new Platform_Function(token, result, null);                                
+                                last.parent.child = null;
+                                last = last.parent;
+                                next = func;
                             }
+                            else
+                                return func;
                         }
                         else
                         {
@@ -304,18 +302,6 @@ namespace metahub.imperative.summoner
                                 throw new Exception("Invalid path token: " + token);
                             }
                         }
-
-                        if (func != null)
-                        {
-                            if (source.patterns[1].patterns.Length > 0)
-                            {
-                                func.args =
-                                    source.patterns[1].patterns[0].patterns.Select(p => process_expression(p, context))
-                                                                  .ToArray();
-                            }
-
-                            return func;
-                        }
                     }
                 }
 
@@ -324,14 +310,34 @@ namespace metahub.imperative.summoner
                 else
                 {
                     if (last.type == Expression_Type.property_function_call)
-                        ((Property_Function_Call) last).args.Add(next);
+                        ((Property_Function_Call)last).args.Add(next);
                     else
                         last.child = next;
                 }
-                last = next;
+                last = next.get_end();
             }
 
             return result;
+        }
+
+        Expression process_function_call(Dungeon dungeon, string token, Expression result, Expression last, List<Expression> args)
+        {
+            var imp = dungeon != null
+                          ? dungeon.summon_imp(token, true)
+                          : null;
+
+            if (imp != null)
+                return new Class_Function_Call(imp, result, args);
+
+            if (Imp.platform_specific_functions.Contains(token))
+            {
+                if (token == "add")
+                    return new Property_Function_Call(Property_Function_Type.set, ((Portal_Expression)last).portal, args);
+
+                return new Platform_Function(token, result, args);
+            }
+
+            return null;
         }
 
         Parameter process_parameter(Pattern_Source source, Context context)
@@ -441,7 +447,7 @@ namespace metahub.imperative.summoner
             var reference = process_reference(source.patterns[0], context);
             var expression = process_expression(source.patterns[4], context);
             var op = source.patterns[2].text;
-            var last = Expression.get_end(reference);
+            var last = reference.get_end();
             //if (last.type == Expression_Type.property)
             //{
             //    var tie_expression = (Tie_Expression)last;

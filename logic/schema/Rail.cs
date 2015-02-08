@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using metahub.imperative.schema;
 using metahub.schema;
 
@@ -155,5 +156,9 @@ namespace metahub.logic.schema
             return tie;
         }
 
+        public Tie get_reference(Rail rail)
+        {
+            return all_ties.Values.FirstOrDefault(t => t.other_rail == rail);
+        }
     }
 }

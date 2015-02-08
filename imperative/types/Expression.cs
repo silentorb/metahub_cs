@@ -44,9 +44,9 @@ public class Expression {
         throw new Exception("Not implemented.");
     }
 
-    public static Expression get_end(Expression expression)
+    public Expression get_end()
     {
-        var result = expression;
+        var result = this;
         while (result.child != null && (result.child.type == Expression_Type.property || result.child.type == Expression_Type.portal))
         {
             result = result.child;

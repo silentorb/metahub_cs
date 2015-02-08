@@ -8,7 +8,6 @@ using metahub.logic.schema;
 namespace metahub.logic.nodes
 {
 
-    [DebuggerDisplay("function_call2 ({name})")]
     public class Function_Node : Node
     {
         static List<string> circular_operators = new List<string>
@@ -24,6 +23,10 @@ namespace metahub.logic.nodes
         public List<Function_Node> children = new List<Function_Node>();
         public bool is_circular = false;
 
+        public override string debug_string
+        {
+            get { return name; }
+        }
 
         public Function_Node(string name, IEnumerable<Node> args, bool is_operation = false)
             : base(Node_Type.function_call)

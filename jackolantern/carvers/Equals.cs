@@ -34,8 +34,7 @@ namespace metahub.jackolantern.carvers
                 var dungeon = portal.dungeon;
                 var setter = jack.get_setter(portal);
                 setter.block.add("post", new Comment("Carving equals: " + portal.name));
-                var context = new Summoner.Context(dungeon);
-                context.scope = setter.scope;
+                var context = new Summoner.Context(setter);
                 var swamp = new Swamp(jack, pumpkin, context);
 
                 var original_target = swamp.get_exclusive_chain(endpoint.node, null, Dir.In);

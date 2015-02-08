@@ -36,17 +36,32 @@ namespace metahub.imperative.schema
 
         public Symbol create_symbol(string name, Profession profession)
         {
+            // It is possible for a snippet to refer to define to a variable that only exists
+            // within the scope of that snippet but shares the same name as a variable outside
+            // of that scope.  In such a case, a mapping is tracked between the local name
+            // of the variable and the actual rendered name of the variable.
+            var actual_name = name;
             if (exists(name))
             {
                 var i = 2;
-                while (exists(name + i))
+                while (exists(actual_name + i))
                 {
                     ++i;
                 }
 
-                name = name + i;
+                actual_name = actual_name + i;
+
+                // Sometimes there can be a series of snippets declaring the same variable.
+                // Because of this each local symbol is also created in the parent scope
+                // so the successive variable names can each be aware of the previous
+                // variable names and thus all be unique.
+                var first_symbol = find_or_null(name);
+                first_symbol.scope.create_symbol(actual_name, profession);
+
+                if (symbols.ContainsKey(name))
+                    name = actual_name;
             }
-            var symbol = new Symbol(name, profession, this);
+            var symbol = new Symbol(actual_name, profession, this);
             symbols[name] = symbol;
             return symbol;
         }

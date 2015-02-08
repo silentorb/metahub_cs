@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using metahub.imperative.schema;
@@ -13,20 +14,6 @@ using metahub.schema;
 
 namespace metahub.jackolantern.schema
 {
-    public class Node_Link
-    {
-        public Node node;
-        public Dir dir;
-        public Node previous;
-
-        public Node_Link(Node node, Dir dir, Node previous)
-        {
-            this.node = node;
-            this.dir = dir;
-            this.previous = previous;
-        }
-    }
-
     public class Swamp
     {
         static Dir reverse(Dir dir)
@@ -127,31 +114,33 @@ namespace metahub.jackolantern.schema
 
         public Expression translate_exclusive(Node node, Node previous, Dir dir, int step = 0)
         {
-            previous_node = previous;
-            last_node = node;
-            var next = get_next(node, previous, ref dir, step);
-            if (next == null)
-            {
-                if (step == 0)
-                    throw new Exception("Empty node path.");
+            var chain = get_exclusive_chain(node, previous, dir);
+            return render_chain(chain);
+            //previous_node = previous;
+            //last_node = node;
+            //var next = get_next(node, previous, ref dir, step);
+            //if (next == null)
+            //{
+            //    if (step == 0)
+            //        throw new Exception("Empty node path.");
 
-                return null;
-            }
-            var expression = get_expression(next, node, dir);
-            if (expression == null)
-                throw new Exception();
+            //    return null;
+            //}
+            //var expression = get_expression(next, node, dir);
+            //if (expression == null)
+            //    throw new Exception();
 
-            var child = translate_exclusive(next, node, dir, step + 1);
-            if (child != null && child.type == Expression_Type.platform_function)
-            {
-                child.child = expression;
-                return child;
-            }
-            else
-            {
-                expression.child = child;
-                return expression;
-            }
+            //var child = translate_exclusive(next, node, dir, step + 1);
+            //if (child != null && child.type == Expression_Type.platform_function)
+            //{
+            //    child.child = expression;
+            //    return child;
+            //}
+            //else
+            //{
+            //    expression.child = child;
+            //    return expression;
+            //}
         }
 
         Node get_next(Node node, Node previous, ref Dir dir, int step = 0)
@@ -212,7 +201,10 @@ namespace metahub.jackolantern.schema
                         var property_node = (Property_Node)node;
                         var tie = dir == Dir.Out
                                       ? property_node.tie
-                                      : ((Property_Node)previous).tie.other_tie;
+                                      //: ((Property_Node)previous).tie.other_tie;
+                                      : ((Property_Node) previous).tie.rail.get_reference(property_node.tie.other_rail)
+                                      ?? ((Property_Node)previous).tie.other_tie;
+
                         if (tie == null)
                             throw new Exception("Not supported.");
                         //return null;
@@ -227,7 +219,12 @@ namespace metahub.jackolantern.schema
                 case Node_Type.scope_node:
                     {
                         var property_node = (Property_Node)previous;
-                        var tie = property_node.tie.other_tie;
+                        var scope_node = (Scope_Node) node;
+
+                        var tie = scope_node.rail == property_node.tie.rail
+                            ? property_node.tie.other_tie
+                            : property_node.tie.rail.get_reference(scope_node.rail);
+
                         return new Portal_Expression(jack.overlord.get_portal(tie));
                     }
 
@@ -300,25 +297,6 @@ namespace metahub.jackolantern.schema
 
             return expression;
         }
-
-        //public List<Node> get_exclusive_chain(Node node, Node previous, Dir dir)
-        //{
-        //    int step = -1;
-        //    List<Node> result = new List<Node>();
-        //    do
-        //    {
-        //        ++step;
-        //        Node next = get_next(node, previous, ref dir, step);
-        //        if (next == null || (next.type == Node_Type.function_call && ((Function_Node)next).is_operation))
-        //            break;
-
-        //        result.Add(next);
-        //        previous = node;
-        //        node = next;
-        //    } while (true);
-
-        //    return result;
-        //}
 
         public List<Node_Link> get_exclusive_chain(Node node, Node previous, Dir dir)
         {

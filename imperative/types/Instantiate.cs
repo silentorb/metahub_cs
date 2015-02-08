@@ -1,6 +1,7 @@
 using metahub.imperative.schema;
 using metahub.logic.schema;
 using metahub.logic.nodes;
+using metahub.schema;
 
 namespace metahub.imperative.types
 {
@@ -19,6 +20,11 @@ namespace metahub.imperative.types
             : base(Expression_Type.instantiate)
         {
             this.dungeon = dungeon;
+        }
+
+        public override Profession get_profession()
+        {
+            return new Profession(Kind.reference, dungeon);
         }
     }
 

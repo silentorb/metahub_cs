@@ -13,6 +13,20 @@ using metahub.schema;
 
 namespace metahub.jackolantern.schema
 {
+    public class Node_Link
+    {
+        public Node node;
+        public Dir dir;
+        public Node previous;
+
+        public Node_Link(Node node, Dir dir, Node previous)
+        {
+            this.node = node;
+            this.dir = dir;
+            this.previous = previous;
+        }
+    }
+
     public class Swamp
     {
         static Dir reverse(Dir dir)
@@ -182,6 +196,8 @@ namespace metahub.jackolantern.schema
                     last_node = result;
                     return null;
                 }
+
+                return null;
             }
 
             return result;
@@ -285,11 +301,29 @@ namespace metahub.jackolantern.schema
             return expression;
         }
 
-        public List<Node> get_exclusive_chain(Node node, Dir dir)
+        //public List<Node> get_exclusive_chain(Node node, Node previous, Dir dir)
+        //{
+        //    int step = -1;
+        //    List<Node> result = new List<Node>();
+        //    do
+        //    {
+        //        ++step;
+        //        Node next = get_next(node, previous, ref dir, step);
+        //        if (next == null || (next.type == Node_Type.function_call && ((Function_Node)next).is_operation))
+        //            break;
+
+        //        result.Add(next);
+        //        previous = node;
+        //        node = next;
+        //    } while (true);
+
+        //    return result;
+        //}
+
+        public List<Node_Link> get_exclusive_chain(Node node, Node previous, Dir dir)
         {
             int step = -1;
-            List<Node> result = new List<Node>();
-            Node previous = null;
+            var result = new List<Node_Link>();
             do
             {
                 ++step;
@@ -297,10 +331,33 @@ namespace metahub.jackolantern.schema
                 if (next == null || (next.type == Node_Type.function_call && ((Function_Node)next).is_operation))
                     break;
 
-                result.Add(next);
+                result.Add(new Node_Link(next, dir, previous));
                 previous = node;
                 node = next;
             } while (true);
+
+            return result;
+        }
+
+        public Expression render_chain(List<Node_Link> links)
+        {
+            Expression result = null;
+            Expression last = null;
+
+            foreach (var link in links)
+            {
+                var expression = get_expression(link.node, link.previous, link.dir);
+                if (result == null)
+                {
+                    result = expression;
+                }
+                else
+                {
+                    last.child = expression;
+                }
+
+                last = expression;
+            }
 
             return result;
         }

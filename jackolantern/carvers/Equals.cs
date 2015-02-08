@@ -38,10 +38,10 @@ namespace metahub.jackolantern.carvers
                 context.scope = setter.scope;
                 var swamp = new Swamp(jack, pumpkin, context);
 
-                var original_target = swamp.get_exclusive_chain(endpoint.node, Dir.In);
-                var transform = Transform.center_on(original_target.Last());
+                var original_target = swamp.get_exclusive_chain(endpoint.node, null, Dir.In);
+                var transform = Transform.center_on(original_target.Last().node);
                 var lvalue = transform.get_out(endpoint.node);
-                var new_target = transform.get_out(original_target.Last());
+                var new_target = transform.get_out(original_target.Last().node);
                 var rvalue = transform.get_out(pumpkin).get_other_input(new_target);
                 //var rvalue = new_target.outputs[0].get_other_input(new_target);
 

@@ -295,7 +295,7 @@ namespace metahub.render.targets.cpp
                 var dependency = d.dungeon;
                 if (d.allow_partial && dependency.realm == dungeon.realm)
                 {
-                    result += line("class " + get_rail_type_string(dependency) + ";");
+                    result += line("class " + render_dungeon_path(dependency) + ";");
                     lines = true;
                 }
             }
@@ -492,18 +492,18 @@ namespace metahub.render.targets.cpp
         //return result + line("}");
         //}
 
-        string get_rail_type_string(Rail rail)
-        {
-            var name = rail.rail_name;
-            if (rail.region.external_name != null)
-                name = rail.region.external_name + "::" + name;
-            else if (rail.region.name != current_realm.name)
-                name = rail.region.name + "::" + name;
+        //string get_rail_type_string(Rail rail)
+        //{
+        //    var name = rail.rail_name;
+        //    if (rail.region.external_name != null)
+        //        name = rail.region.external_name + "::" + name;
+        //    else if (rail.region.name != current_realm.name)
+        //        name = rail.region.name + "::" + name;
 
-            return name;
-        }
+        //    return name;
+        //}
 
-        string get_rail_type_string(Dungeon dungeon)
+        string render_dungeon_path(Dungeon dungeon)
         {
             var name = dungeon.name;
             if (dungeon.realm.external_name != null)
@@ -558,7 +558,7 @@ namespace metahub.render.targets.cpp
 
             var name = signature.dungeon.is_abstract
                 ? "void"
-                : get_rail_type_string(signature.dungeon);
+                : render_dungeon_path(signature.dungeon);
 
             if (!signature.is_list)
             {
@@ -601,7 +601,7 @@ namespace metahub.render.targets.cpp
 
             var name = signature.dungeon.is_abstract && !signature.dungeon.is_value
                 ? "void"
-                : get_rail_type_string(signature.dungeon);
+                : render_dungeon_path(signature.dungeon);
 
             if (!signature.is_list)
             {
@@ -931,10 +931,7 @@ namespace metahub.render.targets.cpp
 
         string render_instantiation(Instantiate expression)
         {
-            return "new " + (expression.dungeon != null
-            ? expression.dungeon.name
-            : get_rail_type_string(expression.rail))
-                + "()";
+            return "new " + render_dungeon_path(expression.dungeon) + "()";
         }
 
         private string render_property_function_call(Property_Function_Call expression, Expression parent)

@@ -69,8 +69,12 @@ namespace metahub.jackolantern.carvers
             var context = new Summoner.Context(setter);
             var swamp = new Swamp(jack, null, context);
 
-            context.add_pattern("T", second_portal.profession);
-            context.add_pattern("ref", swamp.translate_exclusive(list.inputs[0], list, Dir.In));
+            context.add_pattern("T", first_portal.profession);
+            {
+                var chain = swamp.get_exclusive_chain(list.inputs[0], list, Dir.In);
+                var ref_expression = swamp.render_chain(chain.Take(chain.Count - 1).ToList());
+                context.add_pattern("ref", ref_expression);
+            }
             context.add_pattern("list", swamp.translate_inclusive(list.inputs[0], list, Dir.In));
             if (setter.parameters.Count > 0)
             {

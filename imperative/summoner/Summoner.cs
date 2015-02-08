@@ -283,7 +283,14 @@ namespace metahub.imperative.summoner
                         }
                         else if (Imp.platform_specific_functions.Contains(token))
                         {
-                            func = new Platform_Function(token, result, null);
+                            //if (token == "add")
+                            //{
+                            //    next = new Property_Function_Call(Property_Function_Type.set, ((Portal_Expression)last).portal);
+                            //}
+                            //else
+                            {
+                                func = new Platform_Function(token, result, null);                                
+                            }
                         }
                         else
                         {
@@ -315,8 +322,12 @@ namespace metahub.imperative.summoner
                 if (result == null)
                     result = next;
                 else
-                    last.child = next;
-
+                {
+                    if (last.type == Expression_Type.property_function_call)
+                        ((Property_Function_Call) last).args.Add(next);
+                    else
+                        last.child = next;
+                }
                 last = next;
             }
 

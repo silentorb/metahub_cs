@@ -172,7 +172,8 @@ namespace metahub.logic.nodes
             for (int i = 0; i < 2; ++i)
             {
                 var j = 1 - i;
-                foreach (var port in ports(i))
+                var port_list = ports(i).ToArray();
+                foreach (var port in port_list)
                 {
                     var index = port.ports(j).IndexOf(this);
                     disconnect(port);

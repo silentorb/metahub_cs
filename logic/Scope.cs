@@ -10,8 +10,6 @@ namespace metahub.logic
         public Rail rail;
         public Logic_Scope parent;
         public Dictionary<string, Signature> variables = new Dictionary<string, Signature>();
-        public bool is_map = false;
-        public Node[] caller;
         public Constraint_Group group;
         public Signature[] parameters;
         public Constraint_Scope constraint_scope;
@@ -20,11 +18,13 @@ namespace metahub.logic
 
         public Logic_Scope(Logic_Scope parent = null)
         {
-            this.parent = parent;
             if (parent != null)
             {
+                this.parent = parent;
                 rail = parent.rail;
                 constraint_scope = parent.constraint_scope;
+                scope_node = parent.scope_node;
+                parent_function = parent.parent_function;
             }
         }
 

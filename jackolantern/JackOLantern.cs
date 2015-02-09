@@ -46,11 +46,6 @@ namespace metahub.jackolantern
         {
             generate_code(target);
 
-            //foreach (var constraint in logician.constraints)
-            //{
-            //   implement_constraint(constraint);
-            //}
-
             foreach (var pumpkin in logician.functions)
             {
                 carve_pumpkin(pumpkin);

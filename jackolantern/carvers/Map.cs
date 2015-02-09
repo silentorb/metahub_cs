@@ -39,7 +39,8 @@ namespace metahub.jackolantern.carvers
             var first_parameter = (Parameter_Node)lambda.inputs[0];
             var second_parameter = (Parameter_Node)lambda.inputs[1];
 
-            foreach (var node in nodes.OfType<Variable_Node>())
+            var variables = pumpkin.outputs.OfType<Variable_Node>().ToArray();
+            foreach (var node in variables)
             {
                 if (node.name == first_parameter.name)
                 {

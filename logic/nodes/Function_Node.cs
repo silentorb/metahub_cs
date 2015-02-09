@@ -25,7 +25,7 @@ namespace metahub.logic.nodes
 
         public override string debug_string
         {
-            get { return name; }
+            get { return "Function " + name; }
         }
 
         public Function_Node(string name, IEnumerable<Node> args, bool is_operation = false)

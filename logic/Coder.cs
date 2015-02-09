@@ -27,73 +27,6 @@ namespace metahub.logic
             this.railway = railway;
             this.logician = logician;
         }
-        /*
-        public Node convert_expression(Pattern_Source source, Logic_Scope scope, Node previous = null)
-        {
-            switch (source.type)
-            {
-                case "block":
-                    return create_block(source.patterns, scope);
-
-                case "literal":
-                    return create_literal(source, scope);
-
-                case "path":
-                    return process_path(source, scope);
-
-                case "function":
-                    return process_function_call(source, previous, scope);
-
-                case "array":
-                    return create_array(source, scope);
-
-                case "expression":
-                    return process_expression(source, scope);
-
-                case "bool":
-                    return new Literal_Value(bool.Parse(source.text), Kind.Bool);
-
-                case "int":
-                    return new Literal_Value(int.Parse(source.text), Kind.Int);
-
-                case "complex_token":
-                    return process_complex_token(source, scope);
-
-                case "lambda":
-                    return create_lambda(source, scope);
-              
-                case "id":
-                    if (source.text == "null")
-                        return new Null_Node();
-
-                    var variable = scope.find(source.text);
-                    if (variable != null)
-                    {
-                        return new Variable_Node(source.text, variable);
-                        //if (variable.rail == null)
-                        //throw new Exception("variabcle rail cannot be null.");
-                    }
-                    else
-                    {
-                        Tie tie = scope.rail.get_tie_or_error(source.text);
-                        return new Property_Node(tie);
-                        //if (tie.other_rail != null)
-                        //    rail = tie.other_rail;
-                    }
-                //{
-                //    Tie tie = scope.rail.get_tie_or_error(source.text);
-                //    return new Property_Reference(tie);
-                //}
-
-                case "reference":
-                    return source.patterns.Length < 2
-                        ? convert_expression(source.patterns[0], scope)
-                        : process_path(source, scope);
-            }
-
-            throw new Exception("Invalid expression type: " + source.type);
-        }
-        */
 
         public Node convert_expression2(Pattern_Source source, Logic_Scope scope, Node previous = null)
         {
@@ -136,7 +69,9 @@ namespace metahub.logic
                     var variable = scope.find(source.text);
                     if (variable != null)
                     {
-                        return new Variable_Node(source.text, variable);
+                        var result = new Variable_Node(source.text, variable);
+                        result.connect_input(scope.parent_function);
+                        return result;
                         //if (variable.rail == null)
                         //throw new Exception("variable rail cannot be null.");
                     }
@@ -452,31 +387,31 @@ namespace metahub.logic
             return reference;
         }
 
-        Lambda create_lambda(Pattern_Source source, Logic_Scope scope)
-        {
-            var expressions = source.patterns[2].patterns;
-            Logic_Scope new_scope = new Logic_Scope(scope);
-            new_scope.is_map = true;
-            var parameters = source.patterns[0].patterns;
-            int i = 0;
-            foreach (var parameter in parameters)
-            {
-                var signature = scope.parameters[0].parameters[i];
-                new_scope.variables[parameter.text] = signature;
-                ++i;
-            }
+        //Lambda create_lambda(Pattern_Source source, Logic_Scope scope)
+        //{
+        //    var expressions = source.patterns[2].patterns;
+        //    Logic_Scope new_scope = new Logic_Scope(scope);
+        //    new_scope.is_map = true;
+        //    var parameters = source.patterns[0].patterns;
+        //    int i = 0;
+        //    foreach (var parameter in parameters)
+        //    {
+        //        var signature = scope.parameters[0].parameters[i];
+        //        new_scope.variables[parameter.text] = signature;
+        //        ++i;
+        //    }
 
-            throw new Exception("No longer supported.");
-            //return new Lambda(new_scope, parameters.Select(p => new Parameter(p.text, null))
-            //    , expressions.Select(e => ((Constraint_Wrapper)convert_statement(e, new_scope)).constraint)
-            //);
-        }
+        //    throw new Exception("No longer supported.");
+        //    //return new Lambda(new_scope, parameters.Select(p => new Parameter(p.text, null))
+        //    //    , expressions.Select(e => ((Constraint_Wrapper)convert_statement(e, new_scope)).constraint)
+        //    //);
+        //}
 
         Lambda create_lambda2(Pattern_Source source, Logic_Scope scope)
         {
             var expressions = source.patterns[2].patterns;
             Logic_Scope new_scope = new Logic_Scope(scope);
-            new_scope.is_map = true;
+            //new_scope.is_map = true;
             var parameters = source.patterns[0].patterns;
             int i = 0;
             foreach (var parameter in parameters)
@@ -487,7 +422,11 @@ namespace metahub.logic
             }
             
             var lambda = new Lambda(new_scope, parameters.Select(p => new Parameter_Node(p.text, null)));
-            expressions.Select(e => (Function_Node)convert_statement(e, new_scope));
+            //expressions.(e => (Function_Node)convert_statement(e, new_scope));
+            foreach (var expression in expressions)
+            {
+                convert_statement(expression, new_scope);
+            }
 
             return lambda;
         }
@@ -544,14 +483,18 @@ namespace metahub.logic
                 scope_node = scope_node
             };
             var function_signature = prepare_function_scope_signature(name, function_scope, previous);
-  
-            var inputs = new Node[] { previous };
+
+            var result = logician.call(name, new Node[] { previous }, scope);
+            function_scope.parent_function = result;
             if (args != null)
             {
-                inputs = inputs.Concat(args.Select(p => convert_expression2(p, function_scope))).ToArray();
+                foreach (var arg in args)
+                {
+                    result.connect_input(convert_expression2(arg, function_scope));
+                }
             }
 
-            return logician.call(name, inputs, scope);
+            return result;
         }
 
         Signature prepare_function_scope_signature(string name, Logic_Scope function_scope, Node previous)
@@ -579,21 +522,21 @@ namespace metahub.logic
             return function_signature;
         }
 
-        static Signature get_path_signature(Node[] path)
-        {
-            var i = path.Length;
-            while (--i >= 0)
-            {
-                var token = path[i] as Property_Node;
-                if (token == null)
-                    continue;
+        //static Signature get_path_signature(Node[] path)
+        //{
+        //    var i = path.Length;
+        //    while (--i >= 0)
+        //    {
+        //        var token = path[i] as Property_Node;
+        //        if (token == null)
+        //            continue;
 
-                if (!token.tie.rail.trellis.is_value)
-                    return token.tie.get_signature();
-            }
+        //        if (!token.tie.rail.trellis.is_value)
+        //            return token.tie.get_signature();
+        //    }
 
-            throw new Exception("Could not find signature.");
-        }
+        //    throw new Exception("Could not find signature.");
+        //}
 
         Constraint_Group create_group(Pattern_Source source, Logic_Scope scope)
         {

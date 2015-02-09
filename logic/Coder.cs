@@ -387,26 +387,6 @@ namespace metahub.logic
             return reference;
         }
 
-        //Lambda create_lambda(Pattern_Source source, Logic_Scope scope)
-        //{
-        //    var expressions = source.patterns[2].patterns;
-        //    Logic_Scope new_scope = new Logic_Scope(scope);
-        //    new_scope.is_map = true;
-        //    var parameters = source.patterns[0].patterns;
-        //    int i = 0;
-        //    foreach (var parameter in parameters)
-        //    {
-        //        var signature = scope.parameters[0].parameters[i];
-        //        new_scope.variables[parameter.text] = signature;
-        //        ++i;
-        //    }
-
-        //    throw new Exception("No longer supported.");
-        //    //return new Lambda(new_scope, parameters.Select(p => new Parameter(p.text, null))
-        //    //    , expressions.Select(e => ((Constraint_Wrapper)convert_statement(e, new_scope)).constraint)
-        //    //);
-        //}
-
         Lambda create_lambda2(Pattern_Source source, Logic_Scope scope)
         {
             var expressions = source.patterns[2].patterns;

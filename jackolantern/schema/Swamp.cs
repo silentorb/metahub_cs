@@ -25,7 +25,7 @@ namespace metahub.jackolantern.schema
 
         JackOLantern jack;
         Node end;
-        Summoner.Context context;
+        public Summoner.Context context;
         public Node previous_node;
         public Node last_node;
 
@@ -79,38 +79,38 @@ namespace metahub.jackolantern.schema
             }
         }
         */
-        IEnumerable<Expression> translate_many(IEnumerable<Node> nodes, Node previous, Dir dir)
-        {
-            return nodes.Select(n => translate_inclusive(n, previous, dir));
-        }
+        //IEnumerable<Expression> translate_many(IEnumerable<Node> nodes, Node previous, Dir dir)
+        //{
+        //    return nodes.Select(n => translate_inclusive(n, previous, dir));
+        //}
 
-        public Expression translate_inclusive(Node node, Node previous, Dir dir, int step = 0)
-        {
-            if (node.type == Node_Type.scope_node && step == 0)
-            {
-                return translate_inclusive(node.outputs.First(o => o != previous), node, Dir.Out, 1);
-            }
+        //public Expression translate_inclusive(Node node, Node previous, Dir dir, int step = 0)
+        //{
+        //    if (node.type == Node_Type.scope_node && step == 0)
+        //    {
+        //        return translate_inclusive(node.outputs.First(o => o != previous), node, Dir.Out, 1);
+        //    }
 
-            var expression = get_expression(node, previous, dir);
-            if (expression == null)
-                return null;
+        //    var expression = get_expression(node, previous, dir);
+        //    if (expression == null)
+        //        return null;
 
-            Node next = get_next(node, previous, ref dir);
-            if (next == null)
-                return expression;
+        //    Node next = get_next(node, previous, ref dir);
+        //    if (next == null)
+        //        return expression;
 
-            var child = translate_inclusive(next, node, dir, step + 1);
-            if (child != null && child.type == Expression_Type.platform_function)
-            {
-                child.child = expression;
-                return child;
-            }
-            else
-            {
-                expression.child = child;
-                return expression;
-            }
-        }
+        //    var child = translate_inclusive(next, node, dir, step + 1);
+        //    if (child != null && child.type == Expression_Type.platform_function)
+        //    {
+        //        child.child = expression;
+        //        return child;
+        //    }
+        //    else
+        //    {
+        //        expression.child = child;
+        //        return expression;
+        //    }
+        //}
 
         public Expression translate_exclusive(Node node, Node previous, Dir dir, int step = 0)
         {
@@ -126,34 +126,25 @@ namespace metahub.jackolantern.schema
                 throw new Exception("Could not render node chain.");
             
             return result;
-            //previous_node = previous;
-            //last_node = node;
-            //var next = get_next(node, previous, ref dir, step);
-            //if (next == null)
-            //{
-            //    if (step == 0)
-            //        throw new Exception("Empty node path.");
-
-            //    return null;
-            //}
-            //var expression = get_expression(next, node, dir);
-            //if (expression == null)
-            //    throw new Exception();
-
-            //var child = translate_exclusive(next, node, dir, step + 1);
-            //if (child != null && child.type == Expression_Type.platform_function)
-            //{
-            //    child.child = expression;
-            //    return child;
-            //}
-            //else
-            //{
-            //    expression.child = child;
-            //    return expression;
-            //}
         }
 
-        Node get_next(Node node, Node previous, ref Dir dir, int step = 0)
+        public Expression translate_inclusive(Node node, Node previous, Dir dir, int step = 0)
+        {
+            var chain = get_inclusive_chain(node, previous, dir);
+            if (chain.Count == 0)
+            {
+                get_exclusive_chain(node, previous, dir);
+                throw new Exception("Chain has no nodes.");
+            }
+
+            var result = render_chain(chain);
+            if (result == null)
+                throw new Exception("Could not render node chain.");
+
+            return result;
+        }
+
+        Node get_next(Node node, Node previous, ref Dir dir, int step = 0, bool is_backwards = false)
         {
             Node result;
             if (node.type == Node_Type.scope_node)
@@ -165,6 +156,17 @@ namespace metahub.jackolantern.schema
                 result = node.outputs.FirstOrDefault(o => o != previous);
                 if (result == null)
                     return null;
+            }
+            else if (node.type == Node_Type.bounce)
+            {
+                if (is_backwards)
+                    return null;
+
+                if (previous == null)
+                    throw new Exception("Bounce must have a previous node.");
+
+                dir = Dir.Out;
+                result = node.outputs.First(o => o != previous).outputs.First();
             }
             else
             {
@@ -186,6 +188,15 @@ namespace metahub.jackolantern.schema
 
             if (result == end)
                 return null;
+
+            if (result.type == Node_Type.bounce)
+            {
+                if (is_backwards)
+                    return null;
+
+                dir = Dir.Out;
+                result = result.outputs.First(o => o != node).outputs.First();
+            }
 
             if (result.type == Node_Type.function_call)
             {
@@ -279,7 +290,7 @@ namespace metahub.jackolantern.schema
             if (node.type != Node_Type.property)
                 return expression;
 
-            var next = get_next(node, previous, ref dir, step);
+            var next = get_next(node, previous, ref dir, step, true);
 
             if (next == null || next.type == Node_Type.scope_node)
                 return expression;
@@ -320,6 +331,25 @@ namespace metahub.jackolantern.schema
                     break;
 
                 result.Add(new Node_Link(next, dir, previous));
+                previous = node;
+                node = next;
+            } while (true);
+
+            return result;
+        }
+
+        public List<Node_Link> get_inclusive_chain(Node node, Node previous, Dir dir)
+        {
+            int step = -1;
+            var result = new List<Node_Link>();
+            do
+            {
+                ++step;
+                result.Add(new Node_Link(node, dir, previous));
+                Node next = get_next(node, previous, ref dir, step);
+                if (next == null || (next.type == Node_Type.function_call && ((Function_Node)next).is_operation))
+                    break;
+
                 previous = node;
                 node = next;
             } while (true);

@@ -12,9 +12,7 @@ namespace metahub.logic.nodes
         parent_class,
         path,
         lambda,
-        //operation,
         Null,
-        scope_node,
         array,
         parameter,
 
@@ -28,6 +26,10 @@ namespace metahub.logic.nodes
         scope,
         block,
         constra,
-        function_scope
+        function_scope,
+
+        // Internal
+        scope_node,
+        bounce
     }
 }

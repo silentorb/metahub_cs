@@ -28,10 +28,10 @@ namespace metahub.logic.nodes
 
         public virtual string debug_string
         {
-            get { return ToString(); }
+            get { return type.ToString() + " node"; }
         }
 
-        protected Node(Node_Type type)
+        public Node(Node_Type type)
         {
             stack_trace = Environment.StackTrace;
             this.type = type;

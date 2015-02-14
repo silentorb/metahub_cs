@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using metahub.imperative.schema;
 using metahub.schema;
@@ -24,6 +25,7 @@ namespace metahub.logic.schema
         public Dictionary<string, Tie_Addition> properties;
     }
 
+    [DebuggerDisplay("{name} Rail")]
     public class Rail
     {
 

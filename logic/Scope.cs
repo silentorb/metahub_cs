@@ -13,7 +13,8 @@ namespace metahub.logic
         public Constraint_Group group;
         public Signature[] parameters;
         public Constraint_Scope constraint_scope;
-        public Scope_Node scope_node;
+        public Node scope_node;
+        public Node bounce_node;
         public Function_Node parent_function;
 
         public Logic_Scope(Logic_Scope parent = null)

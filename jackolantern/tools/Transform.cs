@@ -19,7 +19,7 @@ namespace metahub.jackolantern.tools
             new_origin = origin;
         }
 
-        public Node get_out(Node input)
+        public Node get_transformed(Node input)
         {
             if (map.Count == 0)
                 return input;
@@ -30,7 +30,6 @@ namespace metahub.jackolantern.tools
         public static Transform center_on(Node origin)
         {
             var transform = new Transform(origin);
-            //if (new[] { origin }.Concat(origin.outputs).OfType<Function_Call2>().All(n => !n.is_operation))
             if (origin.outputs.OfType<Function_Node>().All(n => !n.is_operation))
                 return transform;
 

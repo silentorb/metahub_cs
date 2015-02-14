@@ -41,27 +41,27 @@ namespace metahub.jackolantern.carvers
 
             var variables = pumpkin.outputs.OfType<Variable_Node>().ToArray();
 
-            if (lambda.scope.scope_node == null)
-                lambda.scope.scope_node = new Scope_Node(lambda.scope.rail);
+            //if (lambda.scope.scope_node == null)
+            //    lambda.scope.scope_node = new Scope_Node(lambda.scope.rail);
 
             foreach (var node in variables)
             {
+                Property_Node property_node;
                 if (node.name == first_parameter.name)
                 {
-                    var property_node = new Property_Node(first_portal.tie);
-                    node.replace(property_node);
-                    property_node.replace_other(pumpkin, lambda.scope.scope_node);
+                    property_node = new Property_Node(second_portal.tie);
                 }
                 else if (node.name == second_parameter.name)
                 {
-                    var property_node = new Property_Node(second_portal.tie);
-                    node.replace(property_node);
-                    property_node.replace_other(pumpkin, lambda.scope.scope_node);
+                    property_node = new Property_Node(first_portal.tie);
                 }
                 else
                 {
                     throw new Exception("Could not find parameter " + node.name);
                 }
+
+                node.replace(property_node);
+                property_node.disconnect(pumpkin);
             }
 
             var second_list_portal = jack.overlord.get_portal(second.tie);

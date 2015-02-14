@@ -52,7 +52,7 @@ namespace metahub.logic.schema
         {
             this.rail = rail;
             this.type = type;
-            tie_name = name;
+            this.name = tie_name = name;
             this.other_rail = other_rail;
         }
 

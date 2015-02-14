@@ -40,15 +40,23 @@ namespace metahub.jackolantern.carvers
             var second_parameter = (Parameter_Node)lambda.inputs[1];
 
             var variables = pumpkin.outputs.OfType<Variable_Node>().ToArray();
+
+            if (lambda.scope.scope_node == null)
+                lambda.scope.scope_node = new Scope_Node(lambda.scope.rail);
+
             foreach (var node in variables)
             {
                 if (node.name == first_parameter.name)
                 {
-                    node.replace(new Property_Node(first_portal.tie));
+                    var property_node = new Property_Node(first_portal.tie);
+                    node.replace(property_node);
+                    property_node.replace_other(pumpkin, lambda.scope.scope_node);
                 }
                 else if (node.name == second_parameter.name)
                 {
-                    node.replace(new Property_Node(second_portal.tie));
+                    var property_node = new Property_Node(second_portal.tie);
+                    node.replace(property_node);
+                    property_node.replace_other(pumpkin, lambda.scope.scope_node);
                 }
                 else
                 {

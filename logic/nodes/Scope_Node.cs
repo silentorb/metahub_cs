@@ -14,6 +14,9 @@ namespace metahub.logic.nodes
        public Scope_Node(Rail rail)
            :base(Node_Type.scope_node)
        {
+           if (rail == null)
+               throw new Exception("Scope_Node.rail cannot be null.");
+
            this.rail = rail;
        }
 

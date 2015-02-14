@@ -139,7 +139,7 @@ namespace metahub.logic.nodes
             other.outputs.Remove(this);
         }
 
-        public void replace_connection(Node old_node, Node new_node)
+        public void replace_other(Node old_node, Node new_node)
         {
             if (!connections.Contains(old_node))
                 throw new Exception("Cannot replace node because there is no existing connection.");

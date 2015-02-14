@@ -18,10 +18,15 @@ namespace metahub.jackolantern.carvers
 
         }
 
+        public static string[] container_functions = new[]
+            {
+                "map"
+            };
+
         public override void carve(Function_Node pumpkin)
         {
             //var endpoints = get_endpoints3(pumpkin);
-            if (aggregate(pumpkin).OfType<Function_Node>().Any(n => !n.is_operation))
+            if (aggregate(pumpkin).OfType<Function_Node>().Any(n => !n.is_operation && !container_functions.Contains(n.name)))
                 return;
 
             var endpoints = get_endpoints3(pumpkin, false);

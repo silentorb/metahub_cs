@@ -115,7 +115,17 @@ namespace metahub.jackolantern.schema
         public Expression translate_exclusive(Node node, Node previous, Dir dir, int step = 0)
         {
             var chain = get_exclusive_chain(node, previous, dir);
-            return render_chain(chain);
+            if (chain.Count == 0)
+            {
+                get_exclusive_chain(node, previous, dir);
+                throw new Exception("Chain has no nodes.");
+            }
+
+            var result = render_chain(chain);
+            if (result == null)
+                throw new Exception("Could not render node chain.");
+            
+            return result;
             //previous_node = previous;
             //last_node = node;
             //var next = get_next(node, previous, ref dir, step);

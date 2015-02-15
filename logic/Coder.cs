@@ -357,7 +357,8 @@ namespace metahub.logic
         private Node process_function_call2(string name, Pattern_Source[] args, Node previous, Logic_Scope scope)
         {
             var property_root = previous.aggregate(Dir.In, n => n.type == Node_Type.property).Last();
-            var scope_node = (Scope_Node)property_root.inputs[0];
+            var scope_node = property_root.inputs[0] as Scope_Node ?? null;
+
             var function_scope = new Logic_Scope(scope.parent)
             {
                 constraint_scope = new Constraint_Scope(name, new[] { previous }),
@@ -411,10 +412,13 @@ namespace metahub.logic
                 {
                     if (parameter.parameters != null)
                     {
-                        var i = 0;
+                        var i = -1;
                         foreach (var parameter2 in parameter.parameters)
                         {
-                            var previous_property = (Property_Node)args[i++];
+                            if (i < args.Length - 1)
+                                ++i;
+
+                            var previous_property = (Property_Node)args[i];
                             if (parameter2.type == Kind.reference || parameter2.type == Kind.list)
                                 parameter2.rail = previous_property.tie.other_rail;
                         }

@@ -26,6 +26,7 @@ namespace metahub.logic
                 constraint_scope = parent.constraint_scope;
                 scope_node = parent.scope_node;
                 parent_function = parent.parent_function;
+                bounce_node = parent.bounce_node;
             }
         }
 

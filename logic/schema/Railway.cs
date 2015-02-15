@@ -148,7 +148,7 @@ public class Railway {
                         new Signature(Kind.none, new []
                             {
                                 new Signature(Kind.reference),
-                                new Signature(Kind.reference), 
+                                new Signature(Kind.reference)
                             }), 
                     })
 			}),
@@ -160,7 +160,7 @@ public class Railway {
                         new Signature(Kind.Float, new []
                             {
                                 new Signature(Kind.reference),
-                                new Signature(Kind.reference), 
+                                new Signature(Kind.reference),
                             }), 
                     })
 			}),

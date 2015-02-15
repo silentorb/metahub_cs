@@ -13,6 +13,12 @@ if (ref != null && origin != ref) {
 	$add
 }
 
+@@@map_add_to_list(T, list_add, hub, origin, main_item, $link)
+var item:T = new T()
+item.initialize(hub)
+item.$link = main_item
+list.setter(item, origin)
+
 @@@add_to_list(T, list_add, hub, origin)
 var item:T = new T()
 item.initialize(hub)

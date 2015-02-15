@@ -6,6 +6,8 @@ using metahub.imperative.summoner;
 using metahub.imperative.types;
 using metahub.jackolantern.schema;
 using metahub.logic.nodes;
+using metahub.render;
+using metahub.schema;
 
 namespace metahub.jackolantern.carvers
 {
@@ -37,12 +39,13 @@ namespace metahub.jackolantern.carvers
                 var swamp = new Swamp(jack, pumpkin, context);
                 var expressions = swamp.get_expression_pair(endpoint.node);
 
-                //setter.block.add("post", new Comment("Carving equals: " + endpoint.portal.name + ": " 
-                //    + swamp.get_exclusive_chain(parent, lvalue, Dir.In).Select(n=>n.node.debug_string).join(" <- ")));
+                setter.block.add("post", new Comment("Carving equals: " + endpoint.portal.name));
                 var conditions = get_conditions(expressions[0]);
+                if (portal.type == Kind.reference || portal.type == Kind.list)
+                    expressions = expressions.Reverse().ToArray();
 
-                context.set_pattern("first", expressions[0]);
                 context.set_pattern("condition", conditions);
+                context.set_pattern("first", expressions[0]);
                 context.set_pattern("second", expressions[1]);
                 setter.block.add("post", jack.overlord.summon_snippet(jack.templates["equals"], context));
             }

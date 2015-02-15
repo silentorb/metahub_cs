@@ -281,35 +281,35 @@ namespace metahub.jackolantern.code
 
         public static void size(Constraint constraint, Node expression, JackOLantern jack)
         {
-            var path = constraint.first.get_path();
-            var property_expression = (Property_Node)path[0];
-            var reference = property_expression.tie;
+    //        var path = constraint.first.get_path();
+    //        var property_expression = (Property_Node)path[0];
+    //        var reference = property_expression.tie;
 
-            var instance_name = reference.other_rail.rail_name;
-            var rail = reference.other_rail;
-            Rail local_rail = reference.rail;
-            var dungeon = jack.overlord.get_dungeon(local_rail);
-            var block = dungeon.get_block("initialize");
+    //        var instance_name = reference.other_rail.rail_name;
+    //        var rail = reference.other_rail;
+    //        Rail local_rail = reference.rail;
+    //        var dungeon = jack.overlord.get_dungeon(local_rail);
+    //        var block = dungeon.get_block("initialize");
 
-            //const string child = "child";
-            var new_scope = new Scope(block.scope);
-            var child = new_scope.create_symbol("child", new Signature(Kind.reference, rail));
-            var logic_scope = new Scope();
-            var path1 = constraint.first.get_path();
-            var imp_ref = jack.convert_path(path1.Take(path1.Count - 1).ToArray(), logic_scope);
-            Flow_Control flow_control = new Flow_Control(Flow_Control_Type.While, new Operation("<",
-            new List<Expression>{
-				imp_ref,
-				//{ type: "path", path: constraint.reference },
-				jack.translate(expression, logic_scope)
-        }), new List<Expression> {
-			new Declare_Variable(child, new Instantiate(rail)),
-            Imp.call_initialize(dungeon, jack.overlord.get_dungeon(rail), new Variable(child)),
-			new Function_Call("add_" + reference.tie_name, null,
-			new List<Expression> { new Variable(child), new Null_Value() })
-	});
+    //        //const string child = "child";
+    //        var new_scope = new Scope(block.scope);
+    //        var child = new_scope.create_symbol("child", new Signature(Kind.reference, rail));
+    //        var logic_scope = new Scope();
+    //        var path1 = constraint.first.get_path();
+    //        var imp_ref = jack.convert_path(path1.Take(path1.Count - 1).ToArray(), logic_scope);
+    //        Flow_Control flow_control = new Flow_Control(Flow_Control_Type.While, new Operation("<",
+    //        new List<Expression>{
+    //            imp_ref,
+    //            //{ type: "path", path: constraint.reference },
+    //            jack.translate(expression, logic_scope)
+    //    }), new List<Expression> {
+    //        new Declare_Variable(child, new Instantiate(rail)),
+    //        Imp.call_initialize(dungeon, jack.overlord.get_dungeon(rail), new Variable(child)),
+    //        new Function_Call("add_" + reference.tie_name, null,
+    //        new List<Expression> { new Variable(child), new Null_Value() })
+    //});
 
-            block.add(flow_control);
+    //        block.add(flow_control);
         }
 
     }

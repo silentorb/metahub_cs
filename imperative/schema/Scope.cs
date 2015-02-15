@@ -99,9 +99,9 @@ namespace metahub.imperative.schema
             //return null;
         }
 
-        public Expression resolve(string name)
+        public Expression resolve(string name, summoner.Summoner.Context context)
         {
-            return map[name]();
+            return map[name](context);
         }
     }
 }

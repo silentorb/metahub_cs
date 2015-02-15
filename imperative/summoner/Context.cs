@@ -93,16 +93,17 @@ namespace metahub.imperative.summoner
                 return null;
             }
 
-            public Expression get_expression_pattern(string name)
+            public Expression get_expression_pattern(string name, Context context = null)
             {
+                context = context ?? this;
                 if (expression_lambda_inserts.ContainsKey(name))
-                    return expression_lambda_inserts[name]();
+                    return expression_lambda_inserts[name](context);
 
                 if (expression_inserts.ContainsKey(name))
                     return expression_inserts[name].clone();
 
                 if (parent != null)
-                    return parent.get_expression_pattern(name);
+                    return parent.get_expression_pattern(name, context);
 
                 return null;
             }

@@ -1,13 +1,14 @@
 using System;
 using System.Collections.Generic;
 using metahub.imperative.schema;
+using metahub.imperative.summoner;
 using metahub.logic.schema;
 using metahub.logic.nodes;
 
 namespace metahub.imperative.types
 {
 
-    public delegate Expression Expression_Generator();
+    public delegate Expression Expression_Generator(Summoner.Context context);
 /**
  * @author Christopher W. Johnson
  */

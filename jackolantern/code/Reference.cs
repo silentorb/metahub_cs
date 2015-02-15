@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using metahub.imperative.code;
@@ -16,24 +17,24 @@ namespace metahub.jackolantern.code
     {
         public static void generate_constraint(Constraint constraint, Tie tie, JackOLantern jack)
         {
-            if (constraint.op == "!="
-                        //&& constraint.second.Length == 1 
-                        && constraint.second.type == Node_Type.Null)
-            {
-                not_null((Portal_Expression)jack.convert_path(constraint.first.get_path(), null), jack);
-            }
-            else if (Constraint.circular_operators.Contains(constraint.op))
-            {
-                self_modifying(constraint, tie, jack);
-            }
-            else
-            {
-                var dungeon = jack.overlord.get_dungeon(tie.rail);
-                var block = dungeon.get_block("set_" + tie.tie_name);
-                var constraint_code = Reference.constraint(constraint, tie, jack, block.scope);
-                if (constraint_code != null)
-                    block.add_many("pre", constraint_code);
-            }
+            //if (constraint.op == "!="
+            //            //&& constraint.second.Length == 1 
+            //            && constraint.second.type == Node_Type.Null)
+            //{
+            //    not_null((Portal_Expression)jack.convert_path(constraint.first.get_path(), null), jack);
+            //}
+            //else if (Constraint.circular_operators.Contains(constraint.op))
+            //{
+            //    self_modifying(constraint, tie, jack);
+            //}
+            //else
+            //{
+            //    var dungeon = jack.overlord.get_dungeon(tie.rail);
+            //    var block = dungeon.get_block("set_" + tie.tie_name);
+            //    var constraint_code = Reference.constraint(constraint, tie, jack, block.scope);
+            //    if (constraint_code != null)
+            //        block.add_many("pre", constraint_code);
+            //}
         }
 
         public static void self_modifying(Constraint constraint, Tie tie, JackOLantern jack)
@@ -71,38 +72,39 @@ namespace metahub.jackolantern.code
 
         public static List<Expression> constraint(Constraint constraint, Tie tie, JackOLantern jack, Scope scope)
         {
-            var op = constraint.op;
-            //return new List<Expression>();
-            //var first_last = constraint.first.Last();
-            //if (first_last.type == Node_Type.function_call
-            //    && ((metahub.logic.types.Function_Call)first_last).name == "dist")
-            if (constraint.constraint_scope != null)
-            {
-                switch (constraint.constraint_scope.name)
-                {
-                    case "cross":
-                        return cross(constraint, tie, jack, scope);
-                    case "map":
-                        //List_Code.map(constraint, constraint.second, overlord);
-                        return new List<Expression>();
-                }
+            throw new Exception();
+            //var op = constraint.op;
+            ////return new List<Expression>();
+            ////var first_last = constraint.first.Last();
+            ////if (first_last.type == Node_Type.function_call
+            ////    && ((metahub.logic.types.Function_Call)first_last).name == "dist")
+            //if (constraint.constraint_scope != null)
+            //{
+            //    switch (constraint.constraint_scope.name)
+            //    {
+            //        case "cross":
+            //            return cross(constraint, tie, jack, scope);
+            //        case "map":
+            //            //List_Code.map(constraint, constraint.second, overlord);
+            //            return new List<Expression>();
+            //    }
 
-            }
+            //}
 
-            var reference = jack.translate(constraint.first, scope);
+            //var reference = jack.translate(constraint.first, scope);
 
-            //if (constraint.first.)
+            ////if (constraint.first.)
 
-            if (op == ">=<")
-            {
-                var args = ((metahub.logic.nodes.Array_Expression)constraint.second).children;
-                return generate_constraint(reference, ">=", jack.translate(args[0]))
-                    .Union(
-                        generate_constraint(reference, "<=", jack.translate(args[1]))
-                    ).ToList();
-            }
+            //if (op == ">=<")
+            //{
+            //    var args = ((metahub.logic.nodes.Array_Expression)constraint.second).children;
+            //    return generate_constraint(reference, ">=", jack.translate(args[0]))
+            //        .Union(
+            //            generate_constraint(reference, "<=", jack.translate(args[1]))
+            //        ).ToList();
+            //}
 
-            return generate_constraint(reference, constraint.op, jack.translate(constraint.second));
+            //return generate_constraint(reference, constraint.op, jack.translate(constraint.second));
         }
 
         public static void not_null(Portal_Expression reference, JackOLantern jack)
@@ -168,8 +170,8 @@ namespace metahub.jackolantern.code
 
             var iterator_scope = new Scope(scope);
             var it = iterator_scope.create_symbol("item", new Signature(Kind.reference, property_reference.tie.other_rail));
-            iterator_scope.add_map("a", () => new Variable(it));
-            iterator_scope.add_map("b", () => new Self(dungeon));
+            iterator_scope.add_map("a", c => new Variable(it));
+            iterator_scope.add_map("b", c => new Self(dungeon));
 
             var class_block = dungeon.get_block("class_definition");
             var function_scope = new Scope(class_block.scope);
@@ -235,74 +237,78 @@ namespace metahub.jackolantern.code
 
         public static List<Expression> dist(Constraint constraint, Tie tie, JackOLantern jack, Scope scope, Symbol it, Symbol value)
         {
-            var offset = scope.create_symbol("offset", value.signature);
-            var dungeon = jack.overlord.get_dungeon(tie.rail);
-            var conflict_dungeon = create_conflict_class(constraint, tie.rail, jack);
-            var conflict_nodes = conflict_dungeon.all_portals["nodes"];
-            var conflict = scope.create_symbol("conflict", new Profession(Kind.reference, conflict_dungeon));
-            var mold_tie = tie.rail.get_tie_or_error("mold");
-            var piecemaker_tie = mold_tie.other_rail.get_tie_or_error("piece_maker");
-            var conflicts_tie = piecemaker_tie.other_rail.get_tie_or_error("conflicts");
+            throw new Exception();
+            //var offset = scope.create_symbol("offset", value.signature);
+            //var dungeon = jack.overlord.get_dungeon(tie.rail);
+            //var conflict_dungeon = create_conflict_class(constraint, tie.rail, jack);
+            //var conflict_nodes = conflict_dungeon.all_portals["nodes"];
+            //var conflict = scope.create_symbol("conflict", new Profession(Kind.reference, conflict_dungeon));
+            //var mold_tie = tie.rail.get_tie_or_error("mold");
+            //var piecemaker_tie = mold_tie.other_rail.get_tie_or_error("piece_maker");
+            //var conflicts_tie = piecemaker_tie.other_rail.get_tie_or_error("conflicts");
 
-            return new List<Expression>
-            {
-                Imp.If(Imp.operation(Logician.inverse_operators[constraint.op], 
-                    new Platform_Function("dist", new Variable(it, new Portal_Expression(jack.overlord.get_portal(constraint.endpoints.Last()))),
-                        new List<Expression> { new Variable(value) }),
-                        jack.translate(constraint.second, scope)
-                    ),
-                    new List<Expression>
-                    {
-                        new Declare_Variable(offset, Imp.operation("/", Imp.operation("+",
-                            new Variable(it, new Portal_Expression(jack.overlord.get_portal(constraint.endpoints.Last()))),
-                            new Variable(value)
-                        ), new Literal(2, new Profession(Kind.Float)))),
-                            //new Variable(it, new Property_Function_Call(Property_Function_Type.set, tie, new List<Expression>
-                            //    { Imp.operation("+",
-                            //        new Variable(it, new Property_Expression(constraint.endpoints.Last())),
-                            //        new Variable(offset)) })),
-                            //new Property_Function_Call(Property_Function_Type.set, tie, new List<Expression>
-                            //    { Imp.operation("+", new Variable(value), new Variable(offset)) }),
+            //return new List<Expression>
+            //{
+            //    Imp.If(Imp.operation(Logician.inverse_operators[constraint.op], 
+            //        new Platform_Function("dist", new Variable(it, new Portal_Expression(jack.overlord.get_portal(constraint.endpoints.Last()))),
+            //            new List<Expression> { new Variable(value) }),
+            //            jack.translate(constraint.second, scope)
+            //        ),
+            //        new List<Expression>
+            //        {
+            //            new Declare_Variable(offset, Imp.operation("/", Imp.operation("+",
+            //                new Variable(it, new Portal_Expression(jack.overlord.get_portal(constraint.endpoints.Last()))),
+            //                new Variable(value)
+            //            ), new Literal(2, new Profession(Kind.Float)))),
+            //                //new Variable(it, new Property_Function_Call(Property_Function_Type.set, tie, new List<Expression>
+            //                //    { Imp.operation("+",
+            //                //        new Variable(it, new Property_Expression(constraint.endpoints.Last())),
+            //                //        new Variable(offset)) })),
+            //                //new Property_Function_Call(Property_Function_Type.set, tie, new List<Expression>
+            //                //    { Imp.operation("+", new Variable(value), new Variable(offset)) }),
 
-                            new Declare_Variable(conflict, new Instantiate(conflict_dungeon)),
-                            new Variable(conflict,Imp.setter(conflict_nodes, new Self(dungeon), null, null)),
-                            new Variable(conflict,Imp.setter(conflict_nodes, new Variable(it), null, null)),
-                            new Portal_Expression(jack.overlord.get_portal(mold_tie),
-                                new Portal_Expression(jack.overlord.get_portal(piecemaker_tie),
-                                    Imp.setter(conflicts_tie, new Variable(conflict), null, null)
-                            )),
-                            new Statement("return", Imp.False())
+            //                new Declare_Variable(conflict, new Instantiate(conflict_dungeon)),
+            //                new Variable(conflict,Imp.setter(conflict_nodes, new Self(dungeon), null, null)),
+            //                new Variable(conflict,Imp.setter(conflict_nodes, new Variable(it), null, null)),
+            //                new Portal_Expression(jack.overlord.get_portal(mold_tie),
+            //                    new Portal_Expression(jack.overlord.get_portal(piecemaker_tie),
+            //                        Imp.setter(conflicts_tie, new Variable(conflict), null, null)
+            //                )),
+            //                new Statement("return", Imp.False())
 
-                    })
-            };
+            //        })
+            //};
         }
 
         static Dungeon create_conflict_class(Constraint constraint, Rail rail, JackOLantern jack)
         {
-            var previous = jack.overlord.get_dungeon(rail);
+            throw new Exception();
+            //var previous = jack.overlord.get_dungeon(rail);
 
-            var context = new Summoner.Context(previous.realm);
-            context.set_pattern("Node_Type", new Profession(Kind.reference, previous));
-            context.set_pattern("Class_Name", "Distance_Conflict");
-            context.set_pattern("Class_Name", "Distance_Conflict");
+            //var context = new Summoner.Context(previous.realm);
+            //context.set_pattern("Node_Type", new Profession(Kind.reference, previous));
+            //context.set_pattern("Class_Name", "Distance_Conflict");
+            //context.set_pattern("Class_Name", "Distance_Conflict");
 
-            var result = jack.overlord.summon_dungeon(Piece_Maker.templates["Distance_Conflict"], context);
-            var portal = result.all_portals["nodes"];
-            var scope = new Scope();
-            scope.add_map("a", () => new Portal_Expression(portal) { index = new Literal((int)0) });
-            scope.add_map("b", () => new Portal_Expression(portal) { index = new Literal((int)1) });
-            var imp = result.summon_imp("is_resolved");
-            imp.expressions.Add(new Statement("return",
-                new Operation(constraint.op, new List<Expression>{ 
-                    new Platform_Function("dist", new Portal_Expression(portal, 
-                        new Portal_Expression(jack.overlord.get_portal(constraint.endpoints.Last())))
-                        { index = new Literal((int)0) },
-                        new List<Expression> { new Portal_Expression(portal, new Portal_Expression(jack.overlord.get_portal(constraint.endpoints.Last())
-                            )) { index = new Literal((int)1) } }),
-                    jack.translate(constraint.second, scope)
-                })
-            ));
-            return result;
+            //var result = jack.overlord.summon_dungeon(Piece_Maker.templates["Distance_Conflict"], context);
+            //var portal = result.all_portals["nodes"];
+            //var scope = new Scope();
+            //scope.add_map("a", c => new Portal_Expression(portal) { index = new Literal((int)0) });
+            //scope.add_map("b", c => new Portal_Expression(portal) { index = new Literal((int)1) });
+            //var imp = result.summon_imp("is_resolved");
+            //imp.expressions.Add(new Statement("return",
+            //    new Operation(constraint.op, new List<Expression>{ 
+            //        new Platform_Function("dist", new Portal_Expression(portal, 
+            //            new Portal_Expression(jack.overlord.get_portal(constraint.endpoints.Last())))
+            //            { index = new Literal((int)0) },
+            //            new List<Expression> { new Portal_Expression(portal, new Portal_Expression(jack.overlord.get_portal(constraint.endpoints.Last())
+            //                )) { index = new Literal((int)1) } }),
+            //        jack.translate(constraint.second, scope)
+            //    })
+            //));
+            //return result;
+
+
             //var base_class = overlord.realms["piecemaker"[.dungeons["Conflict"];
             //var result = new Dungeon("Distance_Conflict", overlord, dungeon.realm, base_class);
             //var portal = result.add_portal(new Portal("nodes", Kind.list, result, dungeon));

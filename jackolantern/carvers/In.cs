@@ -69,7 +69,7 @@ namespace metahub.jackolantern.carvers
 
             context.set_pattern("first", value_expression);
 
-            var op = ">";
+            var op = "<";
 
             for (var i = 0; i < 2; ++i)
             {
@@ -77,7 +77,7 @@ namespace metahub.jackolantern.carvers
                 context.set_pattern("second", range[i]);
                 context.set_pattern("third", range[i]);
                 setter.block.add("pre", jack.overlord.summon_snippet(template, context));
-                op = "<";
+                op = ">";
             }
         }
     }

@@ -39,9 +39,6 @@ namespace metahub.jackolantern.carvers
 
             var variables = pumpkin.outputs.OfType<Variable_Node>().ToArray();
 
-            //if (lambda.scope.scope_node == null)
-            //    lambda.scope.scope_node = new Scope_Node(lambda.scope.rail);
-
             foreach (var node in variables)
             {
                 Property_Node property_node;
@@ -78,8 +75,16 @@ namespace metahub.jackolantern.carvers
             var list_expression = swamp.translate_exclusive(list.inputs[0], list, Dir.In);
             context.set_pattern("ref", ref_expression);
             var portal = jack.overlord.get_portal(((Property_Node) list).tie);
-            context.set_pattern("$add", Lantern.add_to_list(list_expression, portal, first_portal.profession, jack));
+            context.set_pattern("$add", on_add_code_sub(list_expression, portal, first_portal, second_portal,setter));
             setter.block.add("post", jack.overlord.summon_snippet(jack.templates["map_on_add"], context));
+        }
+
+        Expression on_add_code_sub(Expression list_expression, Portal portal, Portal first_portal, Portal second_portal, Imp setter)
+        {
+            var context = Lantern.prepare_add_to_list(list_expression, portal, first_portal.profession, jack);
+            context.set_pattern("main_item", new Variable(setter.scope.find_or_exception("item")));
+            context.set_pattern("$link", new Portal_Expression(second_portal));
+            return jack.overlord.summon_snippet(jack.templates["map_add_to_list"], context);
         }
 
         static void point_at(Portal pointer, Portal target)

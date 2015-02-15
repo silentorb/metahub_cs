@@ -251,7 +251,7 @@ namespace metahub.jackolantern.schema
 
                 case Node_Type.variable:
                     var variable = (metahub.logic.nodes.Variable_Node)node;
-                    return context.scope.resolve(variable.name);
+                    return context.scope.resolve(variable.name, context);
 
                 case Node_Type.scope_node:
                     {

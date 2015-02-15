@@ -34,8 +34,6 @@ namespace metahub.jackolantern.carvers
             point_at(first_portal, second_portal);
             point_at(second_portal, first_portal);
 
-            var nodes = aggregate(pumpkin);
-
             var first_parameter = (Parameter_Node)lambda.inputs[0];
             var second_parameter = (Parameter_Node)lambda.inputs[1];
 
@@ -64,8 +62,6 @@ namespace metahub.jackolantern.carvers
                 property_node.disconnect(pumpkin);
             }
 
-            var second_list_portal = jack.overlord.get_portal(second.tie);
-
             on_add_code(first, second, first_portal, second_portal);
             on_add_code(second, first, second_portal, first_portal);
         }
@@ -83,32 +79,6 @@ namespace metahub.jackolantern.carvers
             context.set_pattern("ref", ref_expression);
             var portal = jack.overlord.get_portal(((Property_Node) list).tie);
             context.set_pattern("$add", Lantern.add_to_list(list_expression, portal, first_portal.profession, jack));
-            setter.block.add("post", jack.overlord.summon_snippet(jack.templates["map_on_add"], context));
-        }
-
-        void on_add_code_old(Node list, Node other_list, Portal first_portal, Portal second_portal)
-        {
-            var first_list_portal = jack.overlord.get_portal(((Property_Node)list).tie);
-
-            var setter = jack.get_setter(first_list_portal);
-            var context = new Summoner.Context(setter);
-            var swamp = new Swamp(jack, null, context);
-
-            context.set_pattern("T", first_portal.profession);
-            {
-                var chain = swamp.get_exclusive_chain(list.inputs[0], list, Dir.In);
-                var ref_expression = swamp.render_chain(chain.Take(chain.Count - 1).ToList());
-                context.set_pattern("ref", ref_expression);
-            }
-            context.set_pattern("list", swamp.translate_exclusive(list.inputs[0], list, Dir.In));
-            if (setter.parameters.Count > 0)
-            {
-                context.set_pattern("hub", new Variable(setter.parameters[0].symbol));
-            }
-            else
-            {
-                context.set_pattern("hub", "");
-            }
             setter.block.add("post", jack.overlord.summon_snippet(jack.templates["map_on_add"], context));
         }
 

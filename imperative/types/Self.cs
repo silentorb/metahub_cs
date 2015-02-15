@@ -23,5 +23,10 @@ namespace metahub.imperative.types
         {
             return new Profession(Kind.reference, dungeon);
         }
+
+        public override Expression clone()
+        {
+            return new Self(dungeon, child != null ? child.clone() : null);
+        }
     }
 }

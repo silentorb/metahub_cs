@@ -10,5 +10,9 @@ namespace metahub.imperative.types
         {
         }
 
+        public override Expression clone()
+        {
+            return new Null_Value();
+        }
     }
 }

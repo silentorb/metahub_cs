@@ -275,53 +275,58 @@ namespace metahub.imperative.summoner
 
                 Portal portal = null;
                 Expression next = null;
-                var symbol = context.scope.find_or_null(token);
-                if (symbol != null)
+
+                var insert = context.get_expression_pattern(token);
+                if (insert != null)
                 {
-                    next = new Variable(symbol) { index = array_access };
-                    var profession = next.get_profession();
-                    if (profession != null)
-                        dungeon = profession.dungeon;
-                    else
-                    {
-                        var rail = next.get_signature().rail;
-                        if (rail != null)
-                            dungeon = overlord.get_dungeon(rail);
-                    }
+                    next = insert;
                 }
                 else
                 {
-                    if (dungeon != null)
-                        portal = dungeon.get_portal_or_null(token);
-
-                    if (portal != null)
+                    var symbol = context.scope.find_or_null(token);
+                    if (symbol != null)
                     {
-                        next = new Portal_Expression(portal) { index = array_access };
-                        dungeon = portal.other_dungeon;
+                        next = new Variable(symbol) { index = array_access };
+                        var profession = next.get_profession();
+                        if (profession != null)
+                            dungeon = profession.dungeon;
+                        else
+                        {
+                            var rail = next.get_signature().rail;
+                            if (rail != null)
+                                dungeon = overlord.get_dungeon(rail);
+                        }
                     }
                     else
                     {
-                        var func = process_function_call(dungeon, token, result, last, args);
-                        if (func != null)
+                        if (dungeon != null)
+                            portal = dungeon.get_portal_or_null(token);
+
+                        if (portal != null)
                         {
-                            if (func.type == Expression_Type.property_function_call)
-                            {
-                                if (last.parent != null)
-                                {
-                                    last.parent.child = null;
-                                    last = last.parent;
-                                }
-                                next = func;
-                            }
-                            else
-                                return func;
+                            next = new Portal_Expression(portal) { index = array_access };
+                            dungeon = portal.other_dungeon;
                         }
                         else
                         {
-                            var insert = context.get_expression_pattern(token);
-                            if (insert != null)
+                            var func = process_function_call(dungeon, token, result, last, args);
+                            if (func != null)
                             {
-                                next = insert;
+                                if (func.type == Expression_Type.property_function_call)
+                                {
+                                    if (last.parent != null)
+                                    {
+                                        last.parent.child = null;
+                                        last = last.parent;
+                                    }
+                                    else
+                                    {
+                                        return func;
+                                    }
+                                    next = func;
+                                }
+                                else
+                                    return func;
                             }
                             else
                             {
@@ -357,7 +362,7 @@ namespace metahub.imperative.summoner
 
             if (Imp.platform_specific_functions.Contains(token))
             {
-                if (token == "add")
+                if (token == "add" || token == "setter")
                     return new Property_Function_Call(Property_Function_Type.set, ((Portal_Expression)last).portal, args);
 
                 return new Platform_Function(token, result, args);

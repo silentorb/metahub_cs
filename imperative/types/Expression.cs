@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using metahub.imperative.schema;
 using metahub.logic.schema;
 using metahub.logic.nodes;
@@ -55,9 +56,34 @@ public class Expression {
         return result;
     }
 
+    public List<Expression> get_chain()
+    {
+        var result = new List<Expression>();
+        var current = this;
+        while (current != null && (current.type == Expression_Type.property || current.type == Expression_Type.portal))
+        {
+            result.Add(current);
+            current = current.child;
+        }
+
+        return result;
+    }
+
     public virtual Expression clone()
     {
         throw new Exception("Not implemented.");
+    }
+
+    public void disconnect_parent()
+    {
+        if (parent == null)
+            throw new Exception("Cannot disconnect parent.");
+
+        if (parent.child != this)
+            throw new Exception("parent child mixup.");
+
+        parent.child = null;
+        parent = null;
     }
 }
 //struct Node {

@@ -19,7 +19,8 @@ namespace metahub.imperative.schema
                 "last",
                 "pop",
                 "remove",
-                "rand"
+                "rand",
+                "setter"
             };
 
         public string name;

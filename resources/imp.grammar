@@ -2,7 +2,7 @@
 
 snippet = trim snippet_option final_trim
 
-snippet_option = class | abstract_function | function_definition | statements
+snippet_option = class | abstract_function | statements
 
 statements = @(statement, semicolon_or_newline, 1, 0)
 

@@ -5,8 +5,6 @@ using System.Text;
 using metahub.imperative.schema;
 using metahub.imperative.summoner;
 using metahub.imperative.types;
-using metahub.jackolantern.schema;
-using metahub.logic.nodes;
 
 namespace metahub.jackolantern.code
 {
@@ -18,10 +16,11 @@ namespace metahub.jackolantern.code
             var context = new Summoner.Context(setter);
             context.set_pattern("T", profession);
             context.set_pattern("list", list_expression);
+            context.set_pattern("origin", new Self(setter.dungeon));
 
             if (setter.parameters.Count > 0)
             {
-                context.set_pattern("hub", new Variable(setter.parameters[0].symbol));
+                context.set_pattern("hub", new Portal_Expression(setter.dungeon.all_portals["hub"]));
             }
             else
             {

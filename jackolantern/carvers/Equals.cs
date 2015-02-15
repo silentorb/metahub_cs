@@ -2,13 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using metahub.imperative.schema;
 using metahub.imperative.summoner;
 using metahub.imperative.types;
 using metahub.jackolantern.schema;
-using metahub.jackolantern.tools;
 using metahub.logic.nodes;
-using metahub.render;
 
 namespace metahub.jackolantern.carvers
 {
@@ -31,7 +28,7 @@ namespace metahub.jackolantern.carvers
             if (aggregate(pumpkin).OfType<Function_Node>().Any(n => !n.is_operation && !container_functions.Contains(n.name)))
                 return;
 
-            var endpoints = get_endpoints3(pumpkin, false);
+            var endpoints = get_endpoints3(pumpkin);
             foreach (var endpoint in endpoints)
             {
                 var portal = endpoint.portal;
@@ -42,10 +39,31 @@ namespace metahub.jackolantern.carvers
 
                 //setter.block.add("post", new Comment("Carving equals: " + endpoint.portal.name + ": " 
                 //    + swamp.get_exclusive_chain(parent, lvalue, Dir.In).Select(n=>n.node.debug_string).join(" <- ")));
+                var conditions = get_conditions(expressions[0]);
+
                 context.set_pattern("first", expressions[0]);
+                context.set_pattern("condition", conditions);
                 context.set_pattern("second", expressions[1]);
                 setter.block.add("post", jack.overlord.summon_snippet(jack.templates["equals"], context));
             }
+        }
+
+        static Operation get_conditions(Expression start)
+        {
+            var expression = start;
+            var conditions = new List<Expression>();
+            if (expression.child == null)
+                throw new Exception("Child expression cannot be null.");
+
+            do
+            {
+                expression = expression.clone();
+                expression.get_end().disconnect_parent();
+                conditions.Insert(0, new Operation("!=", new[] { expression, new Null_Value() }));
+            }
+            while (expression.child != null);
+
+            return new Operation("&&", conditions);
         }
     }
 }

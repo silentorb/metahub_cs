@@ -3,18 +3,20 @@ if (item != null && list.contains(item) == false) {
 	list += item
 }
 
-@@@equals(first, second)
-first = second
+@@@equals(condition, first, second)
+if (condition) {
+	first = second
+}
 
 @@@map_on_add(ref, $add)
-if (ref != null) {
+if (ref != null && origin != ref) {
 	$add
 }
 
-@@@add_to_list(T, list_add, hub)
+@@@add_to_list(T, list_add, hub, origin)
 var item:T = new T()
 item.initialize(hub)
-list = item
+list.setter(item, origin)
 
 @@@value_constraint_check($op, first, second, third)
 if (first $op second) {

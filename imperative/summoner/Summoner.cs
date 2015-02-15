@@ -306,8 +306,11 @@ namespace metahub.imperative.summoner
                         {
                             if (func.type == Expression_Type.property_function_call)
                             {
-                                last.parent.child = null;
-                                last = last.parent;
+                                if (last.parent != null)
+                                {
+                                    last.parent.child = null;
+                                    last = last.parent;
+                                }
                                 next = func;
                             }
                             else

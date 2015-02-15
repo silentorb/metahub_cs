@@ -11,10 +11,10 @@ if (ref != null) {
 	$add
 }
 
-@@@add_to_list(T, list, hub)
+@@@add_to_list(T, list_add, hub)
 var item:T = new T()
 item.initialize(hub)
-list.add(item)
+list = item
 
 @@@value_constraint_check($op, first, second, third)
 if (first $op second) {

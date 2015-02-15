@@ -49,11 +49,11 @@ namespace metahub.jackolantern.carvers
                 Property_Node property_node;
                 if (node.name == first_parameter.name)
                 {
-                    property_node = new Property_Node(second_portal.tie);
+                    property_node = new Property_Node(first_portal.tie);
                 }
                 else if (node.name == second_parameter.name)
                 {
-                    property_node = new Property_Node(first_portal.tie);
+                    property_node = new Property_Node(second_portal.tie);
                 }
                 else
                 {
@@ -77,21 +77,37 @@ namespace metahub.jackolantern.carvers
             var setter = jack.get_setter(first_list_portal);
             var context = new Summoner.Context(setter);
             var swamp = new Swamp(jack, null, context);
+            var chain = swamp.get_exclusive_chain(list.inputs[0], list, Dir.In);
+            var ref_expression = swamp.render_chain(chain.Take(chain.Count - 1).ToList());
+            var list_expression = swamp.translate_exclusive(list.inputs[0], list, Dir.In);
+            context.set_pattern("ref", ref_expression);
+            var portal = jack.overlord.get_portal(((Property_Node) list).tie);
+            context.set_pattern("$add", Lantern.add_to_list(list_expression, portal, first_portal.profession, jack));
+            setter.block.add("post", jack.overlord.summon_snippet(jack.templates["map_on_add"], context));
+        }
 
-            context.add_pattern("T", first_portal.profession);
+        void on_add_code_old(Node list, Node other_list, Portal first_portal, Portal second_portal)
+        {
+            var first_list_portal = jack.overlord.get_portal(((Property_Node)list).tie);
+
+            var setter = jack.get_setter(first_list_portal);
+            var context = new Summoner.Context(setter);
+            var swamp = new Swamp(jack, null, context);
+
+            context.set_pattern("T", first_portal.profession);
             {
                 var chain = swamp.get_exclusive_chain(list.inputs[0], list, Dir.In);
                 var ref_expression = swamp.render_chain(chain.Take(chain.Count - 1).ToList());
-                context.add_pattern("ref", ref_expression);
+                context.set_pattern("ref", ref_expression);
             }
-            context.add_pattern("list", swamp.translate_exclusive(list.inputs[0], list, Dir.In));
+            context.set_pattern("list", swamp.translate_exclusive(list.inputs[0], list, Dir.In));
             if (setter.parameters.Count > 0)
             {
-                context.add_pattern("hub", new Variable(setter.parameters[0].symbol));
+                context.set_pattern("hub", new Variable(setter.parameters[0].symbol));
             }
             else
             {
-                context.add_pattern("hub", "");
+                context.set_pattern("hub", "");
             }
             setter.block.add("post", jack.overlord.summon_snippet(jack.templates["map_on_add"], context));
         }

@@ -68,4 +68,11 @@ public class Literal : Expression {
     {
         return new Literal(value, profession);
     }
+
+    public float get_float()
+    {
+        return profession.type == Kind.Int 
+            ? (int) value 
+            : (float) value;
+    }
 }}

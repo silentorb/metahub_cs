@@ -145,7 +145,22 @@ namespace metahub.imperative.summoner
 
         List<Expression> process_block(Pattern_Source source, Context context)
         {
-            return source.patterns.Select(p => process_statement(p, context)).ToList();
+            var result = new List<Expression>();
+            foreach (var pattern in source.patterns)
+            {
+                var expression = process_statement(pattern, context);
+                if (expression.type == Expression_Type.statements)
+                {
+                    var statements = (Statements)expression;
+                    result.AddRange(statements.children);
+                }
+                else
+                {
+                    result.Add(expression);
+                }
+            }
+
+            return result;
         }
 
         public Expression process_statement(Pattern_Source source, Context context)
@@ -160,6 +175,11 @@ namespace metahub.imperative.summoner
 
                 case "if":
                     return new Flow_Control(Flow_Control_Type.If, process_expression(source.patterns[4], context),
+                        process_block(source.patterns[8], context)
+                    );
+
+                case "while":
+                    return new Flow_Control(Flow_Control_Type.While, process_expression(source.patterns[4], context),
                         process_block(source.patterns[8], context)
                     );
 
@@ -196,7 +216,10 @@ namespace metahub.imperative.summoner
                 return process_expression_part(source.patterns[0], context);
 
             if (source.patterns.Length == 2)
-                return new Operation(source.text, source.patterns.Select(p => process_expression_part(p, context)));
+            {
+                var op = context.get_string_pattern(source.text) ?? source.text;
+                return new Operation(op, source.patterns.Select(p => process_expression_part(p, context)));
+            }
 
             throw new Exception("Not supported.");
         }

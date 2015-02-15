@@ -30,8 +30,8 @@ namespace metahub.jackolantern.carvers
                 var initialize = jack.get_initialize(endpoint.dungeon);
                 var context = new Summoner.Context(initialize);
                 var swamp = new Swamp(jack, pumpkin, context);
-                context.add_pattern("list", () => swamp.translate_inclusive(list, null, Dir.Out));
-                context.add_pattern("item", () => swamp.translate_inclusive(item, null, Dir.Out));
+                context.set_pattern("list", () => swamp.translate_inclusive(list, null, Dir.Out));
+                context.set_pattern("item", () => swamp.translate_inclusive(item, null, Dir.Out));
                 initialize.block.add(jack.overlord.summon_snippet(jack.templates["contains"], context));
             }
         }

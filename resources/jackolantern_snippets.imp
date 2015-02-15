@@ -2,11 +2,29 @@
 if (item != null && list.contains(item) == false) {
 	list += item
 }
+
 @@@equals(first, second)
 first = second
-@@@map_on_add(T, ref, list, hub)
+
+@@@map_on_add(ref, $add)
 if (ref != null) {
-	var item:T = new T()
-	item.initialize(hub)
-	list.add(item)
+	$add
+}
+
+@@@add_to_list(T, list, hub)
+var item:T = new T()
+item.initialize(hub)
+list.add(item)
+
+@@@value_constraint_check($op, first, second, third)
+if (first $op second) {
+	first = third
+}
+
+@@@initialize_random_range(prop, min, max)
+prop = rand(min, max)
+
+@@@initialize_count(list, size, $add)
+while(list.count() < size) {
+	$add
 }

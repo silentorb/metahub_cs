@@ -7,6 +7,7 @@ using metahub.imperative.schema;
 using metahub.imperative.summoner;
 using metahub.imperative.types;
 using metahub.jackolantern.code;
+using metahub.jackolantern.tools;
 using metahub.logic;
 using metahub.logic.nodes;
 using metahub.logic.schema;
@@ -122,9 +123,9 @@ namespace metahub.jackolantern.schema
             }
 
             var result = render_chain(chain);
-            if (result == null)
-                throw new Exception("Could not render node chain.");
-            
+            //if (result == null)
+            //    throw new Exception("Could not render node chain.");
+
             return result;
         }
 
@@ -186,16 +187,31 @@ namespace metahub.jackolantern.schema
                 }
             }
 
-            if (result == end)
-                return null;
-
-            if (result.type == Node_Type.bounce)
+            while (true)
             {
-                if (is_backwards)
+                if (result == end)
                     return null;
 
-                dir = Dir.Out;
-                result = result.outputs.First(o => o != node).outputs.First();
+                if (result.type == Node_Type.bounce)
+                {
+                    if (is_backwards)
+                        return null;
+
+                    dir = Dir.Out;
+                    result = result.outputs.First(o => o != node).outputs.First();
+                }
+                else if (result.type == Node_Type.property && dir == Dir.In)
+                {
+                    var property_node = (Property_Node) result;
+                    if (property_node.tie.rail.trellis.is_value)
+                        result = property_node.inputs[0];
+                    else 
+                        break;
+                }
+                else
+                {
+                    break;
+                }
             }
 
             if (result.type == Node_Type.function_call)
@@ -222,8 +238,8 @@ namespace metahub.jackolantern.schema
                         var property_node = (Property_Node)node;
                         var tie = dir == Dir.Out
                                       ? property_node.tie
-                                      //: ((Property_Node)previous).tie.other_tie;
-                                      : ((Property_Node) previous).tie.rail.get_reference(property_node.tie.other_rail)
+                            //: ((Property_Node)previous).tie.other_tie;
+                                      : ((Property_Node)previous).tie.rail.get_reference(property_node.tie.other_rail)
                                       ?? ((Property_Node)previous).tie.other_tie;
 
                         if (tie == null)
@@ -240,11 +256,23 @@ namespace metahub.jackolantern.schema
                 case Node_Type.scope_node:
                     {
                         var property_node = (Property_Node)previous;
-                        var scope_node = (Scope_Node) node;
+                        var scope_node = (Scope_Node)node;
 
-                        var tie = scope_node.rail == property_node.tie.rail
-                            ? property_node.tie.other_tie
-                            : property_node.tie.rail.get_reference(scope_node.rail);
+                        Tie tie;
+                        if (scope_node.rail == property_node.tie.rail)
+                        {
+                            if (property_node.tie.other_rail.trellis.is_value)
+                                return null;
+
+                            tie = property_node.tie.other_tie;
+                        }
+                        else
+                        {
+                            tie = property_node.tie.rail.get_reference(scope_node.rail);
+                        }
+              
+                        if (tie == null)
+                            throw new Exception("Tie cannot be null.");
 
                         return new Portal_Expression(jack.overlord.get_portal(tie));
                     }
@@ -330,7 +358,7 @@ namespace metahub.jackolantern.schema
                 if (next == null || (next.type == Node_Type.function_call && ((Function_Node)next).is_operation))
                     break;
 
-                result.Add(new Node_Link(next, dir, previous));
+                result.Add(new Node_Link(next, dir, node));
                 previous = node;
                 node = next;
             } while (true);
@@ -365,6 +393,9 @@ namespace metahub.jackolantern.schema
             foreach (var link in links)
             {
                 var expression = get_expression(link.node, link.previous, link.dir);
+                if (expression == null)
+                    continue;
+
                 if (result == null)
                 {
                     result = expression;
@@ -387,6 +418,33 @@ namespace metahub.jackolantern.schema
                 expression = expression.child;
             }
             return expression;
+        }
+
+        public Expression[] get_expression_pair(Node node)
+        {
+            var original_target = get_exclusive_chain(node, null, Dir.In);
+            var transform = Transform.center_on(original_target.Last().node);
+            var new_target = transform.get_transformed(original_target.Last().node);
+            var lvalue = transform.get_transformed(node);
+            var rvalue = transform.get_transformed(end).get_other_input(new_target);
+            var parent = lvalue.inputs[0];
+            var lexpression = translate_exclusive(parent, lvalue, Dir.In);
+            var rexpression = translate_backwards(rvalue, null);
+            var has_transforms = end.aggregate(Dir.In).OfType<Function_Node>().Any(n => n.is_operation);
+
+            return has_transforms
+                ? new[] { lexpression, rexpression }
+                : new[] { rexpression, lexpression };
+        }
+
+        public static Node[] get_inputs_in_relation_to(Node pumpkin, Node primary)
+        {
+            if (pumpkin.inputs.Count != 2)
+                throw new Exception("get_inputs_in_relation_to requires an endpoint with 2 nodes.");
+
+            return pumpkin.inputs[0].aggregate(Dir.In).Contains(primary)
+                ? pumpkin.inputs.ToArray()
+                : new [] { pumpkin.inputs[1], pumpkin.inputs[0] };
         }
 
     }

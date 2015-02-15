@@ -47,25 +47,25 @@ namespace metahub.imperative.summoner
                 scope = parent.scope;
             }
 
-            public Profession add_pattern(string name, Profession profession)
+            public Profession set_pattern(string name, Profession profession)
             {
                 profession_inserts[name] = profession;
                 return profession;
             }
 
-            public string add_pattern(string name, string text)
+            public string set_pattern(string name, string text)
             {
                 string_inserts[name] = text;
                 return text;
             }
 
-            public Expression_Generator add_pattern(string name, Expression_Generator generator)
+            public Expression_Generator set_pattern(string name, Expression_Generator generator)
             {
                 expression_lambda_inserts[name] = generator;
                 return generator;
             }
 
-            public Expression add_pattern(string name, Expression generator)
+            public Expression set_pattern(string name, Expression generator)
             {
                 expression_inserts[name] = generator;
                 return generator;

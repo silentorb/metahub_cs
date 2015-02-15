@@ -16,7 +16,7 @@ comma = trim "," trim
 spaces = /[ \t]+/
 dot = "."
 path_separator = "."
-id = /[a-zA-Z0-9_]+/
+id = /[\$a-zA-Z0-9_]+/
 comma_or_newline = /\s*((\s*\n)+|,)\s*/
 semicolon_or_newline = /\s*((\s*\n)+|;)\s*/
 
@@ -24,7 +24,7 @@ string = ('"' /[^"]*/ '"') | ("'" /[^']*/ "'")
 bool = "true" | "false"
 int = /-?[0-9]+/
 float = /-?([0-9]*\.)?[0-9]+f?/
-operator = '+' | '-' | '/' | '*' | '<=' | '>=' | '<' | '>' | '==' | '!=' | '&&' | '||'
+operator = '+' | '-' | '/' | '*' | '<=' | '>=' | '<' | '>' | '==' | '!=' | '&&' | '||' | /\$\w+/
 set_operator = '=' | '+=' | '-=' | '*=' | '/='
 value = string | bool | int | float
 operation_separator = trim operator trim
@@ -50,6 +50,7 @@ optional_list_suffix = trim "[" trim "]"
 statement =
 	declare_variable
 	| if
+	| while
 	| return
 	| for
 	| assignment
@@ -89,6 +90,8 @@ short_block = one_or_no_newline statement
 long_block = "{" trim @(statement, semicolon_or_newline, 0, 0) trim "}"
 
 if = "if" trim "(" trim expression trim ")" trim block
+
+while = "while" trim "(" trim expression trim ")" trim block
 
 optional_expression = spaces expression
 

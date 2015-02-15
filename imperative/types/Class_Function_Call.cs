@@ -36,6 +36,11 @@ namespace metahub.imperative.types
                 ? new Profession(imp.return_type, imp.dungeon.overlord)
                 : profession;
         }
+
+        public override Expression clone()
+        {
+            return new Class_Function_Call(imp, reference, args);
+        }
     }
 
 }

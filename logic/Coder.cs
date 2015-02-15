@@ -365,12 +365,21 @@ namespace metahub.logic
             };
 
             var arg_nodes = new List<Node>();
-            if (name == "map")
+            if (args != null)
             {
-                arg_nodes.Add(convert_expression2(args[0], function_scope));
+                foreach (var arg in args)
+                {
+                    //if (arg.type == "lambda")
+                    //    break;
+
+                    if (arg.type == "expression" && arg.patterns.Any(p => p.type == "lambda"))
+                        break;
+
+                    arg_nodes.Add(convert_expression2(arg, function_scope));
+                }
             }
 
-            var function_signature = prepare_function_scope_signature(name, function_scope, arg_nodes.Concat(new [] { previous }).ToArray());
+            var function_signature = prepare_function_scope_signature(name, function_scope, new [] { previous }.Concat(arg_nodes).ToArray());
 
             var result = logician.call(name, new Node[] { previous }, scope);
             function_scope.parent_function = result;

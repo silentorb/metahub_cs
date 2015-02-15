@@ -212,42 +212,22 @@ namespace metahub.parser
         public static Pattern_Source expression(Pattern_Source data, Repetition_Match match)
         {
             if (data.patterns.Length < 2)
-                //return data;
                 return data;
 
             var rep_match = match;
-            //string op = rep_match.dividers[0].matches[1].get_data().text;
             var dividers = rep_match.dividers
                 .Select(d => d.matches.First(m => m.pattern.name != "trim").get_data().text).ToList();
 
-            //var has_operators = false;
-
-            //for (var i = 1; i < data.patterns.Length; ++i)
-            //{
-            //    var divider = dividers[i - 1];
-            //    if (divider == "|" || divider == "," || )
-            //    {
-            //        data.patterns[i].type = "function";
-            //    }
-            //    else if (divider != ".")
-            //    {
-            //        has_operators = true;
-            //        break;
-            //    }
-            //}
-
-            //if (!has_operators)
-                //return data;
-
             var patterns = data.patterns.ToList();
-            group_operators(new [] { "/", "*" }, patterns, dividers);
-            group_operators(new [] { "+", "-" }, patterns, dividers);
+            group_operators(new[] { "/", "*" }, patterns, dividers);
+            group_operators(new[] { "+", "-" }, patterns, dividers);
+            group_operators(new[] { ".." }, patterns, dividers);
             data.patterns = patterns.ToArray();
 
             return data;
         }
 
-       public static void group_operators(string[] operators, List<Pattern_Source> patterns, List<string> dividers)
+        public static void group_operators(string[] operators, List<Pattern_Source> patterns, List<string> dividers)
         {
             var i = 0;
             for (var d = 0; d < dividers.Count; ++d)
@@ -275,208 +255,5 @@ namespace metahub.parser
                 }
             }
         }
-
-        //static Parser_Condition condition(Pattern_Source data)
-        //{
-        //    return new Parser_Condition
-        //        {
-        //            type = "condition",
-        //            first = (Parser_Item)data.patterns[0],
-        //            op = ((object[])data.patterns[2])[0].ToString(),
-        //            //"op"= Std.string(function_map[data.patterns[2][0]]),
-        //            second = (Parser_Item)data.patterns[4]
-        //        };
-        //}
-
-        //static object optional_block(Pattern_Source data)
-        //{
-        //    return data.patterns[1];
-        //}
-
-        //static object conditions(Pattern_Source data, Match match)
-        //{
-        //    var rep_match = (Repetition_Match)match;
-        //    if (data.Length > 1)
-        //    {
-        //        string symbol = rep_match.dividers[0].matches[1].get_data().text;
-        //        string divider = null;
-        //        switch (symbol)
-        //        {
-
-        //            case "&&": divider = "and";
-        //                break;
-
-        //            case "||": divider = "or";
-        //                break;
-
-        //            default: throw new Exception("Invalid condition group joiner: " + symbol + ".");
-        //        }
-        //        return new Parser_Conditions
-        //            {
-        //                type = "conditions",
-        //                conditions = (Parser_Condition[])data,
-        //                mode = divider
-        //            };
-        //    }
-        //    else
-        //    {
-        //        //throw new Exception("Not implemented.");
-        //        return data.patterns[0];
-        //    }
-        //}
-
-        //static object condition_block(Pattern_Source data)
-        //{
-        //    return data.patterns[2];
-        //}
-
-        //static Parser_If if_statement(Pattern_Source data)
-        //{
-        //    return new Parser_If
-        //        {
-        //            type = "if",
-        //            condition = (Parser_Condition)data.patterns[2],
-        //            action = (Parser_Item)data.patterns[4]
-        //        };
-        //}
-
-        //static Parser_Constraint create_constraint(Pattern_Source data)
-        //{
-        //    return new Parser_Constraint
-        //    {
-        //        type = "specific_constraint",
-        //        path = (Parser_Item)data.patterns[0],
-        //        expression = (Parser_Item)data.patterns[4]
-        //    };
-        //}
-
-        //static object reference(Pattern_Source data, Repetition_Match match)
-        //{
-        //    var dividers = match.dividers.Select((d) => d.matches[0].get_data());
-        //    //
-        //    //if (data.Count == 1) {
-        //    //return {
-        //    //type= "reference",
-        //    //path= [ data.patterns[0] ]
-        //    //}
-        //    //}
-
-        //    var tokens = new List<Parser_Item>();
-        //    throw new Exception();
-
-        //    return new Parser_Block
-        //    {
-        //        type = "path",
-        //        expressions = tokens.ToArray()
-        //    };
-        //}
-
-        //static object long_block(Pattern_Source data)
-        //{
-        //    return new Parser_Block
-        //    {
-        //        type = "block",
-        //        expressions = (Parser_Item[])data.patterns[2]
-        //    };
-        //}
-
-        //static object set_property(Pattern_Source data)
-        //{
-        //    var result = new Parser_Assignment
-        //    {
-        //        type = "set_property",
-        //        path = (Parser_Item)data.patterns[0],
-        //        expression = (Parser_Item)data.patterns[6],
-        //    };
-
-        //    var modifier = (object[])data.patterns[4];
-
-        //    if (modifier.Length > 0)
-        //        result.modifier = modifier[0].ToString();
-
-        //    return result;
-        //}
-
-        //static object set_weight(Pattern_Source data)
-        //{
-        //    return new Parser_Set_Weight
-        //        {
-        //            type = "weight",
-        //            weight = (float)data.patterns[0],
-        //            statement = (Parser_Item)data.patterns[4]
-        //        };
-        //}
-
-        //static object value(object data)
-        //{
-        //    return new Parser_Literal
-        //    {
-        //        type = "literal",
-        //        value = data
-        //    };
-        //}
-
-        //static object new_scope(Pattern_Source data)
-        //{
-        //    return new Parser_Scope
-        //    {
-        //        type = "new_scope",
-        //        path = (string[])data.patterns[0],
-        //        expression = (Parser_Item)data.patterns[2]
-        //    };
-        //}
-
-        //static object constraint_block(Pattern_Source data)
-        //{
-        //    return data.patterns[2];
-        //}
-
-        //static object constraint(Pattern_Source data)
-        //{
-        //    return new Parser_Constraint
-        //    {
-        //        type = "constraint",
-        //        reference = (Parser_Item)data.patterns[0],
-        //        //op= Std.string(function_map[data.patterns[2]]),
-        //        op = (string)data.patterns[2],
-        //        expression = (Parser_Item)data.patterns[4],
-        //        lambda = (Parser_Lambda) ((object[])data.patterns[5])[0]
-        //    };
-        //}
-
-        //static object array_expression(Pattern_Source data)
-        //{
-        //    return new Parser_Block
-        //    {
-        //        type = "array",
-        //        expressions = (Parser_Item[])data.patterns[2]
-        //    };
-        //}
-
-        //static object lambda_expression(Pattern_Source data)
-        //{
-        //    return new Parser_Lambda
-        //    {
-        //        type = "lambda",
-        //        parameters = (string[])data.patterns[1],
-        //        expressions = ((Parser_Block)data.patterns[3]).expressions
-        //    };
-        //}
-
-        //static object parameters(Pattern_Source data)
-        //{
-        //    return data.patterns[2];
-        //}
-
-        //static object function_scope(Pattern_Source data)
-        //{
-        //    return new Parser_Function_Scope
-        //    {
-        //        type = "function_scope",
-        //        expression =(Parser_Item) data.patterns[0],
-        //        lambda =(Parser_Lambda) data.patterns[1]
-        //    };
-        //}
-
     }
 }

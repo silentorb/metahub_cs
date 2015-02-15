@@ -54,17 +54,11 @@ namespace metahub.jackolantern.carvers
                 .Select(p=>jack.overlord.get_portal(p.tie));
         }
 
-        //public IEnumerable<Portal> get_endpoints2(Node start)
-        //{
-        //    return aggregate2(start)
-        //        .OfType<Property_Reference>()
-        //        .Select(p => jack.overlord.get_portal(p.tie));
-        //}
-
         public IEnumerable<Endpoint> get_endpoints3(Node start, bool include_self = false)
         {
             return aggregate(start, include_self)
                 .OfType<Property_Node>()
+                .Where(p=> !p.tie.rail.trellis.is_value)
                 .Select(p => new Endpoint(p, jack.overlord.get_portal(p.tie)));
         }
 

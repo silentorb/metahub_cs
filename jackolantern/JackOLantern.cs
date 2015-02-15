@@ -39,6 +39,8 @@ namespace metahub.jackolantern
         {
             carvers["="] = new Equals(this);
             carvers["contains"] = new Contains(this);
+            carvers["count"] = new Count(this);
+            carvers["in"] = new In(this);
             carvers["map"] = new Map(this);
         }
 

@@ -1035,8 +1035,8 @@ namespace metahub.render.targets.cpp
                     }
 
                 case "rand":
-                    float min = (float)((Literal)expression.args[0]).value;
-                    float max = (float)((Literal)expression.args[1]).value;
+                    float min = ((Literal)expression.args[0]).get_float();
+                    float max = ((Literal)expression.args[1]).get_float();
                     return "rand() % " + (max - min) + (min < 0 ? " - " + -min : " + " + min);
 
                 default:

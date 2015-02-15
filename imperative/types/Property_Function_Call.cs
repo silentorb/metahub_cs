@@ -41,6 +41,14 @@ namespace metahub.imperative.types
             this.reference = reference;
             return this;
         }
+
+        public override Expression clone()
+        {
+            return new Property_Function_Call(function_type, portal, args)
+                {
+                    reference = reference
+                };
+        }
     }
 
 }

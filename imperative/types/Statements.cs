@@ -15,5 +15,9 @@ namespace metahub.imperative.types
             this.children = children;
         }
 
+        public override Expression clone()
+        {
+            return new Statements(children.Select(c => c.clone()).ToList());
+        }
     }
 }

@@ -282,9 +282,9 @@ namespace metahub.jackolantern.code
             var previous = jack.overlord.get_dungeon(rail);
 
             var context = new Summoner.Context(previous.realm);
-            context.add_pattern("Node_Type", new Profession(Kind.reference, previous));
-            context.add_pattern("Class_Name", "Distance_Conflict");
-            context.add_pattern("Class_Name", "Distance_Conflict");
+            context.set_pattern("Node_Type", new Profession(Kind.reference, previous));
+            context.set_pattern("Class_Name", "Distance_Conflict");
+            context.set_pattern("Class_Name", "Distance_Conflict");
 
             var result = jack.overlord.summon_dungeon(Piece_Maker.templates["Distance_Conflict"], context);
             var portal = result.all_portals["nodes"];

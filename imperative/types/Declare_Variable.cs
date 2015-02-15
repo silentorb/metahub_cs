@@ -15,6 +15,11 @@ namespace metahub.imperative.types
             this.symbol = symbol;
             this.expression = expression;
         }
+
+        public override Expression clone()
+        {
+            return new Declare_Variable(symbol, expression);
+        }
     }
 
 }

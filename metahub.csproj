@@ -82,6 +82,7 @@
     <Compile Include="imperative\types\Iterator.cs" />
     <Compile Include="imperative\types\Statements.cs" />
     <Compile Include="jackolantern\carvers\Contains.cs" />
+    <Compile Include="jackolantern\carvers\Cross.cs" />
     <Compile Include="jackolantern\carvers\Count.cs" />
     <Compile Include="jackolantern\carvers\Equals.cs" />
     <Compile Include="jackolantern\carvers\Carver.cs" />

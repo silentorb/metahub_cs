@@ -114,12 +114,12 @@ namespace metahub.logic.nodes
             return result;
         }
 
-        public Node get_last()
+        public Node get_last(Dir dir = Dir.In)
         {
             var current = this;
-            while (current.inputs.Count > 0)
+            while (current.ports(dir).Count > 0)
             {
-                current = current.inputs[0];
+                current = current.ports(dir)[0];
             }
 
             return current;

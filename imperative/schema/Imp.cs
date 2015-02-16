@@ -140,5 +140,13 @@ namespace metahub.imperative.schema
             parameters.Add(parameter);
             return parameter;
         }
+
+        public void add_to_block(Expression expression)
+        {
+            if (block == null)
+                block = dungeon.create_block(name, scope, expressions);
+
+            block.add(expression);
+        }
     }
 }

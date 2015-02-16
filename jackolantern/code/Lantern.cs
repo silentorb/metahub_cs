@@ -17,7 +17,7 @@ namespace metahub.jackolantern.code
             context.set_pattern("T", profession);
             context.set_pattern("list", list_expression);
             context.set_pattern("origin", new Self(setter.dungeon));
-            context.set_pattern("additional", new Statements(new List<Expression>()));
+            context.set_pattern("additional", new Statements());
 
             if (setter.parameters.Count > 0)
             {

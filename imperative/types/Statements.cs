@@ -9,10 +9,10 @@ namespace metahub.imperative.types
     {
         public List<Expression> children;
 
-        public Statements(List<Expression> children)
+        public Statements(List<Expression> children = null)
             : base(Expression_Type.statements)
         {
-            this.children = children;
+            this.children = children ?? new List<Expression>();
         }
 
         public override Expression clone()

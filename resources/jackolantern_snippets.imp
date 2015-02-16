@@ -36,3 +36,8 @@ prop = rand(min, max)
 while(list.count() < size) {
 	$add
 }
+
+@@@cross_iterator(list, block)
+for (var other in list) {
+	block
+}

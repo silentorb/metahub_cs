@@ -13,7 +13,7 @@ namespace metahub.imperative.types
         public Rail rail;
         public Scope scope;
         public Imp imp;
-        public Signature return_type { get { return imp.return_type; } }
+        public Profession return_type { get { return imp.return_type; } }
         public bool is_abstract { get { return imp.is_abstract; } }
         public List<Expression> expressions { get { return imp.expressions; } }
 

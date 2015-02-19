@@ -13,7 +13,8 @@ namespace metahub.logic
     {
         public static Dictionary<string, string> inverse_operators = new Dictionary<string, string>
             {
-                {"=", "="},
+                {"=", "!="},
+                {"!=", "="},
 
                 {">", "<="},
                 {"<", ">="},

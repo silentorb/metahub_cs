@@ -33,7 +33,7 @@ namespace metahub.imperative.types
         public override Profession get_profession()
         {
             return imp != null
-                ? new Profession(imp.return_type, imp.dungeon.overlord)
+                ? imp.return_type
                 : profession;
         }
 

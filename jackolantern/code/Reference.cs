@@ -208,7 +208,7 @@ namespace metahub.jackolantern.code
                                          }.Concat(dist(constraint, tie, jack, iterator_scope, it, value))
                                           .ToList()),
                         new Statement("return", new Literal(true))
-                    }, new Signature(Kind.Bool));
+                    }, new Profession(Kind.Bool));
 
             var setter_block = dungeon.get_block("set_" + property_reference.tie.other_tie.tie_name);
             setter_block.add("post", new Class_Function_Call(function_name, null, new Expression[]

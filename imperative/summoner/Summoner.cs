@@ -376,7 +376,7 @@ namespace metahub.imperative.summoner
             return new Parameter(new Symbol(source.patterns[1].text, new Signature(Kind.unknown), null));
         }
 
-        Signature parse_type(Pattern_Source source, Context context)
+        Profession parse_type(Pattern_Source source, Context context)
         {
             source = source.patterns[2];
             var text = source.patterns.Last().text;
@@ -386,13 +386,13 @@ namespace metahub.imperative.summoner
                 switch (text)
                 {
                     case "bool":
-                        return new Signature(Kind.Bool);
+                        return new Profession(Kind.Bool);
                     case "string":
-                        return new Signature(Kind.String);
+                        return new Profession(Kind.String);
                     case "float":
-                        return new Signature(Kind.Float);
+                        return new Profession(Kind.Float);
                     case "int":
-                        return new Signature(Kind.Int);
+                        return new Profession(Kind.Int);
                 }
             }
 
@@ -409,11 +409,11 @@ namespace metahub.imperative.summoner
                 realm = context.realm;
 
             if (realm.dungeons.ContainsKey(text))
-                return new Signature(Kind.reference, realm.dungeons[text].rail);
+                return new Profession(Kind.reference, realm.dungeons[text]);
 
             var dungeon = overlord.get_dungeon(text);
             if (dungeon != null)
-                return new Signature(Kind.reference, dungeon.rail);
+                return new Profession(Kind.reference, dungeon);
 
             throw new Exception("Invalid type: " + text + ".");
         }

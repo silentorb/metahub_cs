@@ -31,7 +31,7 @@ namespace metahub.imperative.schema
         public List<Imp> invokees = new List<Imp>();
         public List<Parameter> parameters;
         public List<Expression> expressions;
-        public Signature return_type = new Signature(Kind.none);
+        public Profession return_type = new Profession(Kind.none);
         public Imp parent;
         public List<Imp> children = new List<Imp>();
         public Scope scope;

@@ -500,13 +500,13 @@ namespace metahub.imperative.schema
             }
         }
 
-        public Function_Definition add_function(string function_name, List<Parameter> parameters, Signature return_type = null)
+        public Function_Definition add_function(string function_name, List<Parameter> parameters, Profession return_type = null)
         {
             var imp = spawn_imp(function_name, parameters, new List<Expression>(), return_type);
             return new Function_Definition(imp);
         }
 
-        public Imp spawn_imp(string imp_name, List<Parameter> parameters = null, List<Expression> expressions = null, Signature return_type = null, Portal portal = null)
+        public Imp spawn_imp(string imp_name, List<Parameter> parameters = null, List<Expression> expressions = null, Profession return_type = null, Portal portal = null)
         {
             if (imps.ContainsKey(imp_name))
                 throw new Exception("Dungeon " + name + " already contains an imp named " + imp_name + ".");
@@ -515,7 +515,7 @@ namespace metahub.imperative.schema
                 {
                     parameters = parameters ?? new List<Parameter>(),
                     expressions = expressions ?? new List<Expression>(),
-                    return_type = return_type ?? new Signature(Kind.none)
+                    return_type = return_type ?? new Profession(Kind.none)
                 };
 
             imps[imp_name] = imp;

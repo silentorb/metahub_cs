@@ -39,5 +39,9 @@ while(list.count() < size) {
 
 @@@cross_iterator(list, block)
 for (var other in list) {
-	block
+	if (condition) {
+		return false
+	}
 }
+
+return true

@@ -19,6 +19,13 @@ namespace metahub.imperative.types
                throw new Exception("Argument cannot be null");
        }
 
+       public Operation(string op, Expression first, Expression second)
+           : base(Expression_Type.operation)
+       {
+           this.op = op;
+           expressions = new [] { first, second };
+       }
+
        public bool is_condition()
        {
            return op == "=="

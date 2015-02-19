@@ -43,7 +43,10 @@ namespace metahub.imperative.schema
             if (divisions.Count == 0)
                 divide(null);
 
-            divisions.First().add(expression);
+            if (expression.type == Expression_Type.statements)
+                add_many(((Statements)expression).children);
+            else
+                divisions.First().add(expression);
         }
 
         public void add_many(IEnumerable<Expression> expressions)

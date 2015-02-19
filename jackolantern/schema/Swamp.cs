@@ -202,10 +202,10 @@ namespace metahub.jackolantern.schema
                 }
                 else if (result.type == Node_Type.property && dir == Dir.In)
                 {
-                    var property_node = (Property_Node) result;
+                    var property_node = (Property_Node)result;
                     if (property_node.tie.rail.trellis.is_value)
                         result = property_node.inputs[0];
-                    else 
+                    else
                         break;
                 }
                 else
@@ -270,7 +270,7 @@ namespace metahub.jackolantern.schema
                         {
                             tie = property_node.tie.rail.get_reference(scope_node.rail);
                         }
-              
+
                         if (tie == null)
                             throw new Exception("Tie cannot be null.");
 
@@ -290,15 +290,27 @@ namespace metahub.jackolantern.schema
 
                 case Node_Type.function_call:
                     var operation = (Function_Node)node;
-                    var op = dir == Dir.Out
-                        ? operation.name
-                        : Logician.inverse_operators[operation.name];
 
-                    var inputs = operation.inputs
-                        .Where(i => i.type != Node_Type.lambda)
-                        .Select(i => translate_backwards(i, operation));
+                    if (operation.is_operation)
+                    {
+                        var op = dir == Dir.Out
+                                     ? operation.name
+                                     : Logician.inverse_operators[operation.name];
 
-                    return new Operation(op, inputs);
+                        var inputs = operation.inputs
+                                              .Where(i => i.type != Node_Type.lambda)
+                                              .Select(i => translate_backwards(i, operation));
+
+                        return new Operation(op, inputs);
+                    }
+                    else
+                    {
+                        return new Platform_Function(operation.name,
+                            translate_backwards(operation.inputs[0], operation),
+                            operation.inputs.Skip(1)
+                            .Select(i => translate_backwards(i, operation)
+                            ));
+                    }
             }
 
             throw new Exception("Not yet supported: " + node.type);
@@ -444,7 +456,7 @@ namespace metahub.jackolantern.schema
 
             return pumpkin.inputs[0].aggregate(Dir.In).Contains(primary)
                 ? pumpkin.inputs.ToArray()
-                : new [] { pumpkin.inputs[1], pumpkin.inputs[0] };
+                : new[] { pumpkin.inputs[1], pumpkin.inputs[0] };
         }
 
     }

@@ -101,7 +101,13 @@ namespace metahub.imperative.schema
 
         public Expression resolve(string name, summoner.Summoner.Context context)
         {
+            if (map.ContainsKey(name))
             return map[name](context);
+
+            if (parent != null)
+                return parent.resolve(name, context);
+
+            throw new Exception("Could not resolve name " + name + ".");
         }
     }
 }

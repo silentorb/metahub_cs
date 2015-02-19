@@ -30,6 +30,13 @@ namespace metahub.jackolantern.carvers
             var portal = jack.overlord.get_portal(property_node.tie);
             var setter = jack.get_setter(portal);
             var lambda = (Lambda)pumpkin.inputs[1];
+
+            foreach (Variable_Node variable in pumpkin.outputs)
+            {
+                variable.name = variable.name == lambda.parameter_names[0]
+                    ? "this"
+                    : "other";
+            }
             
             foreach (Function_Node constraint in constraints)
             {
@@ -37,12 +44,10 @@ namespace metahub.jackolantern.carvers
 
                 // Iterator
                 var context = new Summoner.Context(setter);
-                //context.scope.create_symbol();
-                var swamp = new Swamp(jack, pumpkin, context);
-
+                context.scope.add_map("this", c=> new Self(portal.other_dungeon));
                 context.set_pattern("list", new Portal_Expression(portal.other_portal, new Portal_Expression(portal)));
                 context.set_pattern("block", new Statements());
-                context.set_pattern("condition", render_inverse_constraint(constraint, swamp));
+                context.set_pattern("condition", c=> render_inverse_constraint(constraint, c));
 
                 var body = jack.overlord.summon_snippet(jack.templates["cross_iterator"], context);
                 imp.add_to_block(body);
@@ -61,8 +66,9 @@ namespace metahub.jackolantern.carvers
             return imp;
         }
 
-        Expression render_inverse_constraint(Function_Node constraint, Swamp swamp)
+        Expression render_inverse_constraint(Function_Node constraint, Summoner.Context context)
         {
+            var swamp = new Swamp(jack, null, context);
             var first = swamp.translate_backwards(constraint.inputs[0], constraint);
             var second = swamp.translate_backwards(constraint.inputs[0], constraint);
             return new Operation(Logician.inverse_operators[constraint.name], first, second);

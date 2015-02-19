@@ -536,7 +536,9 @@ namespace metahub.imperative.summoner
         {
             var reference = process_expression_part(source.patterns[10], context);
             var profession = reference.get_end().get_profession().get_reference();
-            return new Iterator(context.scope.create_symbol(source.patterns[6].text, profession),
+            var symbol = context.scope.create_symbol(source.patterns[6].text, profession);
+            context.scope.add_map(symbol.name, c => new Variable(symbol));
+            return new Iterator(symbol,
                 reference, process_block(source.patterns[14], context)
                 );
         }

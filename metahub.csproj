@@ -80,7 +80,7 @@
     <Compile Include="imperative\types\Portal_Expression.cs" />
     <Compile Include="imperative\types\Property_Function_Call.cs" />
     <Compile Include="imperative\types\Iterator.cs" />
-    <Compile Include="imperative\types\Statements.cs" />
+    <Compile Include="imperative\summoner\expressions\Statements.cs" />
     <Compile Include="jackolantern\carvers\Contains.cs" />
     <Compile Include="jackolantern\carvers\Cross.cs" />
     <Compile Include="jackolantern\carvers\Count.cs" />
@@ -90,6 +90,7 @@
     <Compile Include="jackolantern\carvers\Map.cs" />
     <Compile Include="jackolantern\code\Dungeon_Carver.cs" />
     <Compile Include="jackolantern\code\Lantern.cs" />
+    <Compile Include="imperative\summoner\expressions\Snippet.cs" />
     <Compile Include="jackolantern\schema\Endpoint.cs" />
     <Compile Include="jackolantern\schema\Node_Link.cs" />
     <Compile Include="jackolantern\schema\Swamp.cs" />

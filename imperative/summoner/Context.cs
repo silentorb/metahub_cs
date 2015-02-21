@@ -20,6 +20,10 @@ namespace metahub.imperative.summoner
             protected Dictionary<string, Expression_Generator> expression_lambda_inserts = new Dictionary<string, Expression_Generator>();
             protected Dictionary<string, Expression> expression_inserts = new Dictionary<string, Expression>();
 
+            public Context()
+            {
+            }
+
             public Context(Realm realm, Dungeon dungeon = null)
             {
                 this.realm = realm;

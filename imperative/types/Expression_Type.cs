@@ -21,7 +21,6 @@ namespace metahub.imperative.types
 
         // Statements
         statement,
-        statements,
         space,
         class_definition,
         function_definition,
@@ -30,6 +29,10 @@ namespace metahub.imperative.types
         declare_variable,
         scope,
         insert,
-        iterator
+        iterator,
+
+        // Summoner
+        statements,
+        snippet
     }
 }

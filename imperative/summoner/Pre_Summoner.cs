@@ -130,8 +130,13 @@ namespace metahub.imperative.summoner
                     data.patterns = data.patterns[1].patterns;
                     break;
 
-                //case "block":
-                //    return data.patterns[0];
+                case "long_block_any":
+                    return data.patterns[2];
+
+                case "snippet_entry":
+                    data = data.patterns[1];
+                    data.type = "snippets";
+                    break;
             }
 
             return data;

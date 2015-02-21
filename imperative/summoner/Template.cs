@@ -6,17 +6,17 @@ using metahub.parser;
 
 namespace metahub.imperative.summoner
 {
-    public class Template
-    {
-        public string name;
-        public string[] parameters;
-        public Pattern_Source source;
+    //public class Template
+    //{
+    //    public string name;
+    //    public string[] parameters;
+    //    public Pattern_Source source;
 
-        public Template(string name, string[] parameters, Pattern_Source source)
-        {
-            this.name = name;
-            this.parameters = parameters;
-            this.source = source;
-        }
-    }
+    //    public Template(string name, string[] parameters, Pattern_Source source)
+    //    {
+    //        this.name = name;
+    //        this.parameters = parameters;
+    //        this.source = source;
+    //    }
+    //}
 }

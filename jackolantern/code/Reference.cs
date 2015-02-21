@@ -77,7 +77,7 @@ namespace metahub.jackolantern.code
             ////return new List<Expression>();
             ////var first_last = constraint.first.Last();
             ////if (first_last.type == Node_Type.function_call
-            ////    && ((metahub.logic.types.Function_Call)first_last).name == "dist")
+            ////    && ((metahub.logic.types.Function_Call)first_last).name == "distance")
             //if (constraint.constraint_scope != null)
             //{
             //    switch (constraint.constraint_scope.name)
@@ -205,7 +205,7 @@ namespace metahub.jackolantern.code
                                                          new Statement("continue")
                                                      })
 
-                                         }.Concat(dist(constraint, tie, jack, iterator_scope, it, value))
+                                         }.Concat(distance(constraint, tie, jack, iterator_scope, it, value))
                                           .ToList()),
                         new Statement("return", new Literal(true))
                     }, new Profession(Kind.Bool));
@@ -235,7 +235,7 @@ namespace metahub.jackolantern.code
 
         }
 
-        public static List<Expression> dist(Constraint constraint, Tie tie, JackOLantern jack, Scope scope, Symbol it, Symbol value)
+        public static List<Expression> distance(Constraint constraint, Tie tie, JackOLantern jack, Scope scope, Symbol it, Symbol value)
         {
             throw new Exception();
             //var offset = scope.create_symbol("offset", value.signature);
@@ -250,7 +250,7 @@ namespace metahub.jackolantern.code
             //return new List<Expression>
             //{
             //    Imp.If(Imp.operation(Logician.inverse_operators[constraint.op], 
-            //        new Platform_Function("dist", new Variable(it, new Portal_Expression(jack.overlord.get_portal(constraint.endpoints.Last()))),
+            //        new Platform_Function("distance", new Variable(it, new Portal_Expression(jack.overlord.get_portal(constraint.endpoints.Last()))),
             //            new List<Expression> { new Variable(value) }),
             //            jack.translate(constraint.second, scope)
             //        ),
@@ -298,7 +298,7 @@ namespace metahub.jackolantern.code
             //var imp = result.summon_imp("is_resolved");
             //imp.expressions.Add(new Statement("return",
             //    new Operation(constraint.op, new List<Expression>{ 
-            //        new Platform_Function("dist", new Portal_Expression(portal, 
+            //        new Platform_Function("distance", new Portal_Expression(portal, 
             //            new Portal_Expression(jack.overlord.get_portal(constraint.endpoints.Last())))
             //            { index = new Literal((int)0) },
             //            new List<Expression> { new Portal_Expression(portal, new Portal_Expression(jack.overlord.get_portal(constraint.endpoints.Last())

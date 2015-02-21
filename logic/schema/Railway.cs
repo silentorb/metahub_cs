@@ -153,7 +153,7 @@ public class Railway {
                     })
 			}),
 			
-			new Function_Info("dist", new List<Signature> {
+			new Function_Info("distance", new List<Signature> {
                 new Signature(Kind.Float, new []
                     {
                         new Signature(Kind.reference),

@@ -5,6 +5,7 @@ using System.Text;
 using metahub.Properties;
 using metahub.imperative.schema;
 using metahub.imperative.types;
+using metahub.jackolantern.expressions;
 using metahub.logic.schema;
 using metahub.parser;
 using metahub.schema;
@@ -28,7 +29,7 @@ namespace metahub.imperative.summoner
             }
         }
 
-        void process_namespace(Pattern_Source source)
+        private void process_namespace(Pattern_Source source)
         {
             var name = source.patterns[2].text;
             if (!overlord.realms.ContainsKey(name))
@@ -78,7 +79,7 @@ namespace metahub.imperative.summoner
 
             var statements = source.patterns[7].patterns;
             var dungeon = context.realm.dungeons[name];
-            var dungeon_context = new Context(context) { dungeon = dungeon };
+            var dungeon_context = new Context(context) {dungeon = dungeon};
             foreach (var statement in statements)
             {
                 process_dungeon_statement(statement, dungeon_context);
@@ -87,7 +88,7 @@ namespace metahub.imperative.summoner
             return dungeon;
         }
 
-        void process_dungeon_statement(Pattern_Source source, Context context)
+        private void process_dungeon_statement(Pattern_Source source, Context context)
         {
             switch (source.type)
             {
@@ -105,12 +106,12 @@ namespace metahub.imperative.summoner
             }
         }
 
-        void process_abstract_function(Pattern_Source source, Context context)
+        private void process_abstract_function(Pattern_Source source, Context context)
         {
             var imp = context.dungeon.spawn_imp(
                 source.patterns[2].text,
                 source.patterns[5].patterns.Select(p => process_parameter(p, context)).ToList()
-            );
+                );
 
             imp.is_abstract = true;
 
@@ -119,16 +120,16 @@ namespace metahub.imperative.summoner
                 imp.return_type = parse_type(return_type.patterns[0], context);
         }
 
-        void process_function_definition(Pattern_Source source, Context context)
+        private void process_function_definition(Pattern_Source source, Context context)
         {
             var name = source.patterns[1].text;
             var imp = context.dungeon.has_imp(name)
-            ? context.dungeon.summon_imp(name)
-            : context.dungeon.spawn_imp(
-                         name,
-                         source.patterns[4].patterns.Select(p => process_parameter(p, context)).ToList()
-                     );
-            var new_context = new Context(context) { scope = imp.scope };
+                          ? context.dungeon.summon_imp(name)
+                          : context.dungeon.spawn_imp(
+                              name,
+                              source.patterns[4].patterns.Select(p => process_parameter(p, context)).ToList()
+                                );
+            var new_context = new Context(context) {scope = imp.scope};
 
             var return_type = source.patterns[7];
             if (return_type.patterns.Length > 0)
@@ -137,13 +138,13 @@ namespace metahub.imperative.summoner
             imp.expressions = process_block(source.patterns[9], new_context);
         }
 
-        void process_property_declaration(Pattern_Source source, Context context)
+        private void process_property_declaration(Pattern_Source source, Context context)
         {
             var type_info = parse_type2(source.patterns[2], context);
             context.dungeon.add_portal(new Portal(source.patterns[0].text, type_info));
         }
 
-        List<Expression> process_block(Pattern_Source source, Context context)
+        private List<Expression> process_block(Pattern_Source source, Context context)
         {
             var result = new List<Expression>();
             foreach (var pattern in source.patterns)
@@ -151,7 +152,7 @@ namespace metahub.imperative.summoner
                 var expression = process_statement(pattern, context);
                 if (expression.type == Expression_Type.statements)
                 {
-                    var statements = (Statements)expression;
+                    var statements = (Statements) expression;
                     result.AddRange(statements.children);
                 }
                 else
@@ -175,29 +176,39 @@ namespace metahub.imperative.summoner
 
                 case "if":
                     return new Flow_Control(Flow_Control_Type.If, process_expression(source.patterns[4], context),
-                        process_block(source.patterns[8], context)
-                    );
+                                            process_block(source.patterns[8], context)
+                        );
 
                 case "while":
                     return new Flow_Control(Flow_Control_Type.While, process_expression(source.patterns[4], context),
-                        process_block(source.patterns[8], context)
-                    );
+                                            process_block(source.patterns[8], context)
+                        );
 
                 case "for":
                     return process_iterator(source, context);
 
                 case "return":
                     return new Statement("return", source.patterns[1].patterns.Length == 0
-                        ? null
-                        : process_expression(source.patterns[1].patterns[0], context)
-                    );
+                                                       ? null
+                                                       : process_expression(source.patterns[1].patterns[0], context)
+                        );
 
                 case "declare_variable":
-                    var symbol = context.scope.create_symbol(source.patterns[2].text, parse_type2(source.patterns[4], context));
+                    var symbol = context.scope.create_symbol(source.patterns[2].text,
+                                                             parse_type2(source.patterns[4], context));
                     return new Declare_Variable(symbol, source.patterns[5].patterns.Length == 0
-                        ? null
-                        : process_expression(source.patterns[5].patterns[0], context)
-                    );
+                                                            ? null
+                                                            : process_expression(source.patterns[5].patterns[0], context)
+                        );
+                case "snippet_function":
+                    {
+                        return process_function_snippet(source, context);
+                    }
+
+                case "snippets":
+                    var snippets = source.patterns.Select(p => process_statement(p, context)).ToList();
+                    return new Statements(snippets);
+
                 case "statements":
                     {
                         var expressions = process_block(source, context);
@@ -210,7 +221,7 @@ namespace metahub.imperative.summoner
             throw new Exception("Unsupported statement type: " + source.type + ".");
         }
 
-        Expression process_expression(Pattern_Source source, Context context)
+        private Expression process_expression(Pattern_Source source, Context context)
         {
             if (source.patterns.Length == 1)
                 return process_expression_part(source.patterns[0], context);
@@ -224,7 +235,7 @@ namespace metahub.imperative.summoner
             throw new Exception("Not supported.");
         }
 
-        Expression process_expression_part(Pattern_Source source, Context context)
+        private Expression process_expression_part(Pattern_Source source, Context context)
         {
             switch (source.type)
             {
@@ -247,7 +258,7 @@ namespace metahub.imperative.summoner
             throw new Exception("Unsupported statement type: " + source.type + ".");
         }
 
-        Expression process_reference(Pattern_Source source, Context context)
+        private Expression process_reference(Pattern_Source source, Context context)
         {
             var dungeon = context.dungeon;
             Expression result = null;
@@ -262,16 +273,16 @@ namespace metahub.imperative.summoner
             if (source.patterns[1].patterns.Length > 0)
             {
                 args = source.patterns[1].patterns[0].patterns
-                    .Select(p => process_expression(p, context))
-                    .ToList();
+                                                     .Select(p => process_expression(p, context))
+                                                     .ToList();
             }
 
             foreach (var pattern in patterns)
             {
                 var token = pattern.text;
                 Expression array_access = pattern.patterns.Length > 0
-                    ? process_expression(pattern.patterns[0], context)
-                    : null;
+                                              ? process_expression(pattern.patterns[0], context)
+                                              : null;
 
                 Portal portal = null;
                 Expression next = null;
@@ -286,7 +297,7 @@ namespace metahub.imperative.summoner
                     var symbol = context.scope.find_or_null(token);
                     if (symbol != null)
                     {
-                        next = new Variable(symbol) { index = array_access };
+                        next = new Variable(symbol) {index = array_access};
                         var profession = next.get_profession();
                         if (profession != null)
                             dungeon = profession.dungeon;
@@ -304,7 +315,7 @@ namespace metahub.imperative.summoner
 
                         if (portal != null)
                         {
-                            next = new Portal_Expression(portal) { index = array_access };
+                            next = new Portal_Expression(portal) {index = array_access};
                             dungeon = portal.other_dungeon;
                         }
                         else
@@ -341,7 +352,7 @@ namespace metahub.imperative.summoner
                 else
                 {
                     if (last.type == Expression_Type.property_function_call)
-                        ((Property_Function_Call)last).args.Add(next);
+                        ((Property_Function_Call) last).args.Add(next);
                     else
                         last.child = next;
                 }
@@ -351,7 +362,8 @@ namespace metahub.imperative.summoner
             return result;
         }
 
-        Expression process_function_call(Dungeon dungeon, string token, Expression result, Expression last, List<Expression> args)
+        private Expression process_function_call(Dungeon dungeon, string token, Expression result, Expression last,
+                                                 List<Expression> args)
         {
             var imp = dungeon != null
                           ? dungeon.summon_imp(token, true)
@@ -363,7 +375,8 @@ namespace metahub.imperative.summoner
             if (Imp.platform_specific_functions.Contains(token))
             {
                 if (token == "add" || token == "setter")
-                    return new Property_Function_Call(Property_Function_Type.set, ((Portal_Expression)last).portal, args);
+                    return new Property_Function_Call(Property_Function_Type.set, ((Portal_Expression) last).portal,
+                                                      args);
 
                 return new Platform_Function(token, result, args);
             }
@@ -371,12 +384,12 @@ namespace metahub.imperative.summoner
             return null;
         }
 
-        Parameter process_parameter(Pattern_Source source, Context context)
+        private Parameter process_parameter(Pattern_Source source, Context context)
         {
             return new Parameter(new Symbol(source.patterns[1].text, new Signature(Kind.unknown), null));
         }
 
-        Profession parse_type(Pattern_Source source, Context context)
+        private Profession parse_type(Pattern_Source source, Context context)
         {
             source = source.patterns[2];
             var text = source.patterns.Last().text;
@@ -425,7 +438,7 @@ namespace metahub.imperative.summoner
             return parse_type2(path, context, is_list);
         }
 
-        Profession parse_type2(string[] path, Context context, bool is_list = false)
+        private Profession parse_type2(string[] path, Context context, bool is_list = false)
         {
             var text = path.Last();
             if (path.Length == 1)
@@ -433,13 +446,13 @@ namespace metahub.imperative.summoner
                 switch (text)
                 {
                     case "bool":
-                        return new Profession(Kind.Bool) { is_list = is_list };
+                        return new Profession(Kind.Bool) {is_list = is_list};
                     case "string":
-                        return new Profession(Kind.String) { is_list = is_list };
+                        return new Profession(Kind.String) {is_list = is_list};
                     case "float":
-                        return new Profession(Kind.Float) { is_list = is_list };
+                        return new Profession(Kind.Float) {is_list = is_list};
                     case "int":
-                        return new Profession(Kind.Int) { is_list = is_list };
+                        return new Profession(Kind.Int) {is_list = is_list};
                 }
 
                 var profession = context.get_profession_pattern(text);
@@ -464,7 +477,7 @@ namespace metahub.imperative.summoner
                 realm = context.realm;
 
             if (realm.dungeons.ContainsKey(text))
-                return new Profession(Kind.reference, realm.dungeons[text]) { is_list = is_list };
+                return new Profession(Kind.reference, realm.dungeons[text]) {is_list = is_list};
 
             var dungeon = overlord.get_dungeon(text);
             if (dungeon != null)
@@ -473,7 +486,7 @@ namespace metahub.imperative.summoner
             throw new Exception("Invalid type: " + text + ".");
         }
 
-        Expression process_assignment(Pattern_Source source, Context context)
+        private Expression process_assignment(Pattern_Source source, Context context)
         {
             var reference = process_reference(source.patterns[0], context);
             var expression = process_expression(source.patterns[4], context);
@@ -501,7 +514,7 @@ namespace metahub.imperative.summoner
 
             if (last.type == Expression_Type.portal)
             {
-                var portal_expression = (Portal_Expression)last;
+                var portal_expression = (Portal_Expression) last;
                 var portal = portal_expression.portal;
                 if (portal.type != Kind.list && op != "=")
                 {
@@ -522,14 +535,14 @@ namespace metahub.imperative.summoner
                 return new Property_Function_Call(Property_Function_Type.set, portal, new List<Expression>
                     {
                         expression
-                    }) { reference = reference };
+                    }) {reference = reference};
             }
 
             return new Assignment(
-                        reference,
-                        op,
-                        expression
-                    );
+                reference,
+                op,
+                expression
+                );
         }
 
         public Expression process_iterator(Pattern_Source source, Context context)
@@ -539,14 +552,29 @@ namespace metahub.imperative.summoner
             var symbol = context.scope.create_symbol(source.patterns[6].text, profession);
             context.scope.add_map(symbol.name, c => new Variable(symbol));
             return new Iterator(symbol,
-                reference, process_block(source.patterns[14], context)
+                                reference, process_block(source.patterns[14], context)
                 );
         }
 
         private Expression process_instantiate(Pattern_Source source, Context context)
         {
-            var type = parse_type2(new[] { source.patterns[2].text }, context);
+            var type = parse_type2(new[] {source.patterns[2].text}, context);
             return new Instantiate(type.dungeon);
         }
+
+        //private Expression process_snippet_functions(Pattern_Source source, Context context)
+        //{
+        //    var functions = source.patterns.Select(p => process_function_snippet(p, context));
+        //    return new Statements(functions.ToList());
+        //}
+
+        private Expression process_function_snippet(Pattern_Source source, Context context)
+        {
+            var name = source.patterns[1].text;
+            var body = source.patterns[9];
+            var parameters = source.patterns[4].patterns.Select(p => p.text).ToArray();
+            return new Snippet(name, body, parameters);
+        }
+
     }
 }

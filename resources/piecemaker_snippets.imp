@@ -1,4 +1,4 @@
-﻿@@@Distance_Conflict(Class_Name, Node_Type)
+﻿Distance_Conflict(Class_Name, Node_Type) {
 	class Class_Name : Conflict {
 	
 		nodes: Node_Type[]
@@ -13,3 +13,4 @@
 			nodes[1].position -= offset
 		}
 	}
+}

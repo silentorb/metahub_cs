@@ -8,6 +8,7 @@ using metahub.imperative.schema;
 using metahub.imperative.summoner;
 using metahub.imperative.types;
 using metahub.jackolantern;
+using metahub.jackolantern.expressions;
 using metahub.logic.schema;
 using metahub.render;
 using metahub.schema;
@@ -142,36 +143,45 @@ namespace metahub.imperative
             summon(pre_summoner);
         }
 
-        public Dungeon summon_dungeon(Template template, Summoner.Context context)
+        public Dungeon summon_dungeon(Snippet template, Summoner.Context context)
         {
             var summoner = new Summoner(this);
             summoner.process_dungeon1(template.source, context);
             return summoner.process_dungeon2(template.source, context);
         }
 
-        public Expression summon_snippet(Template template, Summoner.Context context)
+        public Expression summon_snippet(Snippet template, Summoner.Context context)
         {
             var summoner = new Summoner(this);
             return summoner.process_statement(template.source, context);
         }
 
-        public Dictionary<string, Template> summon_snippets(string code)
+        public Dictionary<string, Snippet> summon_snippets(string code)
         {
-            var templates = new Dictionary<string, Template>();
-            var match = Regex.Matches(code,
-                @"@@@[ \t]*(\w+)[ \t]*\([ \t]*(.*?)[ \t]*\)[ \t]*\r\n(.*?)(?=@@@|\z)", RegexOptions.Singleline);
-            foreach (Match item in match)
-            {
-                foreach (Match capture in item.Captures)
-                {
-                    var name = capture.Groups[1].Value;
-                    var parameters = Regex.Split(capture.Groups[2].Value, @"\s*,\s*");
-                    var block = capture.Groups[3].Value;
-                    var pre_summoner = pre_summon(block, Pre_Summoner.Mode.snippet);
-                    templates[name] = new Template(name, parameters, pre_summoner.output.patterns[1]);
-                }
-            }
+            var templates = new Dictionary<string, Snippet>();
+            //var match = Regex.Matches(code,
+            //    @"@@@[ \t]*(\w+)[ \t]*\([ \t]*(.*?)[ \t]*\)[ \t]*\r\n(.*?)(?=@@@|\z)", RegexOptions.Singleline);
+            //foreach (Match item in match)
+            //{
+            //    foreach (Match capture in item.Captures)
+            //    {
+            //        var name = capture.Groups[1].Value;
+            //        var parameters = Regex.Split(capture.Groups[2].Value, @"\s*,\s*");
+            //        var block = capture.Groups[3].Value;
+            //        var pre_summoner = pre_summon(block, Pre_Summoner.Mode.snippet);
+            //        templates[name] = new Template(name, parameters, pre_summoner.output.patterns[1]);
+            //    }
+            //}
 
+            var pre_summoner = pre_summon(code, Pre_Summoner.Mode.snippet);
+            var summoner = new Summoner(this);
+
+            var context = new Summoner.Context();
+            var statements = (Statements)summoner.process_statement(pre_summoner.output, context);
+            foreach (Snippet snippet in statements.children)
+            {
+                templates[snippet.name] = snippet;
+            }
             return templates;
         }
     }

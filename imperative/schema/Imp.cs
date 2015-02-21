@@ -15,7 +15,7 @@ namespace metahub.imperative.schema
                 "count",
                 "add",
                 "contains",
-                "dist",
+                "distance",
                 "last",
                 "pop",
                 "remove",

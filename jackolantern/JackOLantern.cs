@@ -10,6 +10,7 @@ using metahub.imperative.summoner;
 using metahub.imperative.types;
 using metahub.jackolantern.carvers;
 using metahub.jackolantern.code;
+using metahub.jackolantern.expressions;
 using metahub.logic;
 using metahub.logic.nodes;
 using metahub.logic.schema;
@@ -22,10 +23,8 @@ namespace metahub.jackolantern
     {
         public Logician logician;
         public Overlord overlord;
-
         public Dictionary<string, Carver> carvers = new Dictionary<string, Carver>();
-
-        public Dictionary<string, Template> templates = null;
+        public Dictionary<string, Snippet> templates = null;
 
         public JackOLantern(Logician logician, Overlord overlord)
         {

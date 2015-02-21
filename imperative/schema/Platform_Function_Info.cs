@@ -25,7 +25,7 @@ namespace metahub.imperative.schema
             add(new Platform_Function_Info("count", new Profession(Kind.Int)));
             add(new Platform_Function_Info("add", new Profession(Kind.none)));
             add(new Platform_Function_Info("contains", new Profession(Kind.Bool)));
-            add(new Platform_Function_Info("dist", new Profession(Kind.Float)));
+            add(new Platform_Function_Info("distance", new Profession(Kind.Float)));
             add(new Platform_Function_Info("first", new Profession(Kind.reference)));
             add(new Platform_Function_Info("last", new Profession(Kind.reference)));
             add(new Platform_Function_Info("pop", new Profession(Kind.reference)));

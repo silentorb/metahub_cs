@@ -1010,7 +1010,7 @@ namespace metahub.render.targets.cpp
                                + ref_full + "end(), " + first + ") != " + ref_full + "end()";
                     }
 
-                case "dist":
+                case "distance":
                     {
                         //var signature = expression.args[0].get_signature();
                         var first = render_expression(expression.args[0]);

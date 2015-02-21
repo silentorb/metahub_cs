@@ -9,9 +9,9 @@ using metahub.imperative;
 using metahub.jackolantern;
 using metahub.logic.schema;
 using metahub.logic;
-using metahub.parser;
 using metahub.render;
 using metahub.schema;
+using parser;
 using Namespace = metahub.schema.Namespace;
 using Regex = System.Text.RegularExpressions.Regex;
 

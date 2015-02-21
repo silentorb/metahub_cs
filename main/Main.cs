@@ -20,7 +20,7 @@ public class Main {
 		//Hub hub = new Hub();
 		//hub.load_schema_from_file("test/schema.json");
 		//var code = sys.io.File.getContent("test/general.mh");
-    //metahub.parser.Match result = hub.parse_code(code);
+    //parser.Match result = hub.parse_code(code);
 		//var data = result.get_data();
   }
 }}

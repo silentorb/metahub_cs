@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace metahub.parser
+namespace parser
 {
     public class Result
     {

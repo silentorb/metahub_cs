@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace metahub.parser
+namespace parser
 {
     public class Bootstrap : Parser_Context
     {

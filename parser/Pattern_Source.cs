@@ -2,9 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using metahub.parser.types;
 
-namespace metahub.parser
+namespace parser
 {
     public class Pattern_Source
     {

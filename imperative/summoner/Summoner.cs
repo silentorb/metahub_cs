@@ -7,7 +7,7 @@ using metahub.imperative.schema;
 using metahub.imperative.types;
 using metahub.jackolantern.expressions;
 using metahub.logic.schema;
-using metahub.parser;
+using parser;
 using metahub.schema;
 
 namespace metahub.imperative.summoner

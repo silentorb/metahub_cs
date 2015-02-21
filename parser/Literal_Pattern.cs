@@ -1,4 +1,4 @@
-namespace metahub.parser
+namespace parser
 {
     public class Literal_Pattern : Pattern
     {

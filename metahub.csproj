@@ -137,7 +137,6 @@
     <Compile Include="imperative\types\Self.cs" />
     <Compile Include="imperative\types\Statement.cs" />
     <Compile Include="imperative\types\Variable.cs" />
-    <Compile Include="parser\Debug_Info.cs" />
     <Compile Include="logic\schema\Constraint.cs" />
     <Compile Include="logic\schema\Function_Info.cs" />
     <Compile Include="logic\schema\Function_Version.cs" />
@@ -165,28 +164,9 @@
     <Compile Include="logic\nodes\Scope_Expression.cs" />
     <Compile Include="logic\nodes\Variable_Node.cs" />
     <Compile Include="jackolantern\JackOLantern.cs" />
-    <Compile Include="parser\Bootstrap.cs" />
-    <Compile Include="parser\Parser_Context.cs" />
-    <Compile Include="parser\Definition.cs" />
-    <Compile Include="parser\Failure.cs" />
-    <Compile Include="parser\Group.cs" />
-    <Compile Include="parser\Group_And.cs" />
-    <Compile Include="parser\Group_Or.cs" />
-    <Compile Include="parser\Literal_Pattern.cs" />
-    <Compile Include="parser\Match.cs" />
-    <Compile Include="parser\MetaHub_Context.cs" />
-    <Compile Include="parser\Pattern.cs" />
-    <Compile Include="parser\Pattern_Source.cs" />
-    <Compile Include="parser\Position.cs" />
-    <Compile Include="parser\Regex_Pattern.cs" />
-    <Compile Include="parser\Repetition.cs" />
-    <Compile Include="parser\Repetition_Match.cs" />
-    <Compile Include="parser\Result.cs" />
-    <Compile Include="parser\types\Parser_Types.cs" />
-    <Compile Include="parser\Wrapper.cs" />
+    <Compile Include="main\Utility.cs" />
     <Compile Include="render\Generator.cs" />
     <Compile Include="render\Renderer.cs" />
-    <Compile Include="render\String_Extensions.cs" />
     <Compile Include="render\Target.cs" />
     <Compile Include="render\targets\cpp\Cpp.cs" />
     <Compile Include="render\targets\cpp\Cpp_Transmuter.cs" />
@@ -199,7 +179,6 @@
     <Compile Include="schema\Property.cs" />
     <Compile Include="schema\Schema.cs" />
     <Compile Include="schema\Trellis.cs" />
-    <Compile Include="main\Utility.cs" />
     <Compile Include="main\Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
@@ -230,7 +209,15 @@
   <ItemGroup>
     <Content Include="resources\cpp\list.h" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <ProjectReference Include="Parser\Parser.csproj">
+      <Project>{80BEAC71-8BE8-48C5-B109-BAB3F38F6D9F}</Project>
+      <Name>Parser</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="parser2\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

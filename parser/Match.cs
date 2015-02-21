@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace metahub.parser
+namespace parser
 {
 public class Match : Result {
   public int length;

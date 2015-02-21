@@ -4,10 +4,10 @@ using System.Linq;
 using System.Text;
 using metahub.render;
 
-namespace metahub.parser
+namespace parser
 {
 
-    class Debug_Info
+    public class Debug_Info
     {
 
         public static string color(string text, ConsoleColor code)

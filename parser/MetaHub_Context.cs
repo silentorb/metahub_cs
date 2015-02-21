@@ -1,9 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using metahub.parser.types;
 
-namespace metahub.parser
+namespace parser
 {
     //import metahub.code.functions.Functions;
 

@@ -3,8 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using metahub.logic.schema;
 using metahub.logic.nodes;
-using metahub.parser;
-using metahub.parser.types;
+using parser;
 using metahub.schema;
 
 

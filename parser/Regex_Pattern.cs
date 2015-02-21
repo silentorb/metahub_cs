@@ -1,7 +1,7 @@
 using System;
 using System.Text.RegularExpressions;
 
-namespace metahub.parser
+namespace parser
 {
     public class Regex_Pattern : Pattern
     {

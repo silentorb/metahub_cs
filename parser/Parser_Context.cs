@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace metahub.parser
+namespace parser
 {
     public class Parser_Context
     {
@@ -28,7 +28,7 @@ namespace metahub.parser
             var result = start.test(new Position(this), 0);
             if (result.success)
             {
-                var match = (metahub.parser.Match)result;
+                var match = (parser.Match)result;
                 var offset = match.start.move(match.length);
                 if (offset.get_offset() < text.Length)
                 {

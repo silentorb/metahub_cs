@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace metahub.parser
+namespace parser
 {
 public class Pattern {
   public string action;

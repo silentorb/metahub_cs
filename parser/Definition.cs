@@ -1,11 +1,9 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
 using Newtonsoft.Json;
-using metahub.Properties;
-using metahub.schema;
+using Parser.Properties;
 
-namespace metahub.parser
+namespace parser
 {
 
     public class Definition
@@ -137,7 +135,7 @@ namespace metahub.parser
 
         public void load_parser_schema()
         {
-            load(JsonConvert.DeserializeObject<Dictionary<string, Pattern_Source>>(Resources.parser));
+            load(JsonConvert.DeserializeObject<Dictionary<string, Pattern_Source>>(Resources.parser_json));
         }
 
     }

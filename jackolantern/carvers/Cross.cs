@@ -27,7 +27,7 @@ namespace metahub.jackolantern.carvers
             var constraints = pumpkin.outputs.Select(o => o.get_last(Dir.Out)).Distinct();
 
             var property_node = (Property_Node)pumpkin.inputs[0];
-            var portal = jack.overlord.get_portal(property_node.tie);
+            var portal = jack.get_portal(property_node.tie);
             var setter = jack.get_setter(portal);
             var lambda = (Lambda)pumpkin.inputs[1];
 

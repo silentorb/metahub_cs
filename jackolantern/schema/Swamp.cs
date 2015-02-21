@@ -246,7 +246,7 @@ namespace metahub.jackolantern.schema
                             throw new Exception("Not supported.");
                         //return null;
 
-                        return new Portal_Expression(jack.overlord.get_portal(tie));
+                        return new Portal_Expression(jack.get_portal(tie));
                     }
 
                 case Node_Type.variable:
@@ -274,7 +274,7 @@ namespace metahub.jackolantern.schema
                         if (tie == null)
                             throw new Exception("Tie cannot be null.");
 
-                        return new Portal_Expression(jack.overlord.get_portal(tie));
+                        return new Portal_Expression(jack.get_portal(tie));
                     }
 
                 //case Node_Type.function_call:
@@ -336,7 +336,7 @@ namespace metahub.jackolantern.schema
                 return expression;
 
             if (next.type == Node_Type.property
-                && ((Property_Node)next).tie.other_rail == context.dungeon.rail)
+                && ((Property_Node)next).tie.other_rail == jack.get_rail(context.dungeon))
             {
                 return expression;
             }

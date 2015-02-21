@@ -8,7 +8,7 @@
     <ProjectGuid>{80BEAC71-8BE8-48C5-B109-BAB3F38F6D9F}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Parser</RootNamespace>
+    <RootNamespace>parser</RootNamespace>
     <AssemblyName>Parser</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>

@@ -51,7 +51,7 @@ namespace metahub.jackolantern.carvers
         {
             return aggregate(start, include_self)
                 .OfType<Property_Node>()
-                .Select(p=>jack.overlord.get_portal(p.tie));
+                .Select(p=>jack.get_portal(p.tie));
         }
 
         public IEnumerable<Endpoint> get_endpoints3(Node start, bool include_self = false)
@@ -59,7 +59,7 @@ namespace metahub.jackolantern.carvers
             return aggregate(start, include_self)
                 .OfType<Property_Node>()
                 .Where(p=> !p.tie.rail.trellis.is_value)
-                .Select(p => new Endpoint(p, jack.overlord.get_portal(p.tie)));
+                .Select(p => new Endpoint(p, jack.get_portal(p.tie)));
         }
 
         public List<Node> aggregate2(Node start, bool include_self = false)
@@ -81,7 +81,7 @@ namespace metahub.jackolantern.carvers
         {
             return aggregate2(start, include_self)
                 .OfType<Property_Node>()
-                .Select(p => new Endpoint(p, jack.overlord.get_portal(p.tie))).ToList();
+                .Select(p => new Endpoint(p, jack.get_portal(p.tie))).ToList();
         }
     }
 

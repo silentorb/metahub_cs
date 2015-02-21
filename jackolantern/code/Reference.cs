@@ -166,18 +166,18 @@ namespace metahub.jackolantern.code
             //var dungeon = imp.get_dungeon(tie.rail);
             //dungeon.concat_block(tie.tie_name + "_set_pre", Reference.constraint(constraint, this));
             var property_reference = (metahub.logic.nodes.Property_Node)constraint.constraint_scope.caller.First();
-            var dungeon = jack.overlord.get_dungeon(tie.rail);
+            var dungeon = jack.get_dungeon(tie.rail);
 
             var iterator_scope = new Scope(scope);
-            var it = iterator_scope.create_symbol("item", new Signature(Kind.reference, property_reference.tie.other_rail));
+            var it = iterator_scope.create_symbol("item", new Profession(Kind.reference, jack.get_dungeon(property_reference.tie.other_rail)));
             iterator_scope.add_map("a", c => new Variable(it));
             iterator_scope.add_map("b", c => new Self(dungeon));
 
             var class_block = dungeon.get_block("class_definition");
             var function_scope = new Scope(class_block.scope);
-            var value = function_scope.create_symbol("value", tie.get_signature());
+            var value = function_scope.create_symbol("value", jack.create_profession_from_signature(tie.get_signature()));
             var function_name = "check_" + tie.tie_name + "_" + property_reference.tie.other_tie.tie_name;
-            var portal = jack.overlord.get_portal(property_reference.tie);
+            var portal = jack.get_portal(property_reference.tie);
             var imp = dungeon.spawn_imp(function_name, new List<Parameter>
                 {
                     new Parameter(value)
@@ -213,7 +213,7 @@ namespace metahub.jackolantern.code
             var setter_block = dungeon.get_block("set_" + property_reference.tie.other_tie.tie_name);
             setter_block.add("post", new Class_Function_Call(function_name, null, new Expression[]
                 {
-                    new Portal_Expression(jack.overlord.get_portal(constraint.endpoints.First()))
+                    new Portal_Expression(jack.get_portal(constraint.endpoints.First()))
                 })
             );
 

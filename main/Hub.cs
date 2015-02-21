@@ -17,14 +17,13 @@ using Regex = System.Text.RegularExpressions.Regex;
 
 namespace metahub
 {
-
     public delegate void Empty_Delegate();
 
     public class Hub
     {
+        public static Regex remove_comments = new Regex("#[^\n]*");
         public Schema schema;
         public Definition parser_definition;
-        public static Regex remove_comments = new Regex("#[^\n]*");
         public Namespace metahub_namespace;
         public int max_steps = 100;
         public Dictionary<string, string> core_schemas = new Dictionary<string, string>(); 
@@ -137,19 +136,19 @@ namespace metahub
 
         public void generate(Pattern_Source source, string target_name, string destination)
         {
-            Overlord overlord = new Overlord(this, target_name);
-            var logician = new Logician(overlord.railway);
-            run_data(source, overlord.railway, logician);
-            Generator generator = new Generator(this);
-            var target = generator.create_target(overlord, target_name);
-            overlord.run(logician, target);
+            Overlord overlord = new Overlord();
+            var railway = new Railway(this, target_name);
+            var logician = new Logician(railway);
+            run_data(source, railway, logician);
+            var target = Generator.create_target(overlord, target_name);
+            overlord.run(target);
             logician.analyze();
-            var jack = new JackOLantern(logician, overlord);
+            var jack = new JackOLantern(logician, overlord, this, railway);
             jack.run(target);
             overlord.flatten();
             overlord.post_analyze();
 
-            generator.run(target, destination);
+            Generator.run(target, destination);
         }
 
     }

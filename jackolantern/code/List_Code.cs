@@ -18,15 +18,15 @@ namespace metahub.jackolantern.code
     {
         public static void common_functions_stub(Tie tie, JackOLantern imp, Scope scope)
         {
-            add_function_stub(tie, imp, scope);
+            //add_function_stub(tie, imp, scope);
             remove_function_stub(tie, imp, scope);
         }
-
+        /*
         public static void add_function_stub(Tie tie, JackOLantern jack, Scope scope)
         {
             var rail = tie.rail;
-            var portal = jack.overlord.get_portal(tie);
-            var dungeon = jack.overlord.get_dungeon(tie.rail);
+            var portal = jack.get_portal(tie);
+            var dungeon = jack.get_dungeon(tie.rail);
 
             var function_name = "add_" + tie.tie_name;
             var imp = dungeon.spawn_imp(function_name, null, new List<Expression>());
@@ -45,7 +45,7 @@ namespace metahub.jackolantern.code
             var post = block.divide("post");
 
         }
-
+        */
         public static void remove_function_stub(Tie tie, JackOLantern jack, Scope scope)
         {
         }
@@ -53,12 +53,12 @@ namespace metahub.jackolantern.code
         public static void common_functions(Tie tie, JackOLantern imp, Scope scope)
         {
             add_function(tie, imp, scope);
-            remove_function(tie, imp, scope);
+            //remove_function(tie, imp, scope);
         }
 
         public static void add_function(Tie tie, JackOLantern jack, Scope scope)
         {
-            var portal = jack.overlord.get_portal(tie);
+            var portal = jack.get_portal(tie);
             var imp = jack.get_setter(portal);
             var dungeon = portal.dungeon;
             var origin = imp.scope.find_or_exception("origin");
@@ -71,17 +71,17 @@ namespace metahub.jackolantern.code
                 {
                     new Variable(origin), new Variable(item)
                 }), new List<Expression> {
-                    jack.call_setter(jack.overlord.get_portal(tie.other_tie), new Variable(item), 
+                    jack.call_setter(jack.get_portal(tie.other_tie), new Variable(item), 
                     new Self(dungeon), new Self(dungeon))
                 }));
             }
         }
 
-
+        /*
         public static void remove_function(Tie tie, JackOLantern jack, Scope scope)
         {
             var rail = tie.rail;
-            var portal = jack.overlord.get_portal(tie);
+            var portal = jack.get_portal(tie);
             var dungeon = portal.dungeon;
 
             var function_name = "remove_" + tie.tie_name;
@@ -115,7 +115,7 @@ namespace metahub.jackolantern.code
                 mid.add(Imp.call_remove(tie.other_tie, new Variable(item), new Self(dungeon)));
             }
         }
-
+        */
         public static void generate_constraint(Constraint constraint, JackOLantern imp)
         {
             var path = constraint.first;
@@ -160,7 +160,7 @@ namespace metahub.jackolantern.code
             //link(a, b, Parse.reverse_path(b.Take(a.Count - 1)), lambda, imp);
             //link(b, a, a.Take(a.Count - 1), lambda, imp);
         }
-
+        /*
         public static void link(List<Tie> a, List<Tie> b, IEnumerable<Tie> c, Lambda mapping, JackOLantern jack)
         {
             var a_start = a[0];
@@ -257,28 +257,28 @@ namespace metahub.jackolantern.code
             }
 
             creation_block = creation_block.Union(new List<Expression>{
-			new Portal_Expression(jack.overlord.get_portal(c.First()),
+			new Portal_Expression(jack.get_portal(c.First()),
 				new Function_Call("add_" + second_end.tie_name, null,
 				new Expression[] { new Variable(item2), new Self(dungeon)}))
 		}).ToList();
 
             List<Expression> block = new List<Expression> {
 				new Flow_Control(Flow_Control_Type.If, new Operation("!=", new List<Expression> {
-				new Variable(origin), new Portal_Expression(jack.overlord.get_portal(c.First()))}), creation_block)
+				new Variable(origin), new Portal_Expression(jack.get_portal(c.First()))}), creation_block)
 		};
 
             if (a_start.other_tie.property.allow_null)
             {
                 block = new List<Expression> {
 				new Flow_Control(Flow_Control_Type.If, 
-					new Operation("!=", new List<Expression> { new Portal_Expression(jack.overlord.get_portal(a_start.other_tie)),
+					new Operation("!=", new List<Expression> { new Portal_Expression(jack.get_portal(a_start.other_tie)),
 					new Null_Value() }), block
 				)
 			};
             }
             function_block.add_many("post", block);
         }
-
+        */
         public static void size(Constraint constraint, Node expression, JackOLantern jack)
         {
     //        var path = constraint.first.get_path();

@@ -5,6 +5,7 @@ using System.Text;
 using metahub.imperative;
 using metahub.imperative.schema;
 using metahub.imperative.types;
+using metahub.logic;
 using metahub.logic.schema;
 using metahub.schema;
 using Namespace = metahub.imperative.types.Namespace;
@@ -27,7 +28,7 @@ namespace metahub.jackolantern.code
                 else
                 {
                     if (tie.has_setter())
-                        Dungeon_Carver.generate_setter_stub(jack.overlord.get_portal(tie));
+                        Dungeon_Carver.generate_setter_stub(jack.get_portal(tie));
                 }
             }
         }
@@ -36,12 +37,12 @@ namespace metahub.jackolantern.code
         {
             var overlord = jack.overlord;
             var statements = dungeon.get_block("class_definition");
-            if (overlord.logician.needs_hub)
+            if (jack.logician.needs_hub)
             {
                 var hub_dungeon = overlord.realms["metahub"].dungeons["Hub"];
                 dungeon.add_portal(new Portal("hub", Kind.reference, dungeon, hub_dungeon));
             }
-            dungeon.generate_initialize(statements.scope);
+            Dungeon_Carver.generate_initialize(dungeon, statements.scope, rail, jack);
 
             foreach (var tie in rail.all_ties.Values)
             {
@@ -52,7 +53,7 @@ namespace metahub.jackolantern.code
                 else
                 {
                     if (tie.has_setter())
-                        Dungeon_Carver.generate_setter(jack.overlord.get_portal(tie));
+                        Dungeon_Carver.generate_setter(jack.get_portal(tie));
                 }
             }
 
@@ -77,7 +78,7 @@ namespace metahub.jackolantern.code
                 }
             }
 
-            if (dungeon.rail != null && dungeon.rail.needs_tick)
+            if (rail.needs_tick)
             {
                 dungeon.spawn_imp("tick");
                 dungeon.interfaces.Add(overlord.realms["metahub"].dungeons["Tick_Target"]);
@@ -208,5 +209,51 @@ namespace metahub.jackolantern.code
 
             return imp;
         }
+
+
+        public static Imp generate_initialize(Dungeon dungeon, Scope scope, Rail rail, JackOLantern jack)
+        {
+            var expressions = new List<Expression>();
+            var block = dungeon.create_block("initialize", scope, expressions);
+            block.divide("pre");
+            block.divide("post");
+            if (dungeon.parent != null)
+            {
+                block.add(Imp.call_initialize(dungeon, dungeon.parent, new Parent_Class()));
+            }
+
+            foreach (var portal in dungeon.all_portals.Values)
+            {
+                Portal_Carver.customize_initialize(jack, portal, block);
+            }
+
+            var imp = dungeon.spawn_imp("initialize", new List<Parameter>(), expressions);
+            imp.block = block;
+
+            if (jack.logician.needs_hub && (dungeon.name != "Hub" || dungeon.realm.name != "metahub"))
+            {
+                var hub_dungeon = dungeon.overlord.realms["metahub"].dungeons["Hub"];
+                var symbol = imp.scope.create_symbol("hub", new Profession(Kind.reference, hub_dungeon));
+                imp.parameters.Add(new Parameter(symbol));
+                var hub_portal = dungeon.all_portals["hub"];
+                block.add("pre", new Assignment(new Self(dungeon, new Portal_Expression(hub_portal)),
+                   "=", new Variable(symbol)));
+
+                if (rail != null && rail.needs_tick)
+                {
+                    var tick_targets = hub_dungeon.all_portals["tick_targets"];
+                    block.add("pre", new Portal_Expression(hub_portal,
+                        new Property_Function_Call(Property_Function_Type.set,
+                            tick_targets, new List<Expression>
+                                {
+                                    new Self(dungeon)
+                                })
+                        ));
+                }
+            }
+
+            return imp;
+        }
+
     }
 }

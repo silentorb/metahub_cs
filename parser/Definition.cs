@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Newtonsoft.Json;
-using Parser.Properties;
+using parser.Properties;
 
 namespace parser
 {

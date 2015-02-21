@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace parser.Properties {
+namespace imperative.Properties {
     using System;
     
     
@@ -39,7 +39,7 @@ namespace parser.Properties {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("parser.Properties.Resources", typeof(Resources).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("imperative.Properties.Resources", typeof(Resources).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -61,43 +61,30 @@ namespace parser.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to {
-        ///  &quot;start&quot;: {
-        ///    &quot;type&quot;: &quot;repetition&quot;,
-        ///    &quot;action&quot;: &quot;start&quot;,
-        ///    &quot;pattern&quot;: {
-        ///      &quot;type&quot;: &quot;reference&quot;,
-        ///      &quot;name&quot;: &quot;rule&quot;
-        ///    },
-        ///    &quot;divider&quot;: {
-        ///      &quot;type&quot;: &quot;reference&quot;,
-        ///      &quot;name&quot;: &quot;whitespace&quot;
-        ///    }
-        ///  },
+        ///   Looks up a localized string similar to start = trim @(namespace, newlines, 0, 0) final_trim
         ///
-        ///  &quot;id&quot;: {
-        ///    &quot;type&quot;: &quot;regex&quot;,
-        ///    &quot;text&quot;: &quot;[a-zA-Z0-9_]+&quot;
-        ///  },
+        ///snippet_entry = trim @(snippet_function, semicolon_or_newline, 1, 0) final_trim
         ///
-        ///  &quot;whitespace&quot;: {
-        ///    &quot;type&quot;: &quot;regex&quot;,
-        ///    &quot;text&quot;: &quot;\\s+&quot;
-        ///  },
+        ///none = /&amp;*/
+        ///ws = /\s+/
+        ///trim = /\s*/
+        ///final_trim = /\s*$/
+        ///newlines = /(\s*\n)+\s*/
+        ///one_or_no_newline = /[ \t]*(\r\n)?[ \t]*/
+        ///comma = trim &quot;,&quot; trim
+        ///spaces = /[ \t]+/
+        ///dot = &quot;.&quot;
+        ///path_separator = &quot;.&quot;
+        ///id = /[\$a-zA-Z0-9_]+/
+        ///comma_or_newline = /\s*((\s*\n)+|,)\s*/
+        ///semicolon_or_newline = /\s*((\s*\n)+|;)\s*/
         ///
-        ///  &quot;trim&quot;: {
-        ///    &quot;type&quot;: &quot;regex&quot;,
-        ///    &quot;text&quot;: &quot;\\s*&quot;
-        ///  },
-        ///
-        ///  &quot;comma&quot;: {
-        ///    &quot;type&quot;: &quot;regex&quot;,
-        ///    &quot;text&quot;: &quot;[ \\r\\n]*,[ \\r\\n]*&quot;
-        ///  }, [rest of string was truncated]&quot;;.
+        ///string = (&apos;&quot;&apos; /[^&quot;]*/ &apos;&quot;&apos;) | (&quot;&apos;&quot; /[^&apos;]*/ &quot;&apos;&quot;)
+        ///bool = &quot;t [rest of string was truncated]&quot;;.
         /// </summary>
-        internal static string parser_json {
+        internal static string imp_grammar {
             get {
-                return ResourceManager.GetString("parser_json", resourceCulture);
+                return ResourceManager.GetString("imp_grammar", resourceCulture);
             }
         }
     }

@@ -61,60 +61,38 @@ namespace metahub.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to start = trim @(namespace, newlines, 0, 0) final_trim
+        ///   Looks up a localized string similar to contains(list, item) {
+        ///	if (item != null &amp;&amp; list.contains(item) == false) {
+        ///		list += item
+        ///	}
+        ///}
         ///
-        ///snippet = trim snippet_option final_trim
+        ///equals(condition, first, second) {
+        ///	if (condition) {
+        ///		first = second
+        ///	}
+        ///}
         ///
-        ///snippet_option = class | abstract_function | function_definition 
+        ///map_on_add(ref, $add) {
+        ///	if (ref != null &amp;&amp; origin != ref) {
+        ///		$add
+        ///	}
+        ///}
         ///
-        ///none = /&amp;*/
-        ///ws = /\s+/
-        ///trim = /\s*/
-        ///final_trim = /\s*$/
-        ///newlines = /(\s*\n)+\s*/
-        ///one_or_no_newline = /[ \t]*(\r\n)?[ \t]*/
-        ///comma = trim &quot;,&quot; trim
-        ///spaces = /[ \t]+/
-        ///dot = &quot;.&quot;
-        ///path_separator = &quot;.&quot;
-        ///id = /[a-zA-Z0-9_]+/
-        ///comma_or_newline = /\s*((\s*\n)+|,)\s*/
-        ///semicolon_or_newline = /\s*((\s*\n)+|;)\s*/
+        ///map_add_to_list(T, list_add, hub, origin, main_item, $link) {
+        ///	var item:T = new T()
+        ///	item.initialize(hub)
+        ///	item.$link = main_item
+        ///	list.setter(item, origin)
+        ///}
         ///
-        ///string = (&apos;&quot;&apos; /[^&quot;]*/ &apos;&quot;&apos;) |  [rest of string was truncated]&quot;;.
-        /// </summary>
-        internal static string imp_grammar {
-            get {
-                return ResourceManager.GetString("imp_grammar", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to .
+        ///add_to_list(T, list_add, hub, origin) {
+        ///	var item:T = new T()
+        ///	item.initialize [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string jackolantern_snippets {
             get {
                 return ResourceManager.GetString("jackolantern_snippets", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to #include &lt;vector.h&gt;
-        ///
-        ///namespace metahub {
-        ///	/*
-        ///	class List&lt;T&gt; {
-        ///		static T remove&lt;T&gt;(std::vector
-        ///
-        ///
-        ///
-        ///	}
-        ///	*/
-        ///}.
-        /// </summary>
-        internal static string list_h {
-            get {
-                return ResourceManager.GetString("list_h", resourceCulture);
             }
         }
         
@@ -155,10 +133,12 @@ namespace metahub.Properties {
         ///namespace metahub {
         ///
         ///  class Tick_Target {
+        ///	hub:Hub
         ///    abstract tick()
         ///  }
         ///
         ///  class Hub {
+        ///	tick_targets:Tick_Target[]
         ///
         ///    tick() {
         ///		for (var target in tick_targets) {
@@ -201,47 +181,6 @@ namespace metahub.Properties {
         internal static string metahub_json {
             get {
                 return ResourceManager.GetString("metahub_json", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to {
-        ///  &quot;start&quot;: {
-        ///    &quot;type&quot;: &quot;repetition&quot;,
-        ///    &quot;action&quot;: &quot;start&quot;,
-        ///    &quot;pattern&quot;: {
-        ///      &quot;type&quot;: &quot;reference&quot;,
-        ///      &quot;name&quot;: &quot;rule&quot;
-        ///    },
-        ///    &quot;divider&quot;: {
-        ///      &quot;type&quot;: &quot;reference&quot;,
-        ///      &quot;name&quot;: &quot;whitespace&quot;
-        ///    }
-        ///  },
-        ///
-        ///  &quot;id&quot;: {
-        ///    &quot;type&quot;: &quot;regex&quot;,
-        ///    &quot;text&quot;: &quot;[a-zA-Z0-9_]+&quot;
-        ///  },
-        ///
-        ///  &quot;whitespace&quot;: {
-        ///    &quot;type&quot;: &quot;regex&quot;,
-        ///    &quot;text&quot;: &quot;\\s+&quot;
-        ///  },
-        ///
-        ///  &quot;trim&quot;: {
-        ///    &quot;type&quot;: &quot;regex&quot;,
-        ///    &quot;text&quot;: &quot;\\s*&quot;
-        ///  },
-        ///
-        ///  &quot;comma&quot;: {
-        ///    &quot;type&quot;: &quot;regex&quot;,
-        ///    &quot;text&quot;: &quot;[ \\r\\n]*,[ \\r\\n]*&quot;
-        ///  }, [rest of string was truncated]&quot;;.
-        /// </summary>
-        internal static string parser {
-            get {
-                return ResourceManager.GetString("parser", resourceCulture);
             }
         }
         
@@ -316,7 +255,7 @@ namespace metahub.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to @@@Distance_Conflict(Class_Name, Node_Type)
+        ///   Looks up a localized string similar to Distance_Conflict(Class_Name, Node_Type) {
         ///	class Class_Name : Conflict {
         ///	
         ///		nodes: Node_Type[]
@@ -331,6 +270,7 @@ namespace metahub.Properties {
         ///			nodes[1].position -= offset
         ///		}
         ///	}
+        ///}
         ///.
         /// </summary>
         internal static string piecemaker_snippets {

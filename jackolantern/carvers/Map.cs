@@ -44,11 +44,11 @@ namespace metahub.jackolantern.carvers
                 Property_Node property_node;
                 if (node.name == first_parameter.name)
                 {
-                    property_node = new Property_Node(first_portal.tie);
+                    property_node = new Property_Node(jack.get_tie(first_portal));
                 }
                 else if (node.name == second_parameter.name)
                 {
-                    property_node = new Property_Node(second_portal.tie);
+                    property_node = new Property_Node(jack.get_tie(second_portal));
                 }
                 else
                 {
@@ -65,7 +65,7 @@ namespace metahub.jackolantern.carvers
 
         void on_add_code(Node list, Node other_list, Portal first_portal, Portal second_portal)
         {
-            var first_list_portal = jack.overlord.get_portal(((Property_Node)list).tie);
+            var first_list_portal = jack.get_portal(((Property_Node)list).tie);
 
             var setter = jack.get_setter(first_list_portal);
             var context = new Summoner.Context(setter);
@@ -74,7 +74,7 @@ namespace metahub.jackolantern.carvers
             var ref_expression = swamp.render_chain(chain.Take(chain.Count - 1).ToList());
             var list_expression = swamp.translate_exclusive(list.inputs[0], list, Dir.In);
             context.set_pattern("ref", ref_expression);
-            var portal = jack.overlord.get_portal(((Property_Node) list).tie);
+            var portal = jack.get_portal(((Property_Node) list).tie);
             context.set_pattern("$add", on_add_code_sub(list_expression, portal, first_portal, second_portal,setter));
             setter.block.add("post", jack.overlord.summon_snippet(jack.templates["map_on_add"], context));
         }
@@ -90,18 +90,17 @@ namespace metahub.jackolantern.carvers
         static void point_at(Portal pointer, Portal target)
         {
             pointer.other_portal = target;
-            pointer.tie.other_tie = target.tie;
         }
 
         Portal create_reference(Property_Node target, Property_Node other)
         {
             var first_type = target.get_signature();
             var other_rail = other.get_signature().rail;
-            var first_dungeon = jack.overlord.get_dungeon_or_error(first_type.rail);
-            var other_dungeon = jack.overlord.get_dungeon_or_error(other_rail);
+            var first_dungeon = jack.get_dungeon_or_error(first_type.rail);
+            var other_dungeon = jack.get_dungeon_or_error(other_rail);
             var first_name = first_dungeon.get_available_name("map_" + other_dungeon.name.ToLower(), 1);
             var portal = first_dungeon.add_portal(new Portal(first_name, new Profession(Kind.reference, other_dungeon)));
-            portal.tie = new Tie(first_name, first_type.rail, Kind.reference, other_rail);
+            //portal.tie = new Tie(first_name, first_type.rail, Kind.reference, other_rail);
             Dungeon_Carver.generate_setter_stub(portal);
             Dungeon_Carver.generate_setter(portal);
             return portal;

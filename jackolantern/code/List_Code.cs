@@ -18,10 +18,10 @@ namespace metahub.jackolantern.code
     {
         public static void common_functions_stub(Tie tie, JackOLantern imp, Scope scope)
         {
-            //add_function_stub(tie, imp, scope);
+            add_function_stub(tie, imp, scope);
             remove_function_stub(tie, imp, scope);
         }
-        /*
+        
         public static void add_function_stub(Tie tie, JackOLantern jack, Scope scope)
         {
             var rail = tie.rail;
@@ -31,7 +31,7 @@ namespace metahub.jackolantern.code
             var function_name = "add_" + tie.tie_name;
             var imp = dungeon.spawn_imp(function_name, null, new List<Expression>());
             var signature = tie.get_other_signature();
-            var profession = new Profession(signature, jack.overlord);
+            var profession = jack.get_profession(signature);
             var item = imp.add_parameter("item", profession).symbol;
             var origin = imp.add_parameter("origin", new Profession(Kind.reference), new Null_Value()).symbol;
             
@@ -45,49 +45,46 @@ namespace metahub.jackolantern.code
             var post = block.divide("post");
 
         }
-        */
+        
         public static void remove_function_stub(Tie tie, JackOLantern jack, Scope scope)
         {
         }
 
-        public static void common_functions(Tie tie, JackOLantern imp, Scope scope)
+        public static void common_functions(Portal portal, JackOLantern imp, Scope scope)
         {
-            add_function(tie, imp, scope);
-            //remove_function(tie, imp, scope);
+            add_function(portal, imp, scope);
+            remove_function(portal, imp, scope);
         }
 
-        public static void add_function(Tie tie, JackOLantern jack, Scope scope)
+        public static void add_function(Portal portal, JackOLantern jack, Scope scope)
         {
-            var portal = jack.get_portal(tie);
             var imp = jack.get_setter(portal);
             var dungeon = portal.dungeon;
             var origin = imp.scope.find_or_exception("origin");
             var item = imp.scope.find_or_exception("item");
             var block = imp.block;
-            if (tie.other_tie != null)
+            if (portal.other_portal != null)
             {
                 block.add("mid",
                     new Flow_Control(Flow_Control_Type.If, new Operation("!=", new List<Expression>
                 {
                     new Variable(origin), new Variable(item)
                 }), new List<Expression> {
-                    jack.call_setter(jack.get_portal(tie.other_tie), new Variable(item), 
+                    jack.call_setter(portal.other_portal, new Variable(item), 
                     new Self(dungeon), new Self(dungeon))
                 }));
             }
         }
 
-        /*
-        public static void remove_function(Tie tie, JackOLantern jack, Scope scope)
+        
+        public static void remove_function(Portal portal, JackOLantern jack, Scope scope)
         {
-            var rail = tie.rail;
-            var portal = jack.get_portal(tie);
             var dungeon = portal.dungeon;
 
-            var function_name = "remove_" + tie.tie_name;
+            var function_name = "remove_" + portal.name;
             var function_scope = new Scope(scope);
-            var item = function_scope.create_symbol("item", tie.get_other_signature());
-            var origin = function_scope.create_symbol("origin", new Signature(Kind.reference));
+            var item = function_scope.create_symbol("item", portal.get_profession());
+            var origin = function_scope.create_symbol("origin", new Profession(Kind.reference));
             var imp = dungeon.spawn_imp(function_name, new List<Parameter>
                 {
                     new Parameter(item),
@@ -110,12 +107,12 @@ namespace metahub.jackolantern.code
             });
             var post = block.divide("post");
 
-            if (tie.other_tie != null)
+            if (portal.other_portal != null)
             {
-                mid.add(Imp.call_remove(tie.other_tie, new Variable(item), new Self(dungeon)));
+                mid.add(Imp.call_remove(portal.other_portal, new Variable(item), new Self(dungeon)));
             }
         }
-        */
+        
         public static void generate_constraint(Constraint constraint, JackOLantern imp)
         {
             var path = constraint.first;

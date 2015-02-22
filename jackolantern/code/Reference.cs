@@ -175,7 +175,7 @@ namespace metahub.jackolantern.code
 
             var class_block = dungeon.get_block("class_definition");
             var function_scope = new Scope(class_block.scope);
-            var value = function_scope.create_symbol("value", jack.create_profession_from_signature(tie.get_signature()));
+            var value = function_scope.create_symbol("value", jack.get_profession(tie.get_signature()));
             var function_name = "check_" + tie.tie_name + "_" + property_reference.tie.other_tie.tie_name;
             var portal = jack.get_portal(property_reference.tie);
             var imp = dungeon.spawn_imp(function_name, new List<Parameter>

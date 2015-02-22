@@ -100,7 +100,10 @@ namespace metahub.jackolantern.carvers
             var other_dungeon = jack.get_dungeon_or_error(other_rail);
             var first_name = first_dungeon.get_available_name("map_" + other_dungeon.name.ToLower(), 1);
             var portal = first_dungeon.add_portal(new Portal(first_name, new Profession(Kind.reference, other_dungeon)));
-            //portal.tie = new Tie(first_name, first_type.rail, Kind.reference, other_rail);
+            var tie = new Tie(first_name, first_type.rail, Kind.reference, other_rail);
+            var rail = jack.get_rail(first_dungeon);
+            rail.all_ties[tie.tie_name] = tie;
+            rail.core_ties[tie.tie_name] = tie;
             Dungeon_Carver.generate_setter_stub(portal);
             Dungeon_Carver.generate_setter(portal);
             return portal;

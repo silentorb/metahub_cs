@@ -144,7 +144,7 @@ namespace metahub.jackolantern
             //}
         }
 
-        public Profession create_profession_from_signature(Signature signature)
+        public Profession get_profession(Signature signature)
         {
             var dungeon = signature.rail != null
                 ? get_dungeon(signature.rail)

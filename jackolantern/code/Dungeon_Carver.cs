@@ -46,9 +46,10 @@ namespace metahub.jackolantern.code
 
             foreach (var tie in rail.all_ties.Values)
             {
+                var portal = jack.get_portal(tie);
                 if (tie.type == Kind.list)
                 {
-                    List_Code.common_functions(tie, jack, statements.scope);
+                    List_Code.common_functions(portal, jack, statements.scope);
                 }
                 else
                 {

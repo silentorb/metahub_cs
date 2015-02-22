@@ -107,7 +107,7 @@
     <Compile Include="types\Variable.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Parser\Parser.csproj">
+    <ProjectReference Include="..\Parser\Parser.csproj">
       <Project>{80BEAC71-8BE8-48C5-B109-BAB3F38F6D9F}</Project>
       <Name>Parser</Name>
     </ProjectReference>

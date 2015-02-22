@@ -198,10 +198,10 @@ namespace metahub.jackolantern
                     rail_map1[rail] = dungeon;
                     rail_map2[dungeon] = rail;
 
-                    if (rail.trellis.is_abstract && rail.trellis.is_value)
-                        continue;
+                    //if (rail.trellis.is_abstract && rail.trellis.is_value)
+                    //    continue;
 
-                    overlord.dungeons.Add(dungeon);
+                    //overlord.dungeons.Add(dungeon);
                 }
             }
 
@@ -242,7 +242,9 @@ namespace metahub.jackolantern
         public Tie get_tie(Portal portal)
         {
             var rail = get_rail(portal.dungeon);
-            return rail.all_ties[portal.name];
+            return rail.all_ties.ContainsKey(portal.name)
+                ? rail.all_ties[portal.name]
+                : null;
         }
 
         public Rail get_rail(Trellis trellis)

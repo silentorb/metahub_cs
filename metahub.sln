@@ -5,7 +5,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MetaHub", "MetaHub.csproj",
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Parser", "Parser\Parser.csproj", "{80BEAC71-8BE8-48C5-B109-BAB3F38F6D9F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Imp", "Imp\Imp\Imp.csproj", "{72BB0D03-764D-4799-9380-BBA1A8BE7243}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Imp", "Imp\Imp.csproj", "{72BB0D03-764D-4799-9380-BBA1A8BE7243}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

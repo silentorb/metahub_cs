@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using imperative.Properties;
 using metahub.imperative;
 using metahub.imperative.schema;
 using metahub.imperative.types;
@@ -308,7 +307,7 @@ namespace metahub.render.targets.cpp
                 parents.Add(dungeon.parent);
 
             return parents.Concat(dungeon.interfaces).ToList();
-        } 
+        }
 
         string class_declaration(Dungeon dungeon)
         {
@@ -782,7 +781,7 @@ namespace metahub.render.targets.cpp
                     break;
 
                 case Expression_Type.comment:
-                    return render_comment((Comment) expression);
+                    return render_comment((Comment)expression);
 
                 case Expression_Type.variable:
                     var variable_expression = (Variable)expression;
@@ -897,9 +896,9 @@ namespace metahub.render.targets.cpp
             if (expression.type == Expression_Type.parent_class)
                 return "::";
 
-            if (expression.type == Expression_Type.portal && ((Portal_Expression) expression).index != null)
+            if (expression.type == Expression_Type.portal && ((Portal_Expression)expression).index != null)
                 return "->";
-            
+
             var profession = expression.get_profession();
             return profession == null
                 ? is_pointer(expression.get_profession()) ? "->" : "."
@@ -932,45 +931,15 @@ namespace metahub.render.targets.cpp
                 ? render_expression(expression.reference) + get_connector(expression.reference)
                 : "";
 
-            string portal_name;
-            bool is_list;
-            Dungeon other_dungeon;
-
-            if (expression.portal != null)
-            {
-                portal_name = expression.portal.name;
-                is_list = expression.portal.is_list;
-                other_dungeon = expression.portal.dungeon;
-            }
-            else
-            {
-                portal_name = expression.portal.name;
-                is_list = expression.portal.type == Kind.list;
-                other_dungeon = expression.portal.dungeon;
-            }
-
-            var name = is_list
-                ? "add"
-                : expression.function_type.ToString();
-
-            var method_name = name + "_" + portal_name;
-            var imp = other_dungeon.summon_imp(method_name);
             var args = expression.args.Select(e => render_expression(e)).join(", ");
-            if (imp != null)
-            {
-                return ref_full + method_name + "(" + args + ")";
-            }
-
-            if (expression.portal == null)
-            {
-                return expression.portal.type == Kind.list
-                ? ref_full + portal_name + get_connector(expression.portal.profession) + "push_back(" + args + ")"
-                : ref_full + portal_name + " = " + args;
-            }
+            var portal = expression.portal;
+            var setter = portal.setter_imp;
+            if (setter != null)
+                return ref_full + setter.name + "(" + args + ")";
 
             return expression.portal.is_list
-                ? ref_full + portal_name + get_connector(expression.portal.profession) + "push_back(" + args + ")"
-                : ref_full + portal_name + " = " + args;
+                ? ref_full + portal.name + get_connector(expression.portal.profession) + "push_back(" + args + ")"
+                : ref_full + portal.name + " = " + args;
         }
 
         private string render_platform_function_call(Platform_Function expression, Expression parent)
@@ -1079,8 +1048,8 @@ namespace metahub.render.targets.cpp
 
         string render_comment(Comment comment)
         {
-            return comment.is_multiline 
-                ? "/* " + comment.text + "*/" 
+            return comment.is_multiline
+                ? "/* " + comment.text + "*/"
                 : "// " + comment.text;
         }
 

@@ -140,7 +140,9 @@ namespace metahub.imperative.summoner
         private void process_property_declaration(Pattern_Source source, Context context)
         {
             var type_info = parse_type2(source.patterns[2], context);
-            context.dungeon.add_portal(new Portal(source.patterns[0].text, type_info));
+            var portal_name = source.patterns[0].text;
+            if (!context.dungeon.has_portal(portal_name))
+                context.dungeon.add_portal(new Portal(portal_name, type_info));
         }
 
         private List<Expression> process_block(Pattern_Source source, Context context)

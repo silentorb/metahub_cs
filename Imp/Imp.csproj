@@ -69,7 +69,6 @@
     <Compile Include="schema\Scope.cs" />
     <Compile Include="schema\Symbol.cs" />
     <Compile Include="schema\Used_Function.cs" />
-    <Compile Include="schema\Zone.cs" />
     <Compile Include="summoner\Context.cs" />
     <Compile Include="summoner\expressions\Snippet.cs" />
     <Compile Include="summoner\expressions\Statements.cs" />

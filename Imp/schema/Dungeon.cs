@@ -36,9 +36,12 @@ namespace metahub.imperative.schema
         public Dictionary<string, object> hooks = new Dictionary<string, object>();
         public List<Dungeon> interfaces = new List<Dungeon>();
         public string class_export = "";
+        private int id;
+        private static int next_id = 1;
 
         public Dungeon(string name, Overlord overlord, Realm realm, Dungeon parent = null)
         {
+            id = next_id++;
             this.name = name;
             this.overlord = overlord;
             this.realm = realm;
@@ -57,7 +60,6 @@ namespace metahub.imperative.schema
                 }
             }
         }
-
 
         public Dependency add_dependency(Dungeon dungeon)
         {
@@ -146,9 +148,27 @@ namespace metahub.imperative.schema
 
         public Portal add_portal(Portal portal)
         {
+            if (core_portals.ContainsKey(portal.name))
+                throw new Exception("Dungeon " + name + " already has a portal named " + portal.name + ".");
+
             portal.dungeon = this;
             all_portals[portal.name] = portal;
             core_portals[portal.name] = portal;
+            return portal;
+        }
+
+        public bool has_portal(string portal_name)
+        {
+            return all_portals.ContainsKey(portal_name);
+        }
+
+        public Portal add_parent_portal(Portal portal)
+        {
+            if (all_portals.ContainsKey(portal.name))
+                throw new Exception("Dungeon " + name + " already has a portal named " + portal.name + ".");
+
+            portal.dungeon = this;
+            all_portals[portal.name] = portal;
             return portal;
         }
 
@@ -179,8 +199,8 @@ namespace metahub.imperative.schema
             //}
             //else
             //{
-                if (parent != null && !parent.is_abstract)
-                    add_dependency(parent).allow_partial = false;
+            if (parent != null && !parent.is_abstract)
+                add_dependency(parent).allow_partial = false;
             //}
 
             foreach (var @interface in interfaces)

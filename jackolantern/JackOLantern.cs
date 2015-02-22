@@ -6,6 +6,7 @@ using metahub.Properties;
 using metahub.imperative;
 using metahub.imperative.code;
 using metahub.imperative.schema;
+using metahub.imperative.summoner;
 using metahub.imperative.types;
 using metahub.jackolantern.carvers;
 using metahub.jackolantern.code;
@@ -98,50 +99,26 @@ namespace metahub.jackolantern
             return dungeon.summon_imp("initialize");
         }
 
-        public void implement_constraint(Constraint constraint)
-        {
-            //var ties = Parse.get_endpoints(constraint.first);
-            foreach (var tie in constraint.endpoints.Where(tie => tie != null))
-            {
-                if (tie.type == Kind.list)
-                {
-                    List_Code.generate_constraint(constraint, this);
-                }
-                else
-                {
-                    Reference.generate_constraint(constraint, tie, this);
-                }
-            }
-        }
-
-
-
         public void initialize_dungeon(Dungeon dungeon)
         {
             var rail = get_rail(dungeon);
-
-            if (rail.parent != null)
-                dungeon.parent = get_dungeon(rail.parent);
-
             if (rail != null)
             {
+                if (rail.parent != null)
+                    dungeon.parent = get_dungeon(rail.parent);
+
                 foreach (var tie in rail.all_ties.Values)
                 {
                     Portal portal = create_portal_from_tie(tie, dungeon);
-                    dungeon.all_portals[tie.name] = portal;
                     if (rail.core_ties.ContainsKey(tie.name))
-                        dungeon.core_portals[tie.name] = portal;
+                        dungeon.add_portal(portal);
+                    else
+                        dungeon.add_parent_portal(portal);
+
+                    //if (rail.core_ties.ContainsKey(tie.name))
+                    //    dungeon.core_portals[tie.name] = portal;
                 }
             }
-
-            //foreach (var portal in dungeon.core_portals.Values)
-            //{
-            //    if (portal.rail != null)
-            //        portal.dungeon = overlord.get_dungeon_or_error(portal.rail);
-
-            //    if (portal.other_rail != null)
-            //        portal.other_dungeon = overlord.get_dungeon_or_error(portal.other_rail);
-            //}
         }
 
         public Profession get_profession(Signature signature)
@@ -188,6 +165,7 @@ namespace metahub.jackolantern
                 //    continue;
 
                 var realm = new Realm(region.name, overlord);
+                realm.external_name = region.external_name;
                 overlord.realms[realm.name] = realm;
 
                 foreach (var rail in region.rails.Values)
@@ -257,7 +235,7 @@ namespace metahub.jackolantern
             if (!rail_map1.ContainsKey(rail))
                 return null;
 
-                return rail_map1[rail];
+            return rail_map1[rail];
         }
 
         public Dungeon get_dungeon_or_error(Rail rail)
@@ -271,7 +249,7 @@ namespace metahub.jackolantern
         public Portal get_portal(Tie tie)
         {
             var dungeon = get_dungeon(tie.rail);
-            if (!dungeon.all_portals.ContainsKey(tie.tie_name))
+            if (!dungeon.has_portal(tie.tie_name))
                 return null;
 
             return dungeon.all_portals[tie.tie_name];
@@ -283,7 +261,6 @@ namespace metahub.jackolantern
                     ? get_dungeon(tie.other_rail)
                     : null;
             var portal = new Portal(tie.name, tie.type, dungeon, other_dungeon);
-            //profession = new Profession(tie.type);
 
             if (tie.other_tie != null)
             {
@@ -304,18 +281,18 @@ namespace metahub.jackolantern
 
         public Imp get_setter(Portal portal)
         {
-            var setter = portal.dungeon.summon_imp(get_setter_name(portal))
-                ?? Dungeon_Carver.generate_setter(portal);
-
-            return setter;
+            return portal.setter_imp ?? Dungeon_Carver.generate_setter(portal);
         }
 
-        Expression package_path(IEnumerable<Expression> path)
+        public Expression summon_snippet(string name, Summoner.Context context)
         {
-            if (path.Count() == 1)
-                return path.First();
+            return overlord.summon_snippet(templates[name], context);
+        }
 
-            return new Path(path);
+        public List<Expression> summon_snippet_block(string name, Summoner.Context context)
+        {
+            var statements = (Statements) overlord.summon_snippet(templates[name], context);
+            return statements.children;
         }
 
         public Property_Function_Call call_setter(Portal portal, Expression reference, Expression value, Expression origin)
@@ -327,19 +304,6 @@ namespace metahub.jackolantern
                 : new List<Expression> { value }
              ) { reference = reference };
         }
-
-        /*
-                public Expression translate(Node expression, Scope scope = null)
-        {
-            var swamp = new Swamp(this);
-            return swamp.translate(expression, scope);
-        }
-        public Expression convert_path(IList<metahub.logic.nodes.Node> path, Scope scope = null)
-        {
-            var swamp = new Swamp(this);
-            return swamp.convert_path(path, scope);
-        }
-        */
 
     }
 }

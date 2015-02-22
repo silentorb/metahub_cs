@@ -15,6 +15,9 @@ namespace metahub.imperative.schema
         public Portal other_portal;
         public Portal parent;
         public Profession profession;
+        public Imp setter_imp;
+        private int id; 
+        private static int next_id = 1;
 
         public Kind type
         {
@@ -40,6 +43,7 @@ namespace metahub.imperative.schema
 
         public Portal(string name, Kind type, Dungeon dungeon, Dungeon other_dungeon = null)
         {
+            id = next_id++;
             if (type == Kind.reference && other_dungeon == null)
                 throw new Exception("Invalid portal.");
 
@@ -73,6 +77,14 @@ namespace metahub.imperative.schema
         public Profession get_profession()
         {
             return profession;
+        }
+
+        public Profession get_target_profession()
+        {
+            if (profession.dungeon == null)
+                return profession;
+
+            return new Profession(Kind.reference, other_dungeon);
         }
 
         public object get_default_value()

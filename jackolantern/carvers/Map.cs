@@ -104,7 +104,6 @@ namespace metahub.jackolantern.carvers
             var rail = jack.get_rail(first_dungeon);
             rail.all_ties[tie.tie_name] = tie;
             rail.core_ties[tie.tie_name] = tie;
-            Dungeon_Carver.generate_setter_stub(portal);
             Dungeon_Carver.generate_setter(portal);
             return portal;
         }

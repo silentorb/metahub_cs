@@ -1,12 +1,10 @@
 using System.Collections.Generic;
 using System.Linq;
-using metahub.imperative.code;
 using metahub.imperative.schema;
+using metahub.imperative.summoner;
 using metahub.imperative.types;
 using metahub.logic.schema;
-using metahub.logic.nodes;
 using metahub.schema;
-using Constraint = metahub.logic.schema.Constraint;
 using Expression = metahub.imperative.types.Expression;
 using Function_Call = metahub.imperative.types.Class_Function_Call;
 using Parameter = metahub.imperative.types.Parameter;
@@ -30,6 +28,7 @@ namespace metahub.jackolantern.code
 
             var function_name = "add_" + tie.tie_name;
             var imp = dungeon.spawn_imp(function_name, null, new List<Expression>());
+            portal.setter_imp = imp;
             var signature = tie.get_other_signature();
             var profession = jack.get_profession(signature);
             var item = imp.add_parameter("item", profession).symbol;
@@ -83,7 +82,7 @@ namespace metahub.jackolantern.code
 
             var function_name = "remove_" + portal.name;
             var function_scope = new Scope(scope);
-            var item = function_scope.create_symbol("item", portal.get_profession());
+            var item = function_scope.create_symbol("item", portal.get_target_profession());
             var origin = function_scope.create_symbol("origin", new Profession(Kind.reference));
             var imp = dungeon.spawn_imp(function_name, new List<Parameter>
                 {
@@ -93,220 +92,28 @@ namespace metahub.jackolantern.code
             Function_Definition definition = new Function_Definition(imp);
 
             var block = dungeon.create_block(function_name, scope, definition.expressions);
-            var mid = block.divide(null, new List<Expression>{
-                new Flow_Control(Flow_Control_Type.If, new Platform_Function("contains",
-                    new Portal_Expression(portal),
-                    new List<Expression>
-                    {
-                      new Variable(item)  
-                    }), 
-                new List<Expression> {
-                    new Statement("return")
-                 }),
-                 new Platform_Function("remove", new Portal_Expression(portal), new Expression[] {new Variable(item)})
-            });
-            var post = block.divide("post");
+            var context = new Summoner.Context(imp);
+            context.set_pattern("list", new Portal_Expression(portal));
+            context.set_pattern("item", new Variable(item));
+            var mid = block.divide(null, jack.summon_snippet_block("list_remove", context));
+            //var mid = block.divide(null, new List<Expression>{
+            //    new Flow_Control(Flow_Control_Type.If, new Platform_Function("contains",
+            //        new Portal_Expression(portal),
+            //        new List<Expression>
+            //        {
+            //          new Variable(item)  
+            //        }), 
+            //    new List<Expression> {
+            //        new Statement("return")
+            //     }),
+            //     new Platform_Function("remove", new Portal_Expression(portal), new Expression[] {new Variable(item)})
+            //});
+            block.divide("post");
 
             if (portal.other_portal != null)
             {
                 mid.add(Imp.call_remove(portal.other_portal, new Variable(item), new Self(dungeon)));
             }
-        }
-        
-        public static void generate_constraint(Constraint constraint, JackOLantern imp)
-        {
-            var path = constraint.first;
-            var property_expression = (Property_Node)path;
-            var reference = property_expression.tie;
-            //int amount = target.render_expression(constraint.Node, constraint.scope);
-            var expression = constraint.second;
-
-            //if (constraint.Node.type == metahub.logic.types.Expression_Type.function_call) {
-            //metahub.logic.types.Function_Call func = constraint.Node;
-            //if (func.name == "map") {
-            //map(constraint, Node, imp);
-            //return;
-            //}
-            //}
-
-            var other_path = expression.get_path();
-            if (other_path.Count > 0)
-            {
-                //var last = other_path.Last();
-                //if (last.type == Node_Type.function_call && ((metahub.logic.nodes.Function_Call)last).name == "map")
-                //{
-                //    map(constraint, expression, imp);
-                //    return;
-                //}
-            }
-
-            size(constraint, expression, imp);
-
-        }
-
-        public static void map(Constraint constraint, Node expression, JackOLantern imp)
-        {
-            //var start = constraint.first;
-            //var end = constraint.first;
-            //var path = constraint.second.get_path();
-
-            //var a = constraint.first.get_path().Where(i => i.type == Node_Type.property).Select(i => ((Property_Reference)i).tie).ToList();
-            //var b = path.Where(t => t.type == Node_Type.property).Select(i => ((Property_Reference)i).tie).ToList();
-            //var func = ((metahub.logic.nodes.Function_Call)constraint.second.get_last());
-            //var lambda = func.input.Last() as Lambda;
-            //link(a, b, Parse.reverse_path(b.Take(a.Count - 1)), lambda, imp);
-            //link(b, a, a.Take(a.Count - 1), lambda, imp);
-        }
-        /*
-        public static void link(List<Tie> a, List<Tie> b, IEnumerable<Tie> c, Lambda mapping, JackOLantern jack)
-        {
-            var a_start = a[0];
-            var a_end = a[a.Count - 1];
-
-            var second_start = b[0];
-            var second_end = b[b.Count - 1];
-
-            var item_name = second_end.rail.name.ToLower() + "_item";
-            var scope_dungeon = jack.overlord.get_dungeon(a_end.rail);
-            var function_block = scope_dungeon.get_block("add_" + a_end.tie_name);
-            var new_scope = new Scope(function_block.scope);
-            var item = new_scope.create_symbol("item", second_end.get_other_signature());
-            var item2 = new_scope.create_symbol("item", second_end.get_other_signature());
-            var origin = new_scope.create_symbol("origin", second_end.get_other_signature());
-            var creation_block = new List<Expression>();
-            creation_block.Add(new Declare_Variable(item2,
-                new Instantiate(second_end.other_rail))
-            );
-
-            var dungeon = jack.overlord.get_dungeon(second_end.rail);
-            {
-                {
-                    var item_dungeon = jack.overlord.get_dungeon(a_end.other_rail);
-                    var portal_name = second_end.other_rail.name + "_links";
-                    var portal = item_dungeon.all_portals.ContainsKey(portal_name)
-                                     ? item_dungeon.all_portals[portal_name]
-                                     : item_dungeon.add_portal(new Portal(portal_name, Kind.list, item_dungeon, jack.overlord.get_dungeon(second_end.other_rail))
-                                         {
-                                             other_rail = second_end.other_rail
-                                         });
-                    creation_block.Add(new Platform_Function("add", new Variable(item, new Portal_Expression(portal)),
-                        new List<Expression>
-                        {
-                            new Variable(item2)
-                        }));
-
-                }
-
-                {
-                    var item_dungeon = jack.overlord.get_dungeon(second_end.other_rail);
-                    var portal_name = a_end.other_rail.name + "_links";
-                    var portal = item_dungeon.all_portals.ContainsKey(portal_name)
-                                     ? item_dungeon.all_portals[portal_name]
-                                     : item_dungeon.add_portal(new Portal(portal_name, Kind.list, item_dungeon, jack.overlord.get_dungeon(a_end.other_rail))
-                                     {
-                                         other_rail = a_end.other_rail
-                                     });
-                    creation_block.Add(new Platform_Function("add", new Variable(item2, new Portal_Expression(portal)),
-                        new List<Expression>
-                        {
-                            new Variable(item)
-                        }));
-                }
-            }
-
-            creation_block.Add(Imp.call_initialize(scope_dungeon, jack.overlord.get_dungeon(item2.signature.rail), new Variable(item2)));
-
-            if (mapping != null)
-            {
-                //foreach (Constraint constraint in mapping.constraints)
-                //{
-                //    var first = constraint.first;
-                //    var first_tie = a_end.other_rail.get_tie_or_error(((Property_Reference)first.get_path()[1]).tie.name);
-                //    var second = (Property_Reference)constraint.second.get_last();
-                //    //var second_tie = second.children[] as Property_Reference;
-                //    var variable_portal =
-                //        jack.overlord.get_portal(second_end.other_rail.get_tie_or_error(second.tie.name));
-                //    creation_block.Add(new Variable(item2, new Function_Call("set_" + first_tie.name, null,
-                //        new Expression[]
-                //        {
-                //        new Variable(item, new Portal_Expression(variable_portal))
-                //        }
-                //       )
-                //    ));
-
-                //    var setter_dungeon = jack.overlord.get_dungeon(a_end.other_rail);
-                //    var setter_block = setter_dungeon.get_block("set_" + first_tie.name);
-                //    var value_symbol = setter_block.scope.find_or_exception("value");
-                //    //var item_dungeon = jack.get_dungeon(second_end.other_rail);
-                //    //setter_block.add("post", Imp.setter(first_tie, new Variable(value_symbol), new Tie_Expression(a_end), null));
-                //    var portal = setter_dungeon.all_portals[second_end.other_rail.name + "_links"];
-                //    var iterator_scope = new Scope(setter_block.scope);
-                //    var it = iterator_scope.create_symbol("item", new Signature(Kind.reference, portal.other_rail));
-
-                //    setter_block.add("post", new Iterator(it,
-                //        new Portal_Expression(portal),
-                //        new List<Expression>
-                //        {
-                //              Imp.setter(first_tie, new Variable(value_symbol), new Variable(it) , null)
-                //        })
-                //    );
-                //}
-            }
-
-            creation_block = creation_block.Union(new List<Expression>{
-			new Portal_Expression(jack.get_portal(c.First()),
-				new Function_Call("add_" + second_end.tie_name, null,
-				new Expression[] { new Variable(item2), new Self(dungeon)}))
-		}).ToList();
-
-            List<Expression> block = new List<Expression> {
-				new Flow_Control(Flow_Control_Type.If, new Operation("!=", new List<Expression> {
-				new Variable(origin), new Portal_Expression(jack.get_portal(c.First()))}), creation_block)
-		};
-
-            if (a_start.other_tie.property.allow_null)
-            {
-                block = new List<Expression> {
-				new Flow_Control(Flow_Control_Type.If, 
-					new Operation("!=", new List<Expression> { new Portal_Expression(jack.get_portal(a_start.other_tie)),
-					new Null_Value() }), block
-				)
-			};
-            }
-            function_block.add_many("post", block);
-        }
-        */
-        public static void size(Constraint constraint, Node expression, JackOLantern jack)
-        {
-    //        var path = constraint.first.get_path();
-    //        var property_expression = (Property_Node)path[0];
-    //        var reference = property_expression.tie;
-
-    //        var instance_name = reference.other_rail.rail_name;
-    //        var rail = reference.other_rail;
-    //        Rail local_rail = reference.rail;
-    //        var dungeon = jack.overlord.get_dungeon(local_rail);
-    //        var block = dungeon.get_block("initialize");
-
-    //        //const string child = "child";
-    //        var new_scope = new Scope(block.scope);
-    //        var child = new_scope.create_symbol("child", new Signature(Kind.reference, rail));
-    //        var logic_scope = new Scope();
-    //        var path1 = constraint.first.get_path();
-    //        var imp_ref = jack.convert_path(path1.Take(path1.Count - 1).ToArray(), logic_scope);
-    //        Flow_Control flow_control = new Flow_Control(Flow_Control_Type.While, new Operation("<",
-    //        new List<Expression>{
-    //            imp_ref,
-    //            //{ type: "path", path: constraint.reference },
-    //            jack.translate(expression, logic_scope)
-    //    }), new List<Expression> {
-    //        new Declare_Variable(child, new Instantiate(rail)),
-    //        Imp.call_initialize(dungeon, jack.overlord.get_dungeon(rail), new Variable(child)),
-    //        new Function_Call("add_" + reference.tie_name, null,
-    //        new List<Expression> { new Variable(child), new Null_Value() })
-    //});
-
-    //        block.add(flow_control);
         }
 
     }

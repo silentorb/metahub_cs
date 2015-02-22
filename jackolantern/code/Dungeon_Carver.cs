@@ -37,7 +37,7 @@ namespace metahub.jackolantern.code
         {
             var overlord = jack.overlord;
             var statements = dungeon.get_block("class_definition");
-            if (jack.logician.needs_hub)
+            if (jack.logician.needs_hub && !dungeon.has_portal("hub"))
             {
                 var hub_dungeon = overlord.realms["metahub"].dungeons["Hub"];
                 dungeon.add_portal(new Portal("hub", Kind.reference, dungeon, hub_dungeon));
@@ -53,7 +53,7 @@ namespace metahub.jackolantern.code
                 }
                 else
                 {
-                    if (tie.has_setter())
+                    if (tie.has_setter() && portal.setter_imp == null)
                         Dungeon_Carver.generate_setter(jack.get_portal(tie));
                 }
             }
@@ -121,15 +121,20 @@ namespace metahub.jackolantern.code
 
         public static Imp generate_setter_stub(Portal portal)
         {
+            if (portal.setter_imp != null)
+                return portal.setter_imp;
+
             var dungeon = portal.dungeon;
-            var imp = dungeon.spawn_imp("set_" + portal.name);
+            var imp_name = JackOLantern.get_setter_name(portal);
+            var imp = dungeon.spawn_imp(imp_name);
+            portal.setter_imp = imp;
             var function_scope = imp.scope;
             var value = function_scope.create_symbol("value", portal.get_profession());
             imp.parameters.Add(new Parameter(value));
 
             Function_Definition result = new Function_Definition(imp);
             var block =
-                imp.block = dungeon.create_block("set_" + portal.name, new Scope(function_scope), result.expressions);
+                imp.block = dungeon.create_block(imp_name, new Scope(function_scope), result.expressions);
 
             var pre = block.divide("pre");
 
@@ -153,15 +158,17 @@ namespace metahub.jackolantern.code
                 imp.parameters.Add(new Parameter(origin, new Null_Value()));
             }
 
+            block.divide("post");
             return imp;
         }
 
         public static Imp generate_setter(Portal portal)
         {
-            var imp_name = "set_" + portal.name;
-            var imp = portal.dungeon.summon_imp(imp_name)
-                      ?? generate_setter_stub(portal);
-            
+            if (portal.setter_imp != null)
+                throw new Exception("Portal " + portal.fullname + " already has a setter.");
+
+            var imp = generate_setter_stub(portal);
+
             var block = imp.block;
 
             if (portal.type == Kind.reference && portal.other_portal != null)
@@ -190,10 +197,6 @@ namespace metahub.jackolantern.code
                         }), new List<Expression> {
                             Imp.setter(portal.other_portal, new Self(portal.dungeon), 
                             new Portal_Expression(portal), new Self(portal.dungeon))
-                        //new Portal_Expression(portal,
-                        //new Function_Call("add_" + portal.other_portal.name, null,
-                        //    new List<Expression> { new Self(portal.dungeon), new Self(portal.dungeon) }))
-                    
                     }));
                 }
             }

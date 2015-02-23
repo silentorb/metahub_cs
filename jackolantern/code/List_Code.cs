@@ -28,7 +28,7 @@ namespace metahub.jackolantern.code
 
             var function_name = "add_" + tie.tie_name;
             var imp = dungeon.spawn_imp(function_name, null, new List<Expression>());
-            portal.setter_imp = imp;
+            portal.setter = imp;
             var signature = tie.get_other_signature();
             var profession = jack.get_profession(signature);
             var item = imp.add_parameter("item", profession).symbol;

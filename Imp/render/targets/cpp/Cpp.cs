@@ -69,15 +69,8 @@ namespace metahub.render.targets.cpp
         override public void generate_rail_code(Dungeon dungeon)
         {
             var func = dungeon.spawn_imp(dungeon.name);
-            //Function_Definition func = new Function_Definition(dungeon.name, dungeon, new List<imperative.types.Parameter>(),
-            //    new List<Expression>());
             func.return_type = null;
             func = dungeon.spawn_imp("~" + dungeon.name);
-            //func = new Function_Definition("~" + dungeon.name, dungeon, new List<imperative.types.Parameter>(),
-            //new List<Expression>()	//references.map((tie)=> new Function_Call("SAFE_DELETE",
-            //    //[new Property_Reference(tie)])
-            //    //)
-            //);
             func.return_type = null;
         }
 
@@ -92,11 +85,11 @@ namespace metahub.render.targets.cpp
                 else if (!portal.is_list)
                     scalars.Add(portal);
             }
-            var block = references.Select(portal => new Assignment(
-                new Portal_Expression(portal), "=", new Null_Value()))
-                .Union(scalars.Select(portal => new Assignment(
-                new Portal_Expression(portal), "=",
-                new Literal(portal.get_default_value(),
+            var block = references.Select(portal => 
+                new Assignment(new Portal_Expression(portal), "=", new Null_Value()))
+                .Union(scalars.Select(portal => 
+                    new Assignment(new Portal_Expression(portal), "=", 
+                        new Literal(portal.get_default_value(),
                             portal.get_profession())))
             );
 
@@ -370,19 +363,6 @@ namespace metahub.render.targets.cpp
             return result;
         }
 
-        //string render_functions (Rail rail) {
-        //var result = "";
-        //var definitions = [ render_initialize_definition(rail) ];
-        //
-        ////foreach (var tie in rail.all_ties) {
-        ////var definition = render_setter(tie);
-        ////if (definition.Count > 0)
-        ////definitions.Add(definition);
-        ////}
-        ////
-        //return definitions.join(newline());
-        //}
-
         string render_rail_name(Dungeon dungeon)
         {
             if (dungeon.realm != current_realm)
@@ -440,59 +420,10 @@ namespace metahub.render.targets.cpp
                 declarations.Add(line("void initialize_post(); // Externally defined."));
             }
 
-            //if (dungeon.rail != null)
-            //{
-            //    foreach (var tie in dungeon.rail.all_ties.Values)
-            //    {
-            //        if (tie.has_set_post_hook)
-            //            declarations.Add(
-            //                line("void " + tie.get_setter_post_name() + "(" + get_property_type_string(tie, true) +
-            //                     " value);"));
-            //    }
-            //}
-
-            //foreach (var tie in rail.all_ties) {
-            //if (tie.has_setter())
-            //declarations.Add(line(render_signature_old("set_" + tie.tie_name, tie) + ";"));
-            //}
-
-            //declarations.AddRange(dungeon.functions.Select(render_function_declaration));
             declarations.AddRange(dungeon.imps.Values.Select(render_function_declaration));
 
             return declarations.join("");
         }
-
-        //string render_initialize_definition (Rail rail) {
-        //var result = line("void " + rail.rail_name + "::initialize() {");
-        //indent();
-        //result += line(rail.parent != null
-        //? rail.parent.rail_name + "::initialize();"
-        //: ""
-        //);
-        //foreach (var tie in rail.all_ties) {
-        //if (tie.property.type == Kind.list) {
-        //foreach (var constraint in tie.constraints) {
-        //result += Constraints.render_list_constraint(constraint, render, this);
-        //}
-        //}
-        //}
-        //if (rail.hooks.ContainsKey("initialize_post")) {
-        //result += line("initialize_post();");
-        //}
-        //unindent();
-        //return result + line("}");
-        //}
-
-        //string get_rail_type_string(Rail rail)
-        //{
-        //    var name = rail.rail_name;
-        //    if (rail.region.external_name != null)
-        //        name = rail.region.external_name + "::" + name;
-        //    else if (rail.region.name != current_realm.name)
-        //        name = rail.region.name + "::" + name;
-
-        //    return name;
-        //}
 
         string render_dungeon_path(Dungeon dungeon)
         {
@@ -533,11 +464,6 @@ namespace metahub.render.targets.cpp
             + (definition.is_abstract ? " = 0;" : ";"));
         }
 
-        string get_property_type_string(Portal portal, bool is_parameter = false)
-        {
-            return render_signature(portal.get_profession(), is_parameter);
-        }
-
         string render_profession(Profession signature, bool is_parameter = false)
         {
             if (signature.dungeon == null)
@@ -574,13 +500,6 @@ namespace metahub.render.targets.cpp
             return render_signature(symbol.profession, is_parameter);
         }
 
-        //private string render_signature(Signature signature, bool is_parameter = false)
-        //{
-        //    return render_signature(new Profession(signature.type, signature.rail != null
-        //        ? overlord.get_dungeon(signature.rail)
-        //        : null));
-        //}
-
         string render_signature(Profession signature, bool is_parameter = false)
         {
             if (signature.dungeon == null)
@@ -599,13 +518,12 @@ namespace metahub.render.targets.cpp
                 return signature.dungeon.is_value ? is_parameter ? name + "&" : name :
                         name + "*";
             }
-            else
-            {
-                return "std::vector<" + (signature.dungeon.is_value
+
+            var name2 = signature.dungeon.is_value
                 ? name
-                : name + "*")
-                + ">";
-            }
+                : name + "*";
+
+            return "std::vector<" + name2 + ">";
         }
 
         public string render_block(string command, string expression, String_Delegate action)
@@ -648,36 +566,6 @@ namespace metahub.render.targets.cpp
             result += line((minimal ? "" : "}"));
             return result;
         }
-
-        //string render_setter (Tie tie) {
-        //if (!tie.has_setter())
-        //return "";
-
-        //var result = line(render_signature_old("set_" + tie.tie_name, tie) + " {");
-        //indent();
-        //foreach (var constraint in tie.constraints) {
-        //result += Constraints.render(constraint, render, this);
-        //}
-        //result +=
-        //line("if (" + tie.tie_name + " == value)")
-        //+ indent().line("return;")
-        //+	unindent().newline()
-        //+ line(tie.tie_name + " = value;");
-        //if (tie.has_set_post_hook)
-        //result += line(tie.get_setter_post_name() + "(value);");
-        //
-        //unindent();
-        //result += line("}");
-        //return result;
-        //}
-
-        //string render_path (List<Tie> path) {
-        //    return path.Select(t => t.tie_name).join("->");
-        //}
-
-        //string render_function_call (Function_Call statement) {
-        //return line(statement.name + "();");
-        //}
 
         string render_flow_control(Flow_Control statement)
         {
@@ -733,18 +621,6 @@ namespace metahub.render.targets.cpp
 
                 case Expression_Type.operation:
                     return render_operation((Operation)expression);
-
-                //case Expression_Type.path:
-                //    result = render_path_old((Path)expression);
-                //    break;
-
-                //case Expression_Type.property:
-                //    var tie_expression = (Tie_Expression)expression;
-                //    result = tie_expression.tie.tie_name;
-                //    if (tie_expression.index != null)
-                //        result += "[" + render_expression(tie_expression.index) + "]";
-
-                //    break;
 
                 case Expression_Type.portal:
                     var portal_expression = (Portal_Expression)expression;
@@ -854,32 +730,6 @@ namespace metahub.render.targets.cpp
             }
         }
 
-        //Signature get_signature(Expression expression)
-        //{
-        //    switch (expression.type)
-        //    {
-        //        //case Expression_Type.variable:
-        //        //    var variable_expression = (Variable)expression;
-        //        //    return variable_expression.symbol.signature;
-
-        //        //case Expression_Type.property:
-        //        //    var property_expression = (Tie_Expression)expression;
-        //        //    return property_expression.tie.get_signature();
-
-        //        default:
-        //            return expression.get_signature();
-        //        //throw new Exception("Determining pointer is not yet implemented for Node type: " + expression.type + ".");
-        //    }
-        //}
-
-        //bool is_pointer(Signature signature)
-        //{
-        //    if (signature.type == null)
-        //        throw new Exception();
-
-        //    return !signature.is_value && signature.type != Kind.list;
-        //}
-
         bool is_pointer(Profession signature)
         {
             if (signature.type == null)
@@ -910,16 +760,6 @@ namespace metahub.render.targets.cpp
             return is_pointer(profession) ? "->" : ".";
         }
 
-        //Signature find_variable (string name) {
-        //    var i = scopes.Count;
-        //    while (--i >= 0) {
-        //        if (scopes[i].ContainsKey(name))
-        //            return scopes[i][name];
-        //    }
-
-        //    return null;
-        //}
-
         string render_instantiation(Instantiate expression)
         {
             return "new " + render_dungeon_path(expression.dungeon) + "()";
@@ -933,7 +773,7 @@ namespace metahub.render.targets.cpp
 
             var args = expression.args.Select(e => render_expression(e)).join(", ");
             var portal = expression.portal;
-            var setter = portal.setter_imp;
+            var setter = portal.setter;
             if (setter != null)
                 return ref_full + setter.name + "(" + args + ")";
 
@@ -1020,27 +860,6 @@ namespace metahub.render.targets.cpp
                 .join(", ") + ")";
         }
 
-        string render_path_old(Path expression)
-        {
-            Expression parent = null;
-            var result = "";
-            foreach (var child in expression.children)
-            {
-                var connector = "";
-                if (parent != null)
-                    connector = get_connector(parent);
-
-                var new_part = render_expression(child, parent);
-                if (new_part.Length > 0 && new_part[0] == '[')
-                    connector = "";
-
-                result += connector + new_part;
-                parent = child;
-            }
-
-            return result;
-        }
-
         string render_assignment(Assignment statement)
         {
             return line(render_expression(statement.target) + " " + statement.op + " " + render_expression(statement.expression) + ";");
@@ -1052,21 +871,5 @@ namespace metahub.render.targets.cpp
                 ? "/* " + comment.text + "*/"
                 : "// " + comment.text;
         }
-
-        //public object render_expression (Node Node, Scope scope) {
-        //var type = Railway.get_class_name(Node);
-        //trace("Node:", type);
-        //
-        //switch(type) {
-        //case "Literal":
-        //return render_literal(Node);
-        //}
-        //
-        //throw new Exception("Cannot render Node " + type + ".");
-        //}
-        //
-        //string render_literal (Literal Node) {
-        //return Node.value;
-        //}
     }
 }

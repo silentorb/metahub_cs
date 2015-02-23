@@ -21,7 +21,6 @@ namespace metahub.imperative.schema
         public List<Expression> code;
         public Dictionary<string, string[]> inserts;
         Dictionary<string, Block> blocks = new Dictionary<string, Block>();
-        //public List<Function_Definition> functions = new List<Function_Definition>();
         public Overlord overlord;
         public Dictionary<string, Imp> imps = new Dictionary<string, Imp>();
         public Dictionary<string, Portal> all_portals = new Dictionary<string, Portal>();
@@ -38,6 +37,7 @@ namespace metahub.imperative.schema
         public string class_export = "";
         private int id;
         private static int next_id = 1;
+        public object default_value;
 
         public Dungeon(string name, Overlord overlord, Realm realm, Dungeon parent = null)
         {

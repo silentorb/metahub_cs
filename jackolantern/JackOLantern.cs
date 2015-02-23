@@ -139,6 +139,7 @@ namespace metahub.jackolantern
             dungeon.stubs = rail.stubs;
             dungeon.hooks = rail.hooks;
             dungeon.class_export = rail.class_export;
+            dungeon.default_value = rail.default_value;
 
             var region = rail.region;
             if (region.trellis_additional.ContainsKey(rail.trellis.name))
@@ -276,12 +277,15 @@ namespace metahub.jackolantern
             }
 
             portal.is_value = tie.is_value;
+            if (tie.property != null)
+                portal.default_value = tie.property.default_value;
+
             return portal;
         }
 
         public Imp get_setter(Portal portal)
         {
-            return portal.setter_imp ?? Dungeon_Carver.generate_setter(portal);
+            return portal.setter ?? Dungeon_Carver.generate_setter(portal, this);
         }
 
         public Expression summon_snippet(string name, Summoner.Context context)

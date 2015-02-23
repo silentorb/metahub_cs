@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using metahub.imperative;
 using metahub.imperative.schema;
+using metahub.imperative.summoner;
 using metahub.imperative.types;
 using metahub.logic;
 using metahub.logic.schema;
@@ -28,7 +29,7 @@ namespace metahub.jackolantern.code
                 else
                 {
                     if (tie.has_setter())
-                        Dungeon_Carver.generate_setter_stub(jack.get_portal(tie));
+                        Dungeon_Carver.generate_setter_stub(jack.get_portal(tie), jack);
                 }
             }
         }
@@ -53,8 +54,8 @@ namespace metahub.jackolantern.code
                 }
                 else
                 {
-                    if (tie.has_setter() && portal.setter_imp == null)
-                        Dungeon_Carver.generate_setter(jack.get_portal(tie));
+                    if (tie.has_setter())
+                        Dungeon_Carver.generate_setter(jack.get_portal(tie), jack);
                 }
             }
 
@@ -101,7 +102,7 @@ namespace metahub.jackolantern.code
 
             if (imp == null || imp.portal != null)
             {
-                new_imp = generate_setter(portal);
+                new_imp = generate_setter(portal, jack);
                 new_block = new_imp.block;
                 if (imp != null)
                 {
@@ -119,15 +120,15 @@ namespace metahub.jackolantern.code
             new_block.divide("post");
         }
 
-        public static Imp generate_setter_stub(Portal portal)
+        public static Imp generate_setter_stub(Portal portal, JackOLantern jack)
         {
-            if (portal.setter_imp != null)
-                return portal.setter_imp;
+            if (portal.setter != null)
+                return portal.setter;
 
             var dungeon = portal.dungeon;
             var imp_name = JackOLantern.get_setter_name(portal);
             var imp = dungeon.spawn_imp(imp_name);
-            portal.setter_imp = imp;
+            portal.setter = imp;
             var function_scope = imp.scope;
             var value = function_scope.create_symbol("value", portal.get_profession());
             imp.parameters.Add(new Parameter(value));
@@ -138,19 +139,10 @@ namespace metahub.jackolantern.code
 
             var pre = block.divide("pre");
 
-            var mid = block.divide("mid", new List<Expression>
-                {
-                    new Flow_Control(Flow_Control_Type.If, new Operation("==", new List<Expression>
-                        {
-                            new Portal_Expression(portal),
-                            new Variable(value)
-                        }),
-                                     new List<Expression>
-                                         {
-                                             new Statement("return")
-                                         }),
-                    new Assignment(new Portal_Expression(portal), "=", new Variable(value))
-                });
+            var context = new Summoner.Context(imp);
+            context.set_pattern("portal", new Portal_Expression(portal));
+            context.set_pattern("value", new Variable(value));
+            block.divide("mid", jack.summon_snippet_block("reference_setter", context));
 
             if (portal.type == Kind.reference && portal.other_portal != null)
             {
@@ -162,12 +154,12 @@ namespace metahub.jackolantern.code
             return imp;
         }
 
-        public static Imp generate_setter(Portal portal)
+        public static Imp generate_setter(Portal portal, JackOLantern jack)
         {
-            if (portal.setter_imp != null)
-                throw new Exception("Portal " + portal.fullname + " already has a setter.");
+            //if (portal.setter != null)
+            //    throw new Exception("Portal " + portal.fullname + " already has a setter.");
 
-            var imp = generate_setter_stub(portal);
+            var imp = generate_setter_stub(portal, jack);
 
             var block = imp.block;
 
@@ -183,33 +175,15 @@ namespace metahub.jackolantern.code
                 else
                 {
                     var origin = imp.scope.find_or_exception("origin");
-                    var value = imp.scope.find_or_exception("value"); 
-                    block.add("mid", new Flow_Control(Flow_Control_Type.If, new Operation("&&", new List<Expression>
-                        {
-                            new Operation("!=", new List<Expression>
-                            {
-                                new Variable(origin), new Variable(value)
-                            }),
-                            new Operation("!=", new List<Expression>
-                            {
-                                new Portal_Expression(portal), new Null_Value()
-                            }),
-                        }), new List<Expression> {
-                            Imp.setter(portal.other_portal, new Self(portal.dungeon), 
-                            new Portal_Expression(portal), new Self(portal.dungeon))
-                    }));
+                    var value = imp.scope.find_or_exception("value");
+                    var context = new Summoner.Context(imp);
+
+                    context.set_pattern("portal", new Portal_Expression(portal));
+                    context.set_pattern("other_portal", new Portal_Expression(portal.other_portal));
+
+                    block.add("mid", jack.summon_snippet("set_other", context));
                 }
             }
-
-            var post = block.divide("post");
-
-            //if (tie.has_set_post_hook)
-            //{
-            //    post.add(new Function_Call(tie.get_setter_post_name(), null,
-            //        new List<Expression> {
-            //        new Variable(value)
-            //    }));
-            //}
 
             return imp;
         }

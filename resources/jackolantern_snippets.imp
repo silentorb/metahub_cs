@@ -61,3 +61,16 @@ list_remove(list, item) {
 
 	list.remove(item)
 }
+
+set_other(value, origin, portal, other_portal) {
+	if (value != origin && portal != null) {
+		portal.other_portal = this
+	}
+}
+
+reference_setter(portal, value) {
+	if (portal == value)
+		return
+
+	portal @= value
+}

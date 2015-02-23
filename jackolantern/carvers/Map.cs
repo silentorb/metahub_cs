@@ -84,7 +84,7 @@ namespace metahub.jackolantern.carvers
             var context = Lantern.prepare_add_to_list(list_expression, portal, first_portal.profession, jack);
             context.set_pattern("main_item", new Variable(setter.scope.find_or_exception("item")));
             context.set_pattern("$link", new Portal_Expression(second_portal));
-            return jack.overlord.summon_snippet(jack.templates["map_add_to_list"], context);
+            return jack.summon_snippet("map_add_to_list", context);
         }
 
         static void point_at(Portal pointer, Portal target)
@@ -104,7 +104,7 @@ namespace metahub.jackolantern.carvers
             var rail = jack.get_rail(first_dungeon);
             rail.all_ties[tie.tie_name] = tie;
             rail.core_ties[tie.tie_name] = tie;
-            Dungeon_Carver.generate_setter(portal);
+            Dungeon_Carver.generate_setter(portal, jack);
             return portal;
         }
     }

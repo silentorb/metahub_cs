@@ -15,9 +15,10 @@ namespace metahub.imperative.schema
         public Portal other_portal;
         public Portal parent;
         public Profession profession;
-        public Imp setter_imp;
+        public Imp setter;
         private int id; 
         private static int next_id = 1;
+        public object default_value;
 
         public Kind type
         {
@@ -89,13 +90,11 @@ namespace metahub.imperative.schema
 
         public object get_default_value()
         {
-            //if (tie != null)
-            //{
-            //    if (tie.other_rail != null && tie.other_rail.default_value != null)
-            //        return tie.other_rail.default_value;
-
-            //    return tie.property.get_default();
-            //}
+            if (other_dungeon != null && other_dungeon.default_value != null)
+                return other_dungeon.default_value;
+            
+            if (default_value != null)
+                return default_value;
 
             switch (type)
             {

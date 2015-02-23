@@ -78,7 +78,7 @@ namespace metahub.imperative.summoner
 
             var statements = source.patterns[7].patterns;
             var dungeon = context.realm.dungeons[name];
-            var dungeon_context = new Context(context) {dungeon = dungeon};
+            var dungeon_context = new Context(context) { dungeon = dungeon };
             foreach (var statement in statements)
             {
                 process_dungeon_statement(statement, dungeon_context);
@@ -128,7 +128,7 @@ namespace metahub.imperative.summoner
                               name,
                               source.patterns[4].patterns.Select(p => process_parameter(p, context)).ToList()
                                 );
-            var new_context = new Context(context) {scope = imp.scope};
+            var new_context = new Context(context) { scope = imp.scope };
 
             var return_type = source.patterns[7];
             if (return_type.patterns.Length > 0)
@@ -153,7 +153,7 @@ namespace metahub.imperative.summoner
                 var expression = process_statement(pattern, context);
                 if (expression.type == Expression_Type.statements)
                 {
-                    var statements = (Statements) expression;
+                    var statements = (Statements)expression;
                     result.AddRange(statements.children);
                 }
                 else
@@ -176,14 +176,16 @@ namespace metahub.imperative.summoner
                     return process_expression(source, context);
 
                 case "if":
-                    return new Flow_Control(Flow_Control_Type.If, process_expression(source.patterns[4], context),
-                                            process_block(source.patterns[8], context)
-                        );
+                    return new Flow_Control(Flow_Control_Type.If,
+                        process_expression(source.patterns[4], context),
+                        process_block(source.patterns[8], context)
+                    );
 
                 case "while":
-                    return new Flow_Control(Flow_Control_Type.While, process_expression(source.patterns[4], context),
-                                            process_block(source.patterns[8], context)
-                        );
+                    return new Flow_Control(Flow_Control_Type.While, 
+                        process_expression(source.patterns[4], context),
+                        process_block(source.patterns[8], context)
+                    );
 
                 case "for":
                     return process_iterator(source, context);
@@ -298,11 +300,15 @@ namespace metahub.imperative.summoner
                     var symbol = context.scope.find_or_null(token);
                     if (symbol != null)
                     {
-                        next = new Variable(symbol) {index = array_access};
+                        next = new Variable(symbol) { index = array_access };
                         var profession = next.get_profession();
-                        dungeon = profession != null 
-                            ? profession.dungeon 
+                        dungeon = profession != null
+                            ? profession.dungeon
                             : next.get_profession().dungeon;
+                    }
+                    else if (token == "this")
+                    {
+                        return new Self(dungeon);
                     }
                     else
                     {
@@ -311,7 +317,7 @@ namespace metahub.imperative.summoner
 
                         if (portal != null)
                         {
-                            next = new Portal_Expression(portal) {index = array_access};
+                            next = new Portal_Expression(portal) { index = array_access };
                             dungeon = portal.other_dungeon;
                         }
                         else
@@ -348,7 +354,7 @@ namespace metahub.imperative.summoner
                 else
                 {
                     if (last.type == Expression_Type.property_function_call)
-                        ((Property_Function_Call) last).args.Add(next);
+                        ((Property_Function_Call)last).args.Add(next);
                     else
                         last.child = next;
                 }
@@ -371,7 +377,7 @@ namespace metahub.imperative.summoner
             if (Imp.platform_specific_functions.Contains(token))
             {
                 if (token == "add" || token == "setter")
-                    return new Property_Function_Call(Property_Function_Type.set, ((Portal_Expression) last).portal,
+                    return new Property_Function_Call(Property_Function_Type.set, ((Portal_Expression)last).portal,
                                                       args);
 
                 return new Platform_Function(token, result, args);
@@ -442,13 +448,13 @@ namespace metahub.imperative.summoner
                 switch (text)
                 {
                     case "bool":
-                        return new Profession(Kind.Bool) {is_list = is_list};
+                        return new Profession(Kind.Bool) { is_list = is_list };
                     case "string":
-                        return new Profession(Kind.String) {is_list = is_list};
+                        return new Profession(Kind.String) { is_list = is_list };
                     case "float":
-                        return new Profession(Kind.Float) {is_list = is_list};
+                        return new Profession(Kind.Float) { is_list = is_list };
                     case "int":
-                        return new Profession(Kind.Int) {is_list = is_list};
+                        return new Profession(Kind.Int) { is_list = is_list };
                 }
 
                 var profession = context.get_profession_pattern(text);
@@ -473,7 +479,7 @@ namespace metahub.imperative.summoner
                 realm = context.realm;
 
             if (realm.dungeons.ContainsKey(text))
-                return new Profession(Kind.reference, realm.dungeons[text]) {is_list = is_list};
+                return new Profession(Kind.reference, realm.dungeons[text]) { is_list = is_list };
 
             var dungeon = overlord.get_dungeon(text);
             if (dungeon != null)
@@ -488,34 +494,16 @@ namespace metahub.imperative.summoner
             var expression = process_expression(source.patterns[4], context);
             var op = source.patterns[2].text;
             var last = reference.get_end();
-            //if (last.type == Expression_Type.property)
-            //{
-            //    var tie_expression = (Tie_Expression)last;
-            //    if (tie_expression.tie.type != Kind.list && op != "=")
-            //    {
-            //        expression = Imp.operation(op[0].ToString(), reference.clone(), expression);
-            //    }
 
-            //    if (last != reference)
-            //    {
-            //        last.parent.child = null;
-            //        last.parent = null;
-            //    }
-
-            //    return new Property_Function_Call(Property_Function_Type.set, tie_expression.tie, new List<Expression>
-            //        {
-            //            expression
-            //        }) { reference = reference };
-            //}
-
-            if (last.type == Expression_Type.portal)
+            if (last.type == Expression_Type.portal && op != "@=")
             {
-                var portal_expression = (Portal_Expression) last;
+                var portal_expression = (Portal_Expression)last;
                 var portal = portal_expression.portal;
                 if (portal.type != Kind.list && op != "=")
                 {
                     expression = Imp.operation(op[0].ToString(), reference.clone(), expression);
                 }
+                var args = new List<Expression> {expression};
 
                 // The setter absorbs the portal token, so remove it from the reference.
                 if (last == reference)
@@ -528,11 +516,18 @@ namespace metahub.imperative.summoner
                     last.parent = null;
                 }
 
-                return new Property_Function_Call(Property_Function_Type.set, portal, new List<Expression>
-                    {
-                        expression
-                    }) {reference = reference};
+                // Check for origin parameter
+                if (portal.setter != null && portal.setter.parameters.Count > 1)
+                {
+                    args.Add(new Self(context.dungeon));
+                }
+
+                return new Property_Function_Call(Property_Function_Type.set, portal, args) { reference = reference };
             }
+
+            // @= forces direct assignment without setters
+            if (op == "@=")
+                op = "=";
 
             return new Assignment(
                 reference,
@@ -554,7 +549,7 @@ namespace metahub.imperative.summoner
 
         private Expression process_instantiate(Pattern_Source source, Context context)
         {
-            var type = parse_type2(new[] {source.patterns[2].text}, context);
+            var type = parse_type2(new[] { source.patterns[2].text }, context);
             return new Instantiate(type.dungeon);
         }
 

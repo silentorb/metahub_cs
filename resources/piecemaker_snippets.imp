@@ -16,10 +16,10 @@
 }
 
 create_distance_conflict(T, T2, path, path2) {
-	var offset:T = (it.path + value) / 2
+	var offset:T = (other_path + value) / 2
 	var conflict:T2 = new T2()
 	conflict.nodes.add(this)
-	conflict.nodes.add(it)
-	path2 = conflict
+//	conflict.nodes.add(it)
+//	path2 = conflict
 	return false
 }

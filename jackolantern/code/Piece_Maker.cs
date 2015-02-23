@@ -53,13 +53,15 @@ namespace metahub.imperative.code
             context.set_pattern("Node_Type", new Profession(Kind.reference, dungeon));
             context.set_pattern("Class_Name", "Distance_Conflict");
 
-            var result = jack.overlord.summon_dungeon(Piece_Maker.templates["Distance_Conflict"], context);
+            var result = jack.summon_dungeon(Piece_Maker.templates["Distance_Conflict"], context);
             var portal = result.all_portals["nodes"];
             var scope = new Scope();
             scope.add_map("a", c => new Portal_Expression(portal) { index = new Literal((int)0) });
             scope.add_map("b", c => new Portal_Expression(portal) { index = new Literal((int)1) });
             var imp = result.summon_minion("is_resolved");
             var swamp = new Swamp(jack, null, context);
+            imp.expressions.Add(new Statement("return", new Literal(true)));
+
             //imp.expressions.Add(new Statement("return",
             //    new Operation(constraint.op, new List<Expression>{ 
             //        new Platform_Function("dist", new Portal_Expression(portal, 

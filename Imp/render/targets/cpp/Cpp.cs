@@ -66,7 +66,7 @@ namespace metahub.render.targets.cpp
             }
         }
 
-        override public void generate_rail_code(Dungeon dungeon)
+        override public void generate_dungeon_code(Dungeon dungeon)
         {
             var func = dungeon.spawn_minion(dungeon.name);
             func.return_type = null;
@@ -86,7 +86,7 @@ namespace metahub.render.targets.cpp
                     scalars.Add(portal);
             }
             var block = references.Select(portal => 
-                new Assignment(new Portal_Expression(portal), "=", new Null_Value()))
+                (Expression)new Assignment(new Portal_Expression(portal), "=", new Null_Value()))
                 .Union(scalars.Select(portal => 
                     new Assignment(new Portal_Expression(portal), "=", 
                         new Literal(portal.get_default_value(),
@@ -94,7 +94,7 @@ namespace metahub.render.targets.cpp
             );
 
             var func = dungeon.summon_minion(dungeon.name);
-            func.expressions = ((IEnumerable<Expression>)block).ToList();
+            func.expressions = block.ToList();
         }
 
         void push_scope()

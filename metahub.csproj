@@ -68,7 +68,7 @@
     <Compile Include="jackolantern\carvers\Carver.cs" />
     <Compile Include="jackolantern\carvers\In.cs" />
     <Compile Include="jackolantern\carvers\Map.cs" />
-    <Compile Include="jackolantern\code\Dungeon_Carver.cs" />
+    <Compile Include="jackolantern\code\Dwarf.cs" />
     <Compile Include="jackolantern\code\Lantern.cs" />
     <Compile Include="jackolantern\code\Piece_Maker.cs" />
     <Compile Include="jackolantern\code\Portal_Carver.cs" />

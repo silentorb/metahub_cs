@@ -25,15 +25,23 @@ namespace metahub.jackolantern
         public Overlord overlord;
         public Dictionary<string, Carver> carvers = new Dictionary<string, Carver>();
         public Dictionary<string, Snippet> templates = null;
-        public Dictionary<Rail, Dungeon> rail_map1 = new Dictionary<Rail, Dungeon>();
-        public Dictionary<Dungeon, Rail> rail_map2 = new Dictionary<Dungeon, Rail>();
-        public Railway railway;
+        //public Dictionary<Rail, Dungeon> rail_map1 = new Dictionary<Rail, Dungeon>();
+        //public Dictionary<Dungeon, Rail> rail_map2 = new Dictionary<Dungeon, Rail>();
 
-        public JackOLantern(Logician logician, Overlord overlord, Hub hub, Railway railway)
+        //public Dictionary<Dwarf, Dungeon> dungeons = new Dictionary<Dwarf, Dungeon>();
+        public Dictionary<Dungeon, Dwarf> dwarves = new Dictionary<Dungeon, Dwarf>();
+        public Dictionary<Rail, Dwarf> rail_dwarves = new Dictionary<Rail, Dwarf>();
+
+        public Railway railway;
+        public Target target;
+
+        public JackOLantern(Logician logician, Overlord overlord, Hub hub, Railway railway, Target target)
         {
             this.logician = logician;
             this.overlord = overlord;
             this.railway = railway;
+            this.target = target;
+
             initialize_functions();
 
             if (Piece_Maker.templates == null)
@@ -52,7 +60,7 @@ namespace metahub.jackolantern
             carvers["map"] = new Map(this);
         }
 
-        public void run(Target target)
+        public void run()
         {
             generate_code(target);
 
@@ -155,7 +163,17 @@ namespace metahub.jackolantern
 
         public Rail get_rail(Dungeon dungeon)
         {
-            return rail_map2[dungeon];
+            return dwarves[dungeon].rail;
+        }
+
+        public Dwarf add_dwarf(Dungeon dungeon, Rail rail = null)
+        {
+            var dwarf = new Dwarf(this, dungeon, rail);
+            dwarves[dungeon] = dwarf;
+            if (rail != null)
+                rail_dwarves[rail] = dwarf;
+
+            return dwarf;
         }
 
         public void generate_code(Target target)
@@ -174,8 +192,7 @@ namespace metahub.jackolantern
 
                     Dungeon dungeon = create_dungeon_from_rail(rail, realm);
                     realm.dungeons[dungeon.name] = dungeon;
-                    rail_map1[rail] = dungeon;
-                    rail_map2[dungeon] = rail;
+                    add_dwarf(dungeon, rail);
 
                     //if (rail.trellis.is_abstract && rail.trellis.is_value)
                     //    continue;
@@ -200,13 +217,13 @@ namespace metahub.jackolantern
             foreach (var dungeon in not_external)
             {
                 dungeon.generate_code();
-                Dungeon_Carver.generate_code1(this, dungeon, get_rail(dungeon));
+                dwarves[dungeon].generate_code1();
             }
 
             foreach (var dungeon in not_external)
             {
-                target.generate_rail_code(dungeon);
-                Dungeon_Carver.generate_code2(this, dungeon, get_rail(dungeon));
+                target.generate_dungeon_code(dungeon);
+                dwarves[dungeon].generate_code2();
             }
 
             overlord.summon(Resources.metahub_imp);
@@ -233,18 +250,18 @@ namespace metahub.jackolantern
 
         public Dungeon get_dungeon(Rail rail)
         {
-            if (!rail_map1.ContainsKey(rail))
+            if (!rail_dwarves.ContainsKey(rail))
                 return null;
 
-            return rail_map1[rail];
+            return rail_dwarves[rail].dungeon;
         }
 
         public Dungeon get_dungeon_or_error(Rail rail)
         {
-            if (!rail_map1.ContainsKey(rail))
+            if (!rail_dwarves.ContainsKey(rail))
                 throw new Exception("Could not find dungeon for rail " + rail.name + ".");
 
-            return rail_map1[rail];
+            return rail_dwarves[rail].dungeon;
         }
 
         public Portal get_portal(Tie tie)
@@ -254,6 +271,14 @@ namespace metahub.jackolantern
                 return null;
 
             return dungeon.all_portals[tie.tie_name];
+        }
+
+        public Dungeon summon_dungeon(Snippet template, Summoner.Context context)
+        {
+            var dungeon = overlord.summon_dungeon(template, context);
+            var dwarf = add_dwarf(dungeon);
+            target.generate_dungeon_code(dungeon);
+            return dungeon;
         }
 
         public Portal create_portal_from_tie(Tie tie, Dungeon dungeon)
@@ -285,7 +310,7 @@ namespace metahub.jackolantern
 
         public Minion get_setter(Portal portal)
         {
-            return portal.setter ?? Dungeon_Carver.generate_setter(portal, this);
+            return portal.setter ?? dwarves[portal.dungeon].generate_setter(portal);
         }
 
         public Expression summon_snippet(string name, Summoner.Context context)

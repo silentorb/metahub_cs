@@ -123,16 +123,8 @@ namespace metahub
             }
             MetaHub_Context context = new MetaHub_Context(parser_definition);
             var without_comments = remove_comments.Replace(code, "");
-            //trace("without_comments", without_comments);
             return context.parse(without_comments, parser_definition.patterns[0]);
         }
-
-        //public void load_internal_trellises () {
-        //    var functions = Utility.get_string_resource("inserts/core_nodes.json");
-        //var data =JsonConvert.DeserializeObject<RootObject>(functions);
-        
-        //schema.load_trellises(data.trellises, new Load_Settings(metahub_namespace));
-        //}
 
         public void generate(Pattern_Source source, string target_name, string destination)
         {
@@ -143,8 +135,8 @@ namespace metahub
             var target = Generator.create_target(overlord, target_name);
             overlord.run(target);
             logician.analyze();
-            var jack = new JackOLantern(logician, overlord, this, railway);
-            jack.run(target);
+            var jack = new JackOLantern(logician, overlord, this, railway, target);
+            jack.run();
             overlord.flatten();
             overlord.post_analyze();
 

@@ -16,7 +16,7 @@ public class Target {
 		this.overlord = overlord;
 	}
 
-	public virtual void generate_rail_code (Dungeon dungeon) {
+	public virtual void generate_dungeon_code (Dungeon dungeon) {
 	
 	}
 

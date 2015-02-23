@@ -6,17 +6,25 @@ using metahub.imperative;
 using metahub.imperative.schema;
 using metahub.imperative.summoner;
 using metahub.imperative.types;
-using metahub.logic;
 using metahub.logic.schema;
 using metahub.schema;
-using Namespace = metahub.imperative.types.Namespace;
 
 namespace metahub.jackolantern.code
 {
-    public static class Dungeon_Carver
+    public class Dwarf
     {
+        private JackOLantern jack;
+        public Dungeon dungeon;
+        public Rail rail;
 
-        public static void generate_code1(JackOLantern jack, Dungeon dungeon, Rail rail)
+        public Dwarf(JackOLantern jack, Dungeon dungeon, Rail rail = null)
+        {
+            this.jack = jack;
+            this.dungeon = dungeon;
+            this.rail = rail;
+        }
+
+        public void generate_code1()
         {
             var class_definition = dungeon.get_block("class_definition");
 
@@ -29,12 +37,12 @@ namespace metahub.jackolantern.code
                 else
                 {
                     if (tie.has_setter())
-                        Dungeon_Carver.generate_setter_stub(jack.get_portal(tie), jack);
+                        generate_setter_stub(jack.get_portal(tie));
                 }
             }
         }
 
-        public static void generate_code2(JackOLantern jack, Dungeon dungeon, Rail rail)
+        public void generate_code2()
         {
             var overlord = jack.overlord;
             var statements = dungeon.get_block("class_definition");
@@ -43,7 +51,7 @@ namespace metahub.jackolantern.code
                 var hub_dungeon = overlord.realms["metahub"].dungeons["Hub"];
                 dungeon.add_portal(new Portal("hub", Kind.reference, dungeon, hub_dungeon));
             }
-            Dungeon_Carver.generate_initialize(dungeon, statements.scope, rail, jack);
+            generate_initialize(statements.scope);
 
             foreach (var tie in rail.all_ties.Values)
             {
@@ -55,7 +63,7 @@ namespace metahub.jackolantern.code
                 else
                 {
                     if (tie.has_setter())
-                        Dungeon_Carver.generate_setter(jack.get_portal(tie), jack);
+                        generate_setter(jack.get_portal(tie));
                 }
             }
 
@@ -67,7 +75,7 @@ namespace metahub.jackolantern.code
                     var tokens = path.Split('.');
                     var block_name = tokens[0];
 
-                    assure_setter(block_name, dungeon, jack);
+                    assure_setter(block_name);
                     var block = dungeon.get_block(block_name);
                     if (tokens.Length > 1)
                     {
@@ -87,7 +95,7 @@ namespace metahub.jackolantern.code
             }
         }
 
-        public static void assure_setter(string path, Dungeon dungeon, JackOLantern jack)
+        public void assure_setter(string path)
         {
             if (dungeon.has_block(path))
                 return;
@@ -102,7 +110,7 @@ namespace metahub.jackolantern.code
 
             if (minion == null || minion.portal != null)
             {
-                new_minion = generate_setter(portal, jack);
+                new_minion = generate_setter(portal);
                 new_block = new_minion.block;
                 if (minion != null)
                 {
@@ -120,12 +128,11 @@ namespace metahub.jackolantern.code
             new_block.divide("post");
         }
 
-        public static Minion generate_setter_stub(Portal portal, JackOLantern jack)
+        public Minion generate_setter_stub(Portal portal)
         {
             if (portal.setter != null)
                 return portal.setter;
 
-            var dungeon = portal.dungeon;
             var minion_name = JackOLantern.get_setter_name(portal);
             var minion = dungeon.spawn_minion(minion_name);
             portal.setter = minion;
@@ -154,12 +161,12 @@ namespace metahub.jackolantern.code
             return minion;
         }
 
-        public static Minion generate_setter(Portal portal, JackOLantern jack)
+        public Minion generate_setter(Portal portal)
         {
             //if (portal.setter != null)
             //    throw new Exception("Portal " + portal.fullname + " already has a setter.");
 
-            var minion = generate_setter_stub(portal, jack);
+            var minion = generate_setter_stub(portal);
 
             var block = minion.block;
 
@@ -187,9 +194,8 @@ namespace metahub.jackolantern.code
 
             return minion;
         }
-
-
-        public static Minion generate_initialize(Dungeon dungeon, Scope scope, Rail rail, JackOLantern jack)
+        
+        public Minion generate_initialize(Scope scope)
         {
             var expressions = new List<Expression>();
             var block = dungeon.create_block("initialize", scope, expressions);

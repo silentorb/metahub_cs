@@ -89,6 +89,9 @@ namespace metahub.imperative.schema
             if (parent != null)
                 return parent.resolve(name, context);
 
+            if (name == "this" && context.dungeon != null)
+                return new Self(context.dungeon);
+
             throw new Exception("Could not resolve name " + name + ".");
         }
     }

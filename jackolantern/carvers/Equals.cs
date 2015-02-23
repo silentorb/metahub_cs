@@ -51,22 +51,22 @@ namespace metahub.jackolantern.carvers
             }
         }
 
-        static Operation get_conditions(Expression start)
-        {
-            var expression = start;
-            var conditions = new List<Expression>();
-            if (expression.child == null)
-                throw new Exception("Child expression cannot be null.");
+        //static Operation get_conditions(Expression start)
+        //{
+        //    var expression = start;
+        //    var conditions = new List<Expression>();
+        //    if (expression.child == null)
+        //        throw new Exception("Child expression cannot be null.");
 
-            do
-            {
-                expression = expression.clone();
-                expression.get_end().disconnect_parent();
-                conditions.Insert(0, new Operation("!=", new[] { expression, new Null_Value() }));
-            }
-            while (expression.child != null);
+        //    do
+        //    {
+        //        expression = expression.clone();
+        //        expression.get_end().disconnect_parent();
+        //        conditions.Insert(0, new Operation("!=", new[] { expression, new Null_Value() }));
+        //    }
+        //    while (expression.child != null);
 
-            return new Operation("&&", conditions);
-        }
+        //    return new Operation("&&", conditions);
+        //}
     }
 }

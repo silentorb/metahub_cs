@@ -24,6 +24,13 @@ namespace metahub.imperative.types
             name = minion.name;
         }
 
+        public Class_Function_Call(Minion minion, Expression reference, Expression arg)
+            : base(Expression_Type.function_call, reference, new[] { arg })
+        {
+            this.minion = minion;
+            name = minion.name;
+        }
+
         public Class_Function_Call set_reference(Expression reference)
         {
             this.reference = reference;

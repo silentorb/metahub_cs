@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using metahub.imperative.schema;
+using metahub.imperative.types;
 using metahub.jackolantern.schema;
 using metahub.logic.nodes;
 using metahub.logic.schema;
@@ -82,6 +83,88 @@ namespace metahub.jackolantern.carvers
             return aggregate2(start, include_self)
                 .OfType<Property_Node>()
                 .Select(p => new Endpoint(p, jack.get_portal(p.tie))).ToList();
+        }
+
+        protected static Operation get_conditions(Expression start)
+        {
+            var expression = start;
+            var conditions = new List<Expression>();
+            if (expression.child == null)
+                throw new Exception("Child expression cannot be null.");
+
+            do
+            {
+                expression = expression.clone();
+                expression.get_end().disconnect_parent();
+                conditions.Insert(0, new Operation("!=", new[] { expression, new Null_Value() }));
+            }
+            while (expression.child != null);
+
+            return new Operation("&&", conditions);
+        }
+
+        private static Node[] get_property_path(Node node, List<Node[]> result)
+        {
+            Node[] path = null;
+            foreach (var input in node.inputs)
+            {
+                if (input.type == Node_Type.property)
+                {
+                    path = get_property_path(input, result).Concat(new[] {node}).ToArray();
+                }
+                else
+                {
+                    get_non_property_path(input, result);
+                }
+            }
+
+            return path ?? new[] { node };
+        }
+
+        private static void get_non_property_path(Node node, List<Node[]> result)
+        {
+            foreach (var input in node.inputs)
+            {
+                if (input.type == Node_Type.property)
+                {
+                    result.Add(get_property_path(input, result));
+                }
+                else
+                {
+                    get_non_property_path(input, result);
+                }
+            }
+        }
+
+        protected Expression get_conditions(Node start)
+        {
+            var paths = new List<Node[]>();
+            get_non_property_path(start, paths);
+
+            var used_ties = new List<Tie>();
+            var conditions = new List<Operation>();
+
+            foreach (var path in paths)
+            {
+                foreach (Property_Node node in path)
+                {
+                    if (!used_ties.Contains(node.tie) || node.tie.other_rail == null || node.tie.is_value)
+                        continue;
+
+                    used_ties.Add(node.tie);
+                    conditions.Insert(0, new Operation("!=", new[] { 
+                        new Portal_Expression(jack.get_portal(node.tie), new Null_Value())
+                    }));
+                }
+            }
+
+            if (conditions.Count == 0)
+                throw new Exception("Not supported.");
+                //return new Statements();
+
+            return conditions.Count > 1
+                ? new Operation("&&", conditions)
+                : conditions[0];
         }
     }
 

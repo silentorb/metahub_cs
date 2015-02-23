@@ -140,5 +140,13 @@ namespace metahub.imperative.schema
 
             block.add(expression);
         }
+
+        public void add_to_block(string division, Expression expression)
+        {
+            if (block == null)
+                block = dungeon.create_block(name, scope, expressions);
+
+            block.add(division, expression);
+        }
     }
 }

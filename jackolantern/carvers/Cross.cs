@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using metahub.imperative.code;
 using metahub.imperative.schema;
 using metahub.imperative.summoner;
 using metahub.imperative.types;
@@ -46,13 +47,20 @@ namespace metahub.jackolantern.carvers
                 var context = new Summoner.Context(setter);
                 context.scope.add_map("this", c=> new Self(portal.other_dungeon));
                 context.set_pattern("list", new Portal_Expression(portal.other_portal, new Portal_Expression(portal)));
-                context.set_pattern("block", new Statements());
                 context.set_pattern("condition", c=> render_inverse_constraint(constraint, c));
+                context.set_pattern("block", c =>
+                    {
+                        var conflict_class = Piece_Maker.create_conflict_class(setter.dungeon, jack);
+                        c.set_pattern("T", setter.parameters[0].symbol.profession);
+                        c.set_pattern("T2", new Profession(Kind.reference, conflict_class));
 
-                var body = jack.overlord.summon_snippet(jack.templates["cross_iterator"], context);
+                        jack.overlord.summon_snippet(
+                            Piece_Maker.templates["create_distance_conflict"], c);
+                    });
+
+                var body = jack.summon_snippet("cross_iterator", context);
                 minion.add_to_block(body);
             }
-
         }
 
         Minion create_check_function(Portal portal)

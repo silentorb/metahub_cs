@@ -48,7 +48,7 @@ initialize_count(list, size, $add) {
 cross_iterator(list, block) {
 	for (var other in list) {
 		if (condition) {
-			return false
+			block
 		}
 	}
 

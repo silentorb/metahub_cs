@@ -8,6 +8,7 @@ using metahub.imperative.summoner;
 using metahub.imperative.types;
 using metahub.jackolantern;
 using metahub.jackolantern.expressions;
+using metahub.jackolantern.schema;
 using metahub.logic.schema;
 using parser;
 using metahub.schema;
@@ -44,6 +45,41 @@ namespace metahub.imperative.code
                 dungeon.get_block("initialize").add(new Assignment(
                     new Portal_Expression(portal), "=", new Instantiate(group_dungeon)));
             }
+        }
+
+        public static Dungeon create_conflict_class(Dungeon dungeon, JackOLantern jack)
+        {
+            var context = new Summoner.Context(dungeon);
+            context.set_pattern("Node_Type", new Profession(Kind.reference, dungeon));
+            context.set_pattern("Class_Name", "Distance_Conflict");
+
+            var result = jack.overlord.summon_dungeon(Piece_Maker.templates["Distance_Conflict"], context);
+            var portal = result.all_portals["nodes"];
+            var scope = new Scope();
+            scope.add_map("a", c => new Portal_Expression(portal) { index = new Literal((int)0) });
+            scope.add_map("b", c => new Portal_Expression(portal) { index = new Literal((int)1) });
+            var imp = result.summon_minion("is_resolved");
+            var swamp = new Swamp(jack, null, context);
+            //imp.expressions.Add(new Statement("return",
+            //    new Operation(constraint.op, new List<Expression>{ 
+            //        new Platform_Function("dist", new Portal_Expression(portal, 
+            //            new Portal_Expression(jack.get_portal(constraint.endpoints.Last())))
+            //            { index = new Literal((int)0) },
+            //            new List<Expression> { new Portal_Expression(portal, new Portal_Expression(jack.get_portal(constraint.endpoints.Last())
+            //                )) { index = new Literal((int)1) } }),
+            //        swamp.translate_exclusive(constraint.second, null)
+            //    })
+            //));
+            return result;
+            //var base_class = overlord.realms["piecemaker"[.dungeons["Conflict"];
+            //var result = new Dungeon("Distance_Conflict", overlord, dungeon.realm, base_class);
+            //var portal = result.add_portal(new Portal("nodes", Kind.list, result, dungeon));
+            //result.generate_code1();
+
+            //var scope = new Scope();
+
+
+            //return result;
         }
     }
 }

@@ -13,18 +13,18 @@ namespace metahub.render
 
     public static class Generator
     {
-        public static Target create_target(Overlord imp, string target_name)
+        public static Target create_target(Overlord minion, string target_name)
         {
             switch (target_name)
             {
                 case "cpp":
-                    return new Cpp(imp);
+                    return new Cpp(minion);
 
                 case "js":
-                    return new Js_Target(imp);
+                    return new Js_Target(minion);
 
                 case "php":
-                    return new Php_Target(imp);
+                    return new Php_Target(minion);
 
                 default:
                     throw new Exception("Unsupported target: " + target_name + ".");

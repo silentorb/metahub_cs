@@ -79,7 +79,7 @@ namespace metahub.jackolantern.carvers
             setter.block.add("post", jack.overlord.summon_snippet(jack.templates["map_on_add"], context));
         }
 
-        Expression on_add_code_sub(Expression list_expression, Portal portal, Portal first_portal, Portal second_portal, Imp setter)
+        Expression on_add_code_sub(Expression list_expression, Portal portal, Portal first_portal, Portal second_portal, Minion setter)
         {
             var context = Lantern.prepare_add_to_list(list_expression, portal, first_portal.profession, jack);
             context.set_pattern("main_item", new Variable(setter.scope.find_or_exception("item")));

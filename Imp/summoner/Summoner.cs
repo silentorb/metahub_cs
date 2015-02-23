@@ -107,34 +107,34 @@ namespace metahub.imperative.summoner
 
         private void process_abstract_function(Pattern_Source source, Context context)
         {
-            var imp = context.dungeon.spawn_imp(
+            var minion = context.dungeon.spawn_minion(
                 source.patterns[2].text,
                 source.patterns[5].patterns.Select(p => process_parameter(p, context)).ToList()
                 );
 
-            imp.is_abstract = true;
+            minion.is_abstract = true;
 
             var return_type = source.patterns[8];
             if (return_type.patterns.Length > 0)
-                imp.return_type = parse_type(return_type.patterns[0], context);
+                minion.return_type = parse_type(return_type.patterns[0], context);
         }
 
         private void process_function_definition(Pattern_Source source, Context context)
         {
             var name = source.patterns[1].text;
-            var imp = context.dungeon.has_imp(name)
-                          ? context.dungeon.summon_imp(name)
-                          : context.dungeon.spawn_imp(
+            var minion = context.dungeon.has_minion(name)
+                          ? context.dungeon.summon_minion(name)
+                          : context.dungeon.spawn_minion(
                               name,
                               source.patterns[4].patterns.Select(p => process_parameter(p, context)).ToList()
                                 );
-            var new_context = new Context(context) { scope = imp.scope };
+            var new_context = new Context(context) { scope = minion.scope };
 
             var return_type = source.patterns[7];
             if (return_type.patterns.Length > 0)
-                imp.return_type = parse_type(return_type.patterns[0], context);
+                minion.return_type = parse_type(return_type.patterns[0], context);
 
-            imp.expressions = process_block(source.patterns[9], new_context);
+            minion.expressions = process_block(source.patterns[9], new_context);
         }
 
         private void process_property_declaration(Pattern_Source source, Context context)
@@ -367,14 +367,14 @@ namespace metahub.imperative.summoner
         private Expression process_function_call(Dungeon dungeon, string token, Expression result, Expression last,
                                                  List<Expression> args)
         {
-            var imp = dungeon != null
-                          ? dungeon.summon_imp(token, true)
+            var minion = dungeon != null
+                          ? dungeon.summon_minion(token, true)
                           : null;
 
-            if (imp != null)
-                return new Class_Function_Call(imp, result, args);
+            if (minion != null)
+                return new Class_Function_Call(minion, result, args);
 
-            if (Imp.platform_specific_functions.Contains(token))
+            if (Minion.platform_specific_functions.Contains(token))
             {
                 if (token == "add" || token == "setter")
                     return new Property_Function_Call(Property_Function_Type.set, ((Portal_Expression)last).portal,
@@ -501,7 +501,7 @@ namespace metahub.imperative.summoner
                 var portal = portal_expression.portal;
                 if (portal.type != Kind.list && op != "=")
                 {
-                    expression = Imp.operation(op[0].ToString(), reference.clone(), expression);
+                    expression = Minion.operation(op[0].ToString(), reference.clone(), expression);
                 }
                 var args = new List<Expression> {expression};
 

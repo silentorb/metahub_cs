@@ -68,9 +68,9 @@ namespace metahub.render.targets.cpp
 
         override public void generate_rail_code(Dungeon dungeon)
         {
-            var func = dungeon.spawn_imp(dungeon.name);
+            var func = dungeon.spawn_minion(dungeon.name);
             func.return_type = null;
-            func = dungeon.spawn_imp("~" + dungeon.name);
+            func = dungeon.spawn_minion("~" + dungeon.name);
             func.return_type = null;
         }
 
@@ -93,7 +93,7 @@ namespace metahub.render.targets.cpp
                             portal.get_profession())))
             );
 
-            var func = dungeon.summon_imp(dungeon.name);
+            var func = dungeon.summon_minion(dungeon.name);
             func.expressions = ((IEnumerable<Expression>)block).ToList();
         }
 
@@ -420,7 +420,7 @@ namespace metahub.render.targets.cpp
                 declarations.Add(line("void initialize_post(); // Externally defined."));
             }
 
-            declarations.AddRange(dungeon.imps.Values.Select(render_function_declaration));
+            declarations.AddRange(dungeon.minions.Values.Select(render_function_declaration));
 
             return declarations.join("");
         }
@@ -455,7 +455,7 @@ namespace metahub.render.targets.cpp
             )).join("");
         }
 
-        string render_function_declaration(Imp definition)
+        string render_function_declaration(Minion definition)
         {
             return line((definition.return_type != null ? "virtual " : "")
             + (definition.return_type != null ? render_signature(definition.return_type) + " " : "")

@@ -42,7 +42,7 @@ namespace metahub.jackolantern.code
             /*
             var property_node = (metahub.logic.nodes.Property_Reference)constraint.first;
             var dungeon = overlord.get_dungeon(property_node.tie.rail);
-            var imp = dungeon.summon_imp("tick");
+            var minion = dungeon.summon_imp("tick");
             var first_path = constraint.first.get_path();
             var path = first_path.Take(first_path.Count - 1).ToArray();
             var path1 = overlord.convert_path(path, null);
@@ -61,8 +61,8 @@ namespace metahub.jackolantern.code
                           })  
                     }
                 );
-            imp.expressions.Add(path1);
-            //imp.expressions.Add(new Assignment(
+            minion.expressions.Add(path1);
+            //minion.expressions.Add(new Assignment(
             //    overlord.convert_path(constraint.first, null),
             //    constraint.op,
             //    overlord.convert_path(constraint.second, null)
@@ -117,7 +117,7 @@ namespace metahub.jackolantern.code
             block.add_many("pre", new List<Expression>
                 {
                   new Assignment(new Portal_Expression(portal), "=", new Instantiate(other_dungeon)),
-                  Imp.call_initialize(dungeon, other_dungeon, new Portal_Expression(portal))
+                  Minion.call_initialize(dungeon, other_dungeon, new Portal_Expression(portal))
                 });
         }
 
@@ -163,7 +163,7 @@ namespace metahub.jackolantern.code
 
         public static List<Expression> cross(Constraint constraint, Tie tie, JackOLantern jack, Scope scope)
         {
-            //var dungeon = imp.get_dungeon(tie.rail);
+            //var dungeon = minion.get_dungeon(tie.rail);
             //dungeon.concat_block(tie.tie_name + "_set_pre", Reference.constraint(constraint, this));
             var property_reference = (metahub.logic.nodes.Property_Node)constraint.constraint_scope.caller.First();
             var dungeon = jack.get_dungeon(tie.rail);
@@ -178,25 +178,25 @@ namespace metahub.jackolantern.code
             var value = function_scope.create_symbol("value", jack.get_profession(tie.get_signature()));
             var function_name = "check_" + tie.tie_name + "_" + property_reference.tie.other_tie.tie_name;
             var portal = jack.get_portal(property_reference.tie);
-            var imp = dungeon.spawn_imp(function_name, new List<Parameter>
+            var minion = dungeon.spawn_minion(function_name, new List<Parameter>
                 {
                     new Parameter(value)
                 }, new List<Expression>
                     {
-                        Imp.If(new Operation("==", new List<Expression>
+                        Minion.If(new Operation("==", new List<Expression>
                             {
                                 new Portal_Expression(portal.other_portal),
                                 new Null_Value()
                             }), new List<Expression>
                                 {
-                                    new Statement("return", Imp.True())
+                                    new Statement("return", Minion.True())
                                 }),
                         new Iterator(it,
                                      new Portal_Expression(portal.other_portal,
                                                         new Portal_Expression(portal)), 
                                      new List<Expression>
                                          {
-                                             Imp.If(new Operation("==", new List<Expression>
+                                             Minion.If(new Operation("==", new List<Expression>
                                                  {
                                                      new Variable(it),
                                                      new Self(dungeon)
@@ -249,32 +249,32 @@ namespace metahub.jackolantern.code
 
             //return new List<Expression>
             //{
-            //    Imp.If(Imp.operation(Logician.inverse_operators[constraint.op], 
+            //    Minion.If(Minion.operation(Logician.inverse_operators[constraint.op], 
             //        new Platform_Function("distance", new Variable(it, new Portal_Expression(jack.overlord.get_portal(constraint.endpoints.Last()))),
             //            new List<Expression> { new Variable(value) }),
             //            jack.translate(constraint.second, scope)
             //        ),
             //        new List<Expression>
             //        {
-            //            new Declare_Variable(offset, Imp.operation("/", Imp.operation("+",
+            //            new Declare_Variable(offset, Minion.operation("/", Minion.operation("+",
             //                new Variable(it, new Portal_Expression(jack.overlord.get_portal(constraint.endpoints.Last()))),
             //                new Variable(value)
             //            ), new Literal(2, new Profession(Kind.Float)))),
             //                //new Variable(it, new Property_Function_Call(Property_Function_Type.set, tie, new List<Expression>
-            //                //    { Imp.operation("+",
+            //                //    { Minion.operation("+",
             //                //        new Variable(it, new Property_Expression(constraint.endpoints.Last())),
             //                //        new Variable(offset)) })),
             //                //new Property_Function_Call(Property_Function_Type.set, tie, new List<Expression>
-            //                //    { Imp.operation("+", new Variable(value), new Variable(offset)) }),
+            //                //    { Minion.operation("+", new Variable(value), new Variable(offset)) }),
 
             //                new Declare_Variable(conflict, new Instantiate(conflict_dungeon)),
-            //                new Variable(conflict,Imp.setter(conflict_nodes, new Self(dungeon), null, null)),
-            //                new Variable(conflict,Imp.setter(conflict_nodes, new Variable(it), null, null)),
+            //                new Variable(conflict,Minion.setter(conflict_nodes, new Self(dungeon), null, null)),
+            //                new Variable(conflict,Minion.setter(conflict_nodes, new Variable(it), null, null)),
             //                new Portal_Expression(jack.overlord.get_portal(mold_tie),
             //                    new Portal_Expression(jack.overlord.get_portal(piecemaker_tie),
-            //                        Imp.setter(conflicts_tie, new Variable(conflict), null, null)
+            //                        Minion.setter(conflicts_tie, new Variable(conflict), null, null)
             //                )),
-            //                new Statement("return", Imp.False())
+            //                new Statement("return", Minion.False())
 
             //        })
             //};
@@ -295,8 +295,8 @@ namespace metahub.jackolantern.code
             //var scope = new Scope();
             //scope.add_map("a", c => new Portal_Expression(portal) { index = new Literal((int)0) });
             //scope.add_map("b", c => new Portal_Expression(portal) { index = new Literal((int)1) });
-            //var imp = result.summon_imp("is_resolved");
-            //imp.expressions.Add(new Statement("return",
+            //var minion = result.summon_imp("is_resolved");
+            //minion.expressions.Add(new Statement("return",
             //    new Operation(constraint.op, new List<Expression>{ 
             //        new Platform_Function("distance", new Portal_Expression(portal, 
             //            new Portal_Expression(jack.overlord.get_portal(constraint.endpoints.Last())))

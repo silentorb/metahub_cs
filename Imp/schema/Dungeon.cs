@@ -22,7 +22,7 @@ namespace metahub.imperative.schema
         public Dictionary<string, string[]> inserts;
         Dictionary<string, Block> blocks = new Dictionary<string, Block>();
         public Overlord overlord;
-        public Dictionary<string, Imp> imps = new Dictionary<string, Imp>();
+        public Dictionary<string, Minion> minions = new Dictionary<string, Minion>();
         public Dictionary<string, Portal> all_portals = new Dictionary<string, Portal>();
         public Dictionary<string, Portal> core_portals = new Dictionary<string, Portal>();
         public Dictionary<string, Used_Function> used_functions = new Dictionary<string, Used_Function>();
@@ -107,42 +107,7 @@ namespace metahub.imperative.schema
         {
             if (!has_block(path))
                 throw new Exception("Dungeon " + name + " does not have a block named " + path + ".");
-            //{
-            //    var imp = summon_imp(path, true);
-            //    Imp new_imp;
-            //    Block new_block;
-            //    var tokens = path.Split('_');
-            //    var portal_name = tokens.Last();
-
-            //    if (imp == null || imp.portal != null)
-            //    {
-            //        var portal = all_portals[portal_name];
-            //        new_imp = Dungeon_Carver.generate_setter(portal);
-            //        new_block = blocks[path];
-            //        if (imp != null)
-            //        {
-            //            new_block.add("pre", new Parent_Class(new Function_Call(imp.name, null, new List<Expression>
-            //                {
-            //                   new Variable(new_imp.parameters[0].symbol)
-            //                })));
-            //        }
-            //    }
-            //    else
-            //    {
-            //        new_imp = imp.spawn_child(this);
-            //        new_block = create_block(path, new_imp.scope, new_imp.expressions);
-            //        new_block.divide("pre").add(new Parent_Class(new Function_Call(imp.name, null, new List<Expression>
-            //                {
-            //                   new Variable(new_imp.parameters[0].symbol)
-            //                })));
-            //    }
-            //    new_block.divide("post");
-
-            //}
-
-            //if (!blocks.ContainsKey(path))
-            //    throw new Exception("Invalid rail block: " + path + ".");
-
+         
             return blocks[path];
         }
 
@@ -397,51 +362,51 @@ namespace metahub.imperative.schema
 
         public Function_Definition add_function(string function_name, List<Parameter> parameters, Profession return_type = null)
         {
-            var imp = spawn_imp(function_name, parameters, new List<Expression>(), return_type);
-            return new Function_Definition(imp);
+            var minion = spawn_minion(function_name, parameters, new List<Expression>(), return_type);
+            return new Function_Definition(minion);
         }
 
-        public Imp spawn_imp(string imp_name, List<Parameter> parameters = null, List<Expression> expressions = null, Profession return_type = null, Portal portal = null)
+        public Minion spawn_minion(string minion_name, List<Parameter> parameters = null, List<Expression> expressions = null, Profession return_type = null, Portal portal = null)
         {
-            if (imps.ContainsKey(imp_name))
-                throw new Exception("Dungeon " + name + " already contains an imp named " + imp_name + ".");
+            if (minions.ContainsKey(minion_name))
+                throw new Exception("Dungeon " + name + " already contains an minion named " + minion_name + ".");
 
-            var imp = new Imp(imp_name, this, portal)
+            var minion = new Minion(minion_name, this, portal)
                 {
                     parameters = parameters ?? new List<Parameter>(),
                     expressions = expressions ?? new List<Expression>(),
                     return_type = return_type ?? new Profession(Kind.none)
                 };
 
-            imps[imp_name] = imp;
+            minions[minion_name] = minion;
 
-            var definition = new Function_Definition(imp);
+            var definition = new Function_Definition(minion);
 
             var block = get_block("class_definition");
             block.add(definition);
-            definition.scope = imp.scope = new Scope(block.scope);
+            definition.scope = minion.scope = new Scope(block.scope);
 
-            return imp;
+            return minion;
         }
 
-        public bool has_imp(string imp_name, bool check_ancestors = false)
+        public bool has_minion(string minion_name, bool check_ancestors = false)
         {
-            var result = imps.ContainsKey(imp_name);
+            var result = minions.ContainsKey(minion_name);
             if (result || !check_ancestors || parent == null)
                 return result;
 
-            return parent.has_imp(imp_name, true);
+            return parent.has_minion(minion_name, true);
         }
 
-        public Imp summon_imp(string imp_name, bool check_ancestors = false)
+        public Minion summon_minion(string minion_name, bool check_ancestors = false)
         {
-            if (imps.ContainsKey(imp_name))
-                return imps[imp_name];
+            if (minions.ContainsKey(minion_name))
+                return minions[minion_name];
 
             if (!check_ancestors || parent == null)
                 return null;
 
-            return parent.summon_imp(imp_name, true);
+            return parent.summon_minion(minion_name, true);
         }
 
         public string get_available_name(string key, int start = 0)
@@ -454,7 +419,7 @@ namespace metahub.imperative.schema
                     result += start;
 
                 ++start;
-            } while (has_imp(result) || all_portals.ContainsKey(result));
+            } while (has_minion(result) || all_portals.ContainsKey(result));
 
             return result;
         }

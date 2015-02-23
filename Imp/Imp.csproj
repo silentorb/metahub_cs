@@ -59,7 +59,7 @@
     <Compile Include="schema\Dependency.cs" />
     <Compile Include="schema\Division.cs" />
     <Compile Include="schema\Dungeon.cs" />
-    <Compile Include="schema\Imp.cs" />
+    <Compile Include="schema\Minion.cs" />
     <Compile Include="schema\Kind.cs" />
     <Compile Include="schema\Platform_Function_Info.cs" />
     <Compile Include="schema\Portal.cs" />

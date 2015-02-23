@@ -8,7 +8,7 @@ using metahub.schema;
 
 namespace metahub.imperative.schema
 {
-    public class Imp
+    public class Minion
     {
         public static string[] platform_specific_functions = new string[]
             {
@@ -27,13 +27,13 @@ namespace metahub.imperative.schema
         public Dungeon dungeon;
         public Portal portal;
         public bool is_platform_specific;
-        public List<Imp> invokers = new List<Imp>();
-        public List<Imp> invokees = new List<Imp>();
+        public List<Minion> invokers = new List<Minion>();
+        public List<Minion> invokees = new List<Minion>();
         public List<Parameter> parameters;
         public List<Expression> expressions;
         public Profession return_type = new Profession(Kind.none);
-        public Imp parent;
-        public List<Imp> children = new List<Imp>();
+        public Minion parent;
+        public List<Minion> children = new List<Minion>();
         public Scope scope;
         public bool is_abstract = false;
         public Block block;
@@ -42,7 +42,7 @@ namespace metahub.imperative.schema
         public string stack_trace;
 #endif
 
-        public Imp(string name, Dungeon dungeon, Portal portal = null)
+        public Minion(string name, Dungeon dungeon, Portal portal = null)
         {
             this.name = name;
             this.dungeon = dungeon;
@@ -53,7 +53,7 @@ namespace metahub.imperative.schema
 #endif
         }
 
-        //public Function_Call invoke(Imp invoker, IEnumerable<Expression> args = null)
+        //public Function_Call invoke(Minion invoker, IEnumerable<Expression> args = null)
         //{
         //    var invocation = new Function_Call(this, null, args);
 
@@ -69,9 +69,9 @@ namespace metahub.imperative.schema
         //    return invocation;
         //}
 
-        public Imp spawn_child(Dungeon new_dungeon)
+        public Minion spawn_child(Dungeon new_dungeon)
         {
-            var child = new_dungeon.spawn_imp(name, parameters, null, return_type, portal);
+            var child = new_dungeon.spawn_minion(name, parameters, null, return_type, portal);
             child.parent = this;
             children.Add(child);
             return child;
@@ -118,11 +118,11 @@ namespace metahub.imperative.schema
         public static Expression call_initialize(Dungeon caller, Dungeon target, Expression reference)
         {
             var args = new List<Expression>();
-            var imp = target.summon_imp("initialize");
-            if (imp.parameters.Count > 0)
+            var minion = target.summon_minion("initialize");
+            if (minion.parameters.Count > 0)
                 args.Add(new Portal_Expression(caller.all_portals["hub"]));
 
-            return new Class_Function_Call(imp, reference, args);
+            return new Class_Function_Call(minion, reference, args);
         }
 
         public Parameter add_parameter(string name, Profession profession, Expression default_value = null)

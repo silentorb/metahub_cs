@@ -15,7 +15,7 @@ namespace metahub.imperative.schema
         public Portal other_portal;
         public Portal parent;
         public Profession profession;
-        public Imp setter;
+        public Minion setter;
         private int id; 
         private static int next_id = 1;
         public object default_value;

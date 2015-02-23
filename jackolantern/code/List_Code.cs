@@ -14,10 +14,10 @@ namespace metahub.jackolantern.code
 {
     public class List_Code
     {
-        public static void common_functions_stub(Tie tie, JackOLantern imp, Scope scope)
+        public static void common_functions_stub(Tie tie, JackOLantern minion, Scope scope)
         {
-            add_function_stub(tie, imp, scope);
-            remove_function_stub(tie, imp, scope);
+            add_function_stub(tie, minion, scope);
+            remove_function_stub(tie, minion, scope);
         }
         
         public static void add_function_stub(Tie tie, JackOLantern jack, Scope scope)
@@ -27,17 +27,17 @@ namespace metahub.jackolantern.code
             var dungeon = jack.get_dungeon(tie.rail);
 
             var function_name = "add_" + tie.tie_name;
-            var imp = dungeon.spawn_imp(function_name, null, new List<Expression>());
-            portal.setter = imp;
+            var minion = dungeon.spawn_minion(function_name, null, new List<Expression>());
+            portal.setter = minion;
             var signature = tie.get_other_signature();
             var profession = jack.get_profession(signature);
-            var item = imp.add_parameter("item", profession).symbol;
-            var origin = imp.add_parameter("origin", new Profession(Kind.reference), new Null_Value()).symbol;
+            var item = minion.add_parameter("item", profession).symbol;
+            var origin = minion.add_parameter("origin", new Profession(Kind.reference), new Null_Value()).symbol;
             
-            Function_Definition definition = new Function_Definition(imp);
+            Function_Definition definition = new Function_Definition(minion);
 
             var block = dungeon.create_block(function_name, scope, definition.expressions);
-            imp.block = block;
+            minion.block = block;
             var mid = block.divide("mid", new List<Expression> {
 				new Platform_Function("add", new Portal_Expression(portal), new Expression[]{ new Variable(item) })
 		});
@@ -49,19 +49,19 @@ namespace metahub.jackolantern.code
         {
         }
 
-        public static void common_functions(Portal portal, JackOLantern imp, Scope scope)
+        public static void common_functions(Portal portal, JackOLantern minion, Scope scope)
         {
-            add_function(portal, imp, scope);
-            remove_function(portal, imp, scope);
+            add_function(portal, minion, scope);
+            remove_function(portal, minion, scope);
         }
 
         public static void add_function(Portal portal, JackOLantern jack, Scope scope)
         {
-            var imp = jack.get_setter(portal);
+            var minion = jack.get_setter(portal);
             var dungeon = portal.dungeon;
-            var origin = imp.scope.find_or_exception("origin");
-            var item = imp.scope.find_or_exception("item");
-            var block = imp.block;
+            var origin = minion.scope.find_or_exception("origin");
+            var item = minion.scope.find_or_exception("item");
+            var block = minion.block;
             if (portal.other_portal != null)
             {
                 block.add("mid",
@@ -84,15 +84,15 @@ namespace metahub.jackolantern.code
             var function_scope = new Scope(scope);
             var item = function_scope.create_symbol("item", portal.get_target_profession());
             var origin = function_scope.create_symbol("origin", new Profession(Kind.reference));
-            var imp = dungeon.spawn_imp(function_name, new List<Parameter>
+            var minion = dungeon.spawn_minion(function_name, new List<Parameter>
                 {
                     new Parameter(item),
                     new Parameter(origin, new Null_Value())
                 }, new List<Expression>());
-            Function_Definition definition = new Function_Definition(imp);
+            Function_Definition definition = new Function_Definition(minion);
 
             var block = dungeon.create_block(function_name, scope, definition.expressions);
-            var context = new Summoner.Context(imp);
+            var context = new Summoner.Context(minion);
             context.set_pattern("list", new Portal_Expression(portal));
             context.set_pattern("item", new Variable(item));
             var mid = block.divide(null, jack.summon_snippet_block("list_remove", context));
@@ -112,7 +112,7 @@ namespace metahub.jackolantern.code
 
             if (portal.other_portal != null)
             {
-                mid.add(Imp.call_remove(portal.other_portal, new Variable(item), new Self(dungeon)));
+                mid.add(Minion.call_remove(portal.other_portal, new Variable(item), new Self(dungeon)));
             }
         }
 

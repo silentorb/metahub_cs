@@ -11,10 +11,10 @@ namespace metahub.imperative.types
         public string name;
         public Dungeon dungeon;
         public Scope scope;
-        public Imp imp;
-        public Profession return_type { get { return imp.return_type; } }
-        public bool is_abstract { get { return imp.is_abstract; } }
-        public List<Expression> expressions { get { return imp.expressions; } }
+        public Minion minion;
+        public Profession return_type { get { return minion.return_type; } }
+        public bool is_abstract { get { return minion.is_abstract; } }
+        public List<Expression> expressions { get { return minion.expressions; } }
 
         //public Function_Definition(string name, Dungeon dungeon, List<Parameter> parameters, List<Expression> expressions, Signature return_type = null)
         //    : base(parameters, expressions, return_type)
@@ -23,19 +23,19 @@ namespace metahub.imperative.types
         //    this.dungeon = dungeon;
         //    rail = dungeon.rail;
 
-        //    imp = new Imp(name, dungeon)
+        //    minion = new Minion(name, dungeon)
         //        {
         //            return_type = _return_type,
         //            expressions = expressions
         //        };
         //}
 
-        public Function_Definition(Imp imp)
-            : base(imp.parameters, imp.expressions, imp.return_type)
+        public Function_Definition(Minion minion)
+            : base(minion.parameters, minion.expressions, minion.return_type)
         {
-            this.imp = imp;
-            name = imp.name;
-            dungeon = imp.dungeon;
+            this.minion = minion;
+            name = minion.name;
+            dungeon = minion.dungeon;
         }
     }
 

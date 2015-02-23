@@ -82,7 +82,7 @@ namespace metahub.jackolantern.code
 
             if (rail.needs_tick)
             {
-                dungeon.spawn_imp("tick");
+                dungeon.spawn_minion("tick");
                 dungeon.interfaces.Add(overlord.realms["metahub"].dungeons["Tick_Target"]);
             }
         }
@@ -92,91 +92,91 @@ namespace metahub.jackolantern.code
             if (dungeon.has_block(path))
                 return;
 
-            Imp new_imp;
+            Minion new_minion;
             Block new_block;
-            var imp = dungeon.summon_imp(path, true);
+            var minion = dungeon.summon_minion(path, true);
             var tokens = path.Split('_');
             var portal_name = tokens.Last();
 
             var portal = dungeon.all_portals[portal_name];
 
-            if (imp == null || imp.portal != null)
+            if (minion == null || minion.portal != null)
             {
-                new_imp = generate_setter(portal, jack);
-                new_block = new_imp.block;
-                if (imp != null)
+                new_minion = generate_setter(portal, jack);
+                new_block = new_minion.block;
+                if (minion != null)
                 {
-                    new_block.add("pre", Imp.setter(portal, new Variable(new_imp.parameters[0].symbol),
+                    new_block.add("pre", Minion.setter(portal, new Variable(new_minion.parameters[0].symbol),
                          new Parent_Class(), null));
                 }
             }
             else
             {
-                new_imp = imp.spawn_child(dungeon);
-                new_block = dungeon.create_block(path, new_imp.scope, new_imp.expressions);
-                new_block.divide("pre").add(Imp.setter(portal, new Variable(new_imp.parameters[0].symbol),
+                new_minion = minion.spawn_child(dungeon);
+                new_block = dungeon.create_block(path, new_minion.scope, new_minion.expressions);
+                new_block.divide("pre").add(Minion.setter(portal, new Variable(new_minion.parameters[0].symbol),
                          new Parent_Class(), null));
             }
             new_block.divide("post");
         }
 
-        public static Imp generate_setter_stub(Portal portal, JackOLantern jack)
+        public static Minion generate_setter_stub(Portal portal, JackOLantern jack)
         {
             if (portal.setter != null)
                 return portal.setter;
 
             var dungeon = portal.dungeon;
-            var imp_name = JackOLantern.get_setter_name(portal);
-            var imp = dungeon.spawn_imp(imp_name);
-            portal.setter = imp;
-            var function_scope = imp.scope;
+            var minion_name = JackOLantern.get_setter_name(portal);
+            var minion = dungeon.spawn_minion(minion_name);
+            portal.setter = minion;
+            var function_scope = minion.scope;
             var value = function_scope.create_symbol("value", portal.get_profession());
-            imp.parameters.Add(new Parameter(value));
+            minion.parameters.Add(new Parameter(value));
 
-            Function_Definition result = new Function_Definition(imp);
+            Function_Definition result = new Function_Definition(minion);
             var block =
-                imp.block = dungeon.create_block(imp_name, new Scope(function_scope), result.expressions);
+                minion.block = dungeon.create_block(minion_name, new Scope(function_scope), result.expressions);
 
             var pre = block.divide("pre");
 
-            var context = new Summoner.Context(imp);
+            var context = new Summoner.Context(minion);
             context.set_pattern("portal", new Portal_Expression(portal));
             context.set_pattern("value", new Variable(value));
             block.divide("mid", jack.summon_snippet_block("reference_setter", context));
 
             if (portal.type == Kind.reference && portal.other_portal != null)
             {
-                var origin = imp.scope.create_symbol("origin", new Profession(Kind.reference));
-                imp.parameters.Add(new Parameter(origin, new Null_Value()));
+                var origin = minion.scope.create_symbol("origin", new Profession(Kind.reference));
+                minion.parameters.Add(new Parameter(origin, new Null_Value()));
             }
 
             block.divide("post");
-            return imp;
+            return minion;
         }
 
-        public static Imp generate_setter(Portal portal, JackOLantern jack)
+        public static Minion generate_setter(Portal portal, JackOLantern jack)
         {
             //if (portal.setter != null)
             //    throw new Exception("Portal " + portal.fullname + " already has a setter.");
 
-            var imp = generate_setter_stub(portal, jack);
+            var minion = generate_setter_stub(portal, jack);
 
-            var block = imp.block;
+            var block = minion.block;
 
             if (portal.type == Kind.reference && portal.other_portal != null)
             {
                 if (portal.other_portal.type == Kind.reference)
                 {
                     block.add("mid",
-                        Imp.setter(portal.other_portal, new Self(portal.dungeon),
+                        Minion.setter(portal.other_portal, new Self(portal.dungeon),
                         new Portal_Expression(portal), new Self(portal.dungeon))
                     );
                 }
                 else
                 {
-                    var origin = imp.scope.find_or_exception("origin");
-                    var value = imp.scope.find_or_exception("value");
-                    var context = new Summoner.Context(imp);
+                    var origin = minion.scope.find_or_exception("origin");
+                    var value = minion.scope.find_or_exception("value");
+                    var context = new Summoner.Context(minion);
 
                     context.set_pattern("portal", new Portal_Expression(portal));
                     context.set_pattern("other_portal", new Portal_Expression(portal.other_portal));
@@ -185,11 +185,11 @@ namespace metahub.jackolantern.code
                 }
             }
 
-            return imp;
+            return minion;
         }
 
 
-        public static Imp generate_initialize(Dungeon dungeon, Scope scope, Rail rail, JackOLantern jack)
+        public static Minion generate_initialize(Dungeon dungeon, Scope scope, Rail rail, JackOLantern jack)
         {
             var expressions = new List<Expression>();
             var block = dungeon.create_block("initialize", scope, expressions);
@@ -197,7 +197,7 @@ namespace metahub.jackolantern.code
             block.divide("post");
             if (dungeon.parent != null)
             {
-                block.add(Imp.call_initialize(dungeon, dungeon.parent, new Parent_Class()));
+                block.add(Minion.call_initialize(dungeon, dungeon.parent, new Parent_Class()));
             }
 
             foreach (var portal in dungeon.all_portals.Values)
@@ -205,14 +205,14 @@ namespace metahub.jackolantern.code
                 Portal_Carver.customize_initialize(jack, portal, block);
             }
 
-            var imp = dungeon.spawn_imp("initialize", new List<Parameter>(), expressions);
-            imp.block = block;
+            var minion = dungeon.spawn_minion("initialize", new List<Parameter>(), expressions);
+            minion.block = block;
 
             if (jack.logician.needs_hub && (dungeon.name != "Hub" || dungeon.realm.name != "metahub"))
             {
                 var hub_dungeon = dungeon.overlord.realms["metahub"].dungeons["Hub"];
-                var symbol = imp.scope.create_symbol("hub", new Profession(Kind.reference, hub_dungeon));
-                imp.parameters.Add(new Parameter(symbol));
+                var symbol = minion.scope.create_symbol("hub", new Profession(Kind.reference, hub_dungeon));
+                minion.parameters.Add(new Parameter(symbol));
                 var hub_portal = dungeon.all_portals["hub"];
                 block.add("pre", new Assignment(new Self(dungeon, new Portal_Expression(hub_portal)),
                    "=", new Variable(symbol)));
@@ -230,7 +230,7 @@ namespace metahub.jackolantern.code
                 }
             }
 
-            return imp;
+            return minion;
         }
 
     }

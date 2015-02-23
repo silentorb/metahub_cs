@@ -36,11 +36,11 @@ namespace metahub.imperative.summoner
                 this.dungeon = dungeon;
             }
 
-            public Context(Imp imp)
+            public Context(Minion minion)
             {
-                realm = imp.dungeon.realm;
-                dungeon = imp.dungeon;
-                scope = new Scope(imp.scope);
+                realm = minion.dungeon.realm;
+                dungeon = minion.dungeon;
+                scope = new Scope(minion.scope);
             }
 
             public Context(Context parent)

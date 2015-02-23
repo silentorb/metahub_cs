@@ -94,9 +94,9 @@ namespace metahub.jackolantern
                 : "set_" + portal.name;
         }
 
-        public Imp get_initialize(Dungeon dungeon)
+        public Minion get_initialize(Dungeon dungeon)
         {
-            return dungeon.summon_imp("initialize");
+            return dungeon.summon_minion("initialize");
         }
 
         public void initialize_dungeon(Dungeon dungeon)
@@ -283,7 +283,7 @@ namespace metahub.jackolantern
             return portal;
         }
 
-        public Imp get_setter(Portal portal)
+        public Minion get_setter(Portal portal)
         {
             return portal.setter ?? Dungeon_Carver.generate_setter(portal, this);
         }
@@ -301,9 +301,9 @@ namespace metahub.jackolantern
 
         public Property_Function_Call call_setter(Portal portal, Expression reference, Expression value, Expression origin)
         {
-            var imp = get_setter(portal);
+            var minion = get_setter(portal);
             return new Property_Function_Call(Property_Function_Type.set, portal,
-                origin != null && imp.parameters.Count > 1
+                origin != null && minion.parameters.Count > 1
                 ? new List<Expression> { value, origin }
                 : new List<Expression> { value }
              ) { reference = reference };

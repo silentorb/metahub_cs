@@ -40,7 +40,7 @@ namespace metahub.jackolantern.carvers
             
             foreach (Function_Node constraint in constraints)
             {
-                var imp = create_check_function(portal);
+                var minion = create_check_function(portal);
 
                 // Iterator
                 var context = new Summoner.Context(setter);
@@ -50,20 +50,20 @@ namespace metahub.jackolantern.carvers
                 context.set_pattern("condition", c=> render_inverse_constraint(constraint, c));
 
                 var body = jack.overlord.summon_snippet(jack.templates["cross_iterator"], context);
-                imp.add_to_block(body);
+                minion.add_to_block(body);
             }
 
         }
 
-        Imp create_check_function(Portal portal)
+        Minion create_check_function(Portal portal)
         {
             var dungeon = portal.other_dungeon;
-            var imp_name = dungeon.get_available_name("check_" + portal.name + "_cross", 1);
-            var imp = dungeon.spawn_imp(imp_name);
-            imp.return_type = new Profession(Kind.Bool);
+            var minion_name = dungeon.get_available_name("check_" + portal.name + "_cross", 1);
+            var minion = dungeon.spawn_minion(minion_name);
+            minion.return_type = new Profession(Kind.Bool);
             var profession = new Profession(Kind.reference, portal.other_dungeon);
-            imp.add_parameter("value", profession);
-            return imp;
+            minion.add_parameter("value", profession);
+            return minion;
         }
 
         Expression render_inverse_constraint(Function_Node constraint, Summoner.Context context)

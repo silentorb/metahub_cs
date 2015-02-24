@@ -1,7 +1,7 @@
 using metahub.imperative.schema;
 using metahub.schema;
 
-namespace metahub.imperative.types
+namespace metahub.imperative.expressions
 {
     public class Self : Expression
     {
@@ -22,5 +22,7 @@ namespace metahub.imperative.types
         {
             return new Self(dungeon, child != null ? child.clone() : null);
         }
+
+        public override bool is_token { get { return true; } }
     }
 }

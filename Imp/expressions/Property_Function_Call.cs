@@ -3,7 +3,7 @@ using metahub.imperative.schema;
 
 
 
-namespace metahub.imperative.types
+namespace metahub.imperative.expressions
 {
     public enum Property_Function_Type
     {

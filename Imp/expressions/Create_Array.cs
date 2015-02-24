@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace metahub.imperative.types
+namespace metahub.imperative.expressions
 {
     public class Create_Array : Expression
     {

@@ -3,8 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using metahub.logic.schema;
 using metahub.logic.nodes;
-using Function_Call = metahub.imperative.types.Class_Function_Call;
-using Path = metahub.imperative.types.Path;
+using Function_Call = metahub.imperative.expressions.Class_Function_Call;
 
 namespace metahub.imperative.code
 {

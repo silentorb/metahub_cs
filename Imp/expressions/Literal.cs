@@ -3,7 +3,7 @@ using metahub.imperative.schema;
 
 using Kind = metahub.schema.Kind;
 
-namespace metahub.imperative.types {
+namespace metahub.imperative.expressions {
 /**
  * ...
  * @author Christopher W. Johnson

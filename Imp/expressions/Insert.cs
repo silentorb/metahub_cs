@@ -1,4 +1,4 @@
-namespace metahub.imperative.types
+namespace metahub.imperative.expressions
 {
 
 /**

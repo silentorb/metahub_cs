@@ -70,8 +70,10 @@
     <Compile Include="jackolantern\carvers\Map.cs" />
     <Compile Include="jackolantern\code\Dwarf.cs" />
     <Compile Include="jackolantern\code\Lantern.cs" />
+    <Compile Include="jackolantern\code\Pickaxe.cs" />
     <Compile Include="jackolantern\code\Piece_Maker.cs" />
     <Compile Include="jackolantern\code\Portal_Carver.cs" />
+    <Compile Include="jackolantern\code\Ration.cs" />
     <Compile Include="jackolantern\schema\Endpoint.cs" />
     <Compile Include="jackolantern\schema\Node_Link.cs" />
     <Compile Include="jackolantern\schema\Swamp.cs" />

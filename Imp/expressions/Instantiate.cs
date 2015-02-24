@@ -3,7 +3,7 @@ using metahub.imperative.schema;
 
 using metahub.schema;
 
-namespace metahub.imperative.types
+namespace metahub.imperative.expressions
 {
     public class Instantiate : Expression
     {

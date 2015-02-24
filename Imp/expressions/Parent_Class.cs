@@ -1,5 +1,5 @@
 
-namespace metahub.imperative.types
+namespace metahub.imperative.expressions
 {
     public class Parent_Class : Expression
     {

@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using metahub.imperative.schema;
 
-namespace metahub.imperative.types
+namespace metahub.imperative.expressions
 {
     public class Portal_Expression : Expression
     {
@@ -34,5 +34,7 @@ namespace metahub.imperative.types
         {
             return portal.get_profession();
         }
+
+        public override bool is_token { get { return true; } }
     }
 }

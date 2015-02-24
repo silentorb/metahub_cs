@@ -4,13 +4,13 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using metahub.imperative.schema;
 using metahub.imperative.summoner;
-using metahub.imperative.types;
+using metahub.imperative.expressions;
 using metahub.jackolantern;
 using metahub.jackolantern.expressions;
 
 using metahub.render;
 using metahub.schema;
-using Literal = metahub.imperative.types.Literal;
+using Literal = metahub.imperative.expressions.Literal;
 
 namespace metahub.imperative
 {

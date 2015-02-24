@@ -4,7 +4,7 @@ using metahub.imperative.schema;
 
 using metahub.schema;
 
-namespace metahub.imperative.types
+namespace metahub.imperative.expressions
 {
     public class Comment : Expression
     {

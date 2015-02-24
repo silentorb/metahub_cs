@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using metahub.imperative.schema;
 
 
-namespace metahub.imperative.types
+namespace metahub.imperative.expressions
 {
 
 /**

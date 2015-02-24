@@ -2,13 +2,13 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using metahub.imperative.types;
+using metahub.imperative.expressions;
 using metahub.schema;
-using Expression = metahub.imperative.types.Expression;
-using Function_Call = metahub.imperative.types.Class_Function_Call;
-using Namespace = metahub.imperative.types.Namespace;
-using Parameter = metahub.imperative.types.Parameter;
-using Variable = metahub.imperative.types.Variable;
+using Expression = metahub.imperative.expressions.Expression;
+using Function_Call = metahub.imperative.expressions.Class_Function_Call;
+using Namespace = metahub.imperative.expressions.Namespace;
+using Parameter = metahub.imperative.expressions.Parameter;
+using Variable = metahub.imperative.expressions.Variable;
 
 namespace metahub.imperative.schema
 {
@@ -214,8 +214,8 @@ namespace metahub.imperative.schema
                     break;
 
                 case Expression_Type.flow_control:
-                    transform_expression(((Flow_Control)expression).expression, expression);
-                    transform_expressions(((Flow_Control)expression).children, expression);
+                    transform_expression(((Flow_Control)expression).condition, expression);
+                    transform_expressions(((Flow_Control)expression).body, expression);
                     break;
 
                 case Expression_Type.function_call:
@@ -280,8 +280,8 @@ namespace metahub.imperative.schema
                     break;
 
                 case Expression_Type.flow_control:
-                    analyze_expression(((Flow_Control)expression).expression);
-                    analyze_expressions(((Flow_Control)expression).children);
+                    analyze_expression(((Flow_Control)expression).condition);
+                    analyze_expressions(((Flow_Control)expression).body);
                     break;
 
                 case Expression_Type.function_call:

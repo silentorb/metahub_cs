@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using metahub.imperative.schema;
-using metahub.imperative.types;
+using metahub.imperative.expressions;
 using metahub.jackolantern.schema;
 using metahub.logic.nodes;
 using metahub.logic.schema;
@@ -159,8 +159,8 @@ namespace metahub.jackolantern.carvers
             }
 
             if (conditions.Count == 0)
-                throw new Exception("Not supported.");
-                //return new Statements();
+                //throw new Exception("Not supported.");
+                return new Literal(false);
 
             return conditions.Count > 1
                 ? new Operation("&&", conditions)

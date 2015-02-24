@@ -2,10 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using metahub.imperative;
 using metahub.imperative.schema;
 using metahub.imperative.summoner;
-using metahub.imperative.types;
+using metahub.imperative.expressions;
 using metahub.logic.schema;
 using metahub.schema;
 
@@ -16,6 +15,7 @@ namespace metahub.jackolantern.code
         private JackOLantern jack;
         public Dungeon dungeon;
         public Rail rail;
+        public List<Pickaxe> pickaxes = new List<Pickaxe>();
 
         public Dwarf(JackOLantern jack, Dungeon dungeon, Rail rail = null)
         {

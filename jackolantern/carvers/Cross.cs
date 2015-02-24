@@ -5,7 +5,7 @@ using System.Text;
 using metahub.imperative.code;
 using metahub.imperative.schema;
 using metahub.imperative.summoner;
-using metahub.imperative.types;
+using metahub.imperative.expressions;
 using metahub.jackolantern.code;
 using metahub.jackolantern.schema;
 using metahub.logic;

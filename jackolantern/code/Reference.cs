@@ -4,7 +4,7 @@ using System.Linq;
 using metahub.imperative.code;
 using metahub.imperative.schema;
 using metahub.imperative.summoner;
-using metahub.imperative.types;
+using metahub.imperative.expressions;
 using metahub.logic;
 using metahub.logic.schema;
 using metahub.schema;

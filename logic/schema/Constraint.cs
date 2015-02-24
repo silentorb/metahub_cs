@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
-using metahub.imperative.types;
+using metahub.imperative.expressions;
 using metahub.logic.nodes;
 
 namespace metahub.logic.schema

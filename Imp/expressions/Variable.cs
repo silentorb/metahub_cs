@@ -4,7 +4,7 @@ using metahub.imperative.schema;
 
 using metahub.schema;
 
-namespace metahub.imperative.types
+namespace metahub.imperative.expressions
 {
     public class Variable : Expression
     {
@@ -32,5 +32,7 @@ namespace metahub.imperative.types
                 index = index != null ? index.clone() : null
             };
         }
+
+        public override bool is_token { get { return true; } }
     }
 }

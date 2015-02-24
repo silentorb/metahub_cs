@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using metahub.imperative.schema;
-using metahub.imperative.types;
+using metahub.imperative.expressions;
 using metahub.jackolantern.expressions;
 
 using parser;
@@ -329,8 +329,10 @@ namespace metahub.imperative.summoner
                                 {
                                     if (last.parent != null)
                                     {
-                                        last.parent.child = null;
+                                        //last.parent.child = null;
+                                        var last2 = last.parent;
                                         last = last.parent;
+                                        last2.child = null;
                                     }
                                     else
                                     {

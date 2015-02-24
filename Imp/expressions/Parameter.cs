@@ -1,7 +1,7 @@
 using metahub.imperative.schema;
 
 
-namespace metahub.imperative.types
+namespace metahub.imperative.expressions
 {
     public class Parameter
     {

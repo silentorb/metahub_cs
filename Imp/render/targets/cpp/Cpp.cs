@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using metahub.imperative;
 using metahub.imperative.schema;
-using metahub.imperative.types;
+using metahub.imperative.expressions;
 using metahub.schema;
 
 namespace metahub.render.targets.cpp
@@ -569,11 +569,11 @@ namespace metahub.render.targets.cpp
 
         string render_flow_control(Flow_Control statement)
         {
-            var expression = render_expression(statement.expression);
+            var expression = render_expression(statement.condition);
 
             return render_scope2(
                 statement.flow_type.ToString().ToLower() + " (" + expression + ")"
-            , statement.children, statement.flow_type == Flow_Control_Type.If);
+            , statement.body, statement.flow_type == Flow_Control_Type.If);
         }
 
         string render_iterator_block(Iterator statement)
@@ -682,7 +682,7 @@ namespace metahub.render.targets.cpp
                     throw new Exception("Unsupported Expression type: " + expression.type + ".");
             }
 
-            if (expression.child != null)
+            if (expression.is_token && expression.child != null)
             {
                 result += get_connector(expression) + render_expression(expression.child, expression);
             }

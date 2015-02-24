@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using metahub.imperative.schema;
 
-namespace metahub.imperative.types
+namespace metahub.imperative.expressions
 {
     public class Iterator : Expression
     {

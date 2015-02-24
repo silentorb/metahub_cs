@@ -1,6 +1,6 @@
 
 
-namespace metahub.imperative.types
+namespace metahub.imperative.expressions
 {
     public class Statement : Expression
     {

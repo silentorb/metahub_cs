@@ -94,7 +94,7 @@ namespace metahub.render.targets.cpp
             );
 
             var func = dungeon.summon_minion(dungeon.name);
-            func.expressions = block.ToList();
+            func.add_to_block(block);
         }
 
         void push_scope()

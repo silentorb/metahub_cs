@@ -32,14 +32,14 @@ namespace metahub.imperative.schema
         public List<Minion> invokers = new List<Minion>();
         public List<Minion> invokees = new List<Minion>();
         public List<Parameter> parameters;
-        public List<Expression> expressions;
+        public List<Expression> expressions = new List<Expression>();
         public Profession return_type = new Profession(Kind.none);
         public Minion parent;
         public List<Minion> children = new List<Minion>();
         public Scope scope;
         public bool is_abstract = false;
         public Block block;
-        public event Minion_Expression_Event on_add;
+        public event Minion_Expression_Event on_add_expression;
 
 #if DEBUG
         public string stack_trace;
@@ -55,22 +55,6 @@ namespace metahub.imperative.schema
             stack_trace = Environment.StackTrace;
 #endif
         }
-
-        //public Function_Call invoke(Minion invoker, IEnumerable<Expression> args = null)
-        //{
-        //    var invocation = new Function_Call(this, null, args);
-
-        //    if (invoker != null)
-        //    {
-        //        if (!invoker.invokees.Contains(this))
-        //            invoker.invokees.Add(this);
-
-        //        if (!invokers.Contains(invoker))
-        //            invokers.Add(invoker);
-        //    }
-
-        //    return invocation;
-        //}
 
         public Minion spawn_child(Dungeon new_dungeon)
         {
@@ -142,8 +126,16 @@ namespace metahub.imperative.schema
                 block = dungeon.create_block(name, scope, expressions);
 
             block.add(expression);
-            if (on_add != null)
-                on_add(this, expression);
+            if (on_add_expression != null)
+                on_add_expression(this, expression);
+        }
+
+        public void add_to_block(IEnumerable<Expression> expressions)
+        {
+            foreach (var expression in expressions)
+            {
+                add_to_block(expression);
+            }
         }
 
         public void add_to_block(string division, Expression expression)
@@ -152,8 +144,8 @@ namespace metahub.imperative.schema
                 block = dungeon.create_block(name, scope, expressions);
 
             block.add(division, expression);
-            if (on_add != null)
-                on_add(this, expression);
+            if (on_add_expression != null)
+                on_add_expression(this, expression);
         }
     }
 }

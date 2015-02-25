@@ -28,9 +28,9 @@ namespace metahub.jackolantern
         //public Dictionary<Rail, Dungeon> rail_map1 = new Dictionary<Rail, Dungeon>();
         //public Dictionary<Dungeon, Rail> rail_map2 = new Dictionary<Dungeon, Rail>();
 
-        //public Dictionary<Dwarf, Dungeon> dungeons = new Dictionary<Dwarf, Dungeon>();
-        public Dictionary<Dungeon, Dwarf> dwarves = new Dictionary<Dungeon, Dwarf>();
-        public Dictionary<Rail, Dwarf> rail_dwarves = new Dictionary<Rail, Dwarf>();
+        //public Dictionary<Dwarf_Clan, Dungeon> dungeons = new Dictionary<Dwarf_Clan, Dungeon>();
+        public Dictionary<Dungeon, Dwarf_Clan> clans = new Dictionary<Dungeon, Dwarf_Clan>();
+        public Dictionary<Rail, Dwarf_Clan> rail_clans = new Dictionary<Rail, Dwarf_Clan>();
 
         public Railway railway;
         public Target target;
@@ -163,17 +163,17 @@ namespace metahub.jackolantern
 
         public Rail get_rail(Dungeon dungeon)
         {
-            return dwarves[dungeon].rail;
+            return clans[dungeon].rail;
         }
 
-        public Dwarf add_dwarf(Dungeon dungeon, Rail rail = null)
+        public Dwarf_Clan add_clan(Dungeon dungeon, Rail rail = null)
         {
-            var dwarf = new Dwarf(this, dungeon, rail);
-            dwarves[dungeon] = dwarf;
+            var clan = new Dwarf_Clan(this, dungeon, rail);
+            clans[dungeon] = clan;
             if (rail != null)
-                rail_dwarves[rail] = dwarf;
+                rail_clans[rail] = clan;
 
-            return dwarf;
+            return clan;
         }
 
         public void generate_code(Target target)
@@ -192,7 +192,7 @@ namespace metahub.jackolantern
 
                     Dungeon dungeon = create_dungeon_from_rail(rail, realm);
                     realm.dungeons[dungeon.name] = dungeon;
-                    add_dwarf(dungeon, rail);
+                    add_clan(dungeon, rail);
 
                     //if (rail.trellis.is_abstract && rail.trellis.is_value)
                     //    continue;
@@ -217,13 +217,13 @@ namespace metahub.jackolantern
             foreach (var dungeon in not_external)
             {
                 dungeon.generate_code();
-                dwarves[dungeon].generate_code1();
+                clans[dungeon].generate_code1();
             }
 
             foreach (var dungeon in not_external)
             {
                 target.generate_dungeon_code(dungeon);
-                dwarves[dungeon].generate_code2();
+                clans[dungeon].generate_code2();
             }
 
             overlord.summon(Resources.metahub_imp);
@@ -250,18 +250,18 @@ namespace metahub.jackolantern
 
         public Dungeon get_dungeon(Rail rail)
         {
-            if (!rail_dwarves.ContainsKey(rail))
+            if (!rail_clans.ContainsKey(rail))
                 return null;
 
-            return rail_dwarves[rail].dungeon;
+            return rail_clans[rail].dungeon;
         }
 
         public Dungeon get_dungeon_or_error(Rail rail)
         {
-            if (!rail_dwarves.ContainsKey(rail))
+            if (!rail_clans.ContainsKey(rail))
                 throw new Exception("Could not find dungeon for rail " + rail.name + ".");
 
-            return rail_dwarves[rail].dungeon;
+            return rail_clans[rail].dungeon;
         }
 
         public Portal get_portal(Tie tie)
@@ -276,7 +276,7 @@ namespace metahub.jackolantern
         public Dungeon summon_dungeon(Snippet template, Summoner.Context context)
         {
             var dungeon = overlord.summon_dungeon(template, context);
-            var dwarf = add_dwarf(dungeon);
+            var clan = add_clan(dungeon);
             target.generate_dungeon_code(dungeon);
             return dungeon;
         }
@@ -310,7 +310,7 @@ namespace metahub.jackolantern
 
         public Minion get_setter(Portal portal)
         {
-            return portal.setter ?? dwarves[portal.dungeon].generate_setter(portal);
+            return portal.setter ?? clans[portal.dungeon].generate_setter(portal);
         }
 
         public Expression summon_snippet(string name, Summoner.Context context)

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using metahub.imperative.schema;
 using metahub.imperative.summoner;
 
@@ -142,15 +143,19 @@ namespace metahub.imperative.expressions
             parent.child = null;
             parent = null;
         }
+
+        public IEnumerable<Expression> aggregate()
+        {
+            return new[] { this }.Concat(children.SelectMany(c => c.aggregate()));
+
+            //var result = new List<Expression>();
+            //result.Add(this);
+            //foreach (var child in children)
+            //{
+            //    result.AddRange(child.aggregate());
+            //}
+
+            //return result;
+        }
     }
-    //struct Node {
-    //Expression_Type type,
-    //object value,
-    //Node child,
-    //string name,
-    //List<object> args,
-    //List<object> path,
-    //Tie tie,
-    //bool is_platform_specific
-    //}
 }

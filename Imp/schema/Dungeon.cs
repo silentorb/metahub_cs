@@ -12,6 +12,8 @@ using Variable = metahub.imperative.expressions.Variable;
 
 namespace metahub.imperative.schema
 {
+    public delegate void Dungeon_Minion_Event(Dungeon dungeon, Minion minion);
+
     [DebuggerDisplay("dungeon ({name})")]
     public class Dungeon
     {
@@ -35,13 +37,20 @@ namespace metahub.imperative.schema
         public Dictionary<string, object> hooks = new Dictionary<string, object>();
         public List<Dungeon> interfaces = new List<Dungeon>();
         public string class_export = "";
+        public object default_value;
+        public event Dungeon_Minion_Event on_add_minion;
+
+#if DEBUG
         private int id;
         private static int next_id = 1;
-        public object default_value;
+#endif
 
         public Dungeon(string name, Overlord overlord, Realm realm, Dungeon parent = null)
         {
+#if DEBUG
             id = next_id++;
+#endif
+
             this.name = name;
             this.overlord = overlord;
             this.realm = realm;
@@ -107,7 +116,7 @@ namespace metahub.imperative.schema
         {
             if (!has_block(path))
                 throw new Exception("Dungeon " + name + " does not have a block named " + path + ".");
-         
+
             return blocks[path];
         }
 
@@ -374,9 +383,11 @@ namespace metahub.imperative.schema
             var minion = new Minion(minion_name, this, portal)
                 {
                     parameters = parameters ?? new List<Parameter>(),
-                    expressions = expressions ?? new List<Expression>(),
                     return_type = return_type ?? new Profession(Kind.none)
                 };
+
+            if (expressions != null)
+                minion.add_to_block(expressions);
 
             minions[minion_name] = minion;
 
@@ -385,6 +396,9 @@ namespace metahub.imperative.schema
             var block = get_block("class_definition");
             block.add(definition);
             definition.scope = minion.scope = new Scope(block.scope);
+
+            if (on_add_minion != null)
+                on_add_minion(this, minion);
 
             return minion;
         }

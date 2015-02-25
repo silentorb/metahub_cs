@@ -60,7 +60,7 @@ namespace metahub.imperative.code
             scope.add_map("b", c => new Portal_Expression(portal) { index = new Literal((int)1) });
             var imp = result.summon_minion("is_resolved");
             var swamp = new Swamp(jack, null, context);
-            imp.expressions.Add(new Statement("return", new Literal(true)));
+            imp.add_to_block(new Statement("return", new Literal(true)));
 
             //imp.expressions.Add(new Statement("return",
             //    new Operation(constraint.op, new List<Expression>{ 

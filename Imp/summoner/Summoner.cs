@@ -134,7 +134,7 @@ namespace metahub.imperative.summoner
             if (return_type.patterns.Length > 0)
                 minion.return_type = parse_type(return_type.patterns[0], context);
 
-            minion.expressions = process_block(source.patterns[9], new_context);
+            minion.add_to_block(process_block(source.patterns[9], new_context));
         }
 
         private void process_property_declaration(Pattern_Source source, Context context)

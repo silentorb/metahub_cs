@@ -9,7 +9,7 @@ namespace metahub.render
 
     public static class String_Extensions
     {
-        public static string join(this object[] array, string seperator)
+        public static string join<T>(this T[] array, string seperator)
         {
             return string.Join(seperator, array);
         }

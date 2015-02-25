@@ -593,7 +593,7 @@ namespace metahub.render.targets.cpp
 
         string render_operation(Operation operation)
         {
-            return operation.expressions.Select(c =>
+            return operation.children.Select(c =>
                 c.type == Expression_Type.operation && ((Operation)c).is_condition() == operation.is_condition()
                 ? "(" + render_expression(c) + ")"
                 : render_expression(c)

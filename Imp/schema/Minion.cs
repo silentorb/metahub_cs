@@ -86,6 +86,9 @@ namespace metahub.imperative.schema
 
         public static Property_Function_Call setter(Portal portal, Expression value, Expression reference, Expression origin)
         {
+            if(reference.type == Expression_Type.operation)
+                throw new Exception("Cannot call function on operation.");
+
             return new Property_Function_Call(Property_Function_Type.set, portal, origin != null
                 ? new List<Expression> { value, origin }
                 : new List<Expression> { value }
@@ -94,8 +97,11 @@ namespace metahub.imperative.schema
 
         public static Expression call_remove(Portal portal, Expression reference, Expression item)
         {
+            if (reference.type == Expression_Type.operation)
+                throw new Exception("Cannot call function on operation."); 
+            
             return portal.type == Kind.reference
-                ? setter(portal, new Null_Value(), null, null).set_reference(reference)
+                ? setter(portal, new Null_Value(), reference, null)
                 : new Property_Function_Call(Property_Function_Type.remove, portal, new List<Expression>
                     {
                      item   

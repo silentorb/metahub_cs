@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using metahub.imperative.schema;
 
@@ -17,7 +18,7 @@ namespace metahub.imperative.expressions
         public Portal portal;
         public Property_Function_Type function_type;
         public List<Expression> args;
-        public Expression reference;
+        private Expression reference1;
 
         public Property_Function_Call(Property_Function_Type function_type, Portal portal, List<Expression> args = null)
             : base(Expression_Type.property_function_call)
@@ -27,11 +28,26 @@ namespace metahub.imperative.expressions
             this.args = args ?? new List<Expression>();
         }
 
-        public Property_Function_Call set_reference(Expression reference)
+        public Expression reference
         {
-            this.reference = reference;
-            return this;
+            get { return reference1; }
+            set
+            {
+                if (value != null && value.type == Expression_Type.operation)
+                            throw new Exception("Cannot call function on operation.");
+
+                reference1 = value;
+            }
         }
+
+        //public Property_Function_Call set_reference(Expression reference)
+        //{
+        //    this.reference = reference;
+        //    if (reference.type == Expression_Type.operation)
+        //        throw new Exception("Cannot call function on operation.");
+
+        //    return this;
+        //}
 
         public override Expression clone()
         {

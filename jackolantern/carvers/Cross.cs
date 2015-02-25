@@ -88,7 +88,9 @@ namespace metahub.jackolantern.carvers
             context.set_pattern("list", new Portal_Expression(portal.other_portal, new Portal_Expression(portal)));
             context.set_pattern("condition", c => render_inverse_constraint(constraint, c));
             context.set_pattern("block", c => generate_response(c, endpoint.portal, constraint, conflict_class));
-            context.set_pattern("null_check", get_conditions(constraint));
+
+            var dwarf = jack.get_dwarf(minion);
+            context.set_pattern("null_check", dwarf.get_null_check());
             
             var body = jack.summon_snippet("cross_iterator", context);
             minion.add_to_block(body);

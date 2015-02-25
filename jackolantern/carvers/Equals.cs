@@ -44,6 +44,9 @@ namespace metahub.jackolantern.carvers
                 if (portal.type == Kind.reference || portal.type == Kind.list)
                     expressions = expressions.Reverse().ToArray();
 
+                if (expressions[0] != null && expressions[0].type == Expression_Type.operation)
+                    throw new Exception("Cannot call function on operation.");
+
                 context.set_pattern("condition", conditions);
                 context.set_pattern("first", expressions[0]);
                 context.set_pattern("second", expressions[1]);

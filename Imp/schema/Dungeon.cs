@@ -219,7 +219,7 @@ namespace metahub.imperative.schema
                     break;
 
                 case Expression_Type.operation:
-                    transform_expressions(((Operation)expression).expressions, expression);
+                    transform_expressions(((Operation)expression).children, expression);
                     break;
 
                 case Expression_Type.flow_control:
@@ -285,7 +285,7 @@ namespace metahub.imperative.schema
                     break;
 
                 case Expression_Type.operation:
-                    analyze_expressions(((Operation)expression).expressions);
+                    analyze_expressions(((Operation)expression).children);
                     break;
 
                 case Expression_Type.flow_control:

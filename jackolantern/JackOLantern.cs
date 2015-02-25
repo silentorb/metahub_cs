@@ -137,6 +137,13 @@ namespace metahub.jackolantern
 
             return new Profession(signature.type, dungeon);
         }
+
+        public Dwarf get_dwarf(Minion minion)
+        {
+            var clan = clans[minion.dungeon];
+            return clan.dwarves[minion];
+        }
+
         public Dungeon create_dungeon_from_rail(Rail rail, Realm realm)
         {
             var dungeon = new Dungeon(rail.name, overlord, realm);

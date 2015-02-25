@@ -25,8 +25,13 @@ namespace metahub.imperative.expressions
             : base(Expression_Type.flow_control)
         {
             this.flow_type = flow_type;
-            children = new[] { condition }.Concat(body).ToList();
+            add(condition);
+            add(body);
         }
 
+        public override bool is_empty()
+        {
+            return condition.is_empty() || children.Count == 0;
+        }
     }
 }

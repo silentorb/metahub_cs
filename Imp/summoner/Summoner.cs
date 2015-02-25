@@ -496,6 +496,8 @@ namespace metahub.imperative.summoner
             var expression = process_expression(source.patterns[4], context);
             var op = source.patterns[2].text;
             var last = reference.get_end();
+            if (reference != null && reference.type == Expression_Type.operation)
+                throw new Exception("Cannot call function on operation.");
 
             if (last.type == Expression_Type.portal && op != "@=")
             {
@@ -514,7 +516,9 @@ namespace metahub.imperative.summoner
                 }
                 else
                 {
-                    last.parent.child = null;
+                    //if (last.parent.type == Expression_Type.operation || last.type== Expression_Type.operation)
+                    //    throw new Exception();
+                    //last.parent.child = null;
                     last.parent = null;
                 }
 

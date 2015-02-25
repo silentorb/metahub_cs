@@ -87,6 +87,7 @@ namespace metahub.jackolantern.carvers
 
         protected static Operation get_conditions(Expression start)
         {
+            return new Operation("=", new Literal(true), new Literal(true));
             var expression = start;
             var conditions = new List<Expression>();
             if (expression.child == null)
@@ -95,7 +96,7 @@ namespace metahub.jackolantern.carvers
             do
             {
                 expression = expression.clone();
-                expression.get_end().disconnect_parent();
+                expression.get_end().parent = null;
                 conditions.Insert(0, new Operation("!=", new[] { expression, new Null_Value() }));
             }
             while (expression.child != null);

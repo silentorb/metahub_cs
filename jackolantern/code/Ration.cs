@@ -8,13 +8,13 @@ namespace metahub.jackolantern.code
 {
    public class Ration
    {
-       public Dwarf pickaxe;
+       public Dwarf dwarf;
        public Expression target;
        public List<Expression> expressions = new List<Expression>();
 
-       public Ration(Dwarf pickaxe, Expression target)
+       public Ration(Dwarf dwarf, Expression target)
        {
-           this.pickaxe = pickaxe;
+           this.dwarf = dwarf;
            this.target = target;
        }
 
@@ -31,5 +31,9 @@ namespace metahub.jackolantern.code
             return result;
         }
 
+       public Operation create_null_check()
+       {
+           return new Operation("!=", target, new Null_Value());
+       }
    }
 }

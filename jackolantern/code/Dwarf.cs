@@ -14,6 +14,7 @@ namespace metahub.jackolantern.code
         public Minion minion;
         public Dungeon dungeon { get { return clan.dungeon; } }
         public Dictionary<string, Ration> rations = new Dictionary<string, Ration>();
+        private Operation null_check;
 
         public Dwarf(Dwarf_Clan clan, Minion minion)
         {
@@ -42,7 +43,12 @@ namespace metahub.jackolantern.code
             if (!rations.ContainsKey(key))
                 rations[key] = new Ration(this, render_chain(chain));
 
-            rations[key].expressions.AddRange(chain);
+            var ration = rations[key];
+            ration.expressions.AddRange(chain);
+            if (null_check != null)
+            {
+                null_check.add(ration.create_null_check());
+            }
         }
 
         static Expression render_chain(List<Expression> chain)
@@ -58,5 +64,15 @@ namespace metahub.jackolantern.code
             return result;
         }
 
+        public Operation get_null_check()
+        {
+            if (null_check == null)
+            {
+                var expressions = rations.Values.Select(r => r.create_null_check());
+                null_check = new Operation("&&", expressions);
+            }
+
+            return null_check;
+        }
     }
 }

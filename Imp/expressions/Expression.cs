@@ -85,12 +85,12 @@ namespace metahub.imperative.expressions
                 child.parent = this;
         }
 
-        public void add_child(Expression expression)
+        public void add(Expression expression)
         {
             expression.parent = this;
         }
 
-        public void add_children(IEnumerable<Expression> expressions)
+        public void add(IEnumerable<Expression> expressions)
         {
             foreach (var child in expressions)
             {
@@ -132,17 +132,17 @@ namespace metahub.imperative.expressions
             throw new Exception("Not implemented.");
         }
 
-        public void disconnect_parent()
-        {
-            if (parent == null)
-                throw new Exception("Cannot disconnect parent.");
+        //public void disconnect_parent()
+        //{
+        //    if (parent == null)
+        //        throw new Exception("Cannot disconnect parent.");
 
-            if (parent.child != this)
-                throw new Exception("parent child mixup.");
+        //    if (parent.child != this)
+        //        throw new Exception("parent child mixup.");
 
-            parent.child = null;
-            parent = null;
-        }
+        //    parent.child = null;
+        //    parent = null;
+        //}
 
         public IEnumerable<Expression> aggregate()
         {
@@ -156,6 +156,11 @@ namespace metahub.imperative.expressions
             //}
 
             //return result;
+        }
+
+        public virtual bool is_empty()
+        {
+            return false;
         }
     }
 }

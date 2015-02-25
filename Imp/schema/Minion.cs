@@ -8,6 +8,8 @@ using metahub.schema;
 
 namespace metahub.imperative.schema
 {
+    public delegate void Minion_Expression_Event(Minion minion, Expression expression);
+
     public class Minion
     {
         public static string[] platform_specific_functions = new string[]
@@ -37,6 +39,7 @@ namespace metahub.imperative.schema
         public Scope scope;
         public bool is_abstract = false;
         public Block block;
+        public event Minion_Expression_Event on_add;
 
 #if DEBUG
         public string stack_trace;
@@ -139,6 +142,8 @@ namespace metahub.imperative.schema
                 block = dungeon.create_block(name, scope, expressions);
 
             block.add(expression);
+            if (on_add != null)
+                on_add(this, expression);
         }
 
         public void add_to_block(string division, Expression expression)
@@ -147,6 +152,8 @@ namespace metahub.imperative.schema
                 block = dungeon.create_block(name, scope, expressions);
 
             block.add(division, expression);
+            if (on_add != null)
+                on_add(this, expression);
         }
     }
 }

@@ -76,7 +76,7 @@ namespace metahub.jackolantern.carvers
             context.set_pattern("ref", ref_expression);
             var portal = jack.get_portal(((Property_Node) list).tie);
             context.set_pattern("$add", on_add_code_sub(list_expression, portal, first_portal, second_portal,setter));
-            setter.block.add("post", jack.overlord.summon_snippet(jack.templates["map_on_add"], context));
+            setter.accordian.add("post", jack.overlord.summon_snippet(jack.templates["map_on_add"], context));
         }
 
         Expression on_add_code_sub(Expression list_expression, Portal portal, Portal first_portal, Portal second_portal, Minion setter)

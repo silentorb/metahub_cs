@@ -126,8 +126,8 @@ namespace metahub.imperative
             var summoner = new Summoner(this);
 
             var context = new Summoner.Context();
-            var statements = (Statements)summoner.process_statement(pre_summoner.output, context);
-            foreach (Snippet snippet in statements.children)
+            var statements = (Block)summoner.process_statement(pre_summoner.output, context);
+            foreach (Snippet snippet in statements.body)
             {
                 templates[snippet.name] = snippet;
             }

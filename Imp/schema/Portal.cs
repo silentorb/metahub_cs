@@ -19,6 +19,7 @@ namespace metahub.imperative.schema
         private int id; 
         private static int next_id = 1;
         public object default_value;
+        public List<Portal_Expression> expressions = new List<Portal_Expression>(); 
 
         public Kind type
         {

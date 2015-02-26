@@ -38,7 +38,7 @@ namespace metahub.imperative.schema
         public List<Minion> children = new List<Minion>();
         public Scope scope;
         public bool is_abstract = false;
-        public Block block;
+        public Accordian accordian;
         public event Minion_Expression_Event on_add_expression;
 
 #if DEBUG
@@ -128,10 +128,10 @@ namespace metahub.imperative.schema
 
         public void add_to_block(Expression expression)
         {
-            if (block == null)
-                block = dungeon.create_block(name, scope, expressions);
+            if (accordian == null)
+                accordian = dungeon.create_block(name, scope, expressions);
 
-            block.add(expression);
+            accordian.add(expression);
             if (on_add_expression != null)
                 on_add_expression(this, expression);
         }
@@ -146,10 +146,10 @@ namespace metahub.imperative.schema
 
         public void add_to_block(string division, Expression expression)
         {
-            if (block == null)
-                block = dungeon.create_block(name, scope, expressions);
+            if (accordian == null)
+                accordian = dungeon.create_block(name, scope, expressions);
 
-            block.add(division, expression);
+            accordian.add(division, expression);
             if (on_add_expression != null)
                 on_add_expression(this, expression);
         }

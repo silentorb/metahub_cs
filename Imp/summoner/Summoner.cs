@@ -153,8 +153,8 @@ namespace metahub.imperative.summoner
                 var expression = process_statement(pattern, context);
                 if (expression.type == Expression_Type.statements)
                 {
-                    var statements = (Statements)expression;
-                    result.AddRange(statements.children);
+                    var statements = (Block)expression;
+                    result.AddRange(statements.body);
                 }
                 else
                 {
@@ -210,14 +210,14 @@ namespace metahub.imperative.summoner
 
                 case "snippets":
                     var snippets = source.patterns.Select(p => process_statement(p, context)).ToList();
-                    return new Statements(snippets);
+                    return new Block(snippets);
 
                 case "statements":
                     {
                         var expressions = process_block(source, context);
                         return expressions.Count == 1
                             ? expressions[0]
-                            : new Statements(expressions);
+                            : new Block(expressions);
                     }
             }
 
@@ -332,7 +332,7 @@ namespace metahub.imperative.summoner
                                         //last.parent.child = null;
                                         var last2 = last.parent;
                                         last = last.parent;
-                                        last2.child = null;
+                                        last2.next = null;
                                     }
                                     else
                                     {
@@ -358,7 +358,7 @@ namespace metahub.imperative.summoner
                     if (last.type == Expression_Type.property_function_call)
                         ((Property_Function_Call)last).args.Add(next);
                     else
-                        last.child = next;
+                        last.next = next;
                 }
                 last = next.get_end();
             }

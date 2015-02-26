@@ -26,9 +26,10 @@ namespace metahub.jackolantern.code
 
         void minion_on_add(Minion minion, Expression expression)
         {
+            return;
             var portal_expressions = expression.aggregate()
                 .OfType<Portal_Expression>()
-                .Where(e => e.parent == null || e.parent.is_token == false);
+                .Where(e => e.parent == null);
 
             foreach (var e in portal_expressions)
             {
@@ -45,10 +46,10 @@ namespace metahub.jackolantern.code
 
             var ration = rations[key];
             ration.expressions.AddRange(chain);
-            if (null_check != null)
-            {
-                null_check.add(ration.create_null_check());
-            }
+            //if (null_check != null)
+            //{
+            //    null_check.add(ration.create_null_check());
+            //}
         }
 
         static Expression render_chain(List<Expression> chain)
@@ -58,7 +59,7 @@ namespace metahub.jackolantern.code
 
             foreach (var link in chain.Skip(1))
             {
-                last.child = link.clone();
+                last.next = link.clone();
             }
 
             return result;

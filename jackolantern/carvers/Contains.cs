@@ -32,7 +32,7 @@ namespace metahub.jackolantern.carvers
                 var swamp = new Swamp(jack, pumpkin, context);
                 context.set_pattern("list", c => swamp.translate_inclusive(list, null, Dir.Out));
                 context.set_pattern("item", c => swamp.translate_inclusive(item, null, Dir.Out));
-                initialize.block.add(jack.overlord.summon_snippet(jack.templates["contains"], context));
+                initialize.accordian.add(jack.overlord.summon_snippet(jack.templates["contains"], context));
             }
         }
     }

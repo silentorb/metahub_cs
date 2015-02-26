@@ -90,7 +90,7 @@ namespace metahub.jackolantern.carvers
             return new Operation("==", new Literal(true), new Literal(true));
             var expression = start;
             var conditions = new List<Expression>();
-            if (expression.child == null)
+            if (expression.next == null)
                 throw new Exception("Child expression cannot be null.");
 
             do
@@ -99,7 +99,7 @@ namespace metahub.jackolantern.carvers
                 expression.get_end().parent = null;
                 conditions.Insert(0, new Operation("!=", new[] { expression, new Null_Value() }));
             }
-            while (expression.child != null);
+            while (expression.next != null);
 
             return new Operation("&&", conditions);
         }

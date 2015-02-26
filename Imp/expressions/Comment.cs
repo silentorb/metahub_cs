@@ -1,7 +1,6 @@
 using System;
+using System.Collections.Generic;
 using metahub.imperative.schema;
-
-
 using metahub.schema;
 
 namespace metahub.imperative.expressions
@@ -16,6 +15,11 @@ namespace metahub.imperative.expressions
         {
             this.text = text;
             is_multiline = text.Contains("\n");
+        }
+
+        public override IEnumerable<Expression> children
+        {
+            get { return new List<Expression>(); }
         }
     }
 }

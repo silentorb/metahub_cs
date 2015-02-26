@@ -11,7 +11,7 @@ namespace metahub.jackolantern.code
     public static class Portal_Carver
     {
 
-        public static void customize_initialize(JackOLantern jack, Portal portal, Block block)
+        public static void customize_initialize(JackOLantern jack, Portal portal, Accordian accordian)
         {
             var tie = jack.get_tie(portal);
             if (tie == null)
@@ -33,7 +33,7 @@ namespace metahub.jackolantern.code
 
             if (tie.has_setter())
             {
-                block.add("post", new Property_Function_Call(Property_Function_Type.set, portal, new List<Expression>
+                accordian.add("post", new Property_Function_Call(Property_Function_Type.set, portal, new List<Expression>
                     {
                         new Portal_Expression(portal)
                     }));

@@ -1,4 +1,6 @@
 
+using System.Collections.Generic;
+
 namespace metahub.imperative.expressions
 {
     public class Null_Value : Expression
@@ -12,6 +14,11 @@ namespace metahub.imperative.expressions
         public override Expression clone()
         {
             return new Null_Value();
+        }
+
+        public override IEnumerable<Expression> children
+        {
+            get { return new List<Expression>(); }
         }
     }
 }

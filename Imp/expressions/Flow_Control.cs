@@ -9,29 +9,37 @@ namespace metahub.imperative.expressions
         While
     }
 
-    public class Flow_Control : Expression
+    public class Flow_Control : Block
     {
         public Flow_Control_Type flow_type;
-        public Expression condition
-        {
-            get { return children[0]; }   
-        }
-        public List<Expression> body
-        {
-            get { return children.Skip(1).ToList(); }
-        }
+        public Expression condition;
 
         public Flow_Control(Flow_Control_Type flow_type, Expression condition, IEnumerable<Expression> body)
             : base(Expression_Type.flow_control)
         {
             this.flow_type = flow_type;
-            add(condition);
-            add(body);
+            this.condition = condition;
+            if (condition != null)
+                condition.parent = this;
+
+            this.body.AddRange(body);
+            foreach (var expression in this.body)
+            {
+                expression.parent = this;
+            }
         }
 
         public override bool is_empty()
         {
-            return condition.is_empty() || children.Count == 0;
+            return condition.is_empty() || body.Count == 0; // With Imp the body count is usually high.
+        }
+
+        public override IEnumerable<Expression> children
+        {
+            get
+            {
+                return new[] { condition }.Concat(body);
+            }
         }
     }
 }

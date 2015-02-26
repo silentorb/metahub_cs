@@ -58,7 +58,7 @@ namespace metahub.jackolantern.carvers
             context.set_pattern("size", range);
             context.set_pattern("$add", Lantern.add_to_list(property_expression, endpoint.portal, endpoint.portal.profession, jack));
             var template = jack.templates["initialize_count"];
-            initialize.block.add("pre", jack.overlord.summon_snippet(template, context));
+            initialize.accordian.add("pre", jack.overlord.summon_snippet(template, context));
 
         }
 

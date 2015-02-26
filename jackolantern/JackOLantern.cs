@@ -16,6 +16,7 @@ using metahub.logic.nodes;
 using metahub.logic.schema;
 using metahub.render;
 using metahub.schema;
+using Block = metahub.imperative.expressions.Block;
 
 namespace metahub.jackolantern
 {
@@ -327,8 +328,8 @@ namespace metahub.jackolantern
 
         public List<Expression> summon_snippet_block(string name, Summoner.Context context)
         {
-            var statements = (Statements) overlord.summon_snippet(templates[name], context);
-            return statements.children;
+            var statements = (Block) overlord.summon_snippet(templates[name], context);
+            return statements.body;
         }
 
         public Property_Function_Call call_setter(Portal portal, Expression reference, Expression value, Expression origin)

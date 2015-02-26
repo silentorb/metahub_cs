@@ -344,12 +344,12 @@ namespace metahub.jackolantern.schema
             var child = translate_backwards(next, node, step + 1);
             if (child != null && child.type == Expression_Type.platform_function)
             {
-                expression.child = child;
+                expression.next = child;
                 return expression;
             }
             else if (child != null)
             {
-                get_last_child(child).child = expression;
+                get_last_child(child).next = expression;
                 return child;
             }
 
@@ -414,7 +414,7 @@ namespace metahub.jackolantern.schema
                 }
                 else
                 {
-                    last.child = expression;
+                    last.next = expression;
                 }
 
                 last = expression;
@@ -425,9 +425,9 @@ namespace metahub.jackolantern.schema
 
         static Expression get_last_child(Expression expression)
         {
-            while (expression.child != null)
+            while (expression.next != null)
             {
-                expression = expression.child;
+                expression = expression.next;
             }
             return expression;
         }

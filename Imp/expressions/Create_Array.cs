@@ -5,12 +5,17 @@ namespace metahub.imperative.expressions
 {
     public class Create_Array : Expression
     {
-        public List<Expression> children;
+        public List<Expression> items;
 
         public Create_Array(IEnumerable<Expression> children)
             : base(Expression_Type.create_array)
         {
-            this.children = children.ToList();
+            this.items = children.ToList();
+        }
+
+        public override IEnumerable<Expression> children
+        {
+            get { return items; }
         }
     }
 }

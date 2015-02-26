@@ -6,7 +6,7 @@ using metahub.imperative.expressions;
 
 namespace metahub.imperative.schema
 {
-    public class Block
+    public class Accordian
     {
         public string name;
         public Scope scope;
@@ -15,7 +15,7 @@ namespace metahub.imperative.schema
         private Dungeon dungeon;
         public List<Expression> output;
 
-        public Block(string name, Scope scope, Dungeon dungeon, List<Expression> output = null)
+        public Accordian(string name, Scope scope, Dungeon dungeon, List<Expression> output = null)
         {
             this.name = name;
             this.scope = scope;
@@ -44,7 +44,7 @@ namespace metahub.imperative.schema
                 divide(null);
 
             if (expression.type == Expression_Type.statements)
-                add_many(((Statements)expression).children);
+                add_many(((Block)expression).body);
             else
                 divisions.First().add(expression);
         }
@@ -60,7 +60,7 @@ namespace metahub.imperative.schema
         public void add(string division_name, Expression expression)
         {
             if (expression.type == Expression_Type.statements)
-                add_many(division_name, ((Statements)expression).children);
+                add_many(division_name, ((Block)expression).body);
             else
                 division_map[division_name].add(expression);
         }

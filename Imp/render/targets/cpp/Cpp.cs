@@ -174,11 +174,11 @@ namespace metahub.render.targets.cpp
             {
                 case Expression_Type.space:
                     var space = (Namespace)statement;
-                    return render_region(space.realm, () => render_statements(space.expressions));
+                    return render_region(space.realm, () => render_statements(space.body));
 
                 case Expression_Type.class_definition:
                     var definition = (Class_Definition)statement;
-                    return class_definition(definition.dungeon, definition.expressions);
+                    return class_definition(definition.dungeon, definition.body);
 
                 case Expression_Type.function_definition:
                     return render_function_definition((Function_Definition)statement);
@@ -206,8 +206,8 @@ namespace metahub.render.targets.cpp
 
                 case Expression_Type.statement:
                     var state = (Statement)statement;
-                    return line(state.name + (state.child != null
-                        ? " " + render_expression(state.child)
+                    return line(state.name + (state.next != null
+                        ? " " + render_expression(state.next)
                         : "") + ";");
 
                 case Expression_Type.insert:
@@ -586,7 +586,7 @@ namespace metahub.render.targets.cpp
                 "for (" + expression + ")"
             , new List<Expression> { 
                     new Declare_Variable(parameter, new Insert("*" + it.name))
-                }.Concat(statement.children).ToList()
+                }.Concat(statement.body).ToList()
             );
             return result;
         }
@@ -682,9 +682,9 @@ namespace metahub.render.targets.cpp
                     throw new Exception("Unsupported Expression type: " + expression.type + ".");
             }
 
-            if (expression.is_token && expression.child != null)
+            if (expression.next != null)
             {
-                result += get_connector(expression) + render_expression(expression.child, expression);
+                result += get_connector(expression) + render_expression(expression.next, expression);
             }
 
             return result;

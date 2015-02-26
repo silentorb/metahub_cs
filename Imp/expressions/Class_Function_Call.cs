@@ -11,10 +11,15 @@ namespace metahub.imperative.expressions
         public Minion minion;
         public Profession profession;
 
-        public Class_Function_Call(string name, Expression reference = null, IEnumerable<Expression> args = null)
+        //public Class_Function_Call(string name, Expression reference = null, IEnumerable<Expression> args = null)
+        //    : base(Expression_Type.function_call, reference, args)
+        //{
+        //    this.name = name;
+        //}
+
+        public Class_Function_Call(Expression reference = null, IEnumerable<Expression> args = null)
             : base(Expression_Type.function_call, reference, args)
         {
-            this.name = name;
         }
 
         public Class_Function_Call(Minion minion, Expression reference = null, IEnumerable<Expression> args = null)

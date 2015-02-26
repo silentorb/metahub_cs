@@ -37,7 +37,7 @@ namespace metahub.jackolantern.code
             Function_Definition definition = new Function_Definition(minion);
 
             var block = dungeon.create_block(function_name, scope, definition.expressions);
-            minion.block = block;
+            minion.accordian = block;
             var mid = block.divide("mid", new List<Expression> {
 				new Platform_Function("add", new Portal_Expression(portal), new Expression[]{ new Variable(item) })
 		});
@@ -61,7 +61,7 @@ namespace metahub.jackolantern.code
             var dungeon = portal.dungeon;
             var origin = minion.scope.find_or_exception("origin");
             var item = minion.scope.find_or_exception("item");
-            var block = minion.block;
+            var block = minion.accordian;
             if (portal.other_portal != null)
             {
                 block.add("mid",

@@ -45,7 +45,7 @@ namespace metahub.jackolantern.carvers
                     var swamp = new Swamp(jack, pumpkin, context);
                     var expressions = swamp.get_expression_pair(other.node);
 
-                    setter.block.add("post", new Comment("Carving equals: " + endpoint.portal.name));
+                    setter.accordian.add("post", new Comment("Carving equals: " + endpoint.portal.name));
                     var conditions = get_conditions(expressions[0]);
                     //if (portal.type == Kind.reference || portal.type == Kind.list)
                     //expressions = expressions.Reverse().ToArray();
@@ -56,7 +56,7 @@ namespace metahub.jackolantern.carvers
                     context.set_pattern("condition", conditions);
                     context.set_pattern("first", expressions[0]);
                     context.set_pattern("second", expressions[1]);
-                    setter.block.add("post", jack.overlord.summon_snippet(jack.templates["equals"], context));
+                    setter.accordian.add("post", jack.overlord.summon_snippet(jack.templates["equals"], context));
                 }
             }
         }

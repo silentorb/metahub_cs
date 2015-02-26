@@ -1,17 +1,29 @@
 
 
+using System.Collections.Generic;
+
 namespace metahub.imperative.expressions
 {
-    public class Statement : Expression
+    public sealed class Statement : Expression
     {
         public string name;
 
         public Statement(string name, Expression child = null)
-            : base(Expression_Type.statement, child)
+            : base(Expression_Type.statement)
         {
             this.name = name;
+            next = child;
         }
 
+        public override IEnumerable<Expression> children
+        {
+            get
+            {
+                return next != null
+                           ? new List<Expression> { next }
+                           : new List<Expression>();
+            }
+        }
     }
 
 }

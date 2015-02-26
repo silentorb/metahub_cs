@@ -107,7 +107,7 @@ namespace metahub.jackolantern.code
                 return;
 
             Minion new_minion;
-            Block new_block;
+            Accordian newAccordian;
             var minion = dungeon.summon_minion(path, true);
             var tokens = path.Split('_');
             var portal_name = tokens.Last();
@@ -117,21 +117,21 @@ namespace metahub.jackolantern.code
             if (minion == null || minion.portal != null)
             {
                 new_minion = generate_setter(portal);
-                new_block = new_minion.block;
+                newAccordian = new_minion.accordian;
                 if (minion != null)
                 {
-                    new_block.add("pre", Minion.setter(portal, new Variable(new_minion.parameters[0].symbol),
+                    newAccordian.add("pre", Minion.setter(portal, new Variable(new_minion.parameters[0].symbol),
                          new Parent_Class(), null));
                 }
             }
             else
             {
                 new_minion = minion.spawn_child(dungeon);
-                new_block = dungeon.create_block(path, new_minion.scope, new_minion.expressions);
-                new_block.divide("pre").add(Minion.setter(portal, new Variable(new_minion.parameters[0].symbol),
+                newAccordian = dungeon.create_block(path, new_minion.scope, new_minion.expressions);
+                newAccordian.divide("pre").add(Minion.setter(portal, new Variable(new_minion.parameters[0].symbol),
                          new Parent_Class(), null));
             }
-            new_block.divide("post");
+            newAccordian.divide("post");
         }
 
         public Minion generate_setter_stub(Portal portal)
@@ -148,7 +148,7 @@ namespace metahub.jackolantern.code
 
             Function_Definition result = new Function_Definition(minion);
             var block =
-                minion.block = dungeon.create_block(minion_name, new Scope(function_scope), result.expressions);
+                minion.accordian = dungeon.create_block(minion_name, new Scope(function_scope), result.expressions);
 
             var pre = block.divide("pre");
 
@@ -174,7 +174,7 @@ namespace metahub.jackolantern.code
 
             var minion = generate_setter_stub(portal);
 
-            var block = minion.block;
+            var block = minion.accordian;
 
             if (portal.type == Kind.reference && portal.other_portal != null)
             {
@@ -218,7 +218,7 @@ namespace metahub.jackolantern.code
             }
 
             var minion = dungeon.spawn_minion("initialize", new List<Parameter>(), expressions);
-            minion.block = block;
+            minion.accordian = block;
 
             if (jack.logician.needs_hub && (dungeon.name != "Hub" || dungeon.realm.name != "metahub"))
             {

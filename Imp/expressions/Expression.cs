@@ -13,32 +13,25 @@ namespace metahub.imperative.expressions
     public delegate Expression Expression_Generator(Summoner.Context context);
 
     [DebuggerDisplay("{debug_string}")]
-    public class Expression
+    public abstract class Expression
     {
         public Expression_Type type;
-        public Expression child
+        private Expression _next;
+        public Expression next
         {
-            get { return children.Count > 0 ? children[0] : null; }
+            get { return _next; }
             set
             {
-                if (children.Count > 0 && children[0] == value)
-                    return;
-
-                if (children.Count > 0)
-                    children[0].parent = null;
-
-                children.Clear();
-                if (value != null)
+                if (value == null)
                 {
-                    value.parent = this;
+                    if (_next != null)
+                        _next.parent = null;
                 }
+                _next = value;
 
+                if (_next != null)
+                    _next.parent = this;
             }
-        }
-
-        public virtual bool is_token
-        {
-            get { return false; }
         }
 
         protected virtual string debug_string
@@ -46,64 +39,49 @@ namespace metahub.imperative.expressions
             get { return type + " expression"; }
         }
 
-        /*
-                 private Expression _child;
-        public Expression child
-        {
-            get { return _child; }
-            set
-            {
-                _child = value;
-                if (_child != null)
-                {
-                    _child.parent = this;
-                }
-            }
-        }*/
         public string stack_trace;
 
-        private Expression _parent = null;
-        public Expression parent
-        {
-            get { return _parent; }
-            set
-            {
-                if (value != null && !value.children.Contains(this))
-                    value.children.Add(this);
+        public Expression parent;
 
-                if (value == _parent)
-                    return;
+        //private Expression _parent = null;
+        //public Expression parent
+        //{
+        //    get { return _parent; }
+        //    set
+        //    {
+        //        if (value != null && !value.children.Contains(this))
+        //            value.children.Add(this);
 
-                if (_parent != null && _parent.children.Contains(this))
-                    _parent.children.Remove(this);
+        //        if (value == _parent)
+        //            return;
 
-                _parent = value;
+        //        if (_parent != null && _parent.children.Contains(this))
+        //            _parent.children.Remove(this);
 
-            }
-        }
-        public List<Expression> children = new List<Expression>();
+        //        _parent = value;
 
-        protected Expression(Expression_Type type, Expression child = null)
+        //    }
+        //}
+        public abstract IEnumerable<Expression> children { get; }
+
+        protected Expression(Expression_Type type)
         {
             stack_trace = Environment.StackTrace;
             this.type = type;
-            this.child = child;
-            if (child != null)
-                child.parent = this;
         }
 
-        public void add(Expression expression)
-        {
-            expression.parent = this;
-        }
+        //public void add(Expression expression)
+        //{
+        //    expression.parent = this;
+        //}
 
-        public void add(IEnumerable<Expression> expressions)
-        {
-            foreach (var child in expressions)
-            {
-                child.parent = this;
-            }
-        }
+        //public void add(IEnumerable<Expression> expressions)
+        //{
+        //    foreach (var child in expressions)
+        //    {
+        //        child.parent = this;
+        //    }
+        //}
 
         public virtual Profession get_profession()
         {
@@ -113,9 +91,9 @@ namespace metahub.imperative.expressions
         public Expression get_end()
         {
             var result = this;
-            while (result.child != null && (result.child.type == Expression_Type.property || result.child.type == Expression_Type.portal))
+            while (result.next != null && (result.next.type == Expression_Type.property || result.next.type == Expression_Type.portal))
             {
-                result = result.child;
+                result = result.next;
             }
 
             return result;
@@ -128,7 +106,7 @@ namespace metahub.imperative.expressions
             while (current != null && (current.type == Expression_Type.property || current.type == Expression_Type.portal))
             {
                 result.Add(current);
-                current = current.child;
+                current = current.next;
             }
 
             return result;
@@ -139,35 +117,23 @@ namespace metahub.imperative.expressions
             throw new Exception("Not implemented.");
         }
 
-        //public void disconnect_parent()
-        //{
-        //    if (parent == null)
-        //        throw new Exception("Cannot disconnect parent.");
-
-        //    if (parent.child != this)
-        //        throw new Exception("parent child mixup.");
-
-        //    parent.child = null;
-        //    parent = null;
-        //}
-
         public IEnumerable<Expression> aggregate()
         {
             return new[] { this }.Concat(children.SelectMany(c => c.aggregate()));
-
-            //var result = new List<Expression>();
-            //result.Add(this);
-            //foreach (var child in children)
-            //{
-            //    result.AddRange(child.aggregate());
-            //}
-
-            //return result;
         }
 
         public virtual bool is_empty()
         {
             return false;
         }
+
+        //public virtual Expression next
+        //{
+        //    get { return null; }
+        //    set
+        //    {
+        //        throw new Exception("Set next not implemented.");
+        //    }
+        //}
     }
 }

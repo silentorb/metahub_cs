@@ -20,6 +20,11 @@ namespace metahub.imperative.expressions
         {
             return new Declare_Variable(symbol, expression);
         }
+
+        public override System.Collections.Generic.IEnumerable<Expression> children
+        {
+            get { return new[] {expression}; }
+        }
     }
 
 }

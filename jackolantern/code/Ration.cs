@@ -25,7 +25,7 @@ namespace metahub.jackolantern.code
             do
             {
                 result.Add(current);
-                current = current.child;
+                current = current.next;
             } while (current != null && current.type == Expression_Type.portal);
 
             return result;

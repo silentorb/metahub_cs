@@ -55,7 +55,7 @@ namespace metahub.jackolantern.carvers
             context.set_pattern("min", range[0]);
             context.set_pattern("max", range[1]);
             var template = jack.templates["initialize_random_range"];
-            initialize.block.add("pre", jack.overlord.summon_snippet(template, context));
+            initialize.accordian.add("pre", jack.overlord.summon_snippet(template, context));
 
         }
 
@@ -76,7 +76,7 @@ namespace metahub.jackolantern.carvers
                 context.set_pattern("$op", op);
                 context.set_pattern("second", range[i]);
                 context.set_pattern("third", range[i]);
-                setter.block.add("pre", jack.overlord.summon_snippet(template, context));
+                setter.accordian.add("pre", jack.overlord.summon_snippet(template, context));
                 op = ">";
             }
         }

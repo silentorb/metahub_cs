@@ -1,16 +1,18 @@
+using System.Collections.Generic;
 using metahub.imperative.schema;
 using metahub.schema;
 
 namespace metahub.imperative.expressions
 {
-    public class Self : Expression
+    public sealed class Self : Expression
     {
         public Dungeon dungeon;
 
         public Self(Dungeon dungeon, Expression child = null)
-            : base(Expression_Type.self, child)
+            : base(Expression_Type.self)
         {
             this.dungeon = dungeon;
+            next = child;
         }
 
         public override Profession get_profession()
@@ -20,9 +22,17 @@ namespace metahub.imperative.expressions
 
         public override Expression clone()
         {
-            return new Self(dungeon, child != null ? child.clone() : null);
+            return new Self(dungeon, next != null ? next.clone() : null);
         }
 
-        public override bool is_token { get { return true; } }
+        public override IEnumerable<Expression> children
+        {
+            get
+            {
+                return next != null
+                           ? new List<Expression> { next }
+                           : new List<Expression>();
+            }
+        }
     }
 }

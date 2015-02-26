@@ -5,19 +5,15 @@ using metahub.imperative.schema;
 namespace metahub.imperative.expressions
 {
 
-/**
- * @author Christopher W. Johnson
- */
-public class Class_Definition : Expression {
-	public Dungeon dungeon;
-	public List<Expression> expressions;
-
-    public Class_Definition(Dungeon dungeon, List<Expression> statements)
-
-        : base(Expression_Type.class_definition)
+    public class Class_Definition : Block
     {
-		this.dungeon = dungeon;
-		this.expressions = statements;
-	}
-}
+        public Dungeon dungeon;
+
+        public Class_Definition(Dungeon dungeon, List<Expression> statements)
+
+            : base(Expression_Type.class_definition, statements)
+        {
+            this.dungeon = dungeon;
+        }
+    }
 }

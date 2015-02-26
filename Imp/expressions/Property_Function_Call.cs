@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using metahub.imperative.schema;
 
 
@@ -13,41 +14,18 @@ namespace metahub.imperative.expressions
         remove
     }
 
-    public class Property_Function_Call : Expression
+    public class Property_Function_Call : Class_Function_Call
     {
         public Portal portal;
         public Property_Function_Type function_type;
-        public List<Expression> args;
-        private Expression reference1;
 
-        public Property_Function_Call(Property_Function_Type function_type, Portal portal, List<Expression> args = null)
-            : base(Expression_Type.property_function_call)
+        public Property_Function_Call(Property_Function_Type function_type, Portal portal, IEnumerable<Expression> args = null)
+            : base(null, args)
         {
+            type = Expression_Type.property_function_call;
             this.function_type = function_type;
             this.portal = portal;
-            this.args = args ?? new List<Expression>();
         }
-
-        public Expression reference
-        {
-            get { return reference1; }
-            set
-            {
-                if (value != null && value.type == Expression_Type.operation)
-                            throw new Exception("Cannot call function on operation.");
-
-                reference1 = value;
-            }
-        }
-
-        //public Property_Function_Call set_reference(Expression reference)
-        //{
-        //    this.reference = reference;
-        //    if (reference.type == Expression_Type.operation)
-        //        throw new Exception("Cannot call function on operation.");
-
-        //    return this;
-        //}
 
         public override Expression clone()
         {
@@ -55,6 +33,16 @@ namespace metahub.imperative.expressions
                 {
                     reference = reference
                 };
+        }
+
+        public override IEnumerable<Expression> children
+        {
+            get
+            {
+                return reference != null
+                    ? new[] { reference }.Concat(args)
+                    : args;
+            }
         }
     }
 

@@ -22,7 +22,7 @@ namespace metahub.imperative.schema
         public Dungeon parent;
         public List<Expression> code;
         public Dictionary<string, string[]> inserts;
-        Dictionary<string, Block> blocks = new Dictionary<string, Block>();
+        Dictionary<string, Accordian> blocks = new Dictionary<string, Accordian>();
         public Overlord overlord;
         public Dictionary<string, Minion> minions = new Dictionary<string, Minion>();
         public Dictionary<string, Portal> all_portals = new Dictionary<string, Portal>();
@@ -100,9 +100,9 @@ namespace metahub.imperative.schema
             root.divide("post");
         }
 
-        public Block create_block(string path, Scope scope, List<Expression> expressions = null)
+        public Accordian create_block(string path, Scope scope, List<Expression> expressions = null)
         {
-            var block = new Block(path, scope, this, expressions);
+            var block = new Accordian(path, scope, this, expressions);
             blocks[path] = block;
             return block;
         }
@@ -112,7 +112,7 @@ namespace metahub.imperative.schema
             return blocks.ContainsKey(path);
         }
 
-        public Block get_block(string path)
+        public Accordian get_block(string path)
         {
             if (!has_block(path))
                 throw new Exception("Dungeon " + name + " does not have a block named " + path + ".");
@@ -207,11 +207,11 @@ namespace metahub.imperative.schema
             switch (expression.type)
             {
                 case Expression_Type.space:
-                    transform_expressions(((Namespace)expression).expressions, expression);
+                    transform_expressions(((Namespace)expression).body, expression);
                     break;
 
                 case Expression_Type.class_definition:
-                    transform_expressions(((Class_Definition)expression).expressions, expression);
+                    transform_expressions(((Class_Definition)expression).body, expression);
                     break;
 
                 case Expression_Type.function_definition:
@@ -249,12 +249,12 @@ namespace metahub.imperative.schema
                 case Expression_Type.iterator:
                     var iterator = (Iterator)expression;
                     transform_expression(iterator.expression, expression);
-                    transform_expressions(iterator.children, expression);
+                    transform_expressions(iterator.body, expression);
                     break;
             }
 
-            if (expression.child != null)
-                transform_expression(expression.child, expression);
+            if (expression.next != null)
+                transform_expression(expression.next, expression);
         }
 
         void transform_expressions(IEnumerable<Expression> expressions, Expression parent_expression)
@@ -273,11 +273,11 @@ namespace metahub.imperative.schema
             switch (expression.type)
             {
                 case Expression_Type.space:
-                    analyze_expressions(((Namespace)expression).expressions);
+                    analyze_expressions(((Namespace)expression).body);
                     break;
 
                 case Expression_Type.class_definition:
-                    analyze_expressions(((Class_Definition)expression).expressions);
+                    analyze_expressions(((Class_Definition)expression).body);
                     break;
 
                 case Expression_Type.function_definition:
@@ -353,12 +353,12 @@ namespace metahub.imperative.schema
                 case Expression_Type.iterator:
                     var iterator = (Iterator)expression;
                     analyze_expression(iterator.expression);
-                    analyze_expressions(iterator.children);
+                    analyze_expressions(iterator.body);
                     break;
             }
 
-            if (expression.child != null)
-                analyze_expression(expression.child);
+            if (expression.next != null)
+                analyze_expression(expression.next);
         }
 
         void analyze_expressions(IEnumerable<Expression> expressions)

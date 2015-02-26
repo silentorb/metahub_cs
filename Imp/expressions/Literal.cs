@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using metahub.imperative.schema;
 
 using Kind = metahub.schema.Kind;
@@ -12,14 +13,6 @@ public class Literal : Expression {
 	public object value;
     //public Signature signature;
     public Profession profession;
-
-    //public Literal(object value, Signature signature)
-
-    //    : base(Expression_Type.literal)
-    //{
-    //    this.value = value;
-    //    this.signature = signature;
-    //}
 
     public Literal(object value, Profession profession)
 
@@ -74,5 +67,10 @@ public class Literal : Expression {
         return profession.type == Kind.Int 
             ? (int) value 
             : (float) value;
+    }
+
+    public override IEnumerable<Expression> children
+    {
+        get { return new List<Expression>(); }
     }
 }}

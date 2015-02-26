@@ -161,79 +161,79 @@ namespace metahub.jackolantern.code
 		    )};
         }
 
-        public static List<Expression> cross(Constraint constraint, Tie tie, JackOLantern jack, Scope scope)
-        {
-            //var dungeon = minion.get_dungeon(tie.rail);
-            //dungeon.concat_block(tie.tie_name + "_set_pre", Reference.constraint(constraint, this));
-            var property_reference = (metahub.logic.nodes.Property_Node)constraint.constraint_scope.caller.First();
-            var dungeon = jack.get_dungeon(tie.rail);
+        //public static List<Expression> cross(Constraint constraint, Tie tie, JackOLantern jack, Scope scope)
+        //{
+        //    //var dungeon = minion.get_dungeon(tie.rail);
+        //    //dungeon.concat_block(tie.tie_name + "_set_pre", Reference.constraint(constraint, this));
+        //    var property_reference = (metahub.logic.nodes.Property_Node)constraint.constraint_scope.caller.First();
+        //    var dungeon = jack.get_dungeon(tie.rail);
 
-            var iterator_scope = new Scope(scope);
-            var it = iterator_scope.create_symbol("item", new Profession(Kind.reference, jack.get_dungeon(property_reference.tie.other_rail)));
-            iterator_scope.add_map("a", c => new Variable(it));
-            iterator_scope.add_map("b", c => new Self(dungeon));
+        //    var iterator_scope = new Scope(scope);
+        //    var it = iterator_scope.create_symbol("item", new Profession(Kind.reference, jack.get_dungeon(property_reference.tie.other_rail)));
+        //    iterator_scope.add_map("a", c => new Variable(it));
+        //    iterator_scope.add_map("b", c => new Self(dungeon));
 
-            var class_block = dungeon.get_block("class_definition");
-            var function_scope = new Scope(class_block.scope);
-            var value = function_scope.create_symbol("value", jack.get_profession(tie.get_signature()));
-            var function_name = "check_" + tie.tie_name + "_" + property_reference.tie.other_tie.tie_name;
-            var portal = jack.get_portal(property_reference.tie);
-            var minion = dungeon.spawn_minion(function_name, new List<Parameter>
-                {
-                    new Parameter(value)
-                }, new List<Expression>
-                    {
-                        Minion.If(new Operation("==", new List<Expression>
-                            {
-                                new Portal_Expression(portal.other_portal),
-                                new Null_Value()
-                            }), new List<Expression>
-                                {
-                                    new Statement("return", Minion.True())
-                                }),
-                        new Iterator(it,
-                                     new Portal_Expression(portal.other_portal,
-                                                        new Portal_Expression(portal)), 
-                                     new List<Expression>
-                                         {
-                                             Minion.If(new Operation("==", new List<Expression>
-                                                 {
-                                                     new Variable(it),
-                                                     new Self(dungeon)
-                                                 }), new List<Expression>
-                                                     {
-                                                         new Statement("continue")
-                                                     })
+        //    var class_block = dungeon.get_block("class_definition");
+        //    var function_scope = new Scope(class_block.scope);
+        //    var value = function_scope.create_symbol("value", jack.get_profession(tie.get_signature()));
+        //    var function_name = "check_" + tie.tie_name + "_" + property_reference.tie.other_tie.tie_name;
+        //    var portal = jack.get_portal(property_reference.tie);
+        //    var minion = dungeon.spawn_minion(function_name, new List<Parameter>
+        //        {
+        //            new Parameter(value)
+        //        }, new List<Expression>
+        //            {
+        //                Minion.If(new Operation("==", new List<Expression>
+        //                    {
+        //                        new Portal_Expression(portal.other_portal),
+        //                        new Null_Value()
+        //                    }), new List<Expression>
+        //                        {
+        //                            new Statement("return", Minion.True())
+        //                        }),
+        //                new Iterator(it,
+        //                             new Portal_Expression(portal.other_portal,
+        //                                                new Portal_Expression(portal)), 
+        //                             new List<Expression>
+        //                                 {
+        //                                     Minion.If(new Operation("==", new List<Expression>
+        //                                         {
+        //                                             new Variable(it),
+        //                                             new Self(dungeon)
+        //                                         }), new List<Expression>
+        //                                             {
+        //                                                 new Statement("continue")
+        //                                             })
 
-                                         }.Concat(distance(constraint, tie, jack, iterator_scope, it, value))
-                                          .ToList()),
-                        new Statement("return", new Literal(true))
-                    }, new Profession(Kind.Bool));
+        //                                 }.Concat(distance(constraint, tie, jack, iterator_scope, it, value))
+        //                                  .ToList()),
+        //                new Statement("return", new Literal(true))
+        //            }, new Profession(Kind.Bool));
 
-            var setter_block = dungeon.get_block("set_" + property_reference.tie.other_tie.tie_name);
-            setter_block.add("post", new Class_Function_Call(function_name, null, new Expression[]
-                {
-                    new Portal_Expression(jack.get_portal(constraint.endpoints.First()))
-                })
-            );
+        //    //var setter_block = dungeon.get_block("set_" + property_reference.tie.other_tie.tie_name);
+        //    //setter_block.add("post", new Class_Function_Call(function_name, null, new Expression[]
+        //    //    {
+        //    //        new Portal_Expression(jack.get_portal(constraint.endpoints.First()))
+        //    //    })
+        //    );
 
-            //return new List<Expression>();
-            return new List<Expression>
-                {
-                    new Flow_Control(Flow_Control_Type.If, 
-                    new Operation("==", new List<Expression>{ 
-                    new Class_Function_Call(function_name, null, new Expression[]
-                        {
-                            new Variable(scope.find_or_exception("value"))
-                        }),
-                    new Literal(false)
-                    }), new List<Expression>
-                            {
-                                new Statement("return")
-                            })
-                };
+        //    //return new List<Expression>();
+        //    return new List<Expression>
+        //        {
+        //            new Flow_Control(Flow_Control_Type.If, 
+        //            new Operation("==", new List<Expression>{ 
+        //            new Class_Function_Call(function_name, null, new Expression[]
+        //                {
+        //                    new Variable(scope.find_or_exception("value"))
+        //                }),
+        //            new Literal(false)
+        //            }), new List<Expression>
+        //                    {
+        //                        new Statement("return")
+        //                    })
+        //        };
 
-        }
+        //}
 
         public static List<Expression> distance(Constraint constraint, Tie tie, JackOLantern jack, Scope scope, Symbol it, Symbol value)
         {

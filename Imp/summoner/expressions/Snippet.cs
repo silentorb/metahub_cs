@@ -20,5 +20,10 @@ namespace metahub.jackolantern.expressions
            this.source = source;
            this.parameters = parameters;
        }
+
+       public override IEnumerable<Expression> children
+       {
+           get { return new List<Expression>(); }
+       }
     }
 }

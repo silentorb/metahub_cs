@@ -8,6 +8,7 @@ namespace metahub.imperative.expressions
     public class Operation : Expression
     {
         public string op;
+        public List<Expression> expressions = new List<Expression>();
 
         public Operation(string op, IEnumerable<Expression> expressions)
             : base(Expression_Type.operation)
@@ -18,16 +19,22 @@ namespace metahub.imperative.expressions
             if (expressions.Any(e => e == null))
                 throw new Exception("Argument cannot be null");
 #endif
-   
-            add(expressions);
+
+            this.expressions.AddRange(expressions);
+            foreach (var expression in this.expressions)
+            {
+                expression.parent = this;
+            }
         }
 
         public Operation(string op, Expression first, Expression second)
             : base(Expression_Type.operation)
         {
             this.op = op;
-            add(first);
-            add(second);
+            expressions.Add(first);
+            expressions.Add(second);
+            first.parent = this;
+            second.parent = this;
         }
 
         public bool is_condition()
@@ -48,7 +55,12 @@ namespace metahub.imperative.expressions
 
         public override bool is_empty()
         {
-            return children.Count > 0;
+            return expressions.Count > 0;
+        }
+
+        public override IEnumerable<Expression> children
+        {
+            get { return expressions; }
         }
     }
 }

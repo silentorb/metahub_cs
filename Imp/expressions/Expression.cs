@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using metahub.imperative.schema;
 using metahub.imperative.summoner;
@@ -11,6 +12,7 @@ namespace metahub.imperative.expressions
 
     public delegate Expression Expression_Generator(Summoner.Context context);
 
+    [DebuggerDisplay("{debug_string}")]
     public class Expression
     {
         public Expression_Type type;
@@ -37,6 +39,11 @@ namespace metahub.imperative.expressions
         public virtual bool is_token
         {
             get { return false; }
+        }
+
+        protected virtual string debug_string
+        {
+            get { return type + " expression"; }
         }
 
         /*

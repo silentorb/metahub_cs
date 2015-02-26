@@ -332,7 +332,7 @@ namespace metahub.jackolantern.schema
 
             var next = get_next(node, previous, ref dir, step, true);
 
-            if (next == null || next.type == Node_Type.scope_node)
+            if (next == null || next == end)// || next.type == Node_Type.scope_node)
                 return expression;
 
             if (next.type == Node_Type.property
@@ -434,19 +434,21 @@ namespace metahub.jackolantern.schema
 
         public Expression[] get_expression_pair(Node node)
         {
-            var original_target = get_exclusive_chain(node, null, Dir.In);
-            var transform = Transform.center_on(original_target.Last().node);
-            var new_target = transform.get_transformed(original_target.Last().node);
+            //var original_target = get_exclusive_chain(node, null, Dir.In);
+            var transform = Transform.center_on(node);
+            var new_target = transform.get_transformed(node);
             var lvalue = transform.get_transformed(node);
             var rvalue = transform.get_transformed(end).get_other_input(new_target);
             var parent = lvalue.inputs[0];
-            var lexpression = translate_exclusive(parent, lvalue, Dir.In);
+            var lexpression = translate_backwards(lvalue, null);
             var rexpression = translate_backwards(rvalue, null);
-            var has_transforms = end.aggregate(Dir.In).OfType<Function_Node>().Any(n => n.is_operation);
+            //var has_transforms = end.aggregate(Dir.In).OfType<Function_Node>().Any(n => n.is_operation);
 
-            return has_transforms
-                ? new[] { lexpression, rexpression }
-                : new[] { rexpression, lexpression };
+            //return has_transforms
+            //    ? new[] { lexpression, rexpression }
+            //    : new[] { rexpression, lexpression };
+
+            return new[] { lexpression, rexpression };
         }
 
         public static Node[] get_inputs_in_relation_to(Node pumpkin, Node primary)

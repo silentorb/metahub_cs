@@ -23,6 +23,11 @@ namespace metahub.logic.nodes
         public List<Function_Node> children = new List<Function_Node>();
         public bool is_circular = false;
 
+        public string get_inverse()
+        {
+            return Logician.get_inverse_operator(name, is_operation);
+        }
+
         public override string debug_string
         {
             get { return "Function " + name; }

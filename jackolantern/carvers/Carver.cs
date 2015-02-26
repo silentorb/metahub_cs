@@ -87,7 +87,7 @@ namespace metahub.jackolantern.carvers
 
         protected static Operation get_conditions(Expression start)
         {
-            return new Operation("=", new Literal(true), new Literal(true));
+            return new Operation("==", new Literal(true), new Literal(true));
             var expression = start;
             var conditions = new List<Expression>();
             if (expression.child == null)

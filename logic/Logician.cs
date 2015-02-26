@@ -27,6 +27,14 @@ namespace metahub.logic
                 {"/", "*"}
             };
 
+        public static string get_inverse_operator(string op, bool is_assignment)
+        {
+            if (is_assignment && op == "=")
+                return "=";
+
+            return inverse_operators[op];
+        }
+
         public List<Constraint> constraints = new List<Constraint>();
         public List<Function_Node> functions = new List<Function_Node>(); 
         public Dictionary<string, Constraint_Group> groups = new Dictionary<string, Constraint_Group>();

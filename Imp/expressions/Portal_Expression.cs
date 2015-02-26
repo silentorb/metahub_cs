@@ -36,5 +36,10 @@ namespace metahub.imperative.expressions
         }
 
         public override bool is_token { get { return true; } }
+
+        protected override string debug_string
+        {
+            get { return "Portal_Expression " + portal.fullname; }
+        }
     }
 }

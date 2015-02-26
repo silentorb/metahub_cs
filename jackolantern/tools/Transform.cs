@@ -38,7 +38,7 @@ namespace metahub.jackolantern.tools
                 throw new Exception("Not yet supported.");
 
             var operation = (Function_Node)node.outputs[0];
-            operation.name = Logician.inverse_operators[operation.name];
+            operation.name = operation.get_inverse();
 
             if (operation.outputs.Count > 1)
                 throw new Exception("Not yet supported.");

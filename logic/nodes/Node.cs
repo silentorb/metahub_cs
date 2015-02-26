@@ -28,7 +28,7 @@ namespace metahub.logic.nodes
 
         public virtual string debug_string
         {
-            get { return type.ToString() + " node"; }
+            get { return type + " node"; }
         }
 
         public Node(Node_Type type)

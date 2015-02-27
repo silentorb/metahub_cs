@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using metahub.imperative.schema;
-using metahub.imperative.expressions;
+using imperative.schema;
+using imperative.expressions;
 
-namespace metahub.imperative.summoner
+namespace imperative.summoner
 {
     partial class Summoner
     {

@@ -1,10 +1,10 @@
 using System;
 using System.Collections.Generic;
-using metahub.imperative.schema;
+using imperative.schema;
 
 using Kind = metahub.schema.Kind;
 
-namespace metahub.imperative.expressions {
+namespace imperative.expressions {
 /**
  * ...
  * @author Christopher W. Johnson

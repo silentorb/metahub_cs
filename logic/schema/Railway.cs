@@ -62,31 +62,31 @@ public class Railway {
     //    throw new Exception("Could not find rail " + name + ".");
     //}
 
-	//public metahub.imperative.types.Node translate (metahub Node.meta.types.Node) {
+	//public imperative.types.Node translate (metahub Node.meta.types.Node) {
 		//switch(Node.type) {
 			//case metahub.logic.types.Expression_Type.literal:
 				//metahub.logic.types.Literal literal = Node;
-				//return new metahub.imperative.types.Literal(literal.value);
+				//return new imperative.types.Literal(literal.value);
 //
 			//case metahub.logic.types.Expression_Type.function_call:
 				//metahub.logic.types.Function_Call func = Node;
-				//return new metahub.imperative.types.Function_Call(func.name, [translate(func.input)]);
+				//return new imperative.types.Function_Call(func.name, [translate(func.input)]);
 //
 			//case metahub.logic.types.Expression_Type.path:
 				//return convert_path(Node);
 //
 			//case metahub.logic.types.Expression_Type.block:
 				//metahub.logic.types.Block array = Node;
-				//return new metahub.imperative.types.Create_Array(array.children.map((e)=> translate(e)));
+				//return new imperative.types.Create_Array(array.children.map((e)=> translate(e)));
 //
 			//default:
 				//throw new Exception("Cannot convert Node " + Node.type + ".");
 		//}
 	//}
 //
-	//public metahub.imperative.types.Node convert_path (metahub Node.meta.types.Reference_Path) {
+	//public imperative.types.Node convert_path (metahub Node.meta.types.Reference_Path) {
 		//var path = Node.children;
-		//List<metahub.imperative.types.Node> result = new List<metahub.imperative.types.Node>();
+		//List<imperative.types.Node> result = new List<imperative.types.Node>();
 		//metahub.logic.types.Property_Reference first = path[0];
 		//Rail rail = first.property.get_abstract_rail();
 		//foreach (var token in path) {
@@ -96,15 +96,15 @@ public class Railway {
 				//if (tie == null)
 					//throw new Exception("tie is null: " + property_token.property.fullname());
 //
-				//result.Add(new metahub.imperative.types.Property_Reference(tie));
+				//result.Add(new imperative.types.Property_Reference(tie));
 				//rail = tie.other_rail;
 			//}
 			//else {
 				//metahub.logic.types.Function_Call function_token = token;
-				//result.Add(new metahub.imperative.types.Function_Call(function_token.name, [], true));
+				//result.Add(new imperative.types.Function_Call(function_token.name, [], true));
 			//}
 		//}
-		//return new metahub.imperative.types.Reference_Path(result);
+		//return new imperative.types.Reference_Path(result);
 	//}
 	
 	public Rail resolve_rail_path (IEnumerable<string> path) {

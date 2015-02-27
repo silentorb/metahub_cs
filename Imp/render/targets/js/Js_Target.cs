@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using metahub.imperative;
-using metahub.imperative.schema;
+using imperative;
+using imperative.schema;
 
-using metahub.imperative.expressions;
+using imperative.expressions;
 
 namespace metahub.render.targets.js
 {

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace metahub.imperative.summoner
+namespace imperative.summoner
 {
     //public class Template
     //{

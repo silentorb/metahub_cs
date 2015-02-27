@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using metahub.imperative;
-using metahub.imperative.code;
+using imperative;
+using imperative.code;
 using metahub.logic.schema;
 using metahub.logic.nodes;
 

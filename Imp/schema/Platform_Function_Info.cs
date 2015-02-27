@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using metahub.schema;
 
-namespace metahub.imperative.schema
+namespace imperative.schema
 {
     public class Platform_Function_Info
     {

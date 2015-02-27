@@ -7,7 +7,7 @@ using imperative.Properties;
 using parser;
 using Match = parser.Match;
 
-namespace metahub.imperative.summoner
+namespace imperative.summoner
 {
     public class Pre_Summoner : Parser_Context
     {

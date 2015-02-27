@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace metahub.imperative.expressions
+namespace imperative.expressions
 {
     public class Operation : Expression
     {

@@ -1,11 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using metahub.imperative.expressions;
+using imperative.expressions;
 
 using metahub.schema;
 
-namespace metahub.imperative.schema
+namespace imperative.schema
 {
     public class Portal
     {

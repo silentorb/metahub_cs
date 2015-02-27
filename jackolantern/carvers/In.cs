@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using metahub.imperative.summoner;
-using metahub.imperative.expressions;
+using imperative.summoner;
+using imperative.expressions;
 using metahub.jackolantern.schema;
 using metahub.logic.nodes;
 

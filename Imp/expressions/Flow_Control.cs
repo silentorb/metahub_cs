@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace metahub.imperative.expressions
+namespace imperative.expressions
 {
     public enum Flow_Control_Type
     {

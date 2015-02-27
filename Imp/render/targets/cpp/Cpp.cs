@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using metahub.imperative;
-using metahub.imperative.schema;
-using metahub.imperative.expressions;
+using imperative;
+using imperative.schema;
+using imperative.expressions;
 using metahub.schema;
 
 namespace metahub.render.targets.cpp

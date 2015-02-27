@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using metahub.imperative.schema;
+using imperative.schema;
 
-namespace metahub.imperative.expressions
+namespace imperative.expressions
 {
     public class Iterator : Block
     {

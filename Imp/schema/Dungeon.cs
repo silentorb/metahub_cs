@@ -2,16 +2,17 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using metahub.imperative.expressions;
+using imperative.expressions;
 using metahub.schema;
-using Expression = metahub.imperative.expressions.Expression;
-using Function_Call = metahub.imperative.expressions.Class_Function_Call;
-using Namespace = metahub.imperative.expressions.Namespace;
-using Parameter = metahub.imperative.expressions.Parameter;
-using Variable = metahub.imperative.expressions.Variable;
+using Expression = imperative.expressions.Expression;
+using Function_Call = imperative.expressions.Class_Function_Call;
+using Namespace = imperative.expressions.Namespace;
+using Parameter = imperative.expressions.Parameter;
+using Variable = imperative.expressions.Variable;
 
-namespace metahub.imperative.schema
+namespace imperative.schema
 {
+ 
     public delegate void Dungeon_Minion_Event(Dungeon dungeon, Minion minion);
 
     [DebuggerDisplay("dungeon ({name})")]
@@ -66,6 +67,58 @@ namespace metahub.imperative.schema
                 foreach (var portal in parent.all_portals.Values)
                 {
                     all_portals[portal.name] = new Portal(portal, this);
+                }
+            }
+
+            is_external = realm.is_external;
+            class_export = realm.class_export;
+            if (!is_external && source_file == null)
+                source_file = realm.name + "/" + name;
+        }
+
+        private void load_additional()
+        {
+            if (!realm.trellis_additional.ContainsKey(name))
+                return;
+
+            var map = realm.trellis_additional[name];
+
+            if (map.is_external.HasValue)
+                is_external = map.is_external.Value;
+
+//            if (map.name != null)
+//                rail_name = map.name;
+
+            if (map.source_file != null)
+                source_file = map.source_file;
+
+            if (map.class_export != null)
+                class_export = map.class_export;
+
+            if (map.default_value != null) // Should only be set if is_value is set to true
+                default_value = map.default_value;
+
+            if (map.hooks != null)
+            {
+                foreach (var item in map.hooks)
+                {
+                    hooks[item.Key] = item.Value;
+                }
+            }
+
+            if (map.stubs != null)
+            {
+                foreach (var item in map.stubs)
+                {
+                    stubs.Add(item);
+                }
+            }
+
+            if (map.properties != null)
+            {
+                foreach (var item in map.properties)
+                {
+//                    property_additional[item.Key] = item.Value;
                 }
             }
         }

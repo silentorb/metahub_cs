@@ -1,8 +1,8 @@
 using System.Collections.Generic;
-using metahub.imperative.schema;
+using imperative.schema;
 
 
-namespace metahub.imperative.expressions
+namespace imperative.expressions
 {
 
     public class Class_Definition : Block

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using imperative.schema;
 using metahub.logic.schema;
 
 namespace metahub.schema

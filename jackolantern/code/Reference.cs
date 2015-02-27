@@ -1,10 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using metahub.imperative.code;
-using metahub.imperative.schema;
-using metahub.imperative.summoner;
-using metahub.imperative.expressions;
+using imperative.code;
+using imperative.schema;
+using imperative.summoner;
+using imperative.expressions;
 using metahub.logic;
 using metahub.logic.schema;
 using metahub.schema;

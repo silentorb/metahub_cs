@@ -2,14 +2,14 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using metahub.imperative.schema;
-using metahub.imperative.expressions;
+using imperative.schema;
+using imperative.expressions;
 using metahub.jackolantern.expressions;
 
 using parser;
 using metahub.schema;
 
-namespace metahub.imperative.summoner
+namespace imperative.summoner
 {
     public partial class Summoner
     {

@@ -1,4 +1,4 @@
-namespace metahub.imperative.schema
+namespace imperative.schema
 {
 
 public class Used_Function {

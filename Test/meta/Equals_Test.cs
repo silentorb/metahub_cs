@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using NUnit.Framework;
-using metahub.imperative.summoner;
+using imperative.summoner;
 using metahub.jackolantern.schema;
 
 namespace test.meta

@@ -2,17 +2,17 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
-using metahub.imperative.schema;
-using metahub.imperative.summoner;
-using metahub.imperative.expressions;
+using imperative.schema;
+using imperative.summoner;
+using imperative.expressions;
 using metahub.jackolantern;
 using metahub.jackolantern.expressions;
 
 using metahub.render;
 using metahub.schema;
-using Literal = metahub.imperative.expressions.Literal;
+using Literal = imperative.expressions.Literal;
 
-namespace metahub.imperative
+namespace imperative
 {
     public class Overlord
     {

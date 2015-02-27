@@ -1,4 +1,4 @@
-namespace metahub.imperative.expressions
+namespace imperative.expressions
 {
     public enum Expression_Type
     {

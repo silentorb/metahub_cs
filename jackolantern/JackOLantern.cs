@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using metahub.Properties;
-using metahub.imperative;
-using metahub.imperative.code;
-using metahub.imperative.schema;
-using metahub.imperative.summoner;
-using metahub.imperative.expressions;
+using imperative;
+using imperative.code;
+using imperative.schema;
+using imperative.summoner;
+using imperative.expressions;
 using metahub.jackolantern.carvers;
 using metahub.jackolantern.code;
 using metahub.jackolantern.expressions;
@@ -16,7 +16,7 @@ using metahub.logic.nodes;
 using metahub.logic.schema;
 using metahub.render;
 using metahub.schema;
-using Block = metahub.imperative.expressions.Block;
+using Block = imperative.expressions.Block;
 
 namespace metahub.jackolantern
 {
@@ -151,19 +151,13 @@ namespace metahub.jackolantern
         public Dungeon create_dungeon_from_rail(Rail rail, Realm realm)
         {
             var dungeon = new Dungeon(rail.name, overlord, realm);
-            dungeon.is_external = rail.is_external;
             dungeon.is_abstract = rail.trellis.is_abstract;
             dungeon.is_value = rail.trellis.is_value;
-            dungeon.source_file = rail.source_file;
-            dungeon.stubs = rail.stubs;
-            dungeon.hooks = rail.hooks;
-            dungeon.class_export = rail.class_export;
             dungeon.default_value = rail.default_value;
 
-            var region = rail.region;
-            if (region.trellis_additional.ContainsKey(rail.trellis.name))
+            if (realm.trellis_additional.ContainsKey(rail.trellis.name))
             {
-                var map = region.trellis_additional[rail.trellis.name];
+                var map = realm.trellis_additional[rail.trellis.name];
 
                 if (map.inserts != null)
                     dungeon.inserts = map.inserts;
@@ -195,6 +189,8 @@ namespace metahub.jackolantern
                 //    continue;
 
                 var realm = new Realm(region.name, overlord);
+                if (region.space.additional != null && region.space.additional.ContainsKey(region.name))
+                    realm.load_additional(region.space.additional[region.name]);
                 realm.external_name = region.external_name;
                 overlord.realms[realm.name] = realm;
 

@@ -1,11 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using metahub.imperative.schema;
+using imperative.schema;
 
 
 
-namespace metahub.imperative.expressions
+namespace imperative.expressions
 {
     public enum Property_Function_Type
     {

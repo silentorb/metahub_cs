@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using metahub.imperative.schema;
-using metahub.imperative.summoner;
-using metahub.imperative.expressions;
+using imperative.schema;
+using imperative.summoner;
+using imperative.expressions;
 using metahub.logic.schema;
 using metahub.schema;
 

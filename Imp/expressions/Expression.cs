@@ -2,12 +2,12 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using metahub.imperative.schema;
-using metahub.imperative.summoner;
+using imperative.schema;
+using imperative.summoner;
 
 
 
-namespace metahub.imperative.expressions
+namespace imperative.expressions
 {
 
     public delegate Expression Expression_Generator(Summoner.Context context);

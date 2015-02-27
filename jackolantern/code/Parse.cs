@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using metahub.logic.schema;
 using metahub.logic.nodes;
-using Function_Call = metahub.imperative.expressions.Class_Function_Call;
+using Function_Call = imperative.expressions.Class_Function_Call;
 
-namespace metahub.imperative.code
+namespace imperative.code
 {
 
     public class Parse
@@ -88,7 +88,7 @@ namespace metahub.imperative.code
         //var i = path.children.Count;
         //while (--i >= 0) {
         //if (path.children[i].type == Expression_Type.property) {
-        //metahub.imperative.types.Property_Reference property_expression = path.children[i];
+        //imperative.types.Property_Reference property_expression = path.children[i];
         //if (property_expression.tie.rail.trellis.is_value)
         //continue;
         //

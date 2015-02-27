@@ -2,7 +2,7 @@
 
 using System.Collections.Generic;
 
-namespace metahub.imperative.expressions
+namespace imperative.expressions
 {
     public sealed class Statement : Expression
     {

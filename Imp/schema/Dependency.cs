@@ -1,6 +1,6 @@
 
 
-namespace metahub.imperative.schema
+namespace imperative.schema
 {
 /**
  * ...

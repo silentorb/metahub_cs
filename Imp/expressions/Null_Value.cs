@@ -1,7 +1,7 @@
 
 using System.Collections.Generic;
 
-namespace metahub.imperative.expressions
+namespace imperative.expressions
 {
     public class Null_Value : Expression
     {

@@ -1,10 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using metahub.imperative.schema;
+using imperative.schema;
 using metahub.schema;
 
-namespace metahub.imperative.expressions
+namespace imperative.expressions
 {
     public class Platform_Function : Function_Call
     {

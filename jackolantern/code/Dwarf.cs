@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using metahub.imperative.expressions;
-using metahub.imperative.schema;
+using imperative.expressions;
+using imperative.schema;
 using metahub.render;
 
 namespace metahub.jackolantern.code

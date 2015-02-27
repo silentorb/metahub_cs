@@ -4,7 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
-using metahub.imperative;
+using imperative;
 using metahub.jackolantern;
 using metahub.logic;
 using metahub.logic.schema;
@@ -38,8 +38,9 @@ namespace test
             var railway = new Railway(hub, "cpp");
             var target = new Mock_Target(overlord);
             var logician = new Logician(railway);
-            var jack = new JackOLantern(logician, overlord, railway, target);
-            return jack;
+//            var jack = new JackOLantern(logician, overlord, railway, target);
+//            return jack;
+            return null;
         }
     }
 }

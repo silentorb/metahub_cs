@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using metahub.imperative;
-using metahub.imperative.schema;
+using imperative;
+using imperative.schema;
 
 using metahub.render.targets.cpp;
 using metahub.render.targets.js;

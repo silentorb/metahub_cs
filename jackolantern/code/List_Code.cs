@@ -1,14 +1,14 @@
 using System.Collections.Generic;
 using System.Linq;
-using metahub.imperative.schema;
-using metahub.imperative.summoner;
-using metahub.imperative.expressions;
+using imperative.schema;
+using imperative.summoner;
+using imperative.expressions;
 using metahub.logic.schema;
 using metahub.schema;
-using Expression = metahub.imperative.expressions.Expression;
-using Function_Call = metahub.imperative.expressions.Class_Function_Call;
-using Parameter = metahub.imperative.expressions.Parameter;
-using Variable = metahub.imperative.expressions.Variable;
+using Expression = imperative.expressions.Expression;
+using Function_Call = imperative.expressions.Class_Function_Call;
+using Parameter = imperative.expressions.Parameter;
+using Variable = imperative.expressions.Variable;
 
 namespace metahub.jackolantern.code
 {

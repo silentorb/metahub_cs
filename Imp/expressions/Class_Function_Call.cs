@@ -1,9 +1,9 @@
 using System.Collections.Generic;
 using System.Linq;
-using metahub.imperative.schema;
+using imperative.schema;
 
 
-namespace metahub.imperative.expressions
+namespace imperative.expressions
 {
     public class Class_Function_Call : Function_Call
     {

@@ -1,6 +1,6 @@
-using metahub.imperative;
-using metahub.imperative.schema;
-using metahub.imperative.expressions;
+using imperative;
+using imperative.schema;
+using imperative.expressions;
 
 namespace metahub.render
 {

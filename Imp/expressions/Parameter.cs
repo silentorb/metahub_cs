@@ -1,7 +1,7 @@
-using metahub.imperative.schema;
+using imperative.schema;
 
 
-namespace metahub.imperative.expressions
+namespace imperative.expressions
 {
     public class Parameter
     {

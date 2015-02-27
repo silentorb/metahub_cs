@@ -1,10 +1,10 @@
 using System.Collections.Generic;
-using metahub.imperative.schema;
+using imperative.schema;
 
 
 using metahub.schema;
 
-namespace metahub.imperative.expressions
+namespace imperative.expressions
 {
     public class Instantiate : Expression
     {

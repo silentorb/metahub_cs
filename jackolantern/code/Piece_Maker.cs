@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using metahub.Properties;
-using metahub.imperative.schema;
-using metahub.imperative.summoner;
-using metahub.imperative.expressions;
+using imperative.schema;
+using imperative.summoner;
+using imperative.expressions;
 using metahub.jackolantern;
 using metahub.jackolantern.expressions;
 using metahub.jackolantern.schema;
@@ -13,7 +13,7 @@ using metahub.logic.schema;
 using parser;
 using metahub.schema;
 
-namespace metahub.imperative.code
+namespace imperative.code
 {
     static class Piece_Maker
     {

@@ -1,22 +1,13 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using metahub.imperative.code;
+using imperative.code;
 using metahub.logic.nodes;
 using metahub.render;
 using metahub.schema;
 
 namespace metahub.logic.schema
 {
-    public class Tie_Hooks
-    {
-        public object set_post;
-    }
-
-    public class Tie_Addition
-    {
-        public Tie_Hooks hooks;
-    }
 
     public class Tie
     {
@@ -27,10 +18,10 @@ namespace metahub.logic.schema
         public Rail other_rail;
         public Tie other_tie;
         public bool is_value = false;
-        public bool has_getter = false;
-        public bool has_set_post_hook = false;
+//        public bool has_getter = false;
+//        public bool has_set_post_hook = false;
         public Kind type;
-        public List<IRange> ranges = new List<IRange>();
+//        public List<IRange> ranges = new List<IRange>();
 
         public string fullname 
         {
@@ -68,21 +59,12 @@ namespace metahub.logic.schema
                     //other_tie.other_tie = this;
                 }
             }
-
-            if (rail.property_additional.ContainsKey(name))
-            {
-                var additional = rail.property_additional[name];
-                if (additional.hooks != null)
-                {
-                    has_set_post_hook = additional.hooks.set_post != null;
-                }
-            }
         }
 
         public bool has_setter()
         {
             return (property.type != Kind.list)
-            || has_set_post_hook || (property.type == Kind.reference && !is_inherited());
+            || (property.type == Kind.reference && !is_inherited());
         }
 
         public string get_setter_post_name()

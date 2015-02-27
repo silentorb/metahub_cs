@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.IO;
 using Newtonsoft.Json;
 using metahub.Properties;
-using metahub.imperative;
+using imperative;
 using metahub.jackolantern;
 using metahub.logic.schema;
 using metahub.logic;

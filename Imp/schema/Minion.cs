@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using metahub.imperative.expressions;
+using imperative.expressions;
 
 using metahub.schema;
 
-namespace metahub.imperative.schema
+namespace imperative.schema
 {
     public delegate void Minion_Expression_Event(Minion minion, Expression expression);
 

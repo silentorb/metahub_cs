@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using NUnit.Framework;
-using metahub.imperative.expressions;
-using metahub.imperative.schema;
+using imperative.expressions;
+using imperative.schema;
 
 namespace test.imp
 {

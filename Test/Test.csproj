@@ -47,7 +47,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="imp\Expression_Test.cs" />
-    <Compile Include="metahub\Equals_Test.cs" />
+    <Compile Include="meta\Equals_Test.cs" />
+    <Compile Include="meta\mocks\Mock_Target.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Utility.cs" />
   </ItemGroup>
@@ -55,7 +56,8 @@
     <Folder Include="parser\" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="metahub\resources\schema.json" />
+    <EmbeddedResource Include="meta\resources\schema.json" />
+    <EmbeddedResource Include="meta\resources\test1.mh" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>

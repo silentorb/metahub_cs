@@ -4,6 +4,13 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using metahub.imperative;
+using metahub.jackolantern;
+using metahub.logic;
+using metahub.logic.schema;
+using metahub.render;
+using metahub.schema;
+using test.meta.mocks;
 
 namespace test
 {
@@ -18,6 +25,21 @@ namespace test
 
             var reader = new StreamReader(stream);
             return reader.ReadToEnd();
+        }
+
+        public static JackOLantern create_jack()
+        {
+            var json = Utility.load_resource("test.meta.resources.schema.json");
+            var hub = new metahub.Hub();
+            hub.load_parser();
+            var space = new Namespace("test", "test");
+            hub.load_schema_from_string(json, space);
+            var overlord = new Overlord();
+            var railway = new Railway(hub, "cpp");
+            var target = new Mock_Target(overlord);
+            var logician = new Logician(railway);
+            var jack = new JackOLantern(logician, overlord, railway, target);
+            return jack;
         }
     }
 }

@@ -46,19 +46,19 @@ namespace metahub.logic
             this.railway = railway;
         }
 
-        public Constraint create_constraint(Node first, Node second, string op, Lambda lambda, Logic_Scope scope)
-        {
-            var constraint = new Constraint(first, second, op, lambda) { constraint_scope = scope.constraint_scope };
-
-            var tie = Parse.get_end_tie(constraint.first);
-            if (tie != null)
-                tie.constraints.Add(constraint);
-
-            //if (!scope.is_map)
-                constraints.Add(constraint);
-
-            return constraint;
-        }
+//        public Constraint create_constraint(Node first, Node second, string op, Lambda lambda, Logic_Scope scope)
+//        {
+//            var constraint = new Constraint(first, second, op, lambda) { constraint_scope = scope.constraint_scope };
+//
+//            var tie = Parse.get_end_tie(constraint.first);
+//            if (tie != null)
+//                tie.constraints.Add(constraint);
+//
+//            //if (!scope.is_map)
+//                constraints.Add(constraint);
+//
+//            return constraint;
+//        }
 
         public Function_Node call(string name, IEnumerable<Node> inputs, Logic_Scope scope = null)
         {

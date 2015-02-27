@@ -1,0 +1,22 @@
+﻿{
+    "trellises":
+    {
+        "Character": {
+			"properties": {
+				"items": {
+					"type": "list",
+					"trellis": "Item"
+
+				}
+			}
+		},
+		"Item": {
+			"properties": {
+				"owner": {
+					"type": "reference",
+					"trellis": "Character"
+				}
+			}
+		}
+    }
+}

@@ -5,11 +5,6 @@ using System.Linq;
 using metahub.imperative.schema;
 using metahub.schema;
 
-/**
- * ...
- * @author Christopher W. Johnson
- */
-
 namespace metahub.logic.schema
 {
     public class Rail_Additional

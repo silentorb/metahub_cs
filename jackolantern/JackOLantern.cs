@@ -36,7 +36,7 @@ namespace metahub.jackolantern
         public Railway railway;
         public Target target;
 
-        public JackOLantern(Logician logician, Overlord overlord, Hub hub, Railway railway, Target target)
+        public JackOLantern(Logician logician, Overlord overlord, Railway railway, Target target)
         {
             this.logician = logician;
             this.overlord = overlord;
@@ -75,6 +75,9 @@ namespace metahub.jackolantern
             {
                 target.generate_code2(dungeon);
             }
+
+            overlord.flatten();
+            overlord.post_analyze();
         }
 
         public void carve_pumpkin(Function_Node pumpkin)

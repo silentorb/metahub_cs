@@ -10,10 +10,8 @@ public class Railway {
 
 	public Region root_region;
 	public Dictionary<string, Region> regions = new Dictionary<string, Region>();
-	public string target_name;
 
 	public Railway(Hub hub, string target_name) {
-		this.target_name = target_name;
 
         root_region = new Region(hub.schema.root_namespace, "/");
 		initialize_root_functions();

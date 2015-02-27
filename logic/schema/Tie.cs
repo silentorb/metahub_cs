@@ -20,7 +20,6 @@ namespace metahub.logic.schema
 
     public class Tie
     {
-
         public Rail rail;
         public Property property;
         public string name;
@@ -32,8 +31,6 @@ namespace metahub.logic.schema
         public bool has_set_post_hook = false;
         public Kind type;
         public List<IRange> ranges = new List<IRange>();
-
-        public List<Constraint> constraints = new List<Constraint>();
 
         public string fullname 
         {
@@ -84,7 +81,7 @@ namespace metahub.logic.schema
 
         public bool has_setter()
         {
-            return (property.type != Kind.list && constraints.Count > 0)
+            return (property.type != Kind.list)
             || has_set_post_hook || (property.type == Kind.reference && !is_inherited());
         }
 
@@ -127,77 +124,13 @@ namespace metahub.logic.schema
 
         public void finalize()
         {
-            determine_range();
         }
-
-
 
         class Temp
         {
             public Node min;
             public Node max;
             public List<Tie> path;
-        }
-
-
-        void determine_range()
-        {
-            //if (type != Kind.Float)
-            //return;
-            if (type == Kind.list)
-                return;
-
-            var pairs = new Dictionary<string, Temp>();
-            //Constraint min = null;
-            //Constraint max = null;
-
-            foreach (var constraint in constraints)
-            {
-                var path = constraint.first.get_path().Where(t=>t as Property_Node != null)
-                    .Select(t => ((Property_Node)t).tie).ToList();
-                path.RemoveAt(0);
-                var path_name = path.Select(t => t.name).join(".");
-                if (!pairs.ContainsKey(path_name))
-                {
-                    pairs[path_name] = new Temp
-                    {
-                        min = null,
-                        max = null,
-                        path = path
-                    };
-                }
-
-                if (constraint.op == ">=<")
-                {
-                    var args = (Array_Expression)constraint.second;
-                    pairs[path_name].min = args.children[0];
-                    pairs[path_name].max = args.children[1];
-                }
-                else if (constraint.op == ">" || constraint.op == ">=")
-                {
-                    pairs[path_name].min = constraint.second;
-                }
-                else if (constraint.op == "<" || constraint.op == "<=")
-                {
-                    pairs[path_name].max = constraint.second;
-                }
-            }
-
-            foreach (var pair in pairs.Values)
-            {
-                if (pair.min != null && pair.max != null)
-                {
-                    //trace("range", fullname());
-                    ranges.Add(new Range_Float(
-                        get_expression_float(pair.min.get_path().Last()),
-                        get_expression_float(pair.max.get_path().Last()), pair.path));
-                }
-            }
-        }
-
-        static float get_expression_float(Node expression)
-        {
-            return ((Literal_Value)expression).get_float();
         }
 
         public Rail get_abstract_rail()

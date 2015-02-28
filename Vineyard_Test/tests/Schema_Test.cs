@@ -14,7 +14,18 @@ namespace test.meta
         public void test_loading()
         {
             var schema = Hub_Fixture.load_schema();
-            Assert.AreEqual(2, schema.trellises.Count);
+            Assert.Greater(schema.trellises.Count, 1);
+            var character = schema.get_trellis("Character");
+            var item = schema.get_trellis("Item");
+            Assert.Greater(character.all_properties.Count, 1);
+            Assert.Greater(character.core_properties.Count, 1);
+            var character_property = item.all_properties["character"];
+            Assert.AreEqual(character_property, character.all_properties["items"].other_property);
+
+
+            var weapon = schema.get_trellis("Weapon");
+            var weapon_character = weapon.all_properties["character"];
+            Assert.AreEqual(weapon, weapon_character.trellis);
         }
     }
 }

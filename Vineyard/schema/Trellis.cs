@@ -47,26 +47,19 @@ namespace metahub.schema
         public Property add_property(string property_name, IProperty_Source source)
         {
             Property property = new Property(property_name, source, this);
-            this.all_properties[property_name] = property;
+            all_properties[property_name] = property;
             property.id = 10000;
             core_properties[property_name] = property;
             return property;
         }
-        
-//        public Dictionary<string, Property> get_all_properties()
-//        {
-//            return property_keys;
-//            //Dictionary<string, Property> result = new Dictionary<string, Property>();
-//            //var tree = this.get_tree();
-//            //int index = 0;
-//            //foreach (var trellis in tree) {
-//            //foreach (var property in trellis.core_properties) {
-//            //result[property.name] = property;
-//            //property.id = index++;
-//            //}
-//            //}
-//            //return result;
-//        }
+
+        public Property add_property(Property property)
+        {
+            all_properties[property.name] = property;
+            core_properties[property.name] = property;
+            property.trellis = this;
+            return property;
+        }
 
         public Property get_property(string name)
         {
@@ -160,7 +153,7 @@ namespace metahub.schema
 
             if (source.parent != null)
             {
-                var trellis = this.space.get_trellis(source.parent, space);
+                var trellis = this.space.get_trellis(source.parent);
                 set_parent(trellis);
             }
             if (source.primary_key != null)
@@ -183,17 +176,17 @@ namespace metahub.schema
                 }
             }
 
-            var tree = get_tree();
-            int index = 0;
-            foreach (var trellis in tree)
-            {
-                foreach (var property in trellis.core_properties)
-                {
-//                    property.id = index++;
-//                    properties.Add(property);
-//                    all_properties[property.name] = property;
-                }
-            }
+//            var tree = get_tree();
+//            int index = 0;
+//            foreach (var trellis in tree)
+//            {
+//                foreach (var property in trellis.core_properties)
+//                {
+////                    property.id = index++;
+////                    properties.Add(property);
+////                    all_properties[property.name] = property;
+//                }
+//            }
 
             if (source.properties != null)
             {
@@ -223,28 +216,35 @@ namespace metahub.schema
 
             if (source.interfaces != null)
             {
-                interfaces = source.interfaces.Select(i => space.get_trellis(i, space, true)).ToList();
+                interfaces = source.interfaces.Select(i => space.get_trellis(i, true)).ToList();
             }
         }
 
-        void set_parent(Trellis parent)
+        void set_parent(Trellis new_parent)
         {
-            this.parent = parent;
-            if (parent.is_abstract && !is_abstract && is_value)
+            this.parent = new_parent;
+            if (new_parent.is_abstract && !is_abstract && is_value)
             {
-                parent.implementation = this;
+                new_parent.implementation = this;
                 //foreach (var child_space in schema.root_namespace.children)
                 //{
                 //    for
                 //}
 
-                foreach (var property in parent.core_properties.Values)
+                foreach (var property in new_parent.core_properties.Values)
                 {
                     if (property.other_property != null)
                     {
                         property.other_property.other_trellis = this;
                         property.other_property.other_property = get_property_or_null(property.name);
                     }
+                }
+            }
+            else
+            {
+                foreach (var property in new_parent.all_properties.Values)
+                {
+                    add_property(property.clone());
                 }
             }
 

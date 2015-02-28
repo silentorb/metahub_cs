@@ -30,7 +30,6 @@ namespace metahub.schema
         public int id;
         public Trellis other_trellis;
         public Property other_property;
-        public bool multiple = false;
         public bool is_value = false;
 
         public Property(string name, IProperty_Source source, Trellis trellis)
@@ -42,15 +41,11 @@ namespace metahub.schema
             if (source.allow_null.HasValue)
                 allow_null = source.allow_null.Value;
 
-            if (source.multiple.HasValue)
-                multiple = source.multiple.Value;
-
             this.name = name;
             this.trellis = trellis;
         }
-
         
-        public Property(string name, Trellis trellis, Kind type, Trellis other_trellis = null)
+        public Property(string name, Kind type, Trellis trellis = null, Trellis other_trellis = null)
         {
             this.trellis = trellis;
             this.type = type;
@@ -58,11 +53,19 @@ namespace metahub.schema
             this.other_trellis = other_trellis;
         }
 
+        public Property clone()
+        {
+            var result = new Property(name, type)
+                {
+                    default_value= default_value,
+                    allow_null = allow_null,
+                    other_trellis = other_trellis,
+                    other_property = other_property,
+                    is_value = is_value
+                };
 
-        //public Void add_dependency (Property_Reference other) {
-        //this.dependencies.Add(other);
-        ////other.dependents.Add(new Property_Reference(this));
-        //}
+            return result;
+        }
 
         public string fullname
         {
@@ -125,7 +128,7 @@ namespace metahub.schema
             if (source.type != "list" && source.type != "reference")
                 return;
 
-            other_trellis = trellis.space.get_trellis(source.trellis, trellis.space);
+            other_trellis = trellis.space.get_trellis(source.trellis);
             if (other_trellis == null)
                 throw new Exception("Could not find other trellis for " + fullname + ".");
         }

@@ -1,22 +1,32 @@
 ﻿{
-    "trellises":
-    {
-        "Character": {
-			"properties": {
-				"items": {
-					"type": "list",
-					"trellis": "Item"
-
-				}
-			}
-		},
-		"Item": {
-			"properties": {
-				"owner": {
-					"type": "reference",
-					"trellis": "Character"
-				}
-			}
-		}
+  "trellises": {
+    "Character": {
+      "properties": {
+        "items": {
+          "type": "list",
+          "trellis": "Item"
+        },
+        "weapon": {
+          "type": "reference",
+          "trellis": "Weapon"
+        }
+      }
+    },
+    "Item": {
+      "properties": {
+        "character": {
+          "type": "reference",
+          "trellis": "Character"
+        }
+      }
+    },
+    "Weapon": {
+      "parent": "Item",
+      "properties": {
+        "damage": {
+          "type": "int"
+        }
+      }
     }
+  }
 }

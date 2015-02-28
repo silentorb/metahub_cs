@@ -158,27 +158,23 @@ public class Schema
             }
         }
 
-        public Trellis get_trellis(string name, Schema space, bool throw_exception_on_missing = false)
+        public Trellis get_trellis(string trellis_name, bool throw_exception_on_missing = false)
         {
-            if (name.Contains("."))
+            if (trellis_name.Contains("."))
             {
-                var path = name.Split('.').ToList();
-                name = path.Last();
+                var path = trellis_name.Split('.').ToList();
+                trellis_name = path.Last();
                 path.RemoveAt(path.Count - 1);
-                space = space.get_namespace(path);
             }
 
-            if (space == null)
-                throw new Exception("Could not find space for trellis: " + name + ".");
-
-            if (!space.trellises.ContainsKey(name))
+            if (!trellises.ContainsKey(trellis_name))
             {
                 if (!throw_exception_on_missing)
                     return null;
 
-                throw new Exception("Could not find trellis named: " + name + ".");
+                throw new Exception("Could not find trellis named: " + trellis_name + ".");
             }
-            return space.trellises[name];
+            return trellises[trellis_name];
         }
 
 

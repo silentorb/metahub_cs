@@ -1,0 +1,30 @@
+﻿
+namespace piecemaker {
+
+	class Conflict {
+		abstract is_resolved():bool
+		abstract resolve()
+	}
+
+	class Conflict_Group {
+
+	}
+
+	class Piece_Maker {
+
+		tick() {
+			if (is_active)
+				return
+
+			if (conflicts.count() > 0) {
+				var conflict:Conflict = conflicts.last()
+				conflicts.pop()
+				if (conflict.is_resolved)
+					return
+
+				conflict.resolve
+			}
+		}
+
+	}
+}

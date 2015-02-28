@@ -1,0 +1,79 @@
+﻿contains(list, item) {
+	if (item != null && list.contains(item) == false) {
+		list += item
+	}
+}
+
+equals(condition, first, second) {
+	if (condition) {
+		first = second
+	}
+}
+
+map_on_add(ref, $add) {
+	if (ref != null && origin != ref) {
+		$add
+	}
+}
+
+map_add_to_list(T, list_add, hub, origin, main_item, $link) {
+	var item:T = new T()
+	item.initialize(hub)
+	item.$link = main_item
+	list.setter(item, origin)
+}
+
+add_to_list(T, list_add, hub, origin) {
+	var item:T = new T()
+	item.initialize(hub)
+	list.setter(item, origin)
+}
+
+value_constraint_check($op, first, second, third) {
+	if (first $op second) {
+		first = third
+	}
+}
+
+initialize_random_range(prop, min, max) {
+	prop = rand(min, max)
+}
+
+initialize_count(list, size, $add) {
+	while(list.count() < size) {
+		$add
+	}
+}
+
+cross_iterator(list, null_check, condition, block) {
+	if (null_check)
+		return true
+
+	for (var other in list) {
+		if (condition) {
+			block
+		}
+	}
+
+	return true
+}
+
+list_remove(list, item) {
+	if (list.contains(item) == false)
+		return
+
+	list.remove(item)
+}
+
+set_other(value, origin, portal, other_portal) {
+	if (value != origin && portal != null) {
+		portal.other_portal = this
+	}
+}
+
+reference_setter(portal, value) {
+	if (portal == value)
+		return
+
+	portal @= value
+}

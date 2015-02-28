@@ -1,0 +1,21 @@
+﻿{
+  "trellises": {
+    "Hub": {
+      "properties": {
+        "tick_targets": {
+          "type": "list",
+          "trellis": "Tick_Target"
+        }
+      }
+    },
+    "Tick_Target": {
+      "is_interface": true,
+      "properties": {
+        "hub": {
+          "type": "reference",
+          "trellis": "Hub"
+        }
+      }
+    }
+  }
+}

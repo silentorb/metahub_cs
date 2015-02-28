@@ -1,0 +1,119 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{1AAC7CE2-5C7E-46F8-BB7E-D13D84140EC0}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Vineyard</RootNamespace>
+    <AssemblyName>Vineyard</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>..\packages\Newtonsoft.Json.6.0.8\lib\net40\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="logic\Coder.cs" />
+    <Compile Include="logic\Logician.cs" />
+    <Compile Include="logic\nodes\Array_Expression.cs" />
+    <Compile Include="logic\nodes\Block.cs" />
+    <Compile Include="logic\nodes\Constraint_Wrapper.cs" />
+    <Compile Include="logic\nodes\Function_Call.cs" />
+    <Compile Include="logic\nodes\Function_Node.cs" />
+    <Compile Include="logic\nodes\Function_Scope.cs" />
+    <Compile Include="logic\nodes\Lambda.cs" />
+    <Compile Include="logic\nodes\Literal_Value.cs" />
+    <Compile Include="logic\nodes\Node.cs" />
+    <Compile Include="logic\nodes\Node_Type.cs" />
+    <Compile Include="logic\nodes\Null_Node.cs" />
+    <Compile Include="logic\nodes\Operation_Node.cs" />
+    <Compile Include="logic\nodes\Parameter_Node.cs" />
+    <Compile Include="logic\nodes\Property_Node.cs" />
+    <Compile Include="logic\nodes\Reference_Path.cs" />
+    <Compile Include="logic\nodes\Scope_Expression.cs" />
+    <Compile Include="logic\nodes\Scope_Node.cs" />
+    <Compile Include="logic\nodes\Variable_Node.cs" />
+    <Compile Include="logic\schema\Constraint.cs" />
+    <Compile Include="logic\schema\Constraint_Group.cs" />
+    <Compile Include="logic\schema\Constraint_Scope.cs" />
+    <Compile Include="logic\schema\Function_Info.cs" />
+    <Compile Include="logic\schema\Function_Version.cs" />
+    <Compile Include="logic\schema\IRange.cs" />
+    <Compile Include="logic\schema\Rail.cs" />
+    <Compile Include="logic\schema\Railway.cs" />
+    <Compile Include="logic\schema\Range_Float.cs" />
+    <Compile Include="logic\schema\Region.cs" />
+    <Compile Include="logic\schema\Signature.cs" />
+    <Compile Include="logic\schema\Tie.cs" />
+    <Compile Include="logic\Scope.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="schema\Load_Settings.cs" />
+    <Compile Include="schema\Schema.cs" />
+    <Compile Include="schema\Property.cs" />
+    <Compile Include="schema\Schema_Old.cs" />
+    <Compile Include="schema\Trellis.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+    <None Include="resources\metahub.grammar" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Kind\Kind.csproj">
+      <Project>{777BFC47-2DF6-4E8E-8545-A2DE56A8620D}</Project>
+      <Name>Kind</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Parser\Parser.csproj">
+      <Project>{80BEAC71-8BE8-48C5-B109-BAB3F38F6D9F}</Project>
+      <Name>Parser</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

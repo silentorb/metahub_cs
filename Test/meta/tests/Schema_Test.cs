@@ -16,7 +16,7 @@ namespace test.meta
         public void test_loading()
         {
             var schema = Hub_Fixture.load_schema();
-            Assert.AreEqual(schema.root.trellises.Count, 2);
+            Assert.AreEqual(2, schema.root.trellises.Count);
         }
     }
 }

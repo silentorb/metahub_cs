@@ -47,7 +47,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="imp\Expression_Test.cs" />
-    <Compile Include="meta\Equals_Test.cs" />
+    <Compile Include="meta\tests\Schema_Test.cs" />
+    <Compile Include="meta\tests\Equals_Test.cs" />
+    <Compile Include="meta\fixtures\Hub_Fixture.cs" />
     <Compile Include="meta\mocks\Mock_Target.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Utility.cs" />

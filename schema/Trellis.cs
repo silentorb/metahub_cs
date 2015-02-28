@@ -21,7 +21,7 @@ namespace metahub.schema
         public string name;
         public Schema schema;
         public Dictionary<string, Property> core_properties = new Dictionary<string, Property>();
-        public Dictionary<string, Property> all_properties;
+        public Dictionary<string, Property> all_properties = new Dictionary<string, Property>();
         public Trellis parent;
         public uint id;
         public Property identity_property;

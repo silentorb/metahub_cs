@@ -26,17 +26,17 @@ namespace metahub.jackolantern
         public Overlord overlord;
         public Dictionary<string, Carver> carvers = new Dictionary<string, Carver>();
         public Dictionary<string, Snippet> templates = null;
-        //public Dictionary<Rail, Dungeon> rail_map1 = new Dictionary<Rail, Dungeon>();
-        //public Dictionary<Dungeon, Rail> rail_map2 = new Dictionary<Dungeon, Rail>();
+        //public Dictionary<Trellis, Dungeon> rail_map1 = new Dictionary<Trellis, Dungeon>();
+        //public Dictionary<Dungeon, Trellis> rail_map2 = new Dictionary<Dungeon, Trellis>();
 
         //public Dictionary<Dwarf_Clan, Dungeon> dungeons = new Dictionary<Dwarf_Clan, Dungeon>();
         public Dictionary<Dungeon, Dwarf_Clan> clans = new Dictionary<Dungeon, Dwarf_Clan>();
-        public Dictionary<Rail, Dwarf_Clan> rail_clans = new Dictionary<Rail, Dwarf_Clan>();
+        public Dictionary<Trellis, Dwarf_Clan> rail_clans = new Dictionary<Trellis, Dwarf_Clan>();
 
-        public Railway railway;
+        public Schema railway;
         public Target target;
 
-        public JackOLantern(Logician logician, Overlord overlord, Railway railway, Target target)
+        public JackOLantern(Logician logician, Overlord overlord, Schema railway, Target target)
         {
             this.logician = logician;
             this.overlord = overlord;
@@ -119,10 +119,10 @@ namespace metahub.jackolantern
                 if (rail.parent != null)
                     dungeon.parent = get_dungeon(rail.parent);
 
-                foreach (var tie in rail.all_ties.Values)
+                foreach (var tie in rail.all_properties.Values)
                 {
                     Portal portal = create_portal_from_tie(tie, dungeon);
-                    if (rail.core_ties.ContainsKey(tie.name))
+                    if (rail.core_properties.ContainsKey(tie.name))
                         dungeon.add_portal(portal);
                     else
                         dungeon.add_parent_portal(portal);
@@ -148,16 +148,16 @@ namespace metahub.jackolantern
             return clan.dwarves[minion];
         }
 
-        public Dungeon create_dungeon_from_rail(Rail rail, Realm realm)
+        public Dungeon create_dungeon_from_rail(Trellis rail, Realm realm)
         {
             var dungeon = new Dungeon(rail.name, overlord, realm);
-            dungeon.is_abstract = rail.trellis.is_abstract;
-            dungeon.is_value = rail.trellis.is_value;
+            dungeon.is_abstract = rail.is_abstract;
+            dungeon.is_value = rail.is_value;
             dungeon.default_value = rail.default_value;
 
-            if (realm.trellis_additional.ContainsKey(rail.trellis.name))
+            if (realm.trellis_additional.ContainsKey(rail.name))
             {
-                var map = realm.trellis_additional[rail.trellis.name];
+                var map = realm.trellis_additional[rail.name];
 
                 if (map.inserts != null)
                     dungeon.inserts = map.inserts;
@@ -166,12 +166,12 @@ namespace metahub.jackolantern
             return dungeon;
         }
 
-        public Rail get_rail(Dungeon dungeon)
+        public Trellis get_rail(Dungeon dungeon)
         {
             return clans[dungeon].rail;
         }
 
-        public Dwarf_Clan add_clan(Dungeon dungeon, Rail rail = null)
+        public Dwarf_Clan add_clan(Dungeon dungeon, Trellis rail = null)
         {
             var clan = new Dwarf_Clan(this, dungeon, rail);
             clans[dungeon] = clan;
@@ -183,18 +183,18 @@ namespace metahub.jackolantern
 
         public void generate_code(Target target)
         {
-            foreach (var region in railway.regions.Values)
+            foreach (var region in railway.root.children.Values)
             {
                 //if (region.is_external)
                 //    continue;
 
                 var realm = new Realm(region.name, overlord);
-                if (region.space.additional != null && region.space.additional.ContainsKey(region.name))
-                    realm.load_additional(region.space.additional[region.name]);
-                realm.external_name = region.external_name;
+                if (region.additional != null && region.additional.ContainsKey(region.name))
+                    realm.load_additional(region.additional[region.name]);
+
                 overlord.realms[realm.name] = realm;
 
-                foreach (var rail in region.rails.Values)
+                foreach (var rail in region.trellises.Values)
                 {
 
                     Dungeon dungeon = create_dungeon_from_rail(rail, realm);
@@ -213,12 +213,6 @@ namespace metahub.jackolantern
                 initialize_dungeon(dungeon);
             }
 
-            foreach (var dungeon in overlord.dungeons.Where(d => !d.is_external))
-            {
-                var rail = get_rail(dungeon);
-                rail.finalize();
-            }
-
             var not_external = overlord.dungeons.Where(d => !d.is_external).ToArray();
 
             foreach (var dungeon in not_external)
@@ -235,27 +229,22 @@ namespace metahub.jackolantern
 
             overlord.summon(Resources.metahub_imp);
 
-            if (logician.railway.regions.ContainsKey("piecemaker"))
+            if (logician.railway.root.children.ContainsKey("piecemaker"))
             {
-                var piece_region = logician.railway.regions["piecemaker"];
+                var piece_region = logician.railway.root.children["piecemaker"];
                 Piece_Maker.add_functions(this, piece_region);
             }
         }
 
-        public Tie get_tie(Portal portal)
+        public Property get_tie(Portal portal)
         {
             var rail = get_rail(portal.dungeon);
-            return rail.all_ties.ContainsKey(portal.name)
-                ? rail.all_ties[portal.name]
+            return rail.all_properties.ContainsKey(portal.name)
+                ? rail.all_properties[portal.name]
                 : null;
         }
 
-        public Rail get_rail(Trellis trellis)
-        {
-            return railway.get_rail(trellis);
-        }
-
-        public Dungeon get_dungeon(Rail rail)
+        public Dungeon get_dungeon(Trellis rail)
         {
             if (!rail_clans.ContainsKey(rail))
                 return null;
@@ -263,7 +252,7 @@ namespace metahub.jackolantern
             return rail_clans[rail].dungeon;
         }
 
-        public Dungeon get_dungeon_or_error(Rail rail)
+        public Dungeon get_dungeon_or_error(Trellis rail)
         {
             if (!rail_clans.ContainsKey(rail))
                 throw new Exception("Could not find dungeon for rail " + rail.name + ".");
@@ -271,13 +260,13 @@ namespace metahub.jackolantern
             return rail_clans[rail].dungeon;
         }
 
-        public Portal get_portal(Tie tie)
+        public Portal get_portal(Property tie)
         {
-            var dungeon = get_dungeon(tie.rail);
-            if (!dungeon.has_portal(tie.tie_name))
+            var dungeon = get_dungeon(tie.trellis);
+            if (!dungeon.has_portal(tie.name))
                 return null;
 
-            return dungeon.all_portals[tie.tie_name];
+            return dungeon.all_portals[tie.name];
         }
 
         public Dungeon summon_dungeon(Snippet template, Summoner.Context context)
@@ -288,19 +277,19 @@ namespace metahub.jackolantern
             return dungeon;
         }
 
-        public Portal create_portal_from_tie(Tie tie, Dungeon dungeon)
+        public Portal create_portal_from_tie(Property tie, Dungeon dungeon)
         {
-            var other_dungeon = tie.other_rail != null
-                    ? get_dungeon(tie.other_rail)
+            var other_dungeon = tie.other_trellis != null
+                    ? get_dungeon(tie.other_trellis)
                     : null;
             var portal = new Portal(tie.name, tie.type, dungeon, other_dungeon);
 
-            if (tie.other_tie != null)
+            if (tie.other_property != null)
             {
-                var d = get_dungeon(tie.other_rail);
+                var d = get_dungeon(tie.other_trellis);
                 if (d != null)
                 {
-                    portal.other_portal = get_portal(tie.other_tie);
+                    portal.other_portal = get_portal(tie.other_property);
                     if (portal.other_portal != null)
                     {
                         portal.other_portal.other_portal = portal;
@@ -309,8 +298,7 @@ namespace metahub.jackolantern
             }
 
             portal.is_value = tie.is_value;
-            if (tie.property != null)
-                portal.default_value = tie.property.default_value;
+                portal.default_value = tie.default_value;
 
             return portal;
         }

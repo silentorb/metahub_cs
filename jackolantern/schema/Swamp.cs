@@ -203,7 +203,7 @@ namespace metahub.jackolantern.schema
                 else if (result.type == Node_Type.property && dir == Dir.In)
                 {
                     var property_node = (Property_Node)result;
-                    if (property_node.tie.rail.trellis.is_value)
+                    if (property_node.tie.trellis.is_value)
                         result = property_node.inputs[0];
                     else
                         break;
@@ -239,8 +239,8 @@ namespace metahub.jackolantern.schema
                         var tie = dir == Dir.Out
                                       ? property_node.tie
                             //: ((Property_Node)previous).tie.other_tie;
-                                      : ((Property_Node)previous).tie.rail.get_reference(property_node.tie.other_rail)
-                                      ?? ((Property_Node)previous).tie.other_tie;
+                                      : ((Property_Node)previous).tie.trellis.get_reference(property_node.tie.other_trellis)
+                                      ?? ((Property_Node)previous).tie.other_property;
 
                         if (tie == null)
                             throw new Exception("Not supported.");
@@ -258,21 +258,21 @@ namespace metahub.jackolantern.schema
                         var property_node = (Property_Node)previous;
                         var scope_node = (Scope_Node)node;
 
-                        Tie tie;
-                        if (scope_node.rail == property_node.tie.rail)
+                        Property tie;
+                        if (scope_node.rail == property_node.tie.trellis)
                         {
-                            if (property_node.tie.other_rail.trellis.is_value)
+                            if (property_node.tie.other_trellis.is_value)
                                 return null;
 
-                            tie = property_node.tie.other_tie;
+                            tie = property_node.tie.other_property;
                         }
                         else
                         {
-                            tie = property_node.tie.rail.get_reference(scope_node.rail);
+                            tie = property_node.tie.trellis.get_reference(scope_node.rail);
                         }
 
                         if (tie == null)
-                            throw new Exception("Tie cannot be null.");
+                            throw new Exception("Property cannot be null.");
 
                         return new Portal_Expression(jack.get_portal(tie));
                     }
@@ -336,7 +336,7 @@ namespace metahub.jackolantern.schema
                 return expression;
 
             if (next.type == Node_Type.property
-                && ((Property_Node)next).tie.other_rail == jack.get_rail(context.dungeon))
+                && ((Property_Node)next).tie.other_trellis == jack.get_rail(context.dungeon))
             {
                 return expression;
             }

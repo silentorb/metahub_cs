@@ -18,10 +18,10 @@ namespace metahub.logic
 
     public class Coder
     {
-        Railway railway;
+        Schema railway;
         Logician logician;
 
-        public Coder(Railway railway, Logician logician)
+        public Coder(Schema railway, Logician logician)
         {
             this.railway = railway;
             this.logician = logician;
@@ -79,7 +79,7 @@ namespace metahub.logic
                     }
                     else
                     {
-                        Tie tie = scope.rail.get_tie_or_error(source.text);
+                        Property tie = scope.rail.get_property_or_error(source.text);
                         var result = new Property_Node(tie);
                         var input = previous ?? scope.scope_node ?? new Scope_Node(scope.rail);
                         if (input == null)
@@ -91,7 +91,7 @@ namespace metahub.logic
                         //    rail = tie.other_rail;
                     }
                 //{
-                //    Tie tie = scope.rail.get_tie_or_error(source.text);
+                //    Property tie = scope.rail.get_tie_or_error(source.text);
                 //    return new Property_Reference(tie);
                 //}
 
@@ -195,7 +195,7 @@ namespace metahub.logic
         Node process_path2(Pattern_Source source, Logic_Scope scope)
         {
             var token_scope = scope;
-            Rail rail = token_scope.rail;
+            Trellis rail = token_scope.rail;
             Node expression = null;
             var expressions = source.patterns;
             if (expressions == null || expressions.Length == 0)
@@ -401,7 +401,7 @@ namespace metahub.logic
 
         Signature prepare_function_scope_signature(string name, Logic_Scope function_scope, Node[] args)
         {
-            var func = railway.root_region.functions[name];
+            var func = railway.root.functions[name];
             var previous_signature = args[0].get_signature();
             var function_signature = func.get_signature(previous_signature).clone();
             function_scope.parameters = function_signature.parameters.Skip(1).ToArray();
@@ -419,7 +419,7 @@ namespace metahub.logic
 
                             var previous_property = (Property_Node)args[i];
                             if (parameter2.type == Kind.reference || parameter2.type == Kind.list)
-                                parameter2.rail = previous_property.tie.other_rail;
+                                parameter2.rail = previous_property.tie.other_trellis;
                         }
                     }
                 }

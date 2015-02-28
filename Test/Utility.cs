@@ -35,9 +35,9 @@ namespace test
             var space = new Namespace("test", "test");
             hub.load_schema_from_string(json, space);
             var overlord = new Overlord();
-            var railway = new Railway(hub, "cpp");
+//            var railway = new Railway(hub, "cpp");
             var target = new Mock_Target(overlord);
-            var logician = new Logician(railway);
+            var logician = new Logician(hub.schema);
 //            var jack = new JackOLantern(logician, overlord, railway, target);
 //            return jack;
             return null;

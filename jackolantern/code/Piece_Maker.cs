@@ -24,7 +24,7 @@ namespace imperative.code
             templates = overlord.summon_snippets(Resources.piecemaker_snippets);
         }
 
-        public static void add_functions(JackOLantern jack, Region region)
+        public static void add_functions(JackOLantern jack, metahub.schema.Namespace region)
         {
             jack.overlord.summon(Resources.piecemaker_imp);
             //conflict_functions(overlord, region);
@@ -33,10 +33,10 @@ namespace imperative.code
             add_groups(jack, region);
         }
 
-        private static void add_groups(JackOLantern jack, Region region)
+        private static void add_groups(JackOLantern jack, metahub.schema.Namespace region)
         {
-            var dungeon = jack.get_dungeon(region.rails["Piece_Maker"]);
-            var group_dungeon = jack.get_dungeon(region.rails["Conflict_Group"]);
+            var dungeon = jack.get_dungeon(region.trellises["Piece_Maker"]);
+            var group_dungeon = jack.get_dungeon(region.trellises["Conflict_Group"]);
 
             foreach (var pair in jack.logician.groups)
             {

@@ -14,10 +14,10 @@ namespace metahub.jackolantern.code
     {
         private JackOLantern jack;
         public Dungeon dungeon;
-        public Rail rail;
+        public Trellis rail;
         public Dictionary<Minion, Dwarf> dwarves = new Dictionary<Minion, Dwarf>();
 
-        public Dwarf_Clan(JackOLantern jack, Dungeon dungeon, Rail rail = null)
+        public Dwarf_Clan(JackOLantern jack, Dungeon dungeon, Trellis rail = null)
         {
             this.jack = jack;
             this.dungeon = dungeon;
@@ -34,7 +34,7 @@ namespace metahub.jackolantern.code
         {
             var class_definition = dungeon.get_block("class_definition");
 
-            foreach (var tie in rail.all_ties.Values)
+            foreach (var tie in rail.all_properties.Values)
             {
                 if (tie.type == Kind.list)
                 {
@@ -42,8 +42,8 @@ namespace metahub.jackolantern.code
                 }
                 else
                 {
-                    if (tie.has_setter())
-                        generate_setter_stub(jack.get_portal(tie));
+//                    if (tie.has_setter())
+//                        generate_setter_stub(jack.get_portal(tie));
                 }
             }
         }
@@ -59,7 +59,7 @@ namespace metahub.jackolantern.code
             }
             generate_initialize(statements.scope);
 
-            foreach (var tie in rail.all_ties.Values)
+            foreach (var tie in rail.all_properties.Values)
             {
                 var portal = jack.get_portal(tie);
                 if (tie.type == Kind.list)
@@ -68,8 +68,8 @@ namespace metahub.jackolantern.code
                 }
                 else
                 {
-                    if (tie.has_setter())
-                        generate_setter(jack.get_portal(tie));
+//                    if (tie.has_setter())
+//                        generate_setter(jack.get_portal(tie));
                 }
             }
 

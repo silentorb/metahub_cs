@@ -1,14 +1,15 @@
 using System.Diagnostics;
 using metahub.jackolantern.tools;
 using metahub.logic.schema;
+using metahub.schema;
 
 namespace metahub.logic.nodes
 {
     public class Property_Node : Node
     {
-        public Tie tie;
+        public Property tie;
 
-        public Property_Node(Tie tie)
+        public Property_Node(Property tie)
 
             : base(Node_Type.property)
         {

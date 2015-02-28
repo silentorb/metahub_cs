@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using metahub.schema;
 
 namespace metahub.logic.schema
 {
@@ -12,9 +13,9 @@ public class Range_Float : IRange
 	public float min;
 	public float max;
     public int type { get; set; }
-	public List<Tie> path { get; set; }
+	public List<Property> path { get; set; }
 	
-	public Range_Float(float min, float max, List<Tie> path)
+	public Range_Float(float min, float max, List<Property> path)
 	{
 		this.min = min;
 		this.max = max;

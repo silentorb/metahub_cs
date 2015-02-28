@@ -15,7 +15,7 @@ namespace metahub.jackolantern.code
 {
     public class Reference
     {
-        public static void generate_constraint(Constraint constraint, Tie tie, JackOLantern jack)
+        public static void generate_constraint(Constraint constraint, Property tie, JackOLantern jack)
         {
             //if (constraint.op == "!="
             //            //&& constraint.second.Length == 1 
@@ -37,7 +37,7 @@ namespace metahub.jackolantern.code
             //}
         }
 
-        public static void self_modifying(Constraint constraint, Tie tie, JackOLantern jack)
+        public static void self_modifying(Constraint constraint, Property tie, JackOLantern jack)
         {
             /*
             var property_node = (metahub.logic.nodes.Property_Reference)constraint.first;
@@ -70,7 +70,7 @@ namespace metahub.jackolantern.code
              * */
         }
 
-        public static List<Expression> constraint(Constraint constraint, Tie tie, JackOLantern jack, Scope scope)
+        public static List<Expression> constraint(Constraint constraint, Property tie, JackOLantern jack, Scope scope)
         {
             throw new Exception();
             //var op = constraint.op;
@@ -161,7 +161,7 @@ namespace metahub.jackolantern.code
 		    )};
         }
 
-        //public static List<Expression> cross(Constraint constraint, Tie tie, JackOLantern jack, Scope scope)
+        //public static List<Expression> cross(Constraint constraint, Property tie, JackOLantern jack, Scope scope)
         //{
         //    //var dungeon = minion.get_dungeon(tie.rail);
         //    //dungeon.concat_block(tie.tie_name + "_set_pre", Reference.constraint(constraint, this));
@@ -235,7 +235,7 @@ namespace metahub.jackolantern.code
 
         //}
 
-        public static List<Expression> distance(Constraint constraint, Tie tie, JackOLantern jack, Scope scope, Symbol it, Symbol value)
+        public static List<Expression> distance(Constraint constraint, Property tie, JackOLantern jack, Scope scope, Symbol it, Symbol value)
         {
             throw new Exception();
             //var offset = scope.create_symbol("offset", value.signature);
@@ -280,7 +280,7 @@ namespace metahub.jackolantern.code
             //};
         }
 
-        static Dungeon create_conflict_class(Constraint constraint, Rail rail, JackOLantern jack)
+        static Dungeon create_conflict_class(Constraint constraint, Trellis rail, JackOLantern jack)
         {
             throw new Exception();
             //var previous = jack.overlord.get_dungeon(rail);

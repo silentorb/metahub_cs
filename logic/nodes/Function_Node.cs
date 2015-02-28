@@ -51,7 +51,7 @@ namespace metahub.logic.nodes
             {
                 is_circular = true;
                 var property_node = (Property_Node)inputs.First();
-                property_node.tie.rail.needs_tick = true;
+                property_node.tie.trellis.needs_tick = true;
             }
         }
 

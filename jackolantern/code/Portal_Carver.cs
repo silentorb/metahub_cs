@@ -31,13 +31,13 @@ namespace metahub.jackolantern.code
             //        })));
             //}
 
-            if (tie.has_setter())
-            {
-                accordian.add("post", new Property_Function_Call(Property_Function_Type.set, portal, new List<Expression>
-                    {
-                        new Portal_Expression(portal)
-                    }));
-            }
+//            if (tie.has_setter())
+//            {
+//                accordian.add("post", new Property_Function_Call(Property_Function_Type.set, portal, new List<Expression>
+//                    {
+//                        new Portal_Expression(portal)
+//                    }));
+//            }
         }
 
     }

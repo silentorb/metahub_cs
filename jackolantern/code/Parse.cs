@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using metahub.logic.schema;
 using metahub.logic.nodes;
+using metahub.schema;
 using Function_Call = imperative.expressions.Class_Function_Call;
 
 namespace imperative.code
@@ -11,27 +12,27 @@ namespace imperative.code
     public class Parse
     {
 
-        public static Tie get_start_tie(Node expression)
+        public static Property get_start_tie(Node expression)
         {
             var path = (Reference_Path)expression;
             var property_expression = (Property_Node)path.children[0];
             return property_expression.tie;
         }
 
-        public static Tie get_end_tie(Node expression)
+        public static Property get_end_tie(Node expression)
         {
             var path = get_path(expression);
             var i = path.Count;
             while (--i >= 0)
             {
-                if (!path[i].rail.trellis.is_value)
+                if (!path[i].trellis.is_value)
                     return path[i];
             }
 
             throw new Exception("Could not find property inside Node path.");
         }
 
-        public static Tie get_end_tie(Node[] path)
+        public static Property get_end_tie(Node[] path)
         {
             var i = path.Length;
             while (--i >= 0)
@@ -40,7 +41,7 @@ namespace imperative.code
                 if (token == null)
                     continue;
 
-                if (!token.tie.rail.trellis.is_value)
+                if (!token.tie.trellis.is_value)
                     return token.tie;
             }
 
@@ -48,7 +49,7 @@ namespace imperative.code
             return null;
         }
 
-        public static List<Tie> get_endpoints(Node[] path)
+        public static List<Property> get_endpoints(Node[] path)
         {
             var i = path.Length;
             while (--i >= 0)
@@ -58,13 +59,13 @@ namespace imperative.code
                 {
                     case Node_Type.property:
                         var prop = (Property_Node)token;
-                        if (!prop.tie.rail.trellis.is_value)
-                            return new List<Tie> { prop.tie };
+                        if (!prop.tie.trellis.is_value)
+                            return new List<Property> { prop.tie };
 
                         break;
 
                     case Node_Type.array:
-                        var result = new List<Tie>();
+                        var result = new List<Property>();
                         foreach (var t in ((Array_Expression)token).children)
                         {
                             result.AddRange(get_endpoints(new Node[] { t }).Distinct());
@@ -78,12 +79,12 @@ namespace imperative.code
 
             }
 
-            return new List<Tie>();
+            return new List<Property>();
             //throw new Exception("Could not find endpo inside Node path.");
         }
 
 
-        //public static Tie get_end_tie (Node Node) {
+        //public static Property get_end_tie (Node Node) {
         //Reference_Path path = Node;
         //var i = path.children.Count;
         //while (--i >= 0) {
@@ -99,7 +100,7 @@ namespace imperative.code
         //throw new Exception("Could not find property inside Node path.");
         //}
 
-        public static List<Tie> get_path(Node expression)
+        public static List<Property> get_path(Node expression)
         {
             return expression.get_path().OfType<Property_Node>().Select(n => n.tie).ToList();
 
@@ -113,24 +114,24 @@ namespace imperative.code
                     return get_path_from_array(((Array_Expression)expression).children);
 
                 case Node_Type.property:
-                    return new List<Tie> { ((Property_Node)expression).tie };
+                    return new List<Property> { ((Property_Node)expression).tie };
 
                 case Node_Type.function_call:
                     //Function_Call function_call = expression;
-                    return new List<Tie>();
+                    return new List<Property>();
 
                 case Node_Type.variable:
-                    return new List<Tie>();
+                    return new List<Property>();
 
                 default:
-                    return new List<Tie>();
+                    return new List<Property>();
                 //throw new Exception("Unsupported path Node type: " + Node.type);
             }
         }
 
-        public static List<Tie> get_path_from_array(IEnumerable<Node> expressions)
+        public static List<Property> get_path_from_array(IEnumerable<Node> expressions)
         {
-            List<Tie> result = new List<Tie>();
+            List<Property> result = new List<Property>();
             foreach (var token in expressions)
             {
                 result = result.Union(get_path(token)).ToList();
@@ -181,9 +182,9 @@ namespace imperative.code
             }
         }
 
-        public static List<Tie> reverse_path(IEnumerable<Tie> path)
+        public static List<Property> reverse_path(IEnumerable<Property> path)
         {
-            return path.Select((t) => t.other_tie).Reverse().ToList();
+            return path.Select((t) => t.other_property).Reverse().ToList();
         }
 
     }

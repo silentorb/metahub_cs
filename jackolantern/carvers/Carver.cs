@@ -7,6 +7,7 @@ using imperative.expressions;
 using metahub.jackolantern.schema;
 using metahub.logic.nodes;
 using metahub.logic.schema;
+using metahub.schema;
 
 namespace metahub.jackolantern.carvers
 {
@@ -59,7 +60,7 @@ namespace metahub.jackolantern.carvers
         {
             return aggregate(start, include_self)
                 .OfType<Property_Node>()
-                .Where(p=> !p.tie.rail.trellis.is_value)
+                .Where(p=> !p.tie.trellis.is_value)
                 .Select(p => new Endpoint(p, jack.get_portal(p.tie)));
         }
 
@@ -142,14 +143,14 @@ namespace metahub.jackolantern.carvers
             var paths = new List<Node[]>();
             get_non_property_path(start, paths);
 
-            var used_ties = new List<Tie>();
+            var used_ties = new List<Property>();
             var conditions = new List<Operation>();
 
             foreach (var path in paths)
             {
                 foreach (Property_Node node in path)
                 {
-                    if (!used_ties.Contains(node.tie) || node.tie.other_rail == null || node.tie.is_value)
+                    if (!used_ties.Contains(node.tie) || node.tie.other_trellis == null || node.tie.is_value)
                         continue;
 
                     used_ties.Add(node.tie);

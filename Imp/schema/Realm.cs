@@ -16,7 +16,7 @@ namespace imperative.schema
         public bool is_external;
         public string class_export = "";
 
-        //public Realm(Region region, Overlord overlord)
+        //public Realm(Namespace region, Overlord overlord)
         //{
         //    name = region.name;
         //    this.overlord = overlord;

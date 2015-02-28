@@ -14,19 +14,19 @@ namespace metahub.jackolantern.code
 {
     public class List_Code
     {
-        public static void common_functions_stub(Tie tie, JackOLantern minion, Scope scope)
+        public static void common_functions_stub(Property tie, JackOLantern minion, Scope scope)
         {
             add_function_stub(tie, minion, scope);
             remove_function_stub(tie, minion, scope);
         }
         
-        public static void add_function_stub(Tie tie, JackOLantern jack, Scope scope)
+        public static void add_function_stub(Property tie, JackOLantern jack, Scope scope)
         {
-            var rail = tie.rail;
+            var rail = tie.trellis;
             var portal = jack.get_portal(tie);
-            var dungeon = jack.get_dungeon(tie.rail);
+            var dungeon = jack.get_dungeon(tie.trellis);
 
-            var function_name = "add_" + tie.tie_name;
+            var function_name = "add_" + tie.name;
             var minion = dungeon.spawn_minion(function_name, null, new List<Expression>());
             portal.setter = minion;
             var signature = tie.get_other_signature();
@@ -45,7 +45,7 @@ namespace metahub.jackolantern.code
 
         }
         
-        public static void remove_function_stub(Tie tie, JackOLantern jack, Scope scope)
+        public static void remove_function_stub(Property tie, JackOLantern jack, Scope scope)
         {
         }
 

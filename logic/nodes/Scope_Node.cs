@@ -4,14 +4,15 @@ using System.Linq;
 using System.Text;
 using metahub.jackolantern.tools;
 using metahub.logic.schema;
+using metahub.schema;
 
 namespace metahub.logic.nodes
 {
    public class Scope_Node : Node
    {
-       public Rail rail;
+       public Trellis rail;
 
-       public Scope_Node(Rail rail)
+       public Scope_Node(Trellis rail)
            :base(Node_Type.scope_node)
        {
            if (rail == null)

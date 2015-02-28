@@ -6,6 +6,7 @@ using imperative;
 using imperative.code;
 using metahub.logic.schema;
 using metahub.logic.nodes;
+using metahub.schema;
 
 namespace metahub.logic
 {
@@ -39,9 +40,9 @@ namespace metahub.logic
         public List<Function_Node> functions = new List<Function_Node>(); 
         public Dictionary<string, Constraint_Group> groups = new Dictionary<string, Constraint_Group>();
         public bool needs_hub = false;
-        public Railway railway;
+        public Schema railway;
 
-        public Logician(Railway railway)
+        public Logician(Schema railway)
         {
             this.railway = railway;
         }
@@ -90,6 +91,65 @@ namespace metahub.logic
                 analyze(function.children);
             }
 
+        }
+
+
+        void initialize_root_functions(Namespace space)
+        {
+            space.add_functions(new List<Function_Info> {
+
+			new Function_Info("contains", new List<Signature> {
+				new Signature(Kind.Bool, new []
+				    {
+				        new Signature(Kind.list),
+				        new Signature(Kind.reference)
+				    })
+			}),
+
+			new Function_Info("count", new List<Signature> {
+				new Signature(Kind.Int, new [] { new Signature(Kind.list)})
+			}),
+			
+			new Function_Info("cross", new List<Signature> {
+                new Signature(Kind.none, new []
+                    {
+                        new Signature(Kind.list),
+                        new Signature(Kind.none, new []
+                            {
+                                new Signature(Kind.reference),
+                                new Signature(Kind.reference)
+                            }), 
+                    })
+			}),
+			
+			new Function_Info("distance", new List<Signature> {
+                new Signature(Kind.Float, new []
+                    {
+                        new Signature(Kind.reference),
+                        new Signature(Kind.Float, new []
+                            {
+                                new Signature(Kind.reference),
+                                new Signature(Kind.reference),
+                            }), 
+                    })
+			}),
+
+            new Function_Info("first", new List<Signature> {
+				new Signature(Kind.reference, new [] { new Signature(Kind.list)})
+			}),
+
+            new Function_Info("map", new List<Signature> {
+                new Signature(Kind.none, new []
+                    {
+                        new Signature(Kind.list),
+                        new Signature(Kind.none, new []
+                            {
+                                new Signature(Kind.reference),
+                                new Signature(Kind.reference), 
+                            }), 
+                    })
+			}),
+		});
         }
     }
 }

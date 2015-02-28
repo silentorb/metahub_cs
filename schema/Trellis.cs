@@ -20,14 +20,13 @@ namespace metahub.schema
     {
         public string name;
         public Schema schema;
-        public List<Property> core_properties = new List<Property>();
-        List<Property> all_properties;
+        public Dictionary<string, Property> core_properties = new Dictionary<string, Property>();
+        public Dictionary<string, Property> all_properties;
         public Trellis parent;
         public uint id;
         public Property identity_property;
         public Namespace space;
-        Dictionary<string, Property> property_keys = new Dictionary<string, Property>();
-        public List<Property> properties = new List<Property>();
+//        public List<Property> properties = new List<Property>();
         public bool is_value = false;
         public List<string> events;
         public bool is_numeric = false;
@@ -35,7 +34,9 @@ namespace metahub.schema
         public bool is_abstract = false;
         protected Trellis implementation;
         public bool is_interface = false;
-        public List<Trellis> interfaces = new List<Trellis>(); 
+        public List<Trellis> interfaces = new List<Trellis>();
+        public object default_value = null;
+        public bool needs_tick = false;
 
         public Trellis(string name, Schema schema, Namespace space)
         {
@@ -48,36 +49,36 @@ namespace metahub.schema
         public Property add_property(string property_name, IProperty_Source source)
         {
             Property property = new Property(property_name, source, this);
-            this.property_keys[property_name] = property;
+            this.all_properties[property_name] = property;
             property.id = 10000;
-            core_properties.Add(property);
+            core_properties[property_name] = property;
             return property;
         }
         
-        public Dictionary<string, Property> get_all_properties()
-        {
-            return property_keys;
-            //Dictionary<string, Property> result = new Dictionary<string, Property>();
-            //var tree = this.get_tree();
-            //int index = 0;
-            //foreach (var trellis in tree) {
-            //foreach (var property in trellis.core_properties) {
-            //result[property.name] = property;
-            //property.id = index++;
-            //}
-            //}
-            //return result;
-        }
+//        public Dictionary<string, Property> get_all_properties()
+//        {
+//            return property_keys;
+//            //Dictionary<string, Property> result = new Dictionary<string, Property>();
+//            //var tree = this.get_tree();
+//            //int index = 0;
+//            //foreach (var trellis in tree) {
+//            //foreach (var property in trellis.core_properties) {
+//            //result[property.name] = property;
+//            //property.id = index++;
+//            //}
+//            //}
+//            //return result;
+//        }
 
         public Property get_property(string name)
         {
-            var props = get_all_properties();
+            var props = all_properties;
             return !props.ContainsKey(name) ? null : props[name];
         }
 
         public Property get_property_or_error(string name)
         {
-            var props = get_all_properties();
+            var props = all_properties;
             if (!props.ContainsKey(name))
                 throw new Exception(this.name + " does not contain a property named " + name + ".");
 
@@ -86,11 +87,16 @@ namespace metahub.schema
 
         public Property get_property_or_null(string name)
         {
-            var properties = this.get_all_properties();
+            var properties = this.all_properties;
             if (!properties.ContainsKey(name))
                 return null;
 
             return properties[name];
+        }
+
+        public Property get_reference(Trellis rail)
+        {
+            return all_properties.Values.FirstOrDefault(t => t.other_trellis == rail);
         }
 
         public List<Trellis> get_tree()
@@ -162,9 +168,9 @@ namespace metahub.schema
             if (source.primary_key != null)
             {
                 var primary_key = source.primary_key;
-                if (property_keys.ContainsKey(primary_key))
+                if (core_properties.ContainsKey(primary_key))
                 {
-                    identity_property = property_keys[primary_key];
+                    identity_property = core_properties[primary_key];
                 }
             }
             else
@@ -173,9 +179,9 @@ namespace metahub.schema
                 {
                     identity_property = parent.identity_property;
                 }
-                else if (property_keys.ContainsKey("id"))
+                else if (core_properties.ContainsKey("id"))
                 {
-                    identity_property = property_keys["id"];
+                    identity_property = core_properties["id"];
                 }
             }
 
@@ -185,9 +191,9 @@ namespace metahub.schema
             {
                 foreach (var property in trellis.core_properties)
                 {
-                    property.id = index++;
-                    properties.Add(property);
-                    property_keys[property.name] = property;
+//                    property.id = index++;
+//                    properties.Add(property);
+//                    all_properties[property.name] = property;
                 }
             }
 
@@ -215,7 +221,7 @@ namespace metahub.schema
                 }
             }
 
-            is_numeric = properties.Any(p => p.type != Kind.Float && p.type != Kind.Int);
+            is_numeric = core_properties.Values.Any(p => p.type != Kind.Float && p.type != Kind.Int);
 
             if (source.interfaces != null)
             {
@@ -234,7 +240,7 @@ namespace metahub.schema
                 //    for
                 //}
 
-                foreach (var property in parent.properties)
+                foreach (var property in parent.core_properties.Values)
                 {
                     if (property.other_property != null)
                     {

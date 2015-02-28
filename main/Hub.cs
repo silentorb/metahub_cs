@@ -109,7 +109,7 @@ namespace metahub
             }
         }
 
-        public void run_data(Pattern_Source source, Railway railway, Logician logician)
+        public void run_data(Pattern_Source source, Schema railway, Logician logician)
         {
             Coder coder = new Coder(railway, logician);
             coder.convert_statement(source, null);
@@ -129,13 +129,12 @@ namespace metahub
         public void generate(Pattern_Source source, string target_name, string destination)
         {
             var overlord = new Overlord();
-            var railway = new Railway(this, target_name);
-            var logician = new Logician(railway);
-            run_data(source, railway, logician);
+            var logician = new Logician(schema);
+            run_data(source, schema, logician);
             var target = Generator.create_target(overlord, target_name);
             overlord.run(target);
             logician.analyze();
-            var jack = new JackOLantern(logician, overlord, railway, target);
+            var jack = new JackOLantern(logician, overlord, schema, target);
             jack.run();
             Generator.run(target, destination);
         }

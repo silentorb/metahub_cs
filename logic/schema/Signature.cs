@@ -11,7 +11,7 @@ namespace metahub.logic.schema
     public class Signature
     {
         public Kind type;
-        public Rail rail;
+        public Trellis rail;
         public bool is_value;
         public int is_numeric;
         public Signature[] parameters;
@@ -21,7 +21,7 @@ namespace metahub.logic.schema
 
         }
 
-        public Signature(Kind type, Rail rail = null)
+        public Signature(Kind type, Trellis rail = null)
         {
             this.type = type;
             this.rail = rail;

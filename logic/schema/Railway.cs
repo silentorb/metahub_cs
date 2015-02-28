@@ -6,39 +6,39 @@ using metahub.logic.nodes;
 using metahub.schema;
 
 namespace metahub.logic.schema {
-public class Railway {
+public class Railway2 {
 
-	public Region root_region;
-	public Dictionary<string, Region> regions = new Dictionary<string, Region>();
+	public Namespace root;
+	public Dictionary<string, Namespace> regions = new Dictionary<string, Namespace>();
 
-	public Railway(Hub hub, string target_name) {
+	public Railway2(Hub hub, string target_name) {
 
-        root_region = new Region(hub.schema.root_namespace, "/");
-		initialize_root_functions();
+//        root = new Namespace(hub.schema.root, "/");
+//		initialize_root_functions();
 
-        foreach (var space in hub.schema.root_namespace.children.Values)
+        foreach (var space in hub.schema.root.children.Values)
         {
             //if (space.name == "metahub")
             //    continue;
 
-			Region region = new Region(space, target_name);
-			regions[space.name] = region;
-			root_region.children[region.name] = region;
+//			Namespace region = new Namespace(space, target_name);
+//			regions[space.name] = region;
+//			root.children[region.name] = region;
 
 			foreach (var trellis in space.trellises.Values) {
-				region.rails[trellis.name] = new Rail(trellis, this);
+//				region.trellises[trellis.name] = new Trellis(trellis, this);
 			}
 		}
 
 		foreach (var region in regions.Values) {
-			foreach (var rail in region.rails.Values) {
-				rail.process1();
+			foreach (var rail in region.trellises.Values) {
+//				rail.process1();
 			}
 		}
 		
 		foreach (var region in regions.Values) {
-			foreach (var rail in region.rails.Values) {
-				rail.process2();
+			foreach (var rail in region.trellises.Values) {
+//				rail.process2();
 			}
 		}
 	}
@@ -47,16 +47,16 @@ public class Railway {
     //    return Type.getClassName(Type.getClass(expression)).split(".").pop();
     //}
 
-	public Rail get_rail (Trellis trellis) {
-		return regions[trellis.space.name].rails[trellis.name];
+	public Trellis get_rail (Trellis trellis) {
+		return regions[trellis.space.name].trellises[trellis.name];
 	}
 
-    //public Rail get_rail(string name)
+    //public Trellis get_rail(string name)
     //{
     //    foreach (var region in regions.Values)
     //    {
-    //        if (region.rails.ContainsKey(name))
-    //            return region.rails[name];
+    //        if (region.trellises.ContainsKey(name))
+    //            return region.trellises[name];
     //    }
         
     //    throw new Exception("Could not find rail " + name + ".");
@@ -88,7 +88,7 @@ public class Railway {
 		//var path = Node.children;
 		//List<imperative.types.Node> result = new List<imperative.types.Node>();
 		//metahub.logic.types.Property_Reference first = path[0];
-		//Rail rail = first.property.get_abstract_rail();
+		//Trellis rail = first.property.get_abstract_rail();
 		//foreach (var token in path) {
 			//if (token.type == metahub.logic.types.Expression_Type.property) {
 				//metahub.logic.types.Property_Reference property_token = token;
@@ -107,78 +107,6 @@ public class Railway {
 		//return new imperative.types.Reference_Path(result);
 	//}
 	
-	public Rail resolve_rail_path (IEnumerable<string> path) {
-		var tokens = path.Take(path.Count() - 1);
-		var rail_name = path.Last();
-		var region = root_region;
-		foreach (var token in tokens) {
-			if (!region.children.ContainsKey(token))
-				throw new Exception("Region " + region.name + " does not have space: " + token + ".");
-				
-			region = region.children[token];
-		}
-		
-		if (!region.rails.ContainsKey(rail_name))
-			throw new Exception("Region " + region.name + " does not have a rail named " + rail_name + ".");
-			
-		return region.rails[rail_name];
-	}
 	
-	void initialize_root_functions () {
-		root_region.add_functions(new List<Function_Info> {
-
-			new Function_Info("contains", new List<Signature> {
-				new Signature(Kind.Bool, new []
-				    {
-				        new Signature(Kind.list),
-				        new Signature(Kind.reference)
-				    })
-			}),
-
-			new Function_Info("count", new List<Signature> {
-				new Signature(Kind.Int, new [] { new Signature(Kind.list)})
-			}),
-			
-			new Function_Info("cross", new List<Signature> {
-                new Signature(Kind.none, new []
-                    {
-                        new Signature(Kind.list),
-                        new Signature(Kind.none, new []
-                            {
-                                new Signature(Kind.reference),
-                                new Signature(Kind.reference)
-                            }), 
-                    })
-			}),
-			
-			new Function_Info("distance", new List<Signature> {
-                new Signature(Kind.Float, new []
-                    {
-                        new Signature(Kind.reference),
-                        new Signature(Kind.Float, new []
-                            {
-                                new Signature(Kind.reference),
-                                new Signature(Kind.reference),
-                            }), 
-                    })
-			}),
-
-            new Function_Info("first", new List<Signature> {
-				new Signature(Kind.reference, new [] { new Signature(Kind.list)})
-			}),
-
-            new Function_Info("map", new List<Signature> {
-                new Signature(Kind.none, new []
-                    {
-                        new Signature(Kind.list),
-                        new Signature(Kind.none, new []
-                            {
-                                new Signature(Kind.reference),
-                                new Signature(Kind.reference), 
-                            }), 
-                    })
-			}),
-		});
-	}
 }
 }

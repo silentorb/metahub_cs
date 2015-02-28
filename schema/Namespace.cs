@@ -15,6 +15,7 @@ public class Namespace
         public Namespace parent;
         public Dictionary<string, Region_Additional> additional = new Dictionary<string, Region_Additional>();
         public bool is_external = false;
+        public Dictionary<string, Function_Info> functions = new Dictionary<string, Function_Info>();
 
         public Namespace(string name, string fullname)
         {
@@ -51,6 +52,14 @@ public class Namespace
             }
 
             return current_namespace;
+        }
+
+        public void add_functions(List<Function_Info> new_functions)
+        {
+            foreach (var func in new_functions)
+            {
+                functions[func.name] = func;
+            }
         }
 
     }

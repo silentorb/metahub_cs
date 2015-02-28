@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using imperative.expressions;
 using metahub.logic.nodes;
+using metahub.schema;
 
 namespace metahub.logic.schema
 {
@@ -22,7 +23,7 @@ namespace metahub.logic.schema
         public List<Constraint> other_constraints = new List<Constraint>();
         public Lambda lambda;
         //public Node[] caller;
-        public List<Tie> endpoints;
+        public List<Property> endpoints;
         public Constraint_Group group;
         public Constraint_Scope constraint_scope;
 
@@ -38,11 +39,11 @@ namespace metahub.logic.schema
             {
                 is_circular = true;
                 var property_node = (Property_Node) first;
-                property_node.tie.rail.needs_tick = true;
+                property_node.tie.trellis.needs_tick = true;
             }
         }
 
-        public static List<Tie> get_endpoints(Node node)
+        public static List<Property> get_endpoints(Node node)
         {
             var path = node.get_path();
             var i = path.Count;
@@ -53,13 +54,13 @@ namespace metahub.logic.schema
                 {
                     case Node_Type.property:
                         var prop = (Property_Node)token;
-                        if (!prop.tie.rail.trellis.is_value)
-                            return new List<Tie> { prop.tie };
+                        if (!prop.tie.trellis.is_value)
+                            return new List<Property> { prop.tie };
 
                         break;
 
                     case Node_Type.array:
-                        var result = new List<Tie>();
+                        var result = new List<Property>();
                         foreach (var t in ((Array_Expression)token).children)
                         {
                             result.AddRange(get_endpoints(t));
@@ -73,7 +74,7 @@ namespace metahub.logic.schema
 
             }
 
-            return new List<Tie>();
+            return new List<Property>();
             //throw new Exception("Could not find endpo inside Node path.");
         }
     }

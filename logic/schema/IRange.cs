@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using metahub.schema;
 
 namespace metahub.logic.schema
 {
@@ -10,6 +11,6 @@ namespace metahub.logic.schema
 public interface IRange 
 {
     int type { get; set; }
-	List<Tie> path { get; set; }
+	List<Property> path { get; set; }
 }
 }

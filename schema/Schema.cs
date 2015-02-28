@@ -16,7 +16,7 @@ namespace metahub.schema
     public class Schema
     {
         //public List<Trellis> trellises = new List<Trellis>();
-        public Namespace root_namespace = new Namespace("root", "root");
+        public Namespace root = new Namespace("root", "root");
         private uint trellis_counter = 1;
 
         public Schema()
@@ -26,12 +26,12 @@ namespace metahub.schema
 
         public Namespace add_namespace(string name)
         {
-            if (root_namespace.children.ContainsKey(name))
-                return root_namespace.children[name];
+            if (root.children.ContainsKey(name))
+                return root.children[name];
 
             var space = new Namespace(name, name);
-            root_namespace.children[name] = space;
-            space.parent = root_namespace;
+            root.children[name] = space;
+            space.parent = root;
             return space;
         }
 
@@ -45,7 +45,7 @@ namespace metahub.schema
         public void load_trellises(Dictionary<string, ITrellis_Source> trellises, Load_Settings settings)
         {
             if (settings.space == null)
-                settings.space = root_namespace;
+                settings.space = root;
 
             var space = settings.space;
             // Due to cross referencing, loading trellises needs to be done in passes
@@ -119,5 +119,24 @@ namespace metahub.schema
             return space.trellises[name];
         }
 
+
+        public Trellis resolve_rail_path(IEnumerable<string> path)
+        {
+            var tokens = path.Take(path.Count() - 1);
+            var rail_name = path.Last();
+            var region = root;
+            foreach (var token in tokens)
+            {
+                if (!region.children.ContainsKey(token))
+                    throw new Exception("Namespace " + region.name + " does not have space: " + token + ".");
+
+                region = region.children[token];
+            }
+
+            if (!region.trellises.ContainsKey(rail_name))
+                throw new Exception("Namespace " + region.name + " does not have a rail named " + rail_name + ".");
+
+            return region.trellises[rail_name];
+        }
     }
 }

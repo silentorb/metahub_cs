@@ -1,13 +1,14 @@
 using System.Collections.Generic;
 using metahub.logic.schema;
 using metahub.logic.nodes;
+using metahub.schema;
 
 namespace metahub.logic
 {
 
     public class Logic_Scope
     {
-        public Rail rail;
+        public Trellis rail;
         public Logic_Scope parent;
         public Dictionary<string, Signature> variables = new Dictionary<string, Signature>();
         public Constraint_Group group;

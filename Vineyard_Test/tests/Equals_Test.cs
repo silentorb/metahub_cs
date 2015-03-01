@@ -38,7 +38,24 @@ namespace test.meta
 
             var transform = Transform.center_on(strength);
             var pumpkin2 = (Function_Node) transform.get_transformed(pumpkin);
+            var division = (Function_Node)pumpkin2.inputs[1];
+            var strength2 = (Property_Node)pumpkin2.inputs[0];
+
             Assert.AreEqual("=", pumpkin2.name);
+            Assert.AreEqual("/", division.name);
+            Assert.AreEqual("strength", strength2.property.name);
+
+        }
+
+        [Test]
+        public void test_pair()
+        {
+            var logician = Vineyard_Fixture.simple_equation();
+            var pumpkin = logician.functions[0];
+            var strength = (Property_Node)pumpkin.inputs[1].inputs[0];
+
+            var pathfinder = new Pathfinder(logician.schema.get_trellis("Character"));
+//            pathfinder.get_pair()
         }
     }
 }

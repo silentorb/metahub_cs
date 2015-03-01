@@ -47,6 +47,7 @@ namespace vineyard.transform
             var join = (Function_Node)operation.outputs[0];
             join.name = join.get_inverse();
             var other_side = join.get_other_input(operation);
+            join.inputs.Reverse();
 
             // Perform the transformation, similar to rotating a rubix cube.
             operation.replace_other(node, other_side);

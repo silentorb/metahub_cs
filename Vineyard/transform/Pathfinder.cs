@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using metahub.logic.nodes;
+using metahub.schema;
 
 namespace vineyard.transform
 {
@@ -15,13 +16,13 @@ namespace vineyard.transform
                 : Dir.Out;
         }
 
-        Node end;
+        Trellis context;
         public Node previous_node;
         public Node last_node;
 
-        public Pathfinder(Node end)
+        public Pathfinder(Trellis context)
         {
-            this.end = end;
+            this.context = context;
         }
 
         Node get_next(Node node, Node previous, ref Dir dir, int step = 0, bool is_backwards = false)
@@ -68,7 +69,7 @@ namespace vineyard.transform
 
             while (true)
             {
-                if (result == end)
+                if (result.type == Node_Type.property && ((Property_Node)result).property.trellis == context)
                     return null;
 
                 if (result.type == Node_Type.bounce)
@@ -108,45 +109,6 @@ namespace vineyard.transform
             return result;
         }
 
-        /*
-        public List<Node_Link> translate_backwards(Node node, Node previous, int step = 0)
-        {
-            var result = new List<Node_Link>();
-            if (step > 10)
-                throw new Exception("Not supported.");
-
-            var dir = Dir.In;
-
-            if (node.type != Node_Type.property)
-                return expression;
-
-            var next = get_next(node, previous, ref dir, step, true);
-
-            if (next == null || next == end)// || next.type == Node_Type.scope_node)
-                return expression;
-
-            if (next.type == Node_Type.property
-                && ((Property_Node)next).tie.other_trellis == jack.get_rail(context.dungeon))
-            {
-                return result;
-            }
-
-            var child = translate_backwards(next, node, step + 1);
-            if (child != null && child.type == Expression_Type.platform_function)
-            {
-                expression.next = child;
-                return expression;
-            }
-            else if (child != null)
-            {
-                get_last_child(child).next = expression;
-                return child;
-            }
-
-            return result;
-        }
-        */
-
         public List<Node_Link> get_exclusive_chain(Node node, Node previous, Dir dir)
         {
             int step = -1;
@@ -184,26 +146,20 @@ namespace vineyard.transform
 
             return result;
         }
-        /*
-        public Expression[] get_expression_pair(Node node)
+        
+        public List<Node_Link>[] get_pair(Node node, Node context_node)
         {
-            //var original_target = get_exclusive_chain(node, null, Dir.In);
             var transform = Transform.center_on(node);
             var new_target = transform.get_transformed(node);
             var lvalue = transform.get_transformed(node);
-            var rvalue = transform.get_transformed(end).get_other_input(new_target);
-            var parent = lvalue.inputs[0];
-            var lexpression = translate_backwards(lvalue, null);
-            var rexpression = translate_backwards(rvalue, null);
-            //var has_transforms = end.aggregate(Dir.In).OfType<Function_Node>().Any(n => n.is_operation);
+            var rvalue = transform.get_transformed(context_node).get_other_input(new_target);
 
-            //return has_transforms
-            //    ? new[] { lexpression, rexpression }
-            //    : new[] { rexpression, lexpression };
-
+            var lexpression = get_inclusive_chain(lvalue, null, Dir.In);
+            var rexpression = get_inclusive_chain(rvalue, null, Dir.In);
+      
             return new[] { lexpression, rexpression };
         }
-
+        
         public static Node[] get_inputs_in_relation_to(Node pumpkin, Node primary)
         {
             if (pumpkin.inputs.Count != 2)
@@ -213,6 +169,6 @@ namespace vineyard.transform
                 ? pumpkin.inputs.ToArray()
                 : new[] { pumpkin.inputs[1], pumpkin.inputs[0] };
         }
-        */
+        
     }
 }

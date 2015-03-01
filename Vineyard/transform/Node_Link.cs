@@ -13,6 +13,7 @@ namespace vineyard.transform
         public Node node;
         public Dir dir;
         public Node previous;
+        public List<Node_Link> children = new List<Node_Link>(); 
 
         public Node_Link(Node node, Dir dir, Node previous)
         {

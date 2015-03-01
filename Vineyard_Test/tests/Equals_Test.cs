@@ -48,13 +48,17 @@ namespace test.meta
         }
 
         [Test]
-        public void test_pair()
+        public void test_context_transform()
         {
             var logician = Vineyard_Fixture.simple_equation();
             var pumpkin = logician.functions[0];
             var strength = (Property_Node)pumpkin.inputs[1].inputs[0];
+            var race = (Property_Node)pumpkin.aggregate(Dir.In).OfType<Property_Node>()
+                .First(n => n.property.name == "race");
 
-            var pathfinder = new Pathfinder(logician.schema.get_trellis("Character"));
+            Transform.change_context(pumpkin, race);
+//            var pathfinder = new Pathfinder(logician.schema.get_trellis("Character"));
+
 //            pathfinder.get_pair()
         }
     }

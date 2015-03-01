@@ -201,6 +201,14 @@ namespace metahub.logic.nodes
             return outputs.First(n => n != node);
         }
 
+        public IEnumerable<Node> get_other_outputs(Node node)
+        {
+            if (outputs.Count != 2)
+                throw new Exception("Not yet supported.");
+
+            return outputs.Where(n => n != node);
+        }
+
         public virtual Node clone()
         {
             throw new Exception("Not implemented.");
@@ -219,7 +227,24 @@ namespace metahub.logic.nodes
                 }
             }
             return result;
-        } 
+        }
+
+        public static void insert(Node left, Node middle, Node right)
+        {
+            var is_input = left.inputs.Contains(right);
+            left.disconnect(right);
+
+            if (is_input)
+            {
+                left.connect_input(middle);
+                middle.connect_input(right);
+            }
+            else
+            {
+                left.connect_output(middle);
+                middle.connect_output(right);      
+            }
+        }
 
     }
 }

@@ -183,7 +183,7 @@ namespace metahub.jackolantern.schema
                         var scope_node = (Scope_Node)node;
 
                         Property tie;
-                        if (scope_node.rail == property_node.property.trellis)
+                        if (scope_node.trellis == property_node.property.trellis)
                         {
                             if (property_node.property.other_trellis.is_value)
                                 return null;
@@ -192,7 +192,7 @@ namespace metahub.jackolantern.schema
                         }
                         else
                         {
-                            tie = property_node.property.trellis.get_reference(scope_node.rail);
+                            tie = property_node.property.trellis.get_reference(scope_node.trellis);
                         }
 
                         if (tie == null)

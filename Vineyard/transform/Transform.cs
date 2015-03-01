@@ -58,6 +58,40 @@ namespace vineyard.transform
             return transform;
         }
 
+        public static Transform change_context(Node root, Property_Node new_context)
+        {
+            var transform = new Transform(root);
+            if (new_context.aggregate(Dir.In).Count() == 1)
+                return transform;
+
+            transform.new_origin = clone_all(root, transform.map);
+            new_context = (Property_Node)transform.get_transformed(new_context);
+            var tokens = new_context.aggregate(Dir.In).ToList();
+            var original_context = (Scope_Node)tokens.Last();
+            tokens.RemoveAt(tokens.Count - 1);
+
+            var others = original_context.get_other_outputs(tokens.Last()).ToArray();
+
+            var trellis = original_context.trellis;
+             
+            foreach (var other in others)
+            {
+                var last = other;
+                foreach (Property_Node token in tokens)
+                {
+                    var new_property = token.property.trellis.get_reference(trellis);
+                    var property_node = new Property_Node(new_property);
+                    Node.insert(original_context, property_node, last);
+                    last = property_node;
+                }
+            }
+
+            original_context.trellis = new_context.property.trellis;
+            new_context.replace_other(new_context.inputs[0], original_context);
+
+            return transform;
+        }
+
         public static Node clone_all(Node node, Dictionary<Node, Node> map)
         {
             var result = node.clone();

@@ -1,0 +1,32 @@
+﻿			damage 
+Weapon			= 
+			character.race.strength
+
+			weapon.damage 
+Character		= 
+			race.strength
+
+
+			character.weapon.damage 
+Race			= 
+			strength
+
+
+**********************************************************
+Weapon {
+	race.damage = character.race.strength * 4
+}
+**********************************************************
+			
+			race.damage 
+Weapon			= 
+			character.race.strength
+
+			weapon.race.damage 
+Character		= 
+			race.strength
+
+
+			character.weapon.race.damage 
+Race			= 
+			strength

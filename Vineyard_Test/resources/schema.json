@@ -10,9 +10,21 @@
           "type": "reference",
           "trellis": "Weapon"
         },
-		"strength": {
-		"type": "int"
-		}
+        "race": {
+          "type": "reference",
+          "trellis": "Race"
+        }
+      }
+    },
+    "Race": {
+      "properties": {
+        "character": {
+          "type": "reference",
+          "trellis": "Character"
+        },
+        "strength": {
+          "type": "int"
+        }
       }
     },
     "Item": {

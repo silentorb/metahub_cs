@@ -1,1 +1,3 @@
-﻿
+﻿Weapon {
+	damage = character.strength * 4
+}

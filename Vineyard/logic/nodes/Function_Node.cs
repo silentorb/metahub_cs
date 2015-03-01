@@ -25,7 +25,9 @@ namespace metahub.logic.nodes
 
         public string get_inverse()
         {
-            return Logician.get_inverse_operator(name, is_operation);
+            return name == "=" 
+                ? name 
+                : Logician.inverse_operators[name];
         }
 
         public override string debug_string
@@ -51,7 +53,7 @@ namespace metahub.logic.nodes
             {
                 is_circular = true;
                 var property_node = (Property_Node)inputs.First();
-                property_node.tie.trellis.needs_tick = true;
+                property_node.property.trellis.needs_tick = true;
             }
         }
 

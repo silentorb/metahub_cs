@@ -38,7 +38,7 @@ namespace metahub.logic.schema
             {
                 is_circular = true;
                 var property_node = (Property_Node) first;
-                property_node.tie.trellis.needs_tick = true;
+                property_node.property.trellis.needs_tick = true;
             }
         }
 
@@ -53,8 +53,8 @@ namespace metahub.logic.schema
                 {
                     case Node_Type.property:
                         var prop = (Property_Node)token;
-                        if (!prop.tie.trellis.is_value)
-                            return new List<Property> { prop.tie };
+                        if (!prop.property.trellis.is_value)
+                            return new List<Property> { prop.property };
 
                         break;
 

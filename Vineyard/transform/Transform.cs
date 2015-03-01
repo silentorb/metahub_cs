@@ -45,7 +45,7 @@ namespace vineyard.transform
 
             // Prepare for 
             var join = (Function_Node)operation.outputs[0];
-            join.name = Logician.inverse_operators[join.name];
+            join.name = join.get_inverse();
             var other_side = join.get_other_input(operation);
 
             // Perform the transformation, similar to rotating a rubix cube.

@@ -64,7 +64,7 @@ namespace metahub.jackolantern.carvers
 
         void on_add_code(Node list, Node other_list, Portal first_portal, Portal second_portal)
         {
-            var first_list_portal = jack.get_portal(((Property_Node)list).tie);
+            var first_list_portal = jack.get_portal(((Property_Node)list).property);
 
             var setter = jack.get_setter(first_list_portal);
             var context = new Summoner.Context(setter);
@@ -73,7 +73,7 @@ namespace metahub.jackolantern.carvers
             var ref_expression = swamp.render_chain(chain.Take(chain.Count - 1).ToList());
             var list_expression = swamp.translate_exclusive(list.inputs[0], list, Dir.In);
             context.set_pattern("ref", ref_expression);
-            var portal = jack.get_portal(((Property_Node) list).tie);
+            var portal = jack.get_portal(((Property_Node) list).property);
             context.set_pattern("$add", on_add_code_sub(list_expression, portal, first_portal, second_portal,setter));
             setter.accordian.add("post", jack.overlord.summon_snippet(jack.templates["map_on_add"], context));
         }

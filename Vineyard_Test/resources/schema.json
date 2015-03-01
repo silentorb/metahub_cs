@@ -9,7 +9,10 @@
         "weapon": {
           "type": "reference",
           "trellis": "Weapon"
-        }
+        },
+		"strength": {
+		"type": "int"
+		}
       }
     },
     "Item": {

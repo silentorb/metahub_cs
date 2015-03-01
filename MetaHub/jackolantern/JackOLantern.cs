@@ -229,9 +229,9 @@ namespace metahub.jackolantern
 
             overlord.summon(Resources.metahub_imp);
 
-            if (logician.railway.children.ContainsKey("piecemaker"))
+            if (logician.schema.children.ContainsKey("piecemaker"))
             {
-                var piece_region = logician.railway.children["piecemaker"];
+                var piece_region = logician.schema.children["piecemaker"];
                 Piece_Maker.add_functions(this, piece_region);
             }
         }

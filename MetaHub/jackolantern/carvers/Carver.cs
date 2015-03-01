@@ -53,15 +53,15 @@ namespace metahub.jackolantern.carvers
         {
             return aggregate(start, include_self)
                 .OfType<Property_Node>()
-                .Select(p=>jack.get_portal(p.tie));
+                .Select(p=>jack.get_portal(p.property));
         }
 
         public IEnumerable<Endpoint> get_endpoints3(Node start, bool include_self = false)
         {
             return aggregate(start, include_self)
                 .OfType<Property_Node>()
-                .Where(p=> !p.tie.trellis.is_value)
-                .Select(p => new Endpoint(p, jack.get_portal(p.tie)));
+                .Where(p=> !p.property.trellis.is_value)
+                .Select(p => new Endpoint(p, jack.get_portal(p.property)));
         }
 
         public List<Node> aggregate2(Node start, bool include_self = false)
@@ -83,7 +83,7 @@ namespace metahub.jackolantern.carvers
         {
             return aggregate2(start, include_self)
                 .OfType<Property_Node>()
-                .Select(p => new Endpoint(p, jack.get_portal(p.tie))).ToList();
+                .Select(p => new Endpoint(p, jack.get_portal(p.property))).ToList();
         }
 
         protected static Operation get_conditions(Expression start)
@@ -150,12 +150,12 @@ namespace metahub.jackolantern.carvers
             {
                 foreach (Property_Node node in path)
                 {
-                    if (!used_ties.Contains(node.tie) || node.tie.other_trellis == null || node.tie.is_value)
+                    if (!used_ties.Contains(node.property) || node.property.other_trellis == null || node.property.is_value)
                         continue;
 
-                    used_ties.Add(node.tie);
+                    used_ties.Add(node.property);
                     conditions.Insert(0, new Operation("!=", new[] { 
-                        new Portal_Expression(jack.get_portal(node.tie), new Null_Value())
+                        new Portal_Expression(jack.get_portal(node.property), new Null_Value())
                     }));
                 }
             }

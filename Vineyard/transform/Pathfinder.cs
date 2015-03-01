@@ -82,7 +82,7 @@ namespace vineyard.transform
                 else if (result.type == Node_Type.property && dir == Dir.In)
                 {
                     var property_node = (Property_Node)result;
-                    if (property_node.tie.trellis.is_value)
+                    if (property_node.property.trellis.is_value)
                         result = property_node.inputs[0];
                     else
                         break;

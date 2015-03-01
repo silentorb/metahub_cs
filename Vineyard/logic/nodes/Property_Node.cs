@@ -7,28 +7,28 @@ namespace metahub.logic.nodes
 {
     public class Property_Node : Node
     {
-        public Property tie;
+        public Property property;
 
-        public Property_Node(Property tie)
+        public Property_Node(Property property)
 
             : base(Node_Type.property)
         {
-            this.tie = tie;
+            this.property = property;
         }
 
         public override string debug_string
         {
-            get { return tie.fullname; }
+            get { return property.fullname; }
         }
 
         override public Signature get_signature()
         {
-            return tie.get_signature();
+            return property.get_signature();
         }
 
         public override Node clone()
         {
-            return new Property_Node(tie);
+            return new Property_Node(property);
         }
 
     }

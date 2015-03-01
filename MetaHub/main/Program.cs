@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using Newtonsoft.Json;
+using metahub.logic;
 using parser;
 
 namespace metahub
@@ -37,7 +38,8 @@ namespace metahub
                 hub.load_schema(schema_name, root);
             }
 
-            var result = hub.schema.parse_code(code);
+            var logician = new Logician(hub.schema);
+            var result = logician.parse_code(code);
             if (!result.success)
             {
                 Debug_Info.output(result);

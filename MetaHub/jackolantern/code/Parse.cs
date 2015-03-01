@@ -16,7 +16,7 @@ namespace imperative.code
         {
             var path = (Reference_Path)expression;
             var property_expression = (Property_Node)path.children[0];
-            return property_expression.tie;
+            return property_expression.property;
         }
 
         public static Property get_end_tie(Node expression)
@@ -41,8 +41,8 @@ namespace imperative.code
                 if (token == null)
                     continue;
 
-                if (!token.tie.trellis.is_value)
-                    return token.tie;
+                if (!token.property.trellis.is_value)
+                    return token.property;
             }
 
             //throw new Exception("Could not find property inside Node path.");
@@ -59,8 +59,8 @@ namespace imperative.code
                 {
                     case Node_Type.property:
                         var prop = (Property_Node)token;
-                        if (!prop.tie.trellis.is_value)
-                            return new List<Property> { prop.tie };
+                        if (!prop.property.trellis.is_value)
+                            return new List<Property> { prop.property };
 
                         break;
 
@@ -102,7 +102,7 @@ namespace imperative.code
 
         public static List<Property> get_path(Node expression)
         {
-            return expression.get_path().OfType<Property_Node>().Select(n => n.tie).ToList();
+            return expression.get_path().OfType<Property_Node>().Select(n => n.property).ToList();
 
             switch (expression.type)
             {
@@ -114,7 +114,7 @@ namespace imperative.code
                     return get_path_from_array(((Array_Expression)expression).children);
 
                 case Node_Type.property:
-                    return new List<Property> { ((Property_Node)expression).tie };
+                    return new List<Property> { ((Property_Node)expression).property };
 
                 case Node_Type.function_call:
                     //Function_Call function_call = expression;

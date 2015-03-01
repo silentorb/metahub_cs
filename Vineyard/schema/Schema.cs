@@ -3,14 +3,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using Newtonsoft.Json;
-using Vineyard.Properties;
+using metahub.logic;
+using vineyard.Properties;
 using metahub.logic.schema;
 using parser;
 using Match = parser.Match;
 
 namespace metahub.schema
 {
-public class Schema
+    public class Schema
     {
         public string name;
         public string fullname;
@@ -18,12 +19,10 @@ public class Schema
         //public Function_Library function_library;
         public Dictionary<string, Schema> children = new Dictionary<string, Schema>();
         public Schema parent;
-//        public Dictionary<string, Region_Additional> additional = new Dictionary<string, Region_Additional>();
+        //        public Dictionary<string, Region_Additional> additional = new Dictionary<string, Region_Additional>();
         public bool is_external = false;
         public Dictionary<string, Function_Info> functions = new Dictionary<string, Function_Info>();
-        private static Definition parser_definition;
-        public static Regex remove_comments = new Regex("#[^\n]*");
-    
+
         public Schema(string name, string fullname)
         {
             this.name = name;
@@ -88,7 +87,7 @@ public class Schema
 
         Trellis add_trellis(string name, Trellis trellis)
         {
-//            trellis.id = trellis_counter++;
+            //            trellis.id = trellis_counter++;
             //trellises.Add(trellis);
             return trellis;
         }
@@ -197,35 +196,5 @@ public class Schema
             return region.trellises[rail_name];
         }
 
-        public static void load_parser()
-        {
-            Definition boot_definition = new Definition();
-            boot_definition.load_parser_schema();
-            Bootstrap context = new Bootstrap(boot_definition);
-
-            var result = context.parse(Resources.metahub_grammar, boot_definition.patterns[0], false);
-            //Debug_Info.output(result);
-            if (result.success)
-            {
-                var match = (Match)result;
-                parser_definition = new Definition();
-                parser_definition.load(match.get_data().dictionary);
-            }
-            else
-            {
-                throw new Exception("Error loading parser.");
-            }
-        }
-
-        public Result parse_code(string code)
-        {
-            if (parser_definition == null)
-            {
-                load_parser();
-            }
-            MetaHub_Context context = new MetaHub_Context(parser_definition);
-            var without_comments = remove_comments.Replace(code, "");
-            return context.parse(without_comments, parser_definition.patterns[0]);
-        }
     }
 }

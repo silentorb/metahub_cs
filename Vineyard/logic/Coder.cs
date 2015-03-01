@@ -18,12 +18,12 @@ namespace metahub.logic
 
     public class Coder
     {
-        Schema railway;
+        Schema schema;
         Logician logician;
 
-        public Coder(Schema railway, Logician logician)
+        public Coder(Schema schema, Logician logician)
         {
-            this.railway = railway;
+            this.schema = schema;
             this.logician = logician;
         }
 
@@ -274,7 +274,7 @@ namespace metahub.logic
                 //return new Scope_Expression(Node, new_scope_definition);
             }
 
-            var rail = railway.resolve_rail_path(path.Select(t => t.text));// hub.schema.root_namespace.get_namespace(path);
+            var rail = schema.resolve_rail_path(path.Select(t => t.text));// hub.schema.root_namespace.get_namespace(path);
             //var trellis = hub.schema.get_trellis(path[path.Count - 1], namespace);
 
             //if (rail != null) {
@@ -401,7 +401,7 @@ namespace metahub.logic
 
         Signature prepare_function_scope_signature(string name, Logic_Scope function_scope, Node[] args)
         {
-            var func = railway.functions[name];
+            var func = schema.functions[name];
             var previous_signature = args[0].get_signature();
             var function_signature = func.get_signature(previous_signature).clone();
             function_scope.parameters = function_signature.parameters.Skip(1).ToArray();
@@ -419,7 +419,7 @@ namespace metahub.logic
 
                             var previous_property = (Property_Node)args[i];
                             if (parameter2.type == Kind.reference || parameter2.type == Kind.list)
-                                parameter2.rail = previous_property.tie.other_trellis;
+                                parameter2.rail = previous_property.property.other_trellis;
                         }
                     }
                 }

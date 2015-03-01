@@ -43,7 +43,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="fixtures\Hub_Fixture.cs" />
+    <Compile Include="fixtures\Vineyard_Fixture.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="tests\Equals_Test.cs" />
     <Compile Include="tests\Schema_Test.cs" />
@@ -56,6 +56,10 @@
     <EmbeddedResource Include="resources\test1.mh" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Parser\Parser.csproj">
+      <Project>{80BEAC71-8BE8-48C5-B109-BAB3F38F6D9F}</Project>
+      <Name>Parser</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Vineyard\Vineyard.csproj">
       <Project>{1AAC7CE2-5C7E-46F8-BB7E-D13D84140EC0}</Project>
       <Name>Vineyard</Name>

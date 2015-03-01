@@ -13,7 +13,7 @@ namespace test.meta
         [Test]
         public void test_loading()
         {
-            var schema = Hub_Fixture.load_schema();
+            var schema = Vineyard_Fixture.load_schema();
             Assert.Greater(schema.trellises.Count, 1);
             var character = schema.get_trellis("Character");
             var item = schema.get_trellis("Item");

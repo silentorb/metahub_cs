@@ -2,9 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using metahub.logic.schema;
 using metahub.logic.nodes;
 using metahub.schema;
+using parser;
+using vineyard.Properties;
+using Match = parser.Match;
 
 namespace metahub.logic
 {
@@ -26,38 +30,73 @@ namespace metahub.logic
                 {"/", "*"}
             };
 
-        public static string get_inverse_operator(string op, bool is_assignment)
-        {
-            if (is_assignment && op == "=")
-                return "=";
-
-            return inverse_operators[op];
-        }
+        private static Definition parser_definition;
+        public static Regex remove_comments = new Regex("#[^\n]*");
 
         public List<Constraint> constraints = new List<Constraint>();
         public List<Function_Node> functions = new List<Function_Node>(); 
         public Dictionary<string, Constraint_Group> groups = new Dictionary<string, Constraint_Group>();
         public bool needs_hub = false;
-        public Schema railway;
+        public Schema schema;
 
-        public Logician(Schema railway)
+        public Logician(Schema schema)
         {
-            this.railway = railway;
+            this.schema = schema;
+            initialize_root_functions(schema);
         }
 
-//        public Constraint create_constraint(Node first, Node second, string op, Lambda lambda, Logic_Scope scope)
-//        {
-//            var constraint = new Constraint(first, second, op, lambda) { constraint_scope = scope.constraint_scope };
-//
-//            var tie = Parse.get_end_tie(constraint.first);
-//            if (tie != null)
-//                tie.constraints.Add(constraint);
-//
-//            //if (!scope.is_map)
-//                constraints.Add(constraint);
-//
-//            return constraint;
-//        }
+        public static void load_parser()
+        {
+            Definition boot_definition = new Definition();
+            boot_definition.load_parser_schema();
+            Bootstrap context = new Bootstrap(boot_definition);
+
+            var result = context.parse(Resources.metahub_grammar, boot_definition.patterns[0], false);
+            //Debug_Info.output(result);
+            if (result.success)
+            {
+                var match = (Match)result;
+                parser_definition = new Definition();
+                parser_definition.load(match.get_data().dictionary);
+            }
+            else
+            {
+                throw new Exception("Error loading parser.");
+            }
+        }
+
+        public Match parse_code(string code)
+        {
+            if (parser_definition == null)
+            {
+                load_parser();
+            }
+            MetaHub_Context context = new MetaHub_Context(parser_definition);
+            var without_comments = remove_comments.Replace(code, "");
+            var result = context.parse(without_comments, parser_definition.patterns[0]);
+            if (!result.success)
+            {
+                Debug_Info.output(result);
+                throw new Exception("Syntax Error at " + result.end.y + ":" + result.end.x + ". ");
+            }
+
+            return (Match)result;
+        }
+
+        public void apply_code(string code)
+        {
+            var source = parse_code(code);
+            var data = source.get_data();
+            Coder coder = new Coder(schema, this);
+            coder.convert_statement(data, null);
+        }
+
+        public void apply_code(Match source)
+        {
+            var data = source.get_data();
+            Coder coder = new Coder(schema, this);
+            coder.convert_statement(data, null);
+        }
 
         public Function_Node call(string name, IEnumerable<Node> inputs, Logic_Scope scope = null)
         {
@@ -90,7 +129,6 @@ namespace metahub.logic
             }
 
         }
-
 
         void initialize_root_functions(Schema space)
         {

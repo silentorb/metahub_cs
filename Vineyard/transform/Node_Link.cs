@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using metahub.logic.nodes;
 
-namespace metahub.jackolantern.schema
+namespace vineyard.transform
 {
     [DebuggerDisplay("Node_Link {node.debug_string} {dir}")]
     public class Node_Link

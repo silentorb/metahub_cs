@@ -123,9 +123,7 @@
     <Compile Include="jackolantern\code\Portal_Carver.cs" />
     <Compile Include="jackolantern\code\Ration.cs" />
     <Compile Include="jackolantern\schema\Endpoint.cs" />
-    <Compile Include="jackolantern\schema\Node_Link.cs" />
     <Compile Include="jackolantern\schema\Swamp.cs" />
-    <Compile Include="jackolantern\tools\Transform.cs" />
     <Compile Include="main\Hub.cs" />
     <Compile Include="jackolantern\code\List_Code.cs" />
     <Compile Include="jackolantern\code\Parse.cs" />
@@ -175,6 +173,9 @@
       <Project>{1AAC7CE2-5C7E-46F8-BB7E-D13D84140EC0}</Project>
       <Name>Vineyard</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="jackolantern\tools\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

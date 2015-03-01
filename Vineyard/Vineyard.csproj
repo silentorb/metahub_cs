@@ -8,7 +8,7 @@
     <ProjectGuid>{1AAC7CE2-5C7E-46F8-BB7E-D13D84140EC0}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Vineyard</RootNamespace>
+    <RootNamespace>vineyard</RootNamespace>
     <AssemblyName>Vineyard</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
@@ -87,6 +87,9 @@
     <Compile Include="schema\Property.cs" />
     <Compile Include="schema\Schema_Old.cs" />
     <Compile Include="schema\Trellis.cs" />
+    <Compile Include="transform\Node_Link.cs" />
+    <Compile Include="transform\Pathfinder.cs" />
+    <Compile Include="transform\Transform.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

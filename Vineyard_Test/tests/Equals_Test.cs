@@ -5,10 +5,10 @@ using System.Text;
 using NUnit.Framework;
 using metahub.logic;
 using metahub.logic.nodes;
-using test.meta.fixtures;
 using vineyard.transform;
+using vineyard_test.fixtures;
 
-namespace test.meta
+namespace vineyard_test.tests
 {
     [TestFixture]
     public class Equals_Test
@@ -93,6 +93,8 @@ namespace test.meta
             Assert.AreEqual("weapon", weapon.property.name);
             Assert.AreSame(character1, character2);
             Assert.AreEqual("Character", character1.trellis.name);
+            var division = (Function_Node)pumpkin.inputs[1];
+            Assert.AreEqual("/", division.name);
 
         }
     }

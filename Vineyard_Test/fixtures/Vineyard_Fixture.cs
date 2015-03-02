@@ -6,7 +6,7 @@ using metahub.logic;
 using metahub.logic.nodes;
 using metahub.schema;
 
-namespace test.meta.fixtures
+namespace vineyard_test.fixtures
 {
     public static class Vineyard_Fixture
     {

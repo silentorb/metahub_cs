@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using NUnit.Framework;
-using test.meta.fixtures;
+using vineyard_test.fixtures;
 
-namespace test.meta
+namespace vineyard_test.tests
 {
     [TestFixture]
     public class Schema_Test

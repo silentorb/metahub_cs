@@ -97,7 +97,7 @@ namespace metahub
             var target = Generator.create_target(overlord, target_name);
             overlord.run(target);
             logician.analyze();
-            var jack = new JackOLantern(logician, overlord, root, target);
+            var jack = new JackOLantern(logician, overlord, target);
             jack.run();
             Generator.run(target, destination);
         }

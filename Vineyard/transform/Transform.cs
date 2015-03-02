@@ -29,7 +29,7 @@ namespace vineyard.transform
 
         public Transform center_on(Node node)
         {
-            if (origin.outputs.OfType<Function_Node>().All(n => !n.is_operation))
+            if (origin.connections.OfType<Function_Node>().All(n => !n.is_operation))
                 return this;
 
             clone_once();

@@ -33,14 +33,14 @@ namespace metahub.jackolantern
         public Dictionary<Dungeon, Dwarf_Clan> clans = new Dictionary<Dungeon, Dwarf_Clan>();
         public Dictionary<Trellis, Dwarf_Clan> rail_clans = new Dictionary<Trellis, Dwarf_Clan>();
 
-        public Schema railway;
+        public Schema schema;
         public Target target;
 
-        public JackOLantern(Logician logician, Overlord overlord, Schema railway, Target target)
+        public JackOLantern(Logician logician, Overlord overlord, Target target)
         {
             this.logician = logician;
             this.overlord = overlord;
-            this.railway = railway;
+            this.schema = logician.schema;
             this.target = target;
 
             initialize_functions();
@@ -63,6 +63,7 @@ namespace metahub.jackolantern
 
         public void run()
         {
+            load_schema_from_vineyard();
             generate_code(target);
 
             foreach (var pumpkin in logician.functions)
@@ -181,38 +182,37 @@ namespace metahub.jackolantern
             return clan;
         }
 
-        public void generate_code(Target target)
+        private void load_schema(Schema vineyard_schema)
         {
-            foreach (var region in railway.children.Values)
+            var realm = new Realm(vineyard_schema.name, overlord);
+
+            overlord.realms[realm.name] = realm;
+
+            foreach (var rail in vineyard_schema.trellises.Values)
             {
-                //if (region.is_external)
-                //    continue;
-
-                var realm = new Realm(region.name, overlord);
-//                if (region.additional != null && region.additional.ContainsKey(region.name))
-//                    realm.load_additional(region.additional[region.name]);
-
-                overlord.realms[realm.name] = realm;
-
-                foreach (var rail in region.trellises.Values)
-                {
-
-                    Dungeon dungeon = create_dungeon_from_rail(rail, realm);
-                    realm.dungeons[dungeon.name] = dungeon;
-                    add_clan(dungeon, rail);
-
-                    //if (rail.trellis.is_abstract && rail.trellis.is_value)
-                    //    continue;
-
-                    //overlord.dungeons.Add(dungeon);
-                }
+                Dungeon dungeon = create_dungeon_from_rail(rail, realm);
+                realm.dungeons[dungeon.name] = dungeon;
+                add_clan(dungeon, rail);
             }
+            foreach (var child in vineyard_schema.children.Values)
+            {
+                load_schema(child);
+            }
+        }
+
+        public void load_schema_from_vineyard()
+        {
+            load_schema(schema);
 
             foreach (var dungeon in overlord.dungeons)
             {
                 initialize_dungeon(dungeon);
             }
 
+        }
+
+        public void generate_code(Target target)
+        {
             var not_external = overlord.dungeons.Where(d => !d.is_external).ToArray();
 
             foreach (var dungeon in not_external)

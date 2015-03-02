@@ -1,4 +1,10 @@
-﻿			damage 
+﻿**********************************************************
+Weapon {
+	damage = character.race.strength * 4
+}
+**********************************************************
+
+			damage 
 Weapon			= 
 			character.race.strength * 4
 

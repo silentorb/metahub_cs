@@ -8,7 +8,7 @@
     <ProjectGuid>{08181763-EBB9-41CE-9BE1-C585C840B0B0}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>MetaHub_Test</RootNamespace>
+    <RootNamespace>metahub_test</RootNamespace>
     <AssemblyName>MetaHub_Test</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
@@ -46,11 +46,13 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Expression_Test.cs" />
-    <Compile Include="Mock_Target.cs">
+    <Compile Include="fixtures\Jack_Fixture.cs" />
+    <Compile Include="tests\Expression_Test.cs" />
+    <Compile Include="mocks\Mock_Target.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="tests\Swamp_Test.cs" />
     <Compile Include="Utility.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -69,8 +71,14 @@
       <Project>{1AAC7CE2-5C7E-46F8-BB7E-D13D84140EC0}</Project>
       <Name>Vineyard</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Vineyard_Test\Vineyard_Test.csproj">
+      <Project>{FD7B7BE5-DBB8-441E-9540-408600B4D75C}</Project>
+      <Name>Vineyard_Test</Name>
+    </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="resources\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

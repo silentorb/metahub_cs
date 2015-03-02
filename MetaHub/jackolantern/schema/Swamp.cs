@@ -24,8 +24,8 @@ namespace metahub.jackolantern.schema
                 : Dir.Out;
         }
 
-        JackOLantern jack;
-        Node end;
+        public JackOLantern jack;
+        public Node end;
         public Summoner.Context context;
         public Node previous_node;
         public Node last_node;
@@ -366,13 +366,76 @@ namespace metahub.jackolantern.schema
             var parent = lvalue.inputs[0];
             var lexpression = translate_backwards(lvalue, null);
             var rexpression = translate_backwards(rvalue, null);
-            //var has_transforms = end.aggregate(Dir.In).OfType<Function_Node>().Any(n => n.is_operation);
-
-            //return has_transforms
-            //    ? new[] { lexpression, rexpression }
-            //    : new[] { rexpression, lexpression };
 
             return new[] { lexpression, rexpression };
+        }
+
+        public Expression[] get_expression_pair2(Property_Node scope, Node node)
+        {
+            var transform = new Transform(end)
+                .change_context(scope)
+                .center_on(node);
+
+            var inputs = transform.new_origin.inputs;
+            var lexpression = get_expression_simple(inputs[0]);
+            var rexpression = get_expression_simple(inputs[1]);
+
+            return new[] { lexpression, rexpression };
+        }
+
+        Expression get_expression_simple(Node node)
+        {
+            switch (node.type)
+            {
+                case Node_Type.property:
+                    {
+                        var property_node = (Property_Node)node;
+                        var tie = property_node.property;
+                            
+                        if (tie == null)
+                            throw new Exception("Not supported.");
+
+                        var portal_expression = new Portal_Expression(jack.get_portal(tie));
+                        if (property_node.inputs[0].type != Node_Type.scope_node)
+                        {
+                            var next = get_expression_simple(property_node.inputs[0]);
+                            next.get_end().next = portal_expression;
+                            return next;
+                        }
+
+                        return portal_expression;
+                    }
+
+                case Node_Type.variable:
+                    var variable = (Variable_Node)node;
+                    return context.scope.resolve(variable.name, context);
+
+                case Node_Type.literal:
+                    var literal = (Literal_Value)node;
+                    return new Literal(literal.value, new Profession(literal.kind));
+
+                case Node_Type.function_call:
+                    var operation = (Function_Node)node;
+
+                    if (operation.is_operation)
+                    {
+                        var op = operation.name;
+                        var inputs = operation.inputs
+                                              .Where(i => i.type != Node_Type.lambda)
+                                              .Select(get_expression_simple);
+
+                        return new Operation(op, inputs);
+                    }
+                    else
+                    {
+                        return new Platform_Function(operation.name,
+                            get_expression_simple(operation.inputs[0]),
+                            operation.inputs.Skip(1)
+                            .Select(get_expression_simple));
+                    }
+            }
+
+            throw new Exception("Not supported: " + node.type);
         }
 
         public static Node[] get_inputs_in_relation_to(Node pumpkin, Node primary)

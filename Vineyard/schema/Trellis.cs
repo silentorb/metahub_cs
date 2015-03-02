@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 
 namespace metahub.schema
@@ -16,6 +17,7 @@ namespace metahub.schema
         public List<string> interfaces = new List<string>(); 
     }
 
+    [DebuggerDisplay("Trellis({name})")]
     public class Trellis
     {
         public string name;
@@ -87,7 +89,7 @@ namespace metahub.schema
 
         public Property get_reference(Trellis rail)
         {
-            return all_properties.Values.FirstOrDefault(t => t.other_trellis == rail);
+            return all_properties.Values.First(t => t.other_trellis == rail);
         }
 
         public List<Trellis> get_tree()

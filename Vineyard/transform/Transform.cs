@@ -66,11 +66,12 @@ namespace vineyard.transform
 
             transform.new_origin = clone_all(root, transform.map);
             new_context = (Property_Node)transform.get_transformed(new_context);
-            var tokens = new_context.aggregate(Dir.In).ToList();
+            var tokens = new_context.aggregate(Dir.In, null, true).ToList();
             var original_context = (Scope_Node)tokens.Last();
             tokens.RemoveAt(tokens.Count - 1);
+            tokens.Reverse();
 
-            var others = original_context.get_other_outputs(tokens.Last()).ToArray();
+            var others = original_context.get_other_outputs(tokens.Last()).OfType<Property_Node>().ToArray();
 
             var trellis = original_context.trellis;
              
@@ -79,10 +80,14 @@ namespace vineyard.transform
                 var last = other;
                 foreach (Property_Node token in tokens)
                 {
-                    var new_property = token.property.trellis.get_reference(trellis);
+                    if (token.property.other_trellis == null)
+                        continue;
+                    
+                    var new_property = token.property.other_trellis.get_reference(trellis);
                     var property_node = new Property_Node(new_property);
                     Node.insert(original_context, property_node, last);
                     last = property_node;
+                    trellis = last.property.trellis;
                 }
             }
 
@@ -92,7 +97,7 @@ namespace vineyard.transform
             return transform;
         }
 
-        public static Node clone_all(Node node, Dictionary<Node, Node> map)
+        public static Node clone_all(Node node, Dictionary<Node, Node> map, bool clone_outputs = true)
         {
             var result = node.clone();
             map.Add(node, result);
@@ -101,18 +106,21 @@ namespace vineyard.transform
             {
                 var other = map.ContainsKey(connection)
                      ? map[connection]
-                     : clone_all(connection, map);
+                     : clone_all(connection, map, false);
 
                 result.connect_input(other);
             }
 
-            foreach (var connection in node.outputs)
+            if (clone_outputs)
             {
-                var other = map.ContainsKey(connection)
-                     ? map[connection]
-                     : clone_all(connection, map);
+                foreach (var connection in node.outputs)
+                {
+                    var other = map.ContainsKey(connection)
+                                    ? map[connection]
+                                    : clone_all(connection, map);
 
-                result.connect_output(other);
+                    result.connect_output(other);
+                }
             }
 
             return result;

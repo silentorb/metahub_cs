@@ -214,12 +214,13 @@ namespace metahub.logic.nodes
             throw new Exception("Not implemented.");
         }
 
-        public List<Node> aggregate(Dir dir, Node_Filter filter = null)
+        public List<Node> aggregate(Dir dir, Node_Filter filter = null, bool exclude_self = false)
         {
             var result = new List<Node>();
             if (filter == null || filter(this))
             {
-                result.Add(this);
+                if (!exclude_self)
+                    result.Add(this);
 
                 foreach (var node in ports(dir))
                 {

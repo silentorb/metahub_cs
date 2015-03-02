@@ -1,6 +1,6 @@
 ﻿			damage 
 Weapon			= 
-			character.race.strength
+			character.race.strength * 4
 
 			weapon.damage 
 Character		= 
@@ -12,6 +12,11 @@ Race			=
 			strength
 
 
+Race -> Character -> Weapon
+            
+
+race.strength = weapon.damage / 4
+            
 **********************************************************
 Weapon {
 	race.damage = character.race.strength * 4

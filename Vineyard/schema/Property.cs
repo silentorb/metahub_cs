@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using Newtonsoft.Json;
 using metahub.logic.schema;
@@ -20,6 +21,7 @@ namespace metahub.schema
         public object default_value;
     }
 
+    [DebuggerDisplay("Property({fullname})")]
     public class Property
     {
         public string name;

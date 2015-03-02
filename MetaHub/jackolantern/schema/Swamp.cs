@@ -359,7 +359,7 @@ namespace metahub.jackolantern.schema
         public Expression[] get_expression_pair(Node node)
         {
             //var original_target = get_exclusive_chain(node, null, Dir.In);
-            var transform = Transform.center_on(node);
+            var transform = new Transform(node).center_on(node);
             var new_target = transform.get_transformed(node);
             var lvalue = transform.get_transformed(node);
             var rvalue = transform.get_transformed(end).get_other_input(new_target);

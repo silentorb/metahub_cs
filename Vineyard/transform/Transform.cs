@@ -9,11 +9,11 @@ namespace vineyard.transform
 {
     public class Transform
     {
-        public Dictionary<Node, Node> map = new Dictionary<Node, Node>();
+        public Dictionary<Node, Node> map;
         public Node origin;
         public Node new_origin;
 
-        private Transform(Node origin)
+        public Transform(Node origin)
         {
             this.origin = origin;
             new_origin = origin;
@@ -21,19 +21,22 @@ namespace vineyard.transform
 
         public Node get_transformed(Node input)
         {
-            if (map.Count == 0)
+            if (map == null)
                 return input;
 
             return map[input];
         }
 
-        public static Transform center_on(Node origin)
+        public Transform center_on(Node node)
         {
-            var transform = new Transform(origin);
             if (origin.outputs.OfType<Function_Node>().All(n => !n.is_operation))
-                return transform;
+                return this;
 
-            var node = clone_all(origin, transform.map);
+            clone_once();
+
+            if (map.ContainsKey(node))
+                node = map[node];
+
             if (node.outputs.Count > 1)
                 throw new Exception("Not yet supported.");
 
@@ -54,18 +57,19 @@ namespace vineyard.transform
             join.replace_other(operation, node);
             join.replace_other(other_side, operation);
 
-            transform.new_origin = node;
-            return transform;
+            return this;
         }
 
-        public static Transform change_context(Node root, Property_Node new_context)
+        public Transform change_context(Property_Node new_context)
         {
-            var transform = new Transform(root);
             if (new_context.aggregate(Dir.In).Count() == 1)
-                return transform;
+                return this;
 
-            transform.new_origin = clone_all(root, transform.map);
-            new_context = (Property_Node)transform.get_transformed(new_context);
+            clone_once();
+
+            if (map.ContainsKey(new_context))
+                new_context = (Property_Node)map[new_context];
+
             var tokens = new_context.aggregate(Dir.In, null, true).ToList();
             var original_context = (Scope_Node)tokens.Last();
             tokens.RemoveAt(tokens.Count - 1);
@@ -74,7 +78,7 @@ namespace vineyard.transform
             var others = original_context.get_other_outputs(tokens.Last()).OfType<Property_Node>().ToArray();
 
             var trellis = original_context.trellis;
-             
+
             foreach (var other in others)
             {
                 var last = other;
@@ -82,7 +86,7 @@ namespace vineyard.transform
                 {
                     if (token.property.other_trellis == null)
                         continue;
-                    
+
                     var new_property = token.property.other_trellis.get_reference(trellis);
                     var property_node = new Property_Node(new_property);
                     Node.insert(original_context, property_node, last);
@@ -94,19 +98,29 @@ namespace vineyard.transform
             original_context.trellis = new_context.property.trellis;
             new_context.replace_other(new_context.inputs[0], original_context);
 
-            return transform;
+            return this;
         }
 
-        public static Node clone_all(Node node, Dictionary<Node, Node> map, bool clone_outputs = true)
+        public void clone_once()
+        {
+            if (map == null)
+            {
+                map = new Dictionary<Node, Node>();
+                new_origin = clone_all(new_origin);
+            }
+        }
+
+        Node clone_all(Node node, bool clone_outputs = true)
         {
             var result = node.clone();
+
             map.Add(node, result);
 
             foreach (var connection in node.inputs)
             {
                 var other = map.ContainsKey(connection)
                      ? map[connection]
-                     : clone_all(connection, map, false);
+                     : clone_all(connection, false);
 
                 result.connect_input(other);
             }
@@ -117,7 +131,7 @@ namespace vineyard.transform
                 {
                     var other = map.ContainsKey(connection)
                                     ? map[connection]
-                                    : clone_all(connection, map);
+                                    : clone_all(connection);
 
                     result.connect_output(other);
                 }

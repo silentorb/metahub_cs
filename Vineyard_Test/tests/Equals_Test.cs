@@ -36,7 +36,7 @@ namespace test.meta
             var pumpkin = logician.functions[0];
             var strength = (Property_Node)pumpkin.inputs[1].inputs[0];
 
-            var transform = Transform.center_on(strength);
+            var transform = new Transform(strength).center_on(strength);
             var pumpkin2 = (Function_Node) transform.get_transformed(pumpkin);
             var division = (Function_Node)pumpkin2.inputs[1];
             var strength2 = (Property_Node)pumpkin2.inputs[0];
@@ -54,7 +54,8 @@ namespace test.meta
             var strength = pumpkin.aggregate(Dir.In).OfType<Property_Node>()
                 .First(n => n.property.name == "strength");
 
-            var transform = Transform.change_context(pumpkin, strength);
+            var transform = new Transform(pumpkin);
+            transform.change_context(strength);
             pumpkin = (Function_Node)transform.new_origin;
             var strength2 = (Property_Node)pumpkin.inputs[1].inputs[0];
             var character = (Property_Node)pumpkin.inputs[0].inputs[0].inputs[0];
@@ -75,9 +76,9 @@ namespace test.meta
             var strength = property_nodes
                 .First(n => n.property.name == "strength");
 
-            var first_transform = Transform.change_context(pumpkin, race);
-            var transform = Transform.center_on(first_transform.get_transformed(strength));
-            pumpkin = (Function_Node)transform.get_transformed(first_transform.get_transformed(pumpkin));
+            var transform = new Transform(pumpkin).change_context(race);
+            transform.center_on(strength);
+            pumpkin = (Function_Node)transform.get_transformed(pumpkin);
 
             var strength2 = (Property_Node) pumpkin.inputs[0];
             var race2 = (Property_Node)pumpkin.inputs[0].inputs[0];

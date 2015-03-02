@@ -147,18 +147,18 @@ namespace vineyard.transform
             return result;
         }
         
-        public List<Node_Link>[] get_pair(Node node, Node context_node)
-        {
-            var transform = Transform.center_on(node);
-            var new_target = transform.get_transformed(node);
-            var lvalue = transform.get_transformed(node);
-            var rvalue = transform.get_transformed(context_node).get_other_input(new_target);
-
-            var lexpression = get_inclusive_chain(lvalue, null, Dir.In);
-            var rexpression = get_inclusive_chain(rvalue, null, Dir.In);
-      
-            return new[] { lexpression, rexpression };
-        }
+//        public List<Node_Link>[] get_pair(Node node, Node context_node)
+//        {
+//            var transform = Transform.center_on(node);
+//            var new_target = transform.get_transformed(node);
+//            var lvalue = transform.get_transformed(node);
+//            var rvalue = transform.get_transformed(context_node).get_other_input(new_target);
+//
+//            var lexpression = get_inclusive_chain(lvalue, null, Dir.In);
+//            var rexpression = get_inclusive_chain(rvalue, null, Dir.In);
+//      
+//            return new[] { lexpression, rexpression };
+//        }
         
         public static Node[] get_inputs_in_relation_to(Node pumpkin, Node primary)
         {

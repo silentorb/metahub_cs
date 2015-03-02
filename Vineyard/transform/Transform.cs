@@ -29,33 +29,40 @@ namespace vineyard.transform
 
         public Transform center_on(Node node)
         {
-            if (origin.connections.OfType<Function_Node>().All(n => !n.is_operation))
-                return this;
-
-            clone_once();
-
-            if (map.ContainsKey(node))
-                node = map[node];
-
             if (node.outputs.Count > 1)
                 throw new Exception("Not yet supported.");
+            
+            if (origin.connections.OfType<Function_Node>().All(n => !n.is_operation))
+            {
+                if (origin.inputs[1].aggregate(Dir.In).Contains(node))
+                {
+                    clone_once();
+                    new_origin.inputs.Reverse();
+                }
+            }
+            else
+            {
+                clone_once();
+                if (map.ContainsKey(node))
+                    node = map[node];
 
-            var operation = (Function_Node)node.outputs[0];
-            operation.name = operation.get_inverse();
+                var operation = (Function_Node) node.outputs[0];
+                operation.name = operation.get_inverse();
 
-            if (operation.outputs.Count > 1)
-                throw new Exception("Not yet supported.");
+                if (operation.outputs.Count > 1)
+                    throw new Exception("Not yet supported.");
 
-            // Prepare for 
-            var join = (Function_Node)operation.outputs[0];
-            join.name = join.get_inverse();
-            var other_side = join.get_other_input(operation);
-            join.inputs.Reverse();
+                // Prepare for 
+                var join = (Function_Node) operation.outputs[0];
+                join.name = join.get_inverse();
+                var other_side = join.get_other_input(operation);
+                join.inputs.Reverse();
 
-            // Perform the transformation, similar to rotating a rubix cube.
-            operation.replace_other(node, other_side);
-            join.replace_other(operation, node);
-            join.replace_other(other_side, operation);
+                // Perform the transformation, similar to rotating a rubix cube.
+                operation.replace_other(node, other_side);
+                join.replace_other(operation, node);
+                join.replace_other(other_side, operation);
+            }
 
             return this;
         }

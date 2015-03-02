@@ -1,0 +1,3 @@
+﻿Weapon {
+	damage = character.race.strength * 4
+}

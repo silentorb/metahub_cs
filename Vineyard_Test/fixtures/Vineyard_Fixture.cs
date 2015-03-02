@@ -18,11 +18,11 @@ namespace vineyard_test.fixtures
             return schema;
         }
 
-        public static Logician simple_equation()
+        public static Logician simple_equation(string script_name)
         {
             var schema = Vineyard_Fixture.load_schema();
             var logician = new Logician(schema);
-            var code = Utility.load_resource("test1.mh");
+            var code = Utility.load_resource(script_name + ".mh");
             logician.apply_code(code);
             return logician;
         } 

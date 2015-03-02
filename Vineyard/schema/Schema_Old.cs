@@ -20,7 +20,7 @@ namespace metahub.schema
     {
      
         //public List<Trellis> trellises = new List<Trellis>();
-        public Schema root = new Schema("root", "root");
+        public Schema root = new Schema("root");
         private uint trellis_counter = 1;
 
         public Schema_Old()
@@ -33,7 +33,7 @@ namespace metahub.schema
             if (root.children.ContainsKey(name))
                 return root.children[name];
 
-            var space = new Schema(name, name);
+            var space = new Schema(name);
             root.children[name] = space;
             space.parent = root;
             return space;
@@ -48,7 +48,7 @@ namespace metahub.schema
 
         public void load_from_object(Schema_Source data, string space_name)
         {
-            var space = new Schema(space_name, space_name);
+            var space = new Schema(space_name);
             load_trellises(data.trellises, new Load_Settings(space));
         }
 

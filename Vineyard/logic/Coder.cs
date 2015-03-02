@@ -274,7 +274,7 @@ namespace metahub.logic
                 //return new Scope_Expression(Node, new_scope_definition);
             }
 
-            var rail = schema.resolve_rail_path(path.Select(t => t.text));// hub.schema.root_namespace.get_namespace(path);
+            var rail = schema.resolve_path(path.Select(t => t.text));// hub.schema.root_namespace.get_namespace(path);
             //var trellis = hub.schema.get_trellis(path[path.Count - 1], namespace);
 
             //if (rail != null) {

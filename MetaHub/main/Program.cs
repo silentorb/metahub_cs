@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using Newtonsoft.Json;
 using metahub.logic;
+using metahub.schema;
 using parser;
 
 namespace metahub
@@ -28,17 +29,20 @@ namespace metahub
                 throw new Exception("Missing configuration path argument.");
 
             var config_path = args[0].Replace("/", "\\");
-            var root = Path.GetDirectoryName(config_path);
+            var root_path = Path.GetDirectoryName(config_path);
             var config = JsonConvert.DeserializeObject<MetaHub_Configuration>(File.ReadAllText(config_path));
-            var code = File.ReadAllText(Path.Combine(root, config.code[0]));
+            var code = File.ReadAllText(Path.Combine(root_path, config.code[0]));
+            
             var hub = new metahub.Hub();
-            hub.load_schema("metahub", root);
+            hub.load_schema("metahub");
+
             foreach (var schema_name in config.schemas)
             {
-                hub.load_schema(schema_name, root);
+                var schema = hub.root.add_namespace(schema_name);
+                schema.load_from_string(hub.find_schema(schema_name, root_path));
             }
 
-            var logician = new Logician(hub.schema);
+            var logician = new Logician(hub.root);
             var result = logician.parse_code(code);
             if (!result.success)
             {
@@ -49,7 +53,7 @@ namespace metahub
             var match = (Match)result;
             foreach (var entry in config.targets)
             {
-                hub.generate(match.get_data(), entry.Key, Path.Combine(root, entry.Value.output.Replace("/", "\\")));
+                hub.generate(match.get_data(), entry.Key, Path.Combine(root_path, entry.Value.output.Replace("/", "\\")));
             }
             
             Console.WriteLine("done.");

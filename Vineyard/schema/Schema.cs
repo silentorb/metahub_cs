@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using Newtonsoft.Json;
@@ -22,18 +23,28 @@ namespace metahub.schema
         //        public Dictionary<string, Region_Additional> additional = new Dictionary<string, Region_Additional>();
         public bool is_external = false;
         public Dictionary<string, Function_Info> functions = new Dictionary<string, Function_Info>();
+        public Schema root;
 
-        public Schema(string name, string fullname)
+//        public Schema(string name, string fullname)
+//        {
+//            this.name = name;
+//            this.fullname = fullname;
+//            root = this;
+//        }
+
+        public Schema()
         {
-            this.name = name;
-            this.fullname = fullname;
+            name = "";
+            root = this;
         }
 
         public Schema(string name)
         {
             this.name = name;
             fullname = name;
+            root = this;
         }
+
         public bool has_name(string name)
         {
             return trellises.ContainsKey(name);
@@ -74,14 +85,18 @@ namespace metahub.schema
         }
 
 
-        public Schema add_namespace(string name)
+        public Schema add_namespace(string child_name)
         {
-            if (children.ContainsKey(name))
-                return children[name];
+            if (children.ContainsKey(child_name))
+                return children[child_name];
 
-            var space = new Schema(name, name);
-            children[name] = space;
-            space.parent = this;
+            var space = new Schema(child_name)
+                {
+                    root = root ?? this, 
+                    parent = this
+                };
+
+            children[child_name] = space;
             return space;
         }
 
@@ -90,6 +105,11 @@ namespace metahub.schema
             //            trellis.id = trellis_counter++;
             //trellises.Add(trellis);
             return trellis;
+        }
+
+        public void load_from_file(string path)
+        {
+            load_from_string(File.ReadAllText(path));
         }
 
         public void load_from_string(string json)
@@ -101,6 +121,8 @@ namespace metahub.schema
         public void load_from_object(Schema_Source data)
         {
             load_trellises(data.trellises, new Load_Settings(this));
+            if (data.is_external.HasValue && data.is_external.Value)
+                is_external = true;
         }
 
         public void load_trellises(Dictionary<string, ITrellis_Source> trellises, Load_Settings settings)
@@ -161,9 +183,10 @@ namespace metahub.schema
         {
             if (trellis_name.Contains("."))
             {
-                var path = trellis_name.Split('.').ToList();
-                trellis_name = path.Last();
-                path.RemoveAt(path.Count - 1);
+                var path = trellis_name.Split('.');
+//                trellis_name = path.Last();
+//                path.RemoveAt(path.Count - 1);
+                return resolve_path(path);
             }
 
             if (!trellises.ContainsKey(trellis_name))
@@ -176,12 +199,13 @@ namespace metahub.schema
             return trellises[trellis_name];
         }
 
-
-        public Trellis resolve_rail_path(IEnumerable<string> path)
+        public Trellis resolve_path(IEnumerable<string> path)
         {
-            var tokens = path.Take(path.Count() - 1);
-            var rail_name = path.Last();
-            var region = this;
+            var path2 = path.ToList();
+            var tokens = path2.Take(path2.Count() - 1);
+            var trellis_name = path2.Last();
+            var region = root;
+
             foreach (var token in tokens)
             {
                 if (!region.children.ContainsKey(token))
@@ -190,10 +214,10 @@ namespace metahub.schema
                 region = region.children[token];
             }
 
-            if (!region.trellises.ContainsKey(rail_name))
-                throw new Exception("Namespace " + region.name + " does not have a rail named " + rail_name + ".");
+            if (!region.trellises.ContainsKey(trellis_name))
+                throw new Exception("Namespace " + region.name + " does not have a rail named " + trellis_name + ".");
 
-            return region.trellises[rail_name];
+            return region.trellises[trellis_name];
         }
 
     }

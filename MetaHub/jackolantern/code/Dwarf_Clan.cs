@@ -14,15 +14,22 @@ namespace metahub.jackolantern.code
     {
         private JackOLantern jack;
         public Dungeon dungeon;
-        public Trellis rail;
+        public Trellis trellis;
         public Dictionary<Minion, Dwarf> dwarves = new Dictionary<Minion, Dwarf>();
 
-        public Dwarf_Clan(JackOLantern jack, Dungeon dungeon, Trellis rail = null)
+        public Dwarf_Clan(JackOLantern jack, Dungeon dungeon, Trellis trellis = null)
         {
             this.jack = jack;
             this.dungeon = dungeon;
-            this.rail = rail;
-            dungeon.on_add_minion += (dungeon_on_add_minion);
+            this.trellis = trellis;
+            dungeon.on_add_minion += dungeon_on_add_minion;
+            if (trellis != null)
+                trellis.on_add_property += trellis_on_add_property;
+        }
+
+        void trellis_on_add_property(Trellis trellis, Property property)
+        {
+            jack.create_portal_from_property(property, dungeon);
         }
 
         void dungeon_on_add_minion(Dungeon dungeon, Minion minion)
@@ -34,7 +41,7 @@ namespace metahub.jackolantern.code
         {
             var class_definition = dungeon.get_block("class_definition");
 
-            foreach (var tie in rail.all_properties.Values)
+            foreach (var tie in trellis.all_properties.Values)
             {
                 if (tie.type == Kind.list)
                 {
@@ -59,7 +66,7 @@ namespace metahub.jackolantern.code
             }
             generate_initialize(statements.scope);
 
-            foreach (var tie in rail.all_properties.Values)
+            foreach (var tie in trellis.all_properties.Values)
             {
                 var portal = jack.get_portal(tie);
                 if (tie.type == Kind.list)
@@ -94,7 +101,7 @@ namespace metahub.jackolantern.code
                 }
             }
 
-            if (rail.needs_tick)
+            if (trellis.needs_tick)
             {
                 dungeon.spawn_minion("tick");
                 dungeon.interfaces.Add(overlord.realms["metahub"].dungeons["Tick_Target"]);
@@ -229,7 +236,7 @@ namespace metahub.jackolantern.code
                 block.add("pre", new Assignment(new Self(dungeon, new Portal_Expression(hub_portal)),
                    "=", new Variable(symbol)));
 
-                if (rail != null && rail.needs_tick)
+                if (trellis != null && trellis.needs_tick)
                 {
                     var tick_targets = hub_dungeon.all_portals["tick_targets"];
                     block.add("pre", new Portal_Expression(hub_portal,

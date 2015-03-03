@@ -11,7 +11,7 @@ namespace metahub.logic.schema
     public class Signature
     {
         public Kind type;
-        public Trellis rail;
+        public Trellis trellis;
         public bool is_value;
         public int is_numeric;
         public Signature[] parameters;
@@ -21,10 +21,10 @@ namespace metahub.logic.schema
 
         }
 
-        public Signature(Kind type, Trellis rail = null)
+        public Signature(Kind type, Trellis trellis = null)
         {
             this.type = type;
-            this.rail = rail;
+            this.trellis = trellis;
         }
 
         public Signature(Kind type, Signature[] parameters)
@@ -35,7 +35,7 @@ namespace metahub.logic.schema
 
         public Signature clone()
         {
-            var result = new Signature(type, rail);
+            var result = new Signature(type, trellis);
             if (parameters != null)
             {
                 result.parameters = parameters.Select(p => p.clone()).ToArray();

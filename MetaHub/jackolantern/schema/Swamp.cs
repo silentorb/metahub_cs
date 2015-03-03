@@ -376,7 +376,7 @@ namespace metahub.jackolantern.schema
                 .change_context(scope)
                 .center_on(node);
 
-            var inputs = transform.new_origin.inputs;
+            var inputs = transform.root.inputs;
             var lexpression = get_expression_simple(inputs[0]);
             var rexpression = get_expression_simple(inputs[1]);
 

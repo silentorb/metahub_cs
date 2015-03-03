@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using metahub.logic;
 using metahub.logic.nodes;
+using metahub.schema;
 
 namespace vineyard.transform
 {
@@ -11,12 +12,12 @@ namespace vineyard.transform
     {
         public Dictionary<Node, Node> map;
         public Node origin;
-        public Node new_origin;
+        public Node root;
 
         public Transform(Node origin)
         {
             this.origin = origin;
-            new_origin = origin;
+            root = origin;
         }
 
         public Node get_transformed(Node input)
@@ -37,7 +38,7 @@ namespace vineyard.transform
                 if (origin.inputs[1].aggregate(Dir.In).Contains(node))
                 {
                     clone_once();
-                    new_origin.inputs.Reverse();
+                    root.inputs.Reverse();
                 }
             }
             else
@@ -113,7 +114,7 @@ namespace vineyard.transform
             if (map == null)
             {
                 map = new Dictionary<Node, Node>();
-                new_origin = clone_all(new_origin);
+                root = clone_all(root);
             }
         }
 
@@ -145,6 +146,66 @@ namespace vineyard.transform
             }
 
             return result;
+        }
+
+        public Transform initialize_map()
+        {
+            clone_once();
+
+            var first = (Property_Node)root.inputs[0];
+            var second = (Property_Node)root.inputs[1];
+
+            var lambda = (Lambda)root.inputs[2];
+
+            var first_portal = create_reference(first, second);
+            var second_portal = create_reference(second, first);
+
+            point_at(first_portal, second_portal);
+            point_at(second_portal, first_portal);
+
+            var first_parameter = (Parameter_Node)lambda.inputs[0];
+            var second_parameter = (Parameter_Node)lambda.inputs[1];
+
+            var variables = root.outputs.OfType<Variable_Node>().ToArray();
+
+            foreach (var node in variables)
+            {
+                Property_Node property_node;
+                if (node.name == first_parameter.name)
+                {
+                    property_node = new Property_Node(first_portal);
+                }
+                else if (node.name == second_parameter.name)
+                {
+                    property_node = new Property_Node(second_portal);
+                }
+                else
+                {
+                    throw new Exception("Could not find parameter " + node.name);
+                }
+
+                node.replace(property_node);
+                property_node.disconnect(root);
+            }
+
+            return this;
+        }
+
+
+        static void point_at(Property pointer, Property target)
+        {
+            pointer.other_property = target;
+        }
+
+        Property create_reference(Property_Node target, Property_Node other)
+        {
+            var first_type = target.get_signature();
+            var other_trellis = other.get_signature().trellis;
+            var first_trellis = first_type.trellis;
+            var other_dungeon = other_trellis;
+            var first_name = first_trellis.get_available_name("map_" + other_dungeon.name.ToLower(), 1);
+            var portal = first_trellis.add_property(new Property(first_name, Kind.reference, other_dungeon));
+            return portal;
         }
     }
 }

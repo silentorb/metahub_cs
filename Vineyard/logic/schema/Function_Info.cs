@@ -37,7 +37,7 @@ public class Function_Info
 	    if (first.type == Kind.reference || first.type == Kind.list)
 	    {
 	        return first.type == second.type && 
-                (first.rail == null || second.rail == null || first.rail == second.rail);
+                (first.trellis == null || second.trellis == null || first.trellis == second.trellis);
 	    }
 	    
 	    return first.type == second.type;

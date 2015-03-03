@@ -211,6 +211,9 @@ namespace metahub.logic.nodes
 
         public virtual Node clone()
         {
+            if (type == Node_Type.bounce)
+                return new Node(Node_Type.bounce);
+
             throw new Exception("Not implemented.");
         }
 

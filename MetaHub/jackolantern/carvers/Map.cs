@@ -10,6 +10,7 @@ using metahub.jackolantern.schema;
 using metahub.logic.nodes;
 using metahub.logic.schema;
 using metahub.schema;
+using vineyard.transform;
 
 namespace metahub.jackolantern.carvers
 {
@@ -23,46 +24,19 @@ namespace metahub.jackolantern.carvers
 
         public override void carve(Function_Node pumpkin)
         {
-            var first = (Property_Node)pumpkin.inputs[0];
-            var second = (Property_Node)pumpkin.inputs[1];
-            var lambda = (Lambda)pumpkin.inputs[2];
+            var transform = new Transform(pumpkin).initialize_map();
 
-            var first_portal = create_reference(first, second);
-            var second_portal = create_reference(second, first);
+            var first = (Property_Node)transform.root.inputs[0];
+            var second = (Property_Node)transform.root.inputs[1];
 
-            point_at(first_portal, second_portal);
-            point_at(second_portal, first_portal);
+            var first_portal = jack.get_portal(first.property);
+            var second_portal = jack.get_portal(second.property);
 
-            var first_parameter = (Parameter_Node)lambda.inputs[0];
-            var second_parameter = (Parameter_Node)lambda.inputs[1];
-
-            var variables = pumpkin.outputs.OfType<Variable_Node>().ToArray();
-
-            foreach (var node in variables)
-            {
-                Property_Node property_node;
-                if (node.name == first_parameter.name)
-                {
-                    property_node = new Property_Node(jack.get_tie(first_portal));
-                }
-                else if (node.name == second_parameter.name)
-                {
-                    property_node = new Property_Node(jack.get_tie(second_portal));
-                }
-                else
-                {
-                    throw new Exception("Could not find parameter " + node.name);
-                }
-
-                node.replace(property_node);
-                property_node.disconnect(pumpkin);
-            }
-
-            on_add_code(first, second, first_portal, second_portal);
-            on_add_code(second, first, second_portal, first_portal);
+            on_add_code(first, first_portal, second_portal);
+            on_add_code(second, second_portal, first_portal);
         }
 
-        void on_add_code(Node list, Node other_list, Portal first_portal, Portal second_portal)
+        void on_add_code(Node list, Portal first_portal, Portal second_portal)
         {
             var first_list_portal = jack.get_portal(((Property_Node)list).property);
 
@@ -94,12 +68,12 @@ namespace metahub.jackolantern.carvers
         Portal create_reference(Property_Node target, Property_Node other)
         {
             var first_type = target.get_signature();
-            var other_rail = other.get_signature().rail;
-            var first_dungeon = jack.get_dungeon_or_error(first_type.rail);
+            var other_rail = other.get_signature().trellis;
+            var first_dungeon = jack.get_dungeon_or_error(first_type.trellis);
             var other_dungeon = jack.get_dungeon_or_error(other_rail);
             var first_name = first_dungeon.get_available_name("map_" + other_dungeon.name.ToLower(), 1);
             var portal = first_dungeon.add_portal(new Portal(first_name, new Profession(Kind.reference, other_dungeon)));
-            var tie = new Property(first_name, Kind.reference, first_type.rail, other_rail);
+            var tie = new Property(first_name, Kind.reference, first_type.trellis, other_rail);
             var rail = jack.get_rail(first_dungeon);
             rail.all_properties[tie.name] = tie;
             rail.core_properties[tie.name] = tie;

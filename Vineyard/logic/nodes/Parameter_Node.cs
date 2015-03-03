@@ -14,5 +14,10 @@ namespace metahub.logic.nodes
             this.name = name;
             this.signature = signature;
         }
+
+        public override Node clone()
+        {
+            return new Parameter_Node(name, signature);
+        }
     }
 }

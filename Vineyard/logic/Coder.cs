@@ -216,8 +216,8 @@ namespace metahub.logic
                 {
                     current = convert_expression2(item, token_scope, previous);
                     var signature = current.get_signature();
-                    if (signature.rail != null)
-                        token_scope = new Logic_Scope(scope) { rail = signature.rail };
+                    if (signature.trellis != null)
+                        token_scope = new Logic_Scope(scope) { rail = signature.trellis };
                 }
 
                 if (previous == null)
@@ -419,7 +419,7 @@ namespace metahub.logic
 
                             var previous_property = (Property_Node)args[i];
                             if (parameter2.type == Kind.reference || parameter2.type == Kind.list)
-                                parameter2.rail = previous_property.property.other_trellis;
+                                parameter2.trellis = previous_property.property.other_trellis;
                         }
                     }
                 }

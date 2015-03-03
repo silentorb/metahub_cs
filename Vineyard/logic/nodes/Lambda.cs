@@ -16,5 +16,9 @@ namespace metahub.logic.nodes
             this.parameter_names = parameters.Select(p => p.name).ToArray();
         }
 
+        public override Node clone()
+        {
+            return new Lambda(scope, inputs.OfType<Parameter_Node>());
+        }
     }
 }

@@ -104,7 +104,7 @@ namespace metahub.schema
             return new Signature
             {
                 type = type,
-                rail = other_trellis,
+                trellis = other_trellis,
                 is_value = is_value
             };
         }
@@ -121,7 +121,7 @@ namespace metahub.schema
             return new Signature
             {
                 type = type == Kind.list && other_type == Kind.list ? Kind.reference : other_type,
-                rail = other_trellis,
+                trellis = other_trellis,
                 is_value = is_value
             };
         }

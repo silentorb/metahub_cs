@@ -2,11 +2,6 @@ using metahub.logic.schema;
 
 namespace metahub.logic.nodes
 {
-
-    /**
-     * ...
-     * @author Christopher W. Johnson
-     */
     public class Variable_Node : Node
     {
         public string name;
@@ -22,6 +17,11 @@ namespace metahub.logic.nodes
         public override Signature get_signature()
         {
             return signature;
+        }
+
+        public override Node clone()
+        {
+            return new Variable_Node(name, signature);
         }
     }
 }

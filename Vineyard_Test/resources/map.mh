@@ -1,0 +1,5 @@
+﻿World {
+	characters|map(models, a : b => {
+		a.x = b.x
+	  })
+}

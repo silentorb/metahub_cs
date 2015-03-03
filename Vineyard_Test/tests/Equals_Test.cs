@@ -16,7 +16,7 @@ namespace vineyard_test.tests
         [Test]
         public void test_equals()
         {
-            var logician = Vineyard_Fixture.simple_equation("test1");
+            var logician = Vineyard_Fixture.load_script("test1");
             var pumpkin = logician.functions[0];
             var damage = (Property_Node) pumpkin.inputs[0];
             var multiply = (Function_Node)pumpkin.inputs[1];
@@ -32,7 +32,7 @@ namespace vineyard_test.tests
         [Test]
         public void test_transform()
         {
-            var logician = Vineyard_Fixture.simple_equation("test2");
+            var logician = Vineyard_Fixture.load_script("test2");
             var pumpkin = logician.functions[0];
             var strength = (Property_Node)pumpkin.inputs[1].inputs[0];
 
@@ -49,14 +49,14 @@ namespace vineyard_test.tests
         [Test]
         public void test_context_transform()
         {
-            var logician = Vineyard_Fixture.simple_equation("test2");
+            var logician = Vineyard_Fixture.load_script("test2");
             var pumpkin = logician.functions[0];
             var strength = pumpkin.aggregate(Dir.In).OfType<Property_Node>()
                 .First(n => n.property.name == "strength");
 
             var transform = new Transform(pumpkin);
             transform.change_context(strength);
-            pumpkin = (Function_Node)transform.new_origin;
+            pumpkin = (Function_Node)transform.root;
             var strength2 = (Property_Node)pumpkin.inputs[1].inputs[0];
             var character = (Property_Node)pumpkin.inputs[0].inputs[0].inputs[0];
             Assert.AreEqual("strength", strength2.property.name);
@@ -67,7 +67,7 @@ namespace vineyard_test.tests
         [Test]
         public void test_dual_transform()
         {
-            var logician = Vineyard_Fixture.simple_equation("test1");
+            var logician = Vineyard_Fixture.load_script("test1");
             var pumpkin = logician.functions[0];
             var property_nodes = pumpkin.aggregate(Dir.In)
                 .OfType<Property_Node>().ToArray();
@@ -98,7 +98,7 @@ namespace vineyard_test.tests
         [Test]
         public void test_dual_transform_with_operators()
         {
-            var logician = Vineyard_Fixture.simple_equation("test2");
+            var logician = Vineyard_Fixture.load_script("test2");
             var pumpkin = logician.functions[0];
             var property_nodes = pumpkin.aggregate(Dir.In)
                 .OfType<Property_Node>().ToArray();

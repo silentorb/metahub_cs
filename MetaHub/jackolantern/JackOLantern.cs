@@ -122,7 +122,7 @@ namespace metahub.jackolantern
 
                 foreach (var tie in rail.all_properties.Values)
                 {
-                    Portal portal = create_portal_from_tie(tie, dungeon);
+                    Portal portal = create_portal_from_property(tie, dungeon);
                     if (rail.core_properties.ContainsKey(tie.name))
                         dungeon.add_portal(portal);
                     else
@@ -136,8 +136,8 @@ namespace metahub.jackolantern
 
         public Profession get_profession(Signature signature)
         {
-            var dungeon = signature.rail != null
-                ? get_dungeon(signature.rail)
+            var dungeon = signature.trellis != null
+                ? get_dungeon(signature.trellis)
                 : null;
 
             return new Profession(signature.type, dungeon);
@@ -169,7 +169,7 @@ namespace metahub.jackolantern
 
         public Trellis get_rail(Dungeon dungeon)
         {
-            return clans[dungeon].rail;
+            return clans[dungeon].trellis;
         }
 
         public Dwarf_Clan add_clan(Dungeon dungeon, Trellis rail = null)
@@ -277,7 +277,7 @@ namespace metahub.jackolantern
             return dungeon;
         }
 
-        public Portal create_portal_from_tie(Property tie, Dungeon dungeon)
+        public Portal create_portal_from_property(Property tie, Dungeon dungeon)
         {
             var other_dungeon = tie.other_trellis != null
                     ? get_dungeon(tie.other_trellis)

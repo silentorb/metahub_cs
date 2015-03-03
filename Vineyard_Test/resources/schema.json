@@ -1,7 +1,33 @@
 ﻿{
   "trellises": {
+    "World": {
+      "properties": {
+        "characters": {
+          "type": "list",
+          "trellis": "Character"
+        },
+        "models": {
+          "type": "list",
+          "trellis": "Model"
+        }
+      }
+    },
+    "Model": {
+      "properties": {
+        "x": {
+          "type": "float"
+        },
+        "world": {
+          "type": "reference",
+          "trellis": "World"
+        }
+      }
+    },
     "Character": {
       "properties": {
+        "x": {
+          "type": "float"
+        },
         "items": {
           "type": "list",
           "trellis": "Item"
@@ -13,6 +39,10 @@
         "race": {
           "type": "reference",
           "trellis": "Race"
+        },
+        "world": {
+          "type": "reference",
+          "trellis": "World"
         }
       }
     },

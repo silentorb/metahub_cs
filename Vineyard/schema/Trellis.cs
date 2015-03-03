@@ -5,6 +5,8 @@ using System.Linq;
 
 namespace metahub.schema
 {
+    public delegate void Trellis_Property_Event(Trellis trellis, Property property);
+
     public class ITrellis_Source
     {
         public string name;
@@ -38,6 +40,7 @@ namespace metahub.schema
         public List<Trellis> interfaces = new List<Trellis>();
         public object default_value = null;
         public bool needs_tick = false;
+        public event Trellis_Property_Event on_add_property;
 
         public Trellis(string name, Schema space)
         {
@@ -49,9 +52,7 @@ namespace metahub.schema
         public Property add_property(string property_name, IProperty_Source source)
         {
             Property property = new Property(property_name, source, this);
-            all_properties[property_name] = property;
-            property.id = 10000;
-            core_properties[property_name] = property;
+            add_property(property);
             return property;
         }
 
@@ -60,31 +61,32 @@ namespace metahub.schema
             all_properties[property.name] = property;
             core_properties[property.name] = property;
             property.trellis = this;
+
+            if (on_add_property != null)
+                on_add_property(this, property);
+
             return property;
         }
 
         public Property get_property(string name)
         {
-            var props = all_properties;
-            return !props.ContainsKey(name) ? null : props[name];
+            return !all_properties.ContainsKey(name) ? null : all_properties[name];
         }
 
         public Property get_property_or_error(string name)
         {
-            var props = all_properties;
-            if (!props.ContainsKey(name))
+            if (!all_properties.ContainsKey(name))
                 throw new Exception(this.name + " does not contain a property named " + name + ".");
 
-            return props[name];
+            return all_properties[name];
         }
 
         public Property get_property_or_null(string name)
         {
-            var properties = this.all_properties;
-            if (!properties.ContainsKey(name))
+            if (!all_properties.ContainsKey(name))
                 return null;
 
-            return properties[name];
+            return all_properties[name];
         }
 
         public Property get_reference(Trellis rail)
@@ -259,6 +261,21 @@ namespace metahub.schema
         public string to_string()
         {
             return name;
+        }
+
+        public string get_available_name(string key, int start = 0)
+        {
+            var result = "";
+            do
+            {
+                result = key;
+                if (start != 0)
+                    result += start;
+
+                ++start;
+            } while (all_properties.ContainsKey(result));
+
+            return result;
         }
     }
 }

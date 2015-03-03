@@ -18,7 +18,7 @@ namespace vineyard_test.fixtures
             return schema;
         }
 
-        public static Logician simple_equation(string script_name)
+        public static Logician load_script(string script_name)
         {
             var schema = Vineyard_Fixture.load_schema();
             var logician = new Logician(schema);

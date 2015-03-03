@@ -56,7 +56,6 @@
     <Compile Include="logic\nodes\Node.cs" />
     <Compile Include="logic\nodes\Node_Type.cs" />
     <Compile Include="logic\nodes\Null_Node.cs" />
-    <Compile Include="logic\nodes\Operation_Node.cs" />
     <Compile Include="logic\nodes\Parameter_Node.cs" />
     <Compile Include="logic\nodes\Property_Node.cs" />
     <Compile Include="logic\nodes\Reference_Path.cs" />

@@ -41,7 +41,11 @@ namespace metahub.jackolantern.carvers
                     var setter = jack.get_setter(portal);
                     var context = new Summoner.Context(setter);
                     var swamp = new Swamp(jack, pumpkin, context);
-                    var expressions = swamp.get_expression_pair(other.node);
+                    var context_node =
+                        pumpkin.aggregate(Dir.In)
+                               .OfType<Property_Node>()
+                               .First(n => n.property.fullname == portal.fullname);
+                    var expressions = swamp.get_expression_pair2(context_node, other.node);
 
                     setter.accordian.add("post", new Comment("Carving equals: " + endpoint.portal.name));
                     var conditions = get_conditions(expressions[0]);

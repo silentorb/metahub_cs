@@ -356,19 +356,19 @@ namespace metahub.jackolantern.schema
             return expression;
         }
 
-        public Expression[] get_expression_pair(Node node)
-        {
-            //var original_target = get_exclusive_chain(node, null, Dir.In);
-            var transform = new Transform(node).center_on(node);
-            var new_target = transform.get_transformed(node);
-            var lvalue = transform.get_transformed(node);
-            var rvalue = transform.get_transformed(end).get_other_input(new_target);
-            var parent = lvalue.inputs[0];
-            var lexpression = translate_backwards(lvalue, null);
-            var rexpression = translate_backwards(rvalue, null);
-
-            return new[] { lexpression, rexpression };
-        }
+//        public Expression[] get_expression_pair(Node node)
+//        {
+//            //var original_target = get_exclusive_chain(node, null, Dir.In);
+//            var transform = new Transform(node).center_on(node);
+//            var new_target = transform.get_transformed(node);
+//            var lvalue = transform.get_transformed(node);
+//            var rvalue = transform.get_transformed(end).get_other_input(new_target);
+//            var parent = lvalue.inputs[0];
+//            var lexpression = translate_backwards(lvalue, null);
+//            var rexpression = translate_backwards(rvalue, null);
+//
+//            return new[] { lexpression, rexpression };
+//        }
 
         public Expression[] get_expression_pair2(Property_Node scope, Node node)
         {

@@ -63,7 +63,7 @@ namespace metahub
             var space = this.root.add_namespace(Path.GetFileNameWithoutExtension(schema_name));
             space.load_from_string(source);
         }
-//
+
 //        public void load_schema_from_file(string url, Schema space, bool auto_identity = false)
 //        {
 //            var data = JsonConvert.DeserializeObject<Schema_Source>(File.ReadAllText(url));
@@ -95,12 +95,10 @@ namespace metahub
             var logician = new Logician(root);
             run_data(source, root, logician);
             var target = Generator.create_target(overlord, target_name);
-            overlord.run(target);
             logician.analyze();
             var jack = new JackOLantern(logician, overlord, target);
             jack.run();
             Generator.run(target, destination);
         }
-
     }
 }

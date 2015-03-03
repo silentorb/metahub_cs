@@ -20,17 +20,14 @@ namespace imperative
         public Dictionary<string, Realm> realms = new Dictionary<string, Realm>();
         public Target target;
 
-        public Overlord()
+        public Overlord(Target target = null)
         {
             if (Platform_Function_Info.functions == null)
                 Platform_Function_Info.initialize();
 
-        }
-
-        public void run(Target target)
-        {
             this.target = target;
-
+            if (target != null)
+                target.overlord = this;
         }
 
         public void post_analyze()

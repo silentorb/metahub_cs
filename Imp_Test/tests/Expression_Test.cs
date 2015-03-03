@@ -6,7 +6,7 @@ using NUnit.Framework;
 using imperative.expressions;
 using imperative.schema;
 
-namespace test.imp
+namespace imp_test.tests
 {
     [TestFixture]
     class Expression_Test

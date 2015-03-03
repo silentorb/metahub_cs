@@ -1,0 +1,9 @@
+﻿namespace test {
+
+	class Pizza {
+
+		tick() {
+
+		}
+	}
+}

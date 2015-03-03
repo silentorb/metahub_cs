@@ -8,13 +8,14 @@ namespace metahub.render
     {
         protected Renderer render = new Renderer();
         protected int line_count = 0;
-        protected Overlord overlord;
+        public Overlord overlord;
         public Transmuter transmuter;
 
         public Target(Overlord overlord)
         {
             this.overlord = overlord;
-            overlord.target = this;
+            if (overlord != null)
+                overlord.target = this;
         }
 
         public virtual void generate_dungeon_code(Dungeon dungeon)

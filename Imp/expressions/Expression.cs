@@ -36,7 +36,7 @@ namespace imperative.expressions
 
         protected virtual string debug_string
         {
-            get { return type + " expression"; }
+            get { return "Expression(" + type + ")"; }
         }
 
         public string stack_trace;

@@ -449,6 +449,7 @@ namespace imperative.schema
             var block = get_block("class_definition");
             block.add(definition);
             definition.scope = minion.scope = new Scope(block.scope);
+            minion.scope.minion = minion;
 
             if (on_add_minion != null)
                 on_add_minion(this, minion);

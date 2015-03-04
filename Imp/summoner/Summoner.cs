@@ -390,7 +390,7 @@ namespace imperative.summoner
 
         private Parameter process_parameter(Pattern_Source source, Context context)
         {
-            return new Parameter(new Symbol(source.patterns[1].text, new Profession(Kind.unknown), null));
+            return new Parameter(new Symbol(source.patterns[0].text, new Profession(Kind.unknown), null));
         }
 
         private Profession parse_type(Pattern_Source source, Context context)

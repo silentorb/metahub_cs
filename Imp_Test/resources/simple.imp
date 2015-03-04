@@ -1,9 +1,13 @@
 ﻿namespace test {
 
 	class Pizza {
+		toppings:string[]
 
-		tick() {
+		add(topping:string) {
+			if (topping == null)
+				return
 
+			toppings.add(topping)
 		}
 	}
 }

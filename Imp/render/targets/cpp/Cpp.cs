@@ -123,7 +123,7 @@ namespace metahub.render.targets.cpp
             var result = line("#pragma once")
             + render_includes(headers) + newline()
             + render_outer_dependencies(dungeon)
-            + render_region(dungeon.realm, () => newline() + render_inner_dependencies(dungeon) + class_declaration(dungeon));
+            + render_realm(dungeon.realm, () => newline() + render_inner_dependencies(dungeon) + class_declaration(dungeon));
             Generator.create_file(dir + "/" + dungeon.name + ".h", result);
         }
 
@@ -174,7 +174,7 @@ namespace metahub.render.targets.cpp
             {
                 case Expression_Type.space:
                     var space = (Namespace)statement;
-                    return render_region(space.realm, () => render_statements(space.body));
+                    return render_realm(space.realm, () => render_statements(space.body));
 
                 case Expression_Type.class_definition:
                     var definition = (Class_Definition)statement;
@@ -240,29 +240,29 @@ namespace metahub.render.targets.cpp
         {
             bool lines = false;
             var result = "";
-            Dictionary<string, Temp> regions = new Dictionary<string, Temp>();
+            Dictionary<string, Temp> realms = new Dictionary<string, Temp>();
 
             foreach (var d in dungeon.dependencies.Values)
             {
                 var dependency = d.dungeon;
                 if (d.allow_partial && dependency.realm != dungeon.realm)
                 {
-                    if (!regions.ContainsKey(dependency.realm.name))
+                    if (!realms.ContainsKey(dependency.realm.name))
                     {
-                        regions[dependency.realm.name] = new Temp
+                        realms[dependency.realm.name] = new Temp
                             {
                                 realm = dependency.realm,
                                 dependencies = new List<Dungeon>()
                             };
                     }
-                    regions[dependency.realm.name].dependencies.Add(dependency);
+                    realms[dependency.realm.name].dependencies.Add(dependency);
                     lines = true;
                 }
             }
 
-            foreach (var r in regions.Values)
+            foreach (var r in realms.Values)
             {
-                result += render_region(r.realm, () => r.dependencies.Select(d => line("class " + d.name + ";"))
+                result += render_realm(r.realm, () => r.dependencies.Select(d => line("class " + d.name + ";"))
                         .join("")
                 );
             }
@@ -315,7 +315,7 @@ namespace metahub.render.targets.cpp
 
             if (parents.Count > 0)
             {
-                first += " : " + parents.Select(p => "public " + render_rail_name(p)).join(", ");
+                first += " : " + parents.Select(p => "public " + render_trellis_name(p)).join(", ");
             }
 
             result = line(first + " {")
@@ -343,14 +343,14 @@ namespace metahub.render.targets.cpp
         {
             var result = "";
 
-            //result += pad(render_functions(rail));
+            //result += pad(render_functions(trellis));
             result += newline() + render_statements(statements, newline());
             unindent();
 
             return result;
         }
 
-        string render_region(Realm realm, String_Delegate action)
+        string render_realm(Realm realm, String_Delegate action)
         {
             var space = Generator.get_namespace_path(realm);
             var result = line("namespace " + space.join("::") + " {");
@@ -363,17 +363,17 @@ namespace metahub.render.targets.cpp
             return result;
         }
 
-        string render_rail_name(Dungeon dungeon)
+        string render_trellis_name(Dungeon dungeon)
         {
             if (dungeon.realm != current_realm)
-                return render_region_name(dungeon.realm) + "::" + dungeon.name;
+                return render_realm_name(dungeon.realm) + "::" + dungeon.name;
 
             return dungeon.name;
         }
 
-        string render_region_name(Realm region)
+        string render_realm_name(Realm realm)
         {
-            var path = Generator.get_namespace_path(region);
+            var path = Generator.get_namespace_path(realm);
             return path.join("::");
         }
 
@@ -723,7 +723,7 @@ namespace metahub.render.targets.cpp
                     if (expression.value != null)
                         return expression.value.ToString();
 
-                    return render_rail_name(signature.dungeon) + "()";
+                    return render_trellis_name(signature.dungeon) + "()";
 
                 default:
                     throw new Exception("Invalid literal " + expression.value + " type " + expression.profession.type + ".");

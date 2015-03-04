@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using imperative.expressions;
 
 namespace imperative.schema
@@ -10,6 +11,7 @@ namespace imperative.schema
         public Scope parent;
         Dictionary<string, Symbol> symbols = new Dictionary<string, Symbol>();
         Dictionary<string, Expression_Generator> map = new Dictionary<string, Expression_Generator>();
+        public Minion minion;
 
         public Scope(Scope parent = null)
         {
@@ -63,6 +65,13 @@ namespace imperative.schema
             if (symbols.ContainsKey(name))
                 return symbols[name];
 
+            if (minion != null)
+            {
+                var result = minion.parameters.FirstOrDefault(p => p.symbol.name == name);
+                if (result != null)
+                    return result.symbol;
+            }
+
             if (parent != null)
                 return parent.find_or_null(name);
 
@@ -73,6 +82,13 @@ namespace imperative.schema
         {
             if (symbols.ContainsKey(name))
                 return symbols[name];
+
+            if (minion != null)
+            {
+                var result = minion.parameters.FirstOrDefault(p => p.symbol.name == name);
+                if (result != null)
+                    return result.symbol;
+            }
 
             if (parent != null)
                 return parent.find_or_exception(name);

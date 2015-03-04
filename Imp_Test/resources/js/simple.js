@@ -2,6 +2,11 @@
 
 test.Pizza = function() {}
 test.Pizza.prototype = {
-	tick: function() {
+	toppings: [],
+	add: function(topping) {
+		if (topping == null)
+			return
+		
+		this.toppings.push(topping)
 	}
 }

@@ -16,7 +16,7 @@ namespace vineyard_test.tests
         [Test]
         public void test_equals()
         {
-            var logician = Vineyard_Fixture.load_script("test1");
+            var logician = Vineyard_Fixture.load_script("test2");
             var pumpkin = logician.functions[0];
             var damage = (Property_Node) pumpkin.inputs[0];
             var multiply = (Function_Node)pumpkin.inputs[1];

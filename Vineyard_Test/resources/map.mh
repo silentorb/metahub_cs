@@ -1,5 +1,12 @@
 ﻿World {
-	characters|map(models, a : b => {
-		a.x = b.x
-	  })
+  characters = models
+	#characters|map(models, b => {
+	#	 x = b.x
+	#})
+
+	#characters|map(models, "model", "character")
+}
+
+Character {
+  x = model.x
 }

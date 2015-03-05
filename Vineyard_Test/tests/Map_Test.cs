@@ -15,7 +15,7 @@ namespace vineyard_test.tests
         public void test_map()
         {
             var logician = Vineyard_Fixture.load_script("map");
-            var transform = new Transform(logician.functions[0]).initialize_map();
+//            var transform = new Transform(logician.functions[0]).initialize_map();
 
         }
     }

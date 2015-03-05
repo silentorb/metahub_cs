@@ -20,6 +20,10 @@
         "world": {
           "type": "reference",
           "trellis": "World"
+        },
+        "character": {
+          "type": "reference",
+          "trellis": "Character"
         }
       }
     },
@@ -43,6 +47,10 @@
         "world": {
           "type": "reference",
           "trellis": "World"
+        },
+        "model": {
+          "type": "reference",
+          "trellis": "Model"
         }
       }
     },

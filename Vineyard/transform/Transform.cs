@@ -70,7 +70,7 @@ namespace vineyard.transform
 
         public Transform change_context(Property_Node new_context)
         {
-            if (new_context.aggregate(Dir.In).Count() == 1)
+            if (new_context.aggregate(Dir.In).Count() < 3)
                 return this;
 
             clone_once();

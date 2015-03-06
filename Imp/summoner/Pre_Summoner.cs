@@ -82,6 +82,11 @@ namespace imperative.summoner
                 case "start":
                     return data.patterns[1];
 
+                case "string":
+                    data = data.patterns[1];
+                    data.type = "string";
+                    break;
+
                 case "optional_expression":
                     return data.patterns[1];
 
@@ -139,6 +144,9 @@ namespace imperative.summoner
                     data = data.patterns[1];
                     data.type = "snippets";
                     break;
+
+                case "class_attributes":
+                    return data.patterns[0];
             }
 
             return data;

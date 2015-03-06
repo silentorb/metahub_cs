@@ -1,5 +1,6 @@
-﻿start = trim @(namespace, newlines, 0, 0) final_trim
+﻿start = trim @(namespace_class, newlines, 1, 0) final_trim
 
+namespace_class = namespace | class
 snippet_entry = trim @(snippet_function, semicolon_or_newline, 1, 0) final_trim
 
 none = /&*/
@@ -71,15 +72,18 @@ function_definition = @(function_attribute, none, 0, 1) id trim "(" @(declare_sy
 
 snippet_function = @(function_attribute, none, 0, 1) id trim "(" @(declare_symbol, comma, 0, 0) ")" trim @(type_info, none, 0, 1) trim long_block_any
 
-abstract_function = "abstract" ws id trim "(" @(declare_symbol, comma, 0, 0) ")" trim @(type_info, none, 0, 1)
+abstract_function = id trim "(" @(declare_symbol, comma, 0, 0) ")" trim @(type_info, none, 0, 1)
 
 function_attribute =  "private" ws
 
-class_statements = abstract_function | function_definition | property_declaration
+class_statements = function_definition | abstract_function| property_declaration
 
 property_declaration = id trim type_info
 
-class = "class" ws id trim @(optional_parent_classes, none, 0, 1) "{" trim @(class_statements, newlines, 0, 0) trim "}"
+class = class_attributes "class" ws id trim @(optional_parent_classes, none, 0, 1) "{" trim @(class_statements, newlines, 0, 0) trim "}"
+
+class_attributes = @(class_attribute, ws, 0, 0) trim
+class_attribute = "abstract"
 
 optional_parent_classes = ":" trim @(id, comma_or_newline, 1, 0) trim
 

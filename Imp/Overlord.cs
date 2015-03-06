@@ -28,6 +28,8 @@ namespace imperative
             this.target = target;
             if (target != null)
                 target.overlord = this;
+
+            realms[""] = new Realm("", this);
         }
 
         public void post_analyze()
@@ -87,6 +89,13 @@ namespace imperative
         {
             var pre_summoner = pre_summon(code);
             summon(pre_summoner);
+        }
+
+        public void summon_many(IEnumerable<string> codes)
+        {
+            var pre_summoners = codes.Select(code => pre_summon(code).output);
+            var summoner = new Summoner(this);
+            summoner.summon_many(pre_summoners);
         }
 
         public Dungeon summon_dungeon(Snippet template, Summoner.Context context)

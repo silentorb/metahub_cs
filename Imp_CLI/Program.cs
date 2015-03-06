@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using imperative;
 using metahub.render.targets.js;
 
@@ -35,11 +36,8 @@ namespace imp
                 ? aggregate_files(input)
                 : new List<string> { input };
 
-            foreach (var file in files)
-            {
-                var code = File.ReadAllText(file);
-                overlord.summon(code);
-            }
+            var codes = files.Select(File.ReadAllText);
+            overlord.summon_many(codes);
 
             overlord.flatten();
             overlord.post_analyze();

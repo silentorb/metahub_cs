@@ -18,6 +18,7 @@ namespace imperative.expressions
         path,
         portal,
         comment,
+        profession,
 
         // Statements
         statement,

@@ -22,34 +22,48 @@ namespace imperative.summoner
 
         public void summon(Pattern_Source source)
         {
-            foreach (var pattern in source.patterns)
-            {
-                var context = create_realm_context(pattern);
-                var statements = pattern.patterns[6].patterns;
-                process_namespace1(statements, context);
-                process_namespace2(statements, context);
-            }
+            ack(source, process_dungeon1);
+            ack(source, process_dungeon2);
+            ack(source, process_dungeon3);
         }
-        
-        public void summon_many(Pattern_Source[] sources)
+
+        public void summon_many(IEnumerable<Pattern_Source> sources)
         {
             foreach (var source in sources)
             {
-                foreach (var pattern in source.patterns)
-                {
-                    var context = create_realm_context(pattern);
-                    var statements = pattern.patterns[6].patterns;
-                    process_namespace1(statements, context);
-                }
+                ack(source, process_dungeon1);
             }
 
             foreach (var source in sources)
             {
-                foreach (var pattern in source.patterns)
+                ack(source, process_dungeon2);
+            }
+
+            foreach (var source in sources)
+            {
+                ack(source, process_dungeon3);
+            }
+        }
+
+        void ack(Pattern_Source source, 
+            Func<Pattern_Source, Context, Dungeon> second)
+        {
+            foreach (var pattern in source.patterns)
+            {
+                if (pattern.type == "namespace")
                 {
                     var context = create_realm_context(pattern);
                     var statements = pattern.patterns[6].patterns;
-                    process_namespace2(statements, context);
+                    process_namespace(statements, context, second);
+                }
+                else if (pattern.type == "class")
+                {
+                    var context = new Context(overlord.realms[""]);
+                    second(pattern, context);
+                }
+                else
+                {
+                    throw new Exception("Not supported.");
                 }
             }
         }
@@ -67,25 +81,18 @@ namespace imperative.summoner
             return context;
         }
 
-        private void process_namespace1(IEnumerable<Pattern_Source> statements, Context context)
+        private void process_namespace(IEnumerable<Pattern_Source> statements, Context context, 
+            Func<Pattern_Source, Context, Dungeon> dungeon_step)
         {
             foreach (var statement in statements)
             {
-                process_dungeon1(statement, context);
+                dungeon_step(statement, context);
             }
         }
 
-        private void process_namespace2(IEnumerable<Pattern_Source> statements, Context context)
+        public Dungeon process_dungeon1(Pattern_Source source, Context context)
         {
-            foreach (var statement in statements)
-            {
-                process_dungeon2(statement, context);
-            }
-        }
-
-        public void process_dungeon1(Pattern_Source source, Context context)
-        {
-            var name = source.patterns[2].text;
+            var name = source.patterns[3].text;
             var replacement_name = context.get_string_pattern(name);
             if (replacement_name != null)
                 name = replacement_name;
@@ -93,23 +100,48 @@ namespace imperative.summoner
             if (!context.realm.dungeons.ContainsKey(name))
             {
                 var dungeon = context.realm.create_dungeon(name);
-                var parent_dungeons = source.patterns[4].patterns;
+                if (source.patterns[0].patterns.Length > 0)
+                    dungeon.is_abstract = source.patterns[0].patterns.Any(p => p.text == "abstract");
+
+                var parent_dungeons = source.patterns[5].patterns;
                 if (parent_dungeons.Length > 0)
                     dungeon.parent = overlord.get_dungeon(parent_dungeons[0].patterns[0].text);
 
                 dungeon.generate_code();
+                return dungeon;
             }
+
+            return null;
         }
 
         public Dungeon process_dungeon2(Pattern_Source source, Context context)
         {
-            var name = source.patterns[2].text;
+            var name = source.patterns[3].text;
 
             var replacement_name = context.get_string_pattern(name);
             if (replacement_name != null)
                 name = replacement_name;
 
-            var statements = source.patterns[7].patterns;
+            var statements = source.patterns[8].patterns;
+            var dungeon = context.realm.dungeons[name];
+            var dungeon_context = new Context(context) { dungeon = dungeon };
+            foreach (var statement in statements)
+            {
+                process_dungeon_statement(statement, dungeon_context, true);
+            }
+
+            return dungeon;
+        }
+
+        public Dungeon process_dungeon3(Pattern_Source source, Context context)
+        {
+            var name = source.patterns[3].text;
+
+            var replacement_name = context.get_string_pattern(name);
+            if (replacement_name != null)
+                name = replacement_name;
+
+            var statements = source.patterns[8].patterns;
             var dungeon = context.realm.dungeons[name];
             var dungeon_context = new Context(context) { dungeon = dungeon };
             foreach (var statement in statements)
@@ -120,20 +152,21 @@ namespace imperative.summoner
             return dungeon;
         }
 
-        private void process_dungeon_statement(Pattern_Source source, Context context)
+        private void process_dungeon_statement(Pattern_Source source, Context context, bool as_stub = false)
         {
             switch (source.type)
             {
                 case "abstract_function":
+                    if (as_stub)
                     process_abstract_function(source, context);
                     break;
 
                 case "function_definition":
-                    process_function_definition(source, context);
+                    process_function_definition(source, context, as_stub);
                     break;
 
                 case "property_declaration":
-                    process_property_declaration(source, context);
+                    process_property_declaration(source, context, as_stub);
                     break;
             }
         }
@@ -141,37 +174,46 @@ namespace imperative.summoner
         private void process_abstract_function(Pattern_Source source, Context context)
         {
             var minion = context.dungeon.spawn_minion(
-                source.patterns[2].text,
-                source.patterns[5].patterns.Select(p => process_parameter(p, context)).ToList()
+                source.patterns[0].text,
+                source.patterns[3].patterns.Select(p => process_parameter(p, context)).ToList()
                 );
 
             minion.is_abstract = true;
 
-            var return_type = source.patterns[8];
+            var return_type = source.patterns[6];
             if (return_type.patterns.Length > 0)
                 minion.return_type = parse_type(return_type.patterns[0], context);
         }
 
-        private void process_function_definition(Pattern_Source source, Context context)
+        private void process_function_definition(Pattern_Source source, Context context, bool as_stub = false)
         {
             var name = source.patterns[1].text;
             var minion = context.dungeon.has_minion(name)
-                          ? context.dungeon.summon_minion(name)
-                          : context.dungeon.spawn_minion(
-                              name,
-                              source.patterns[4].patterns.Select(p => process_parameter(p, context)).ToList()
-                                );
+                         ? context.dungeon.summon_minion(name)
+                         : context.dungeon.spawn_minion(
+                             name,
+                             source.patterns[4].patterns.Select(p => process_parameter(p, context)).ToList()
+                               );
+
             var new_context = new Context(context) { scope = minion.scope };
 
-            var return_type = source.patterns[7];
-            if (return_type.patterns.Length > 0)
-                minion.return_type = parse_type(return_type.patterns[0], context);
-
-            minion.add_to_block(process_block(source.patterns[9], new_context));
+            if (as_stub)
+            {
+                var return_type = source.patterns[7];
+                if (return_type.patterns.Length > 0)
+                    minion.return_type = parse_type(return_type.patterns[0], context);
+            }
+            else
+            {
+                minion.add_to_block(process_block(source.patterns[9], new_context));
+            }
         }
 
-        private void process_property_declaration(Pattern_Source source, Context context)
+        private void process_property_declaration(Pattern_Source source, Context context, bool as_stub = false)
         {
+            if (!as_stub)
+                return;
+
             var type_info = parse_type2(source.patterns[2], context);
             var portal_name = source.patterns[0].text;
             if (!context.dungeon.has_portal(portal_name))
@@ -300,6 +342,12 @@ namespace imperative.summoner
                 case "int":
                     return new Literal(int.Parse(source.text));
 
+                case "float":
+                    return new Literal(float.Parse(source.text));
+
+                case "string":
+                    return new Literal(source.text);
+
                 case "reference":
                     return process_reference(source, context);
 
@@ -349,6 +397,11 @@ namespace imperative.summoner
                 }
                 else
                 {
+                    if (token == "this")
+                    {
+                        return new Self(dungeon);
+                    }
+
                     var symbol = context.scope.find_or_null(token);
                     if (symbol != null)
                     {
@@ -357,10 +410,6 @@ namespace imperative.summoner
                         dungeon = profession != null
                             ? profession.dungeon
                             : next.get_profession().dungeon;
-                    }
-                    else if (token == "this")
-                    {
-                        return new Self(dungeon);
                     }
                     else
                     {
@@ -397,7 +446,15 @@ namespace imperative.summoner
                             }
                             else
                             {
-                                throw new Exception("Invalid path token: " + token);
+                                dungeon = overlord.get_dungeon(token);
+                                if (dungeon != null)
+                                {
+                                    next = new Profession_Expression(new Profession(Kind.reference, dungeon));
+                                }
+                                else
+                                {
+                                    throw new Exception("Invalid path token: " + token);
+                                }
                             }
                         }
                     }
@@ -614,7 +671,8 @@ namespace imperative.summoner
         private Expression process_instantiate(Pattern_Source source, Context context)
         {
             var type = parse_type2(source.patterns[2], context);
-            return new Instantiate(type.dungeon);
+            var args = source.patterns[4].patterns.Select(p => process_expression(p, context));
+            return new Instantiate(type.dungeon, args);
         }
 
         //private Expression process_snippet_functions(Pattern_Source source, Context context)

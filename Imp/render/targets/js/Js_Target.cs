@@ -128,6 +128,9 @@ namespace metahub.render.targets.js
 
         string class_definition(Dungeon dungeon, IEnumerable<Expression> statements)
         {
+            if (dungeon.is_abstract)
+                return "";
+
             current_dungeon = dungeon;
 
             var result = line(full_dungeon_name(dungeon) + " = function() {}");
@@ -192,12 +195,19 @@ namespace metahub.render.targets.js
 
         string render_realm(Realm realm, String_Delegate action)
         {
+            if (realm.name == "")
+                return action();
+
             var result = line("var " + realm.name + " = {}") + newline();
 
             current_realm = realm;
-            result += action();
+            var body = action();
             current_realm = null;
 
+            if (body == "")
+                return "";
+
+            result += body;
             return result;
         }
 
@@ -266,6 +276,10 @@ namespace metahub.render.targets.js
 
                 case Expression_Type.null_value:
                     return "null";
+
+                case Expression_Type.profession:
+                    result = expression.get_profession().dungeon.name;
+                    break;
 
                 case Expression_Type.create_array:
                     result = "FOOO";
@@ -519,7 +533,8 @@ namespace metahub.render.targets.js
 
         string render_instantiation(Instantiate expression)
         {
-            return "new " + full_dungeon_name(expression.dungeon) + "()";
+            var args = expression.args.Select(a => render_expression(a)).join(", ");
+            return "new " + full_dungeon_name(expression.dungeon) + "(" + args + ")";
         }
 
     }

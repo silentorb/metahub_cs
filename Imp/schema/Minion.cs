@@ -38,6 +38,7 @@ namespace imperative.schema
         public List<Minion> children = new List<Minion>();
         public Scope scope;
         public bool is_abstract = false;
+        public bool is_static = false;
         public Accordian accordian;
         public event Minion_Expression_Event on_add_expression;
 

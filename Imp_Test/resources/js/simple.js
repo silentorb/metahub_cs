@@ -6,7 +6,7 @@ test.Pizza.prototype = {
 	add: function(topping) {
 		if (topping == null)
 			return
-		
+
 		this.toppings.push(topping)
 	}
 }

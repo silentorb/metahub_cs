@@ -24,11 +24,37 @@ namespace imperative.summoner
         {
             foreach (var pattern in source.patterns)
             {
-                process_namespace(pattern);
+                var context = create_realm_context(pattern);
+                var statements = pattern.patterns[6].patterns;
+                process_namespace1(statements, context);
+                process_namespace2(statements, context);
+            }
+        }
+        
+        public void summon_many(Pattern_Source[] sources)
+        {
+            foreach (var source in sources)
+            {
+                foreach (var pattern in source.patterns)
+                {
+                    var context = create_realm_context(pattern);
+                    var statements = pattern.patterns[6].patterns;
+                    process_namespace1(statements, context);
+                }
+            }
+
+            foreach (var source in sources)
+            {
+                foreach (var pattern in source.patterns)
+                {
+                    var context = create_realm_context(pattern);
+                    var statements = pattern.patterns[6].patterns;
+                    process_namespace2(statements, context);
+                }
             }
         }
 
-        private void process_namespace(Pattern_Source source)
+        private Context create_realm_context(Pattern_Source source)
         {
             var name = source.patterns[2].text;
             if (!overlord.realms.ContainsKey(name))
@@ -37,13 +63,20 @@ namespace imperative.summoner
             }
             var realm = overlord.realms[name];
             var context = new Context(realm);
-            var statements = source.patterns[6].patterns;
 
+            return context;
+        }
+
+        private void process_namespace1(IEnumerable<Pattern_Source> statements, Context context)
+        {
             foreach (var statement in statements)
             {
                 process_dungeon1(statement, context);
             }
+        }
 
+        private void process_namespace2(IEnumerable<Pattern_Source> statements, Context context)
+        {
             foreach (var statement in statements)
             {
                 process_dungeon2(statement, context);
@@ -182,7 +215,7 @@ namespace imperative.summoner
                     );
 
                 case "while":
-                    return new Flow_Control(Flow_Control_Type.While, 
+                    return new Flow_Control(Flow_Control_Type.While,
                         process_expression(source.patterns[4], context),
                         process_block(source.patterns[8], context)
                     );
@@ -197,12 +230,8 @@ namespace imperative.summoner
                         );
 
                 case "declare_variable":
-                    var symbol = context.scope.create_symbol(source.patterns[2].text,
-                                                             parse_type2(source.patterns[4], context));
-                    return new Declare_Variable(symbol, source.patterns[5].patterns.Length == 0
-                                                            ? null
-                                                            : process_expression(source.patterns[5].patterns[0], context)
-                        );
+                    return process_declare_variable(source, context);
+
                 case "snippet_function":
                     {
                         return process_function_snippet(source, context);
@@ -236,6 +265,29 @@ namespace imperative.summoner
             }
 
             throw new Exception("Not supported.");
+        }
+
+        Expression process_declare_variable(Pattern_Source source, Context context)
+        {
+            Profession profession;
+            var expression_pattern = source.patterns[5].patterns.Length == 0
+                ? null
+                : process_expression(source.patterns[5].patterns[0], context);
+
+            if (source.patterns[4].patterns.Length > 0)
+            {
+                profession = parse_type2(source.patterns[4], context);
+            }
+            else
+            {
+                if (expression_pattern == null)
+                    throw new Exception("Cannot discern variable type.");
+
+                profession = expression_pattern.get_profession();
+            }
+
+            var symbol = context.scope.create_symbol(source.patterns[2].text, profession);
+            return new Declare_Variable(symbol, expression_pattern);
         }
 
         private Expression process_expression_part(Pattern_Source source, Context context)
@@ -437,8 +489,8 @@ namespace imperative.summoner
 
         private Profession parse_type2(Pattern_Source source, Context context)
         {
-            var path = source.patterns[2].patterns.Select(p => p.text).ToArray();
-            var is_list = source.patterns.Length > 1 && source.patterns[3].patterns.Length > 0;
+            var path = source.patterns[0].patterns.Select(p => p.text).ToArray();
+            var is_list = source.patterns.Length > 1 && source.patterns[1].patterns.Length > 0;
             return parse_type2(path, context, is_list);
         }
 
@@ -472,7 +524,13 @@ namespace imperative.summoner
             for (var i = 0; i < path.Length - 1; ++i)
             {
                 if (realm == null)
-                    realm = overlord.realms[path[i]];
+                {
+                    var realm_name = path[i];
+                    if (!overlord.realms.ContainsKey(realm_name))
+                        throw new Exception("Could not find realm: " + realm_name + ".");
+
+                    realm = overlord.realms[realm_name];
+                }
                 else
                     throw new Exception("embedded namespaces are not supported yet.");
             }
@@ -507,7 +565,7 @@ namespace imperative.summoner
                 {
                     expression = Minion.operation(op[0].ToString(), reference.clone(), expression);
                 }
-                var args = new List<Expression> {expression};
+                var args = new List<Expression> { expression };
 
                 // The setter absorbs the portal token, so remove it from the reference.
                 if (last == reference)
@@ -555,7 +613,7 @@ namespace imperative.summoner
 
         private Expression process_instantiate(Pattern_Source source, Context context)
         {
-            var type = parse_type2(new[] { source.patterns[2].text }, context);
+            var type = parse_type2(source.patterns[2], context);
             return new Instantiate(type.dungeon);
         }
 

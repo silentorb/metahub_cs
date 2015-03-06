@@ -38,9 +38,9 @@ id_with_optional_array = id @(optional_array, none, 0, 1)
 
 reference = @(id_with_optional_array, path_separator, 1, 0) @(optional_arguments, none, 0, 1)
 
-declare_symbol = id trim @(type_info, none, 0, 1)
+declare_symbol = id @(type_info, none, 0, 1)
 
-type_info = ":" trim type
+type_info = trim ":" trim type
 
 type = @(id, path_separator, 1, 0) @(optional_list_suffix, none, 0, 1)
 
@@ -68,26 +68,25 @@ expression = @(expression_part, operation_separator, 1, 0)
 
 namespace = "module" ws id trim "{" trim @(class, newlines, 0, 0) trim "}"
 
-function_definition = @(function_attribute, none, 0, 1) id trim "(" @(declare_symbol, comma, 0, 0) ")" trim @(type_info, none, 0, 1) trim long_block
+function_definition = @(function_attribute, none, 0, 1) id trim "(" @(declare_symbol, comma, 0, 0) ")" @(type_info, none, 0, 1) @(optional_long_block, none, 0, 1)
 
-snippet_function = @(function_attribute, none, 0, 1) id trim "(" @(declare_symbol, comma, 0, 0) ")" trim @(type_info, none, 0, 1) trim long_block_any
-
-abstract_function = id trim "(" @(declare_symbol, comma, 0, 0) ")" trim @(type_info, none, 0, 1)
+snippet_function = @(function_attribute, none, 0, 1) id trim "(" @(declare_symbol, comma, 0, 0) ")" @(type_info, none, 0, 1) trim long_block_any
 
 function_attribute =  "private" ws
 
-class_statements = function_definition | abstract_function| property_declaration
+class_statements = function_definition | property_declaration
 
-property_declaration = id trim type_info
+property_declaration = id type_info
 
-class = class_attributes "class" ws id trim @(optional_parent_classes, none, 0, 1) "{" trim @(class_statements, newlines, 0, 0) trim "}"
+class = @(class_attribute, ws, 0, 0) trim "class" ws id trim @(optional_parent_classes, none, 0, 1) "{" trim @(class_statements, newlines, 0, 0) trim "}"
 
-class_attributes = @(class_attribute, ws, 0, 0) trim
 class_attribute = "abstract"
 
 optional_parent_classes = ":" trim @(id, comma_or_newline, 1, 0) trim
 
 block = long_block | short_block
+
+optional_long_block = trim long_block
 
 short_block = one_or_no_newline statement
 
@@ -109,7 +108,7 @@ return = "return" @(optional_expression, none, 0, 1)
 
 optional_assignment = trim "=" trim expression
 
-declare_variable = "var" ws id trim @(type_info, none, 0, 1) @(optional_assignment, none, 0, 1)
+declare_variable = "var" ws id @(type_info, none, 0, 1) @(optional_assignment, none, 0, 1)
 
 assignment = reference trim set_operator trim expression
 

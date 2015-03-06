@@ -45,7 +45,7 @@ namespace imperative.summoner
             }
         }
 
-        void ack(Pattern_Source source, 
+        void ack(Pattern_Source source,
             Func<Pattern_Source, Context, Dungeon> second)
         {
             foreach (var pattern in source.patterns)
@@ -81,7 +81,7 @@ namespace imperative.summoner
             return context;
         }
 
-        private void process_namespace(IEnumerable<Pattern_Source> statements, Context context, 
+        private void process_namespace(IEnumerable<Pattern_Source> statements, Context context,
             Func<Pattern_Source, Context, Dungeon> dungeon_step)
         {
             foreach (var statement in statements)
@@ -92,7 +92,7 @@ namespace imperative.summoner
 
         public Dungeon process_dungeon1(Pattern_Source source, Context context)
         {
-            var name = source.patterns[3].text;
+            var name = source.patterns[4].text;
             var replacement_name = context.get_string_pattern(name);
             if (replacement_name != null)
                 name = replacement_name;
@@ -103,7 +103,7 @@ namespace imperative.summoner
                 if (source.patterns[0].patterns.Length > 0)
                     dungeon.is_abstract = source.patterns[0].patterns.Any(p => p.text == "abstract");
 
-                var parent_dungeons = source.patterns[5].patterns;
+                var parent_dungeons = source.patterns[6].patterns;
                 if (parent_dungeons.Length > 0)
                     dungeon.parent = overlord.get_dungeon(parent_dungeons[0].patterns[0].text);
 
@@ -116,13 +116,13 @@ namespace imperative.summoner
 
         public Dungeon process_dungeon2(Pattern_Source source, Context context)
         {
-            var name = source.patterns[3].text;
+            var name = source.patterns[4].text;
 
             var replacement_name = context.get_string_pattern(name);
             if (replacement_name != null)
                 name = replacement_name;
 
-            var statements = source.patterns[8].patterns;
+            var statements = source.patterns[9].patterns;
             var dungeon = context.realm.dungeons[name];
             var dungeon_context = new Context(context) { dungeon = dungeon };
             foreach (var statement in statements)
@@ -135,13 +135,13 @@ namespace imperative.summoner
 
         public Dungeon process_dungeon3(Pattern_Source source, Context context)
         {
-            var name = source.patterns[3].text;
+            var name = source.patterns[4].text;
 
             var replacement_name = context.get_string_pattern(name);
             if (replacement_name != null)
                 name = replacement_name;
 
-            var statements = source.patterns[8].patterns;
+            var statements = source.patterns[9].patterns;
             var dungeon = context.realm.dungeons[name];
             var dungeon_context = new Context(context) { dungeon = dungeon };
             foreach (var statement in statements)
@@ -156,10 +156,10 @@ namespace imperative.summoner
         {
             switch (source.type)
             {
-                case "abstract_function":
-                    if (as_stub)
-                    process_abstract_function(source, context);
-                    break;
+//                case "abstract_function":
+//                    if (as_stub)
+//                        process_abstract_function(source, context);
+//                    break;
 
                 case "function_definition":
                     process_function_definition(source, context, as_stub);
@@ -171,19 +171,19 @@ namespace imperative.summoner
             }
         }
 
-        private void process_abstract_function(Pattern_Source source, Context context)
-        {
-            var minion = context.dungeon.spawn_minion(
-                source.patterns[0].text,
-                source.patterns[3].patterns.Select(p => process_parameter(p, context)).ToList()
-                );
-
-            minion.is_abstract = true;
-
-            var return_type = source.patterns[6];
-            if (return_type.patterns.Length > 0)
-                minion.return_type = parse_type(return_type.patterns[0], context);
-        }
+//        private void process_abstract_function(Pattern_Source source, Context context)
+//        {
+//            var minion = context.dungeon.spawn_minion(
+//                source.patterns[0].text,
+//                source.patterns[3].patterns.Select(p => process_parameter(p, context)).ToList()
+//                );
+//
+//            minion.is_abstract = true;
+//
+//            var return_type = source.patterns[6];
+//            if (return_type.patterns.Length > 0)
+//                minion.return_type = parse_type(return_type.patterns[0], context);
+//        }
 
         private void process_function_definition(Pattern_Source source, Context context, bool as_stub = false)
         {
@@ -199,13 +199,16 @@ namespace imperative.summoner
 
             if (as_stub)
             {
-                var return_type = source.patterns[7];
+                var return_type = source.patterns[6];
                 if (return_type.patterns.Length > 0)
                     minion.return_type = parse_type(return_type.patterns[0], context);
             }
             else
             {
-                minion.add_to_block(process_block(source.patterns[9], new_context));
+                if (source.patterns[7].patterns.Length == 0)
+                    minion.is_abstract = true;
+                else
+                    minion.add_to_block(process_block(source.patterns[7].patterns[0], new_context));
             }
         }
 
@@ -312,13 +315,13 @@ namespace imperative.summoner
         Expression process_declare_variable(Pattern_Source source, Context context)
         {
             Profession profession;
-            var expression_pattern = source.patterns[5].patterns.Length == 0
+            var expression_pattern = source.patterns[4].patterns.Length == 0
                 ? null
-                : process_expression(source.patterns[5].patterns[0], context);
+                : process_expression(source.patterns[4].patterns[0], context);
 
-            if (source.patterns[4].patterns.Length > 0)
+            if (source.patterns[3].patterns.Length > 0)
             {
-                profession = parse_type2(source.patterns[4], context);
+                profession = parse_type2(source.patterns[3], context);
             }
             else
             {

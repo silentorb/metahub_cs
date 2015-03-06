@@ -145,8 +145,8 @@ namespace imperative.summoner
                     data.type = "snippets";
                     break;
 
-                case "class_attributes":
-                    return data.patterns[0];
+                case "optional_long_block":
+                    return data.patterns[1];
             }
 
             return data;

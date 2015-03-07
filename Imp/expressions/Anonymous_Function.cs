@@ -7,14 +7,20 @@ namespace imperative.expressions
 {
     public class Anonymous_Function : Block
     {
-        public List<Parameter> parameters;
-        public Profession _return_type;
+        public Ethereal_Minion minion;
 
-        public Anonymous_Function(List<Parameter> parameters, List<Expression> expressions, Profession return_type = null)
-            : base(Expression_Type.function_definition)
+        public Anonymous_Function(Ethereal_Minion minion)
+            : base(Expression_Type.anonymous_function)
         {
-            this.parameters = parameters;
-            _return_type = return_type ?? new Profession(Kind.none);
+            this.minion = minion;
+        }
+
+        public List<Parameter> parameters { get { return minion.parameters; } }
+        public List<Expression> expressions { get { return minion.expressions; } }
+
+        public override Profession get_profession()
+        {
+            return minion.return_type;
         }
     }
 }

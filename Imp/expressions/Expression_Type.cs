@@ -19,6 +19,7 @@ namespace imperative.expressions
         portal,
         comment,
         profession,
+        anonymous_function,
 
         // Statements
         statement,

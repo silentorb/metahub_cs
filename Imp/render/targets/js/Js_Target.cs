@@ -180,16 +180,26 @@ namespace metahub.render.targets.js
             if (definition.is_abstract)
                 return "";
 
-            var intro = definition.name + ": function(" + definition.parameters.Select(p => p.symbol.name).join(", ") + ")";
+            return render.get_indentation() + definition.name + ": function(" + definition.parameters.Select(p => p.symbol.name).join(", ") + ")"
+                + render_minion_scope(definition.minion);
+        }
 
-            return render_scope(intro, () =>
+        string render_anonymous_function(Anonymous_Function definition)
+        {
+            return "function(" + definition.parameters.Select(p => p.symbol.name).join(", ") + ")"
+            + render_minion_scope(definition.minion);
+        }
+
+        string render_minion_scope(Minion_Base minion)
+        {
+            return render_scope2(() =>
             {
-                foreach (var parameter in definition.parameters)
+                foreach (var parameter in minion.parameters)
                 {
                     current_scope[parameter.symbol.name] = parameter.symbol.profession;
                 }
 
-                return render_statements(definition.expressions);
+                return render_statements(minion.expressions);
             });
         }
 
@@ -223,6 +233,17 @@ namespace metahub.render.targets.js
             return result;
         }
 
+        public string render_scope2(String_Delegate action)
+        {
+            push_scope();
+            var result = " {" + newline();
+            indent();
+            result += action();
+            unindent();
+            result += line("}");
+            pop_scope();
+            return result;
+        }
         string render_flow_control(Flow_Control statement)
         {
             var expression = render_expression(statement.condition);
@@ -284,6 +305,9 @@ namespace metahub.render.targets.js
                 case Expression_Type.create_array:
                     result = "FOOO";
                     break;
+
+                case Expression_Type.anonymous_function:
+                    return render_anonymous_function((Anonymous_Function)expression);
 
                 case Expression_Type.comment:
                     return render_comment((Comment)expression);

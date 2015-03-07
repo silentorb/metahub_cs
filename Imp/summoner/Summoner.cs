@@ -359,6 +359,9 @@ namespace imperative.summoner
 
                 case "instantiate":
                     return process_instantiate(source, context);
+
+                case "lambda":
+                    return process_lambda(source, context);
             }
 
             throw new Exception("Unsupported statement type: " + source.type + ".");
@@ -692,5 +695,16 @@ namespace imperative.summoner
             return new Snippet(name, body, parameters);
         }
 
+        private Expression process_lambda(Pattern_Source source, Context context)
+        {
+            var parameters = source.patterns[2].patterns.Select(p => process_parameter(p, context));
+            var minion = new Ethereal_Minion(parameters, context.scope);
+            var new_context = new Context(context) { scope = minion.scope };
+            var block = process_block(source.patterns[8], new_context);
+            minion.expressions.AddRange(block);
+            minion.return_type = new Profession(Kind.none);
+
+            return new Anonymous_Function(minion);
+        }
     }
 }

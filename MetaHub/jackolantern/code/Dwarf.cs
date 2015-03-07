@@ -21,21 +21,21 @@ namespace metahub.jackolantern.code
             this.clan = clan;
             this.minion = minion;
 
-            minion.on_add_expression += (minion_on_add);
+//            minion.on_add_expression += (minion_on_add);
         }
 
-        void minion_on_add(Minion minion, Expression expression)
-        {
-            return;
-            var portal_expressions = expression.aggregate()
-                .OfType<Portal_Expression>()
-                .Where(e => e.parent == null);
-
-            foreach (var e in portal_expressions)
-            {
-                add_ration(e);
-            }
-        }
+//        void minion_on_add(Minion_Base minion, Expression expression)
+//        {
+//            return;
+//            var portal_expressions = expression.aggregate()
+//                .OfType<Portal_Expression>()
+//                .Where(e => e.parent == null);
+//
+//            foreach (var e in portal_expressions)
+//            {
+//                add_ration(e);
+//            }
+//        }
 
         void add_ration(Portal_Expression expression)
         {

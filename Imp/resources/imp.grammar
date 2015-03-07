@@ -59,8 +59,10 @@ statement =
 expression_part =
 	  instantiate
 	| value
+	| lambda
 	| reference	
 	| closed_expression
+
 
 closed_expression = "(" trim expression ")"
 
@@ -115,3 +117,5 @@ assignment = reference trim set_operator trim expression
 for = "for" trim "(" trim "var" ws id ws "in" ws reference trim ")" trim long_block
 
 instantiate = "new" ws type trim arguments
+
+lambda = "(" trim @(declare_symbol, comma, 0, 0) trim ")" trim "=>" trim block

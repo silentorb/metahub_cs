@@ -8,9 +8,7 @@ using metahub.schema;
 
 namespace imperative.schema
 {
-    public delegate void Minion_Expression_Event(Minion minion, Expression expression);
-
-    public class Minion
+    public class Minion : Minion_Base
     {
         public static string[] platform_specific_functions = new string[]
             {
@@ -31,16 +29,11 @@ namespace imperative.schema
         public bool is_platform_specific;
         public List<Minion> invokers = new List<Minion>();
         public List<Minion> invokees = new List<Minion>();
-        public List<Parameter> parameters;
-        public List<Expression> expressions = new List<Expression>();
-        public Profession return_type = new Profession(Kind.none);
+        public Accordian accordian;
         public Minion parent;
         public List<Minion> children = new List<Minion>();
-        public Scope scope;
         public bool is_abstract = false;
         public bool is_static = false;
-        public Accordian accordian;
-        public event Minion_Expression_Event on_add_expression;
 
 #if DEBUG
         public string stack_trace;
@@ -51,6 +44,7 @@ namespace imperative.schema
             this.name = name;
             this.dungeon = dungeon;
             this.portal = portal;
+            accordian = dungeon.create_block(name, scope, expressions);
 
 #if DEBUG
             stack_trace = Environment.StackTrace;
@@ -87,7 +81,7 @@ namespace imperative.schema
 
         public static Property_Function_Call setter(Portal portal, Expression value, Expression reference, Expression origin)
         {
-            if(reference.type == Expression_Type.operation)
+            if (reference.type == Expression_Type.operation)
                 throw new Exception("Cannot call function on operation.");
 
             return new Property_Function_Call(Property_Function_Type.set, portal, origin != null
@@ -99,8 +93,8 @@ namespace imperative.schema
         public static Expression call_remove(Portal portal, Expression reference, Expression item)
         {
             if (reference.type == Expression_Type.operation)
-                throw new Exception("Cannot call function on operation."); 
-            
+                throw new Exception("Cannot call function on operation.");
+
             return portal.type == Kind.reference
                 ? setter(portal, new Null_Value(), reference, null)
                 : new Property_Function_Call(Property_Function_Type.remove, portal, new List<Expression>
@@ -129,12 +123,9 @@ namespace imperative.schema
 
         public void add_to_block(Expression expression)
         {
-            if (accordian == null)
-                accordian = dungeon.create_block(name, scope, expressions);
-
             accordian.add(expression);
-            if (on_add_expression != null)
-                on_add_expression(this, expression);
+//            if (on_add_expression != null)
+//                on_add_expression(this, expression);
         }
 
         public void add_to_block(IEnumerable<Expression> expressions)
@@ -147,12 +138,9 @@ namespace imperative.schema
 
         public void add_to_block(string division, Expression expression)
         {
-            if (accordian == null)
-                accordian = dungeon.create_block(name, scope, expressions);
-
             accordian.add(division, expression);
-            if (on_add_expression != null)
-                on_add_expression(this, expression);
+//            if (on_add_expression != null)
+//                on_add_expression(this, expression);
         }
     }
 }

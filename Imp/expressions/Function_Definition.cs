@@ -5,8 +5,7 @@ using imperative.schema;
 
 namespace imperative.expressions
 {
-
-    public class Function_Definition : Anonymous_Function
+    public class Function_Definition : Block
     {
         public string name;
         public Dungeon dungeon;
@@ -15,23 +14,10 @@ namespace imperative.expressions
         public Profession return_type { get { return minion.return_type; } }
         public bool is_abstract { get { return minion.is_abstract; } }
         public List<Expression> expressions { get { return minion.expressions; } }
-
-        //public Function_Definition(string name, Dungeon dungeon, List<Parameter> parameters, List<Expression> expressions, Signature return_type = null)
-        //    : base(parameters, expressions, return_type)
-        //{
-        //    this.name = name;
-        //    this.dungeon = dungeon;
-        //    rail = dungeon.rail;
-
-        //    minion = new Minion(name, dungeon)
-        //        {
-        //            return_type = _return_type,
-        //            expressions = expressions
-        //        };
-        //}
+        public List<Parameter> parameters { get { return minion.parameters; } }
 
         public Function_Definition(Minion minion)
-            : base(minion.parameters, minion.expressions, minion.return_type)
+            : base(Expression_Type.function_definition)
         {
             this.minion = minion;
             name = minion.name;

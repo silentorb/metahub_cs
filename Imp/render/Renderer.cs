@@ -20,6 +20,11 @@ namespace metahub.render
             return indentation + text + "\n";
         }
 
+        public string get_indentation()
+        {
+            return indentation;
+        }
+
         public Renderer indent()
         {
             ++depth;

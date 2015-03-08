@@ -56,6 +56,8 @@
     <Compile Include="render\Renderer.cs" />
     <Compile Include="render\Target.cs" />
     <Compile Include="render\targets\Cpp.cs" />
+    <Compile Include="render\targets\Csharp.cs" />
+    <Compile Include="render\targets\Java.cs" />
     <Compile Include="render\targets\JavaScript.cs" />
     <Compile Include="render\targets\PHP.cs" />
     <Compile Include="render\Target_Configuration.cs" />

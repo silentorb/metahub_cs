@@ -15,10 +15,10 @@ namespace imp_test.tests
         public void test_simple()
         {
             var target = new JavaScript();
-            var overlord = Imp_Fixture.create_overlord(target, "simple.imp");
+            var overlord = Imp_Fixture.create_overlord(target, "imp.simple.imp");
             var output = target.generate();
             var goal = Utility.load_resource("js.simple.js");
-            Assert.AreEqual(goal, output);
+            Utility.diff(goal, output);
         }
     }
 }

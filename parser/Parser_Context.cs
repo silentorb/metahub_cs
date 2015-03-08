@@ -11,7 +11,6 @@ namespace parser
         public bool debug = false;
         public bool draw_offsets = false;
         protected Definition definition;
-        //  List<Match> history;
         public Match last_success;
 
         public Parser_Context(Definition definition)
@@ -22,8 +21,6 @@ namespace parser
         public Result parse(string text, Pattern start, bool silent = true)
         {
             this.text = text;
-            //if (definition.patterns.Count == 0)
-            //    throw new Exception("Unable to parse; definition does not have any patterns.");
 
             var result = start.test(new Position(this), 0);
             if (result.success)
@@ -81,14 +78,8 @@ namespace parser
                 return previous.start;
             }
 
-            //    var previous = match.last_success;
-            //    if (previous == null) {
             messages.Add("cannot rewind " + pattern.name + ", No other rewind options.");
             return null;
-            //    }
-
-            //    messages.Add("cannot rewind " + pattern.name + ", looking for earlier repetition.");
-            //    return previous.pattern.rewind(previous, messages);
         }
     }
 }

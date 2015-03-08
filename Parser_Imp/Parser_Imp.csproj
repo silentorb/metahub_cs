@@ -5,11 +5,11 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{0F6E1EC8-D551-4AB7-915E-41479E9EDF5E}</ProjectGuid>
+    <ProjectGuid>{A8555236-C761-42AC-95CA-443475025A15}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>imp_test</RootNamespace>
-    <AssemblyName>Imp_Test</AssemblyName>
+    <RootNamespace>Parser_Imp</RootNamespace>
+    <AssemblyName>Parser_Imp</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -31,9 +31,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="nunit.framework, Version=2.6.4.14350, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77, processorArchitecture=MSIL">
-      <HintPath>..\packages\NUnit.2.6.4\lib\nunit.framework.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -43,33 +40,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="fixtures\Imp_Fixture.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="tests\Cpp_Test.cs" />
-    <Compile Include="tests\Expression_Test.cs" />
-    <Compile Include="tests\JavaScript_Test.cs" />
-    <Compile Include="Utility.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Imp\Imp.csproj">
-      <Project>{72BB0D03-764D-4799-9380-BBA1A8BE7243}</Project>
-      <Name>Imp</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Parser\Parser.csproj">
-      <Project>{80BEAC71-8BE8-48C5-B109-BAB3F38F6D9F}</Project>
-      <Name>Parser</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="packages.config" />
-    <EmbeddedResource Include="resources\imp\simple.imp" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="resources\js\simple.js" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="resources\cpp\pizza.h" />
-    <EmbeddedResource Include="resources\cpp\pizza.cpp" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

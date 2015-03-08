@@ -270,9 +270,9 @@ namespace imperative.summoner
 
                 case "return":
                     return new Statement("return", source.patterns[1].patterns.Length == 0
-                                                       ? null
-                                                       : process_expression(source.patterns[1].patterns[0], context)
-                        );
+                        ? null
+                        : process_expression(source.patterns[1].patterns[0], context)
+                    );
 
                 case "declare_variable":
                     return process_declare_variable(source, context);
@@ -505,7 +505,11 @@ namespace imperative.summoner
 
         private Parameter process_parameter(Pattern_Source source, Context context)
         {
-            return new Parameter(new Symbol(source.patterns[0].text, new Profession(Kind.unknown), null));
+            var type = source.patterns[1].patterns[0].patterns.Length > 0
+                ? parse_type2(source.patterns[1].patterns[0].patterns[3], context)
+                : new Profession(Kind.unknown);
+
+            return new Parameter(new Symbol(source.patterns[0].text, type, null));
         }
 
         private Profession parse_type(Pattern_Source source, Context context)

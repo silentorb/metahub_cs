@@ -5,27 +5,10 @@ namespace parser
 {
     public class Bootstrap : Parser_Context
     {
-
-        //  public Bootstrap() { }
-
-        //public class Pattern_Source
-        //{
-        //    public string type;
-        //    public string text;
-        //    public string name;
-        //    public Pattern_Source[] patterns;
-        //    public Pattern_Source pattern;
-        //    public Pattern_Source divider;
-        //    public Pattern_Source value;
-        //    public int? min;
-        //    public int? max;
-        //}
-
         public Bootstrap(Definition definition)
             : base(definition)
         {
         }
-
 
         public override object perform_action(string name, Pattern_Source data, Match match)
         {

@@ -11,6 +11,7 @@ namespace imperative.expressions
 {
 
     public delegate Expression Expression_Generator(Summoner.Context context);
+    public delegate bool Expression_Check(Expression expression);
 
     [DebuggerDisplay("{debug_string}")]
     public abstract class Expression
@@ -135,5 +136,35 @@ namespace imperative.expressions
         //        throw new Exception("Set next not implemented.");
         //    }
         //}
+
+        public List<Expression> find(Expression_Type expression_type)
+        {
+            var result = new List<Expression>();
+
+            foreach (var expression in children)
+            {
+                if (expression.type== expression_type)
+                    result.Add(expression);
+
+                result.AddRange(expression.find(expression_type));
+            }
+
+            return result;
+        }
+
+        public List<Expression> find(Expression_Check check)
+        {
+            var result = new List<Expression>();
+
+            foreach (var expression in children)
+            {
+                if (check(expression))
+                    result.Add(expression);
+
+                result.AddRange(expression.find(check));
+            }
+
+            return result;
+        }
     }
 }

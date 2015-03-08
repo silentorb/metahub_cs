@@ -505,7 +505,7 @@ namespace imperative.summoner
 
         private Parameter process_parameter(Pattern_Source source, Context context)
         {
-            var type = source.patterns[1].patterns[0].patterns.Length > 0
+            var type = source.patterns[1].patterns.Length > 0
                 ? parse_type2(source.patterns[1].patterns[0].patterns[3], context)
                 : new Profession(Kind.unknown);
 

@@ -62,14 +62,18 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
-    <EmbeddedResource Include="resources\imp\simple.imp" />
+    <EmbeddedResource Include="resources\imp\pizza.imp" />
+    <EmbeddedResource Include="resources\imp\anonymous_minion.imp" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="resources\js\simple.js" />
+    <EmbeddedResource Include="resources\js\pizza.js" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="resources\cpp\pizza.h" />
     <EmbeddedResource Include="resources\cpp\pizza.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="resources\js\anonymous_minion.js" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -23,6 +23,11 @@ namespace imperative.expressions
             name = minion.name;
             dungeon = minion.dungeon;
         }
+
+        public override IEnumerable<Expression> children
+        {
+            get { return expressions; }
+        }
     }
 
 }

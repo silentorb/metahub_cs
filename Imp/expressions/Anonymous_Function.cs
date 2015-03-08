@@ -22,5 +22,10 @@ namespace imperative.expressions
         {
             return minion.return_type;
         }
+
+        public override IEnumerable<Expression> children
+        {
+            get { return expressions; }
+        }
     }
 }

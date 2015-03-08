@@ -15,7 +15,7 @@ namespace imp_test.tests
         public void test_simple()
         {
             var target = new Cpp();
-            var overlord = Imp_Fixture.create_overlord(target, "imp.simple.imp");
+            var overlord = Imp_Fixture.create_overlord(target, "imp.pizza.imp");
             var dungeon = overlord.get_dungeon("Pizza");
             var output_h = target.create_header_file(dungeon);
             var output_cpp = target.create_class_file(dungeon);

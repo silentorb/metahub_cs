@@ -68,7 +68,7 @@ closed_expression = "(" trim expression ")"
 
 expression = @(expression_part, operation_separator, 1, 0)
 
-namespace = "module" ws id trim "{" trim @(class, newlines, 0, 0) trim "}"
+namespace = "namespace" ws id trim "{" trim @(class, newlines, 0, 0) trim "}"
 
 function_definition = @(function_attribute, none, 0, 1) id trim "(" @(declare_symbol, comma, 0, 0) ")" @(type_info, none, 0, 1) @(optional_long_block, none, 0, 1)
 

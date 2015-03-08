@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using imperative;
-using metahub.render.targets.js;
+using metahub.render.targets;
 
 namespace imp
 {
@@ -31,7 +31,7 @@ namespace imp
                 }
             }
 
-            var overlord = new Overlord(new Js_Target());
+            var overlord = new Overlord(new JavaScript());
             var files = Directory.Exists(input)
                 ? aggregate_files(input)
                 : new List<string> { input };

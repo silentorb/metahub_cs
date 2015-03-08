@@ -3,9 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using imperative;
 using imperative.schema;
-
-using metahub.render.targets.cpp;
-using metahub.render.targets.js;
+using metahub.render.targets;
 using metahub.render.targets.php;
 
 namespace metahub.render
@@ -21,10 +19,10 @@ namespace metahub.render
                     return new Cpp(minion);
 
                 case "js":
-                    return new Js_Target(minion);
+                    return new JavaScript(minion);
 
                 case "php":
-                    return new Php_Target(minion);
+                    return new PHP(minion);
 
                 default:
                     throw new Exception("Unsupported target: " + target_name + ".");

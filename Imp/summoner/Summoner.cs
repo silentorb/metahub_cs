@@ -217,7 +217,7 @@ namespace imperative.summoner
             if (!as_stub)
                 return;
 
-            var type_info = parse_type2(source.patterns[2], context);
+            var type_info = parse_type2(source.patterns[1].patterns[3], context);
             var portal_name = source.patterns[0].text;
             if (!context.dungeon.has_portal(portal_name))
                 context.dungeon.add_portal(new Portal(portal_name, type_info));

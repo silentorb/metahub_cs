@@ -1,4 +1,5 @@
 using imperative;
+using imperative.render;
 using imperative.schema;
 using imperative.expressions;
 
@@ -10,6 +11,7 @@ namespace metahub.render
         protected int line_count = 0;
         public Overlord overlord;
         public Transmuter transmuter;
+        public Target_Configuration config;
 
         public Target(Overlord overlord)
         {

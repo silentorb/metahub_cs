@@ -51,13 +51,14 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <Compile Include="render\Common_Target.cs" />
     <Compile Include="render\Generator.cs" />
     <Compile Include="render\Renderer.cs" />
     <Compile Include="render\Target.cs" />
-    <Compile Include="render\targets\cpp\Cpp.cs" />
-    <Compile Include="render\targets\cpp\Cpp_Transmuter.cs" />
-    <Compile Include="render\targets\js\Js_Target.cs" />
-    <Compile Include="render\targets\php\Php_Target.cs" />
+    <Compile Include="render\targets\Cpp.cs" />
+    <Compile Include="render\targets\JavaScript.cs" />
+    <Compile Include="render\targets\PHP.cs" />
+    <Compile Include="render\Target_Configuration.cs" />
     <Compile Include="render\Transmuter.cs" />
     <Compile Include="schema\Accordian.cs" />
     <Compile Include="schema\Configuration.cs" />

@@ -1,0 +1,30 @@
+﻿none = /&*/
+ws = /\s+/
+trim = /\s*/
+final_trim = /\s*$/
+newlines = /(\s*\n)+\s*/
+one_or_no_newline = /[ \t]*(\r\n)?[ \t]*/
+comma = ","
+spaces = /[ \t]+/
+path_separator = "."
+id = /[\$a-zA-Z0-9_]+/
+comma_or_newline = /\s*((\s*\n)+|,)\s*/
+semicolon_or_newline = /\s*((\s*\n)+|;)\s*/
+line_comment = "//[^\r\n]*"
+string = ('"' /[^"]*/ '"') | ("'" /[^']*/ "'")
+bool = "true" | "false"
+int = /-?[0-9]+/
+float = /-?([0-9]*\.)?[0-9]+f?/
+operator = '+' | '-' | '/' | '*' | '<=' | '>=' | '<' | '>' | '==' | '!=' | '&&' | '||' | /\$\w+/
+set_operator = '=' | '+=' | '-=' | '*=' | '/=' | '@='
+
+block_start = "{"
+block_end = "}"
+
+group_start = "("
+group_end = ")"
+
+array_start = "["
+array_end = "]"
+
+type_separator = ":"

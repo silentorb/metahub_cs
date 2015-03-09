@@ -171,8 +171,8 @@ namespace metahub.render.targets
 
         protected override string render_this()
         {
-            var self = current_minion.scope.find_or_null("self");
-            return self != null 
+            return current_minion.GetType() == typeof(Ethereal_Minion) 
+                && current_minion.scope.find_or_null("self") != null
                 ? "self" 
                 : "this";
         }

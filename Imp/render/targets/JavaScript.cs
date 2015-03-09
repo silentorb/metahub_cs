@@ -168,6 +168,15 @@ namespace metahub.render.targets
             return render.get_indentation() + definition.name + ": function(" + definition.parameters.Select(p => p.symbol.name).join(", ") + ")"
                 + render_minion_scope(minion);
         }
+
+        protected override string render_this()
+        {
+            var self = current_minion.scope.find_or_null("self");
+            return self != null 
+                ? "self" 
+                : "this";
+        }
+
 //        private string render_expression(Expression expression, Expression parent = null)
 //        {
 //            string result;

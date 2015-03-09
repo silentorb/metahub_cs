@@ -28,6 +28,7 @@ namespace imperative.render
 
         protected Realm current_realm;
         protected Dungeon current_dungeon;
+        protected Minion_Base current_minion;
         protected List<Dictionary<string, Profession>> scopes = new List<Dictionary<string, Profession>>();
         protected Dictionary<string, Profession> current_scope;
 
@@ -77,7 +78,7 @@ namespace imperative.render
                     break;
 
                 case Expression_Type.self:
-                    result = "this";
+                    result = render_this();
                     break;
 
                 case Expression_Type.null_value:
@@ -128,11 +129,16 @@ namespace imperative.render
             return result;
         }
 
+        virtual protected string render_this()
+        {
+            return "this";
+        }
+
         virtual protected string render_portal(Portal_Expression portal_expression)
         {
             var result = portal_expression.portal.name;
             if (portal_expression.parent.next == null)
-                result = "this." + result;
+                result = render_this() + "." + result;
 
             if (portal_expression.index != null)
                 result += "[" + render_expression(portal_expression.index) + "]";
@@ -360,7 +366,7 @@ namespace imperative.render
                 ? render_expression(expression.reference) + "."
                 : "";
 
-            ref_full = "this." + ref_full;
+            ref_full = render_this() + "." + ref_full;
 
             var args = expression.args.Select(e => render_expression(e)).join(", ");
             var portal = expression.portal;
@@ -374,7 +380,7 @@ namespace imperative.render
         }
 
         protected abstract string render_platform_function_call(Platform_Function expression, Expression parent);
-        
+
         virtual protected string render_function_call(Class_Function_Call expression, Expression parent)
         {
             var ref_string = expression.reference != null
@@ -408,14 +414,14 @@ namespace imperative.render
             return "new " + render_dungeon_path(expression.dungeon) + "(" + args + ")";
         }
 
-//        protected abstract string render_function_definition(Function_Definition definition);
-//        {
-//            if (definition.is_abstract)
-//                return "";
-//
-//            return render.get_indentation() + definition.name + ": function(" + definition.parameters.Select(p => p.symbol.name).join(", ") + ")"
-//                + render_minion_scope(definition.minion);
-//        }
+        //        protected abstract string render_function_definition(Function_Definition definition);
+        //        {
+        //            if (definition.is_abstract)
+        //                return "";
+        //
+        //            return render.get_indentation() + definition.name + ": function(" + definition.parameters.Select(p => p.symbol.name).join(", ") + ")"
+        //                + render_minion_scope(definition.minion);
+        //        }
 
         virtual protected string render_anonymous_function(Anonymous_Function definition)
         {
@@ -425,15 +431,19 @@ namespace imperative.render
 
         virtual protected string render_minion_scope(Minion_Base minion)
         {
-            return render_scope2(() =>
-            {
-                foreach (var parameter in minion.parameters)
-                {
-                    current_scope[parameter.symbol.name] = parameter.symbol.profession;
-                }
+            current_minion = minion;
+            var result = render_scope2(() =>
+               {
+                   foreach (var parameter in minion.parameters)
+                   {
+                       current_scope[parameter.symbol.name] = parameter.symbol.profession;
+                   }
 
-                return render_statements(minion.expressions);
-            });
+                   return render_statements(minion.expressions);
+               });
+
+            current_minion = null;
+            return result;
         }
 
         virtual protected string render_realm(Realm realm, String_Delegate action)

@@ -6,11 +6,12 @@ using metahub.schema;
 
 namespace imperative.expressions
 {
-    public class Platform_Function : Function_Call
+    public class Platform_Function : Abstract_Function_Call
     {
         public string name;
         public Profession profession;
         public Platform_Function_Info info;
+        public override string get_name() { return name; }
 
         public Platform_Function(string name, Expression reference = null, IEnumerable<Expression> args = null)
             : base(Expression_Type.platform_function, reference, args)

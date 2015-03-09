@@ -596,7 +596,7 @@ namespace metahub.render.targets
                     break;
 
                 case Expression_Type.function_call:
-                    result = render_function_call((Class_Function_Call)expression, parent);
+                    result = render_function_call((Method_Call)expression, parent);
                     break;
 
                 case Expression_Type.property_function_call:
@@ -810,7 +810,7 @@ namespace metahub.render.targets
             }
         }
 
-        string render_function_call(Class_Function_Call expression, Expression parent)
+        string render_function_call(Method_Call expression, Expression parent)
         {
             var ref_string = expression.reference != null
                                  ? render_expression(expression.reference)

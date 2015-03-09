@@ -20,7 +20,7 @@ namespace imperative.expressions
 
         public override Profession get_profession()
         {
-            return minion.return_type;
+            return new Profession(Kind.function);
         }
 
         public override IEnumerable<Expression> children

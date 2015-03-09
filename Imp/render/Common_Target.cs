@@ -63,7 +63,7 @@ namespace imperative.render
                     break;
 
                 case Expression_Type.function_call:
-                    result = render_function_call((Class_Function_Call)expression, parent);
+                    result = render_function_call((Abstract_Function_Call)expression, parent);
                     break;
 
                 case Expression_Type.property_function_call:
@@ -381,7 +381,7 @@ namespace imperative.render
 
         protected abstract string render_platform_function_call(Platform_Function expression, Expression parent);
 
-        virtual protected string render_function_call(Class_Function_Call expression, Expression parent)
+        virtual protected string render_function_call(Abstract_Function_Call expression, Expression parent)
         {
             var ref_string = expression.reference != null
                ? render_expression(expression.reference)
@@ -391,7 +391,7 @@ namespace imperative.render
                 ? ref_string + "."
                 : "";
 
-            return ref_full + expression.name + "(" +
+            return ref_full + expression.get_name() + "(" +
                 expression.args.Select(a => render_expression(a))
                 .join(", ") + ")";
         }

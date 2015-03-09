@@ -4,7 +4,6 @@ using System.Linq;
 using metahub.logic.schema;
 using metahub.logic.nodes;
 using metahub.schema;
-using Function_Call = imperative.expressions.Class_Function_Call;
 
 namespace imperative.code
 {

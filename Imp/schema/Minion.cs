@@ -110,7 +110,7 @@ namespace imperative.schema
             if (minion.parameters.Count > 0)
                 args.Add(new Portal_Expression(caller.all_portals["hub"]));
 
-            return new Class_Function_Call(minion, reference, args);
+            return new Method_Call(minion, reference, args);
         }
 
         public Parameter add_parameter(string name, Profession profession, Expression default_value = null)

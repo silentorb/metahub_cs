@@ -156,10 +156,10 @@ namespace imperative.summoner
         {
             switch (source.type)
             {
-//                case "abstract_function":
-//                    if (as_stub)
-//                        process_abstract_function(source, context);
-//                    break;
+                //                case "abstract_function":
+                //                    if (as_stub)
+                //                        process_abstract_function(source, context);
+                //                    break;
 
                 case "function_definition":
                     process_function_definition(source, context, as_stub);
@@ -171,19 +171,19 @@ namespace imperative.summoner
             }
         }
 
-//        private void process_abstract_function(Pattern_Source source, Context context)
-//        {
-//            var minion = context.dungeon.spawn_minion(
-//                source.patterns[0].text,
-//                source.patterns[3].patterns.Select(p => process_parameter(p, context)).ToList()
-//                );
-//
-//            minion.is_abstract = true;
-//
-//            var return_type = source.patterns[6];
-//            if (return_type.patterns.Length > 0)
-//                minion.return_type = parse_type(return_type.patterns[0], context);
-//        }
+        //        private void process_abstract_function(Pattern_Source source, Context context)
+        //        {
+        //            var minion = context.dungeon.spawn_minion(
+        //                source.patterns[0].text,
+        //                source.patterns[3].patterns.Select(p => process_parameter(p, context)).ToList()
+        //                );
+        //
+        //            minion.is_abstract = true;
+        //
+        //            var return_type = source.patterns[6];
+        //            if (return_type.patterns.Length > 0)
+        //                minion.return_type = parse_type(return_type.patterns[0], context);
+        //        }
 
         private void process_function_definition(Pattern_Source source, Context context, bool as_stub = false)
         {
@@ -386,8 +386,10 @@ namespace imperative.summoner
                                                      .ToList();
             }
 
+            var index = -1;
             foreach (var pattern in patterns)
             {
+                ++index;
                 var token = pattern.text;
                 Expression array_access = pattern.patterns.Length > 0
                                               ? process_expression(pattern.patterns[0], context)
@@ -411,11 +413,18 @@ namespace imperative.summoner
                     var symbol = context.scope.find_or_null(token);
                     if (symbol != null)
                     {
-                        next = new Variable(symbol) { index = array_access };
-                        var profession = next.get_profession();
-                        dungeon = profession != null
-                            ? profession.dungeon
-                            : next.get_profession().dungeon;
+                        if (index == patterns.Length - 1 && symbol.profession.type == Kind.function)
+                        {
+                            next = new Dynamic_Function_Call(symbol.name, null, args);
+                        }
+                        else
+                        {
+                            next = new Variable(symbol) { index = array_access };
+                            var profession = next.get_profession();
+                            dungeon = profession != null
+                                ? profession.dungeon
+                                : next.get_profession().dungeon;
+                        }
                     }
                     else
                     {
@@ -489,7 +498,7 @@ namespace imperative.summoner
                           : null;
 
             if (minion != null)
-                return new Class_Function_Call(minion, result, args);
+                return new Method_Call(minion, result, args);
 
             if (Minion.platform_specific_functions.Contains(token))
             {

@@ -5,12 +5,14 @@ using imperative.schema;
 
 namespace imperative.expressions
 {
-    public abstract class Function_Call : Expression
+    public abstract class Abstract_Function_Call : Expression
     {
         public List<Expression> args;
         public Expression reference;
 
-        protected Function_Call(Expression_Type type, Expression reference = null, IEnumerable<Expression> args = null)
+        public abstract string get_name();
+
+        protected Abstract_Function_Call(Expression_Type type, Expression reference = null, IEnumerable<Expression> args = null)
             : base(type)
         {
             this.args = args != null ? args.ToList() : new List<Expression>();

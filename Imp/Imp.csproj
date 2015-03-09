@@ -43,6 +43,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="expressions\Dynamic_Function_Call.cs" />
     <Compile Include="expressions\Profession_Expression.cs" />
     <Compile Include="Overlord.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -87,14 +88,14 @@
     <Compile Include="expressions\Anonymous_Function.cs" />
     <Compile Include="expressions\Assignment.cs" />
     <Compile Include="expressions\Class_Definition.cs" />
-    <Compile Include="expressions\Class_Function_Call.cs" />
+    <Compile Include="expressions\Method_Call.cs" />
     <Compile Include="expressions\Comment.cs" />
     <Compile Include="expressions\Create_Array.cs" />
     <Compile Include="expressions\Declare_Variable.cs" />
     <Compile Include="expressions\Expression.cs" />
     <Compile Include="expressions\Expression_Type.cs" />
     <Compile Include="expressions\Flow_Control.cs" />
-    <Compile Include="expressions\Function_Call.cs" />
+    <Compile Include="expressions\Abstract_Function_Call.cs" />
     <Compile Include="expressions\Function_Definition.cs" />
     <Compile Include="expressions\Insert.cs" />
     <Compile Include="expressions\Instantiate.cs" />

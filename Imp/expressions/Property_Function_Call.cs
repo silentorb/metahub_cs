@@ -14,7 +14,7 @@ namespace imperative.expressions
         remove
     }
 
-    public class Property_Function_Call : Class_Function_Call
+    public class Property_Function_Call : Method_Call
     {
         public Portal portal;
         public Property_Function_Type function_type;

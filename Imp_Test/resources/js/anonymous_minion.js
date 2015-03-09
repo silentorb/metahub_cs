@@ -11,6 +11,7 @@ test.Pizza.prototype = {
 		var anon = function(topping) {
 			self.toppings.push(topping)
 		}
+		
 		anon(topping)
 	}
 }

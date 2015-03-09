@@ -5,11 +5,12 @@ using imperative.schema;
 
 namespace imperative.expressions
 {
-    public class Class_Function_Call : Function_Call
+    public class Method_Call : Abstract_Function_Call
     {
         public string name;
         public Minion minion;
         public Profession profession;
+        public override string get_name() { return name; }
 
         //public Class_Function_Call(string name, Expression reference = null, IEnumerable<Expression> args = null)
         //    : base(Expression_Type.function_call, reference, args)
@@ -17,26 +18,26 @@ namespace imperative.expressions
         //    this.name = name;
         //}
 
-        public Class_Function_Call(Expression reference = null, IEnumerable<Expression> args = null)
+        public Method_Call(Expression reference = null, IEnumerable<Expression> args = null)
             : base(Expression_Type.function_call, reference, args)
         {
         }
 
-        public Class_Function_Call(Minion minion, Expression reference = null, IEnumerable<Expression> args = null)
+        public Method_Call(Minion minion, Expression reference = null, IEnumerable<Expression> args = null)
             : base(Expression_Type.function_call, reference, args)
         {
             this.minion = minion;
             name = minion.name;
         }
 
-        public Class_Function_Call(Minion minion, Expression reference, Expression arg)
+        public Method_Call(Minion minion, Expression reference, Expression arg)
             : base(Expression_Type.function_call, reference, new[] { arg })
         {
             this.minion = minion;
             name = minion.name;
         }
 
-        public Class_Function_Call set_reference(Expression reference)
+        public Method_Call set_reference(Expression reference)
         {
             this.reference = reference;
             return this;
@@ -51,7 +52,7 @@ namespace imperative.expressions
 
         public override Expression clone()
         {
-            return new Class_Function_Call(minion, reference, args);
+            return new Method_Call(minion, reference, args);
         }
     }
 

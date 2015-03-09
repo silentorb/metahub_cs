@@ -53,7 +53,7 @@ namespace metahub.jackolantern.carvers
                     used_portals[endpoint.portal] = endpoint;
 
                     var minion = process_endpoint(portal, constraint, endpoint, conflict_class);
-                    endpoint.portal.setter.add_to_block("post", new Class_Function_Call(minion, null,
+                    endpoint.portal.setter.add_to_block("post", new Method_Call(minion, null,
                         new Variable(endpoint.portal.setter.parameters[0].symbol)));
                 }
             }

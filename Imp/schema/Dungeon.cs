@@ -5,7 +5,6 @@ using System.Linq;
 using imperative.expressions;
 using metahub.schema;
 using Expression = imperative.expressions.Expression;
-using Function_Call = imperative.expressions.Class_Function_Call;
 using Namespace = imperative.expressions.Namespace;
 using Parameter = imperative.expressions.Parameter;
 using Variable = imperative.expressions.Variable;
@@ -281,7 +280,7 @@ namespace imperative.schema
                     break;
 
                 case Expression_Type.function_call:
-                    var definition = (Function_Call)expression;
+                    var definition = (Abstract_Function_Call)expression;
                     transform_expressions(definition.args, expression);
                     break;
 
@@ -348,7 +347,7 @@ namespace imperative.schema
 
                 case Expression_Type.function_call:
                     {
-                        var definition = (Function_Call)expression;
+                        var definition = (Abstract_Function_Call)expression;
                         analyze_expressions(definition.args);
                     }
                     break;

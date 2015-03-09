@@ -10,6 +10,7 @@ namespace metahub.schema
         list,
         Float,
         Bool,
-        unknown
+        unknown,
+        function
     }
 }

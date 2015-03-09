@@ -43,12 +43,27 @@ namespace metahub.render
 
         public Renderer indent()
         {
-            return render.indent();
+            var tab = "\t";
+            if (config.space_tabs)
+            {
+                tab = "";
+
+                for (var i = 0; i < config.indent; ++i)
+                {
+                    tab += " ";
+                }
+            }
+            
+            return render.indent(tab);
         }
 
         public Renderer unindent()
         {
-            return render.unindent();
+            var offset = config.space_tabs
+                ? config.indent
+                : 1;
+
+            return render.unindent(offset);
         }
 
         public string newline(int amount = 1)

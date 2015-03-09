@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using imperative.expressions;
+using imperative.schema;
 using metahub.render;
 
 namespace imperative.render.targets
@@ -14,9 +15,37 @@ namespace imperative.render.targets
         {
             config = new Target_Configuration()
                 {
-                    statement_terminator = ";"
+                    statement_terminator = ";",
+                    dependency_keyword = "using",
+                    space_tabs = true,
+                    indent = 4,
+                    block_brace_same_line = false,
+                    explicit_public_members = true,
+                    type_mode = Type_Mode.required_prefix
                 };
         }
+
+        public string generate_dungeon_file_contents(Dungeon dungeon)
+        {
+            return render_dependencies(dungeon) + newline()
+                   + render_statements(dungeon.code);
+        }
+
+        virtual protected string render_dependencies(Dungeon dungeon)
+        {
+            var dependencies = new[]
+                {
+                    "System",
+                    "System.Collections.Generic",
+                    "System.Linq",
+                    "System.Text"
+                };
+
+            return dependencies.Select(d =>
+                line(config.dependency_keyword + " " + d + terminate_statement())
+            ).join("");
+        }
+
         override protected string render_platform_function_call(Platform_Function expression, Expression parent)
         {
             var ref_string = expression.reference != null
@@ -36,7 +65,7 @@ namespace imperative.render.targets
                     {
                         var first = render_expression(expression.args[0]);
                         //var dereference = is_pointer(expression.args.Last().get_signature()) ? "*" : "";
-                        return ref_full + "push_back(" + first + ")";
+                        return ref_full + "Add(" + first + ")";
                     }
 
                 case "contains":
@@ -80,6 +109,14 @@ namespace imperative.render.targets
             }
         }
 
+        protected override string listify(string type)
+        {
+            return "List<" + type + ">";
+        }
 
+        protected override string instantiate_list(Portal portal)
+        {
+            return "new " + render_profession(portal.profession) + "()";
+        }
     }
 }

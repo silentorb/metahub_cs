@@ -137,7 +137,7 @@ namespace imperative.render
         virtual protected string render_portal(Portal_Expression portal_expression)
         {
             var result = portal_expression.portal.name;
-            if (portal_expression.parent.next == null)
+            if (!config.implicit_this && (portal_expression.parent == null || portal_expression.parent.next == null))
                 result = render_this() + "." + result;
 
             if (portal_expression.index != null)
@@ -157,7 +157,7 @@ namespace imperative.render
 
                 case Expression_Type.class_definition:
                     var definition = (Class_Definition)statement;
-                    return class_definition(definition.dungeon, definition.body);
+                    return render_dungeon(definition.dungeon, definition.body);
 
                 case Expression_Type.function_definition:
                     return render_function_definition((Function_Definition)statement);
@@ -167,12 +167,6 @@ namespace imperative.render
 
                 case Expression_Type.iterator:
                     return render_iterator_block((Iterator)statement);
-
-                //case Expression_Type.function_call:
-                //    return line(render_function_call((Class_Function_Call)statement, null) + ";");
-
-                //case Expression_Type.platform_function:
-                //    return line(render_platform_function_call((Platform_Function)statement, null) + ";");
 
                 case Expression_Type.assignment:
                     return render_assignment((Assignment)statement);
@@ -194,7 +188,6 @@ namespace imperative.render
 
                 default:
                     return line(render_expression(statement) + terminate_statement());
-                //throw new Exception("Unsupported statement type: " + statement.type + ".");
             }
         }
 
@@ -208,17 +201,16 @@ namespace imperative.render
             return statements.Select(render_statement).join(glue);
         }
 
-        virtual protected string class_definition(Dungeon dungeon, IEnumerable<Expression> statements)
+        virtual protected string render_dungeon(Dungeon dungeon, IEnumerable<Expression> statements)
         {
             if (dungeon.is_abstract)
                 return "";
 
             current_dungeon = dungeon;
 
-            var result = line(render_dungeon_path(dungeon) + " = function() {}");
-            var intro = render_dungeon_path(dungeon) + ".prototype =";
-            result += render_scope(intro, () =>
-                render_properties(dungeon)
+            var intro = "public class " + render_dungeon_path(dungeon);
+            var result = render_scope(intro, () =>
+                render_properties(dungeon) + newline()
                 + render_statements(statements, newline())
             );
 
@@ -229,21 +221,34 @@ namespace imperative.render
 
         virtual protected string render_properties(Dungeon dungeon)
         {
-            var result = "";
-            foreach (var portal in dungeon.core_portals.Values)
-            {
-                result += line(portal.name + ": " + get_default_value(portal) + ",");
-            }
+            return dungeon.core_portals.Values.Select(render_property).join("");
+        }
 
-            return result;
+        virtual protected string render_property(Portal portal)
+        {
+            var main = portal.name;
+            if (config.type_mode == Type_Mode.required_prefix)
+                main = render_profession(portal.profession) + " " + main;
+            else if (config.type_mode == Type_Mode.optional_suffix)
+                main += ":" + render_profession(portal.profession);
+
+            if (config.explicit_public_members)
+                main = "public " + main;
+
+            return line(main + " = " + get_default_value(portal) + terminate_statement());
         }
 
         virtual protected string get_default_value(Portal portal)
         {
             if (portal.is_list)
-                return "[]";
+                return instantiate_list(portal);
 
             return render_literal(portal.get_default_value(), portal.get_target_profession());
+        }
+
+        protected virtual string instantiate_list(Portal portal)
+        {
+            return "[]";
         }
 
         virtual protected string render_variable_declaration(Declare_Variable declaration)
@@ -366,7 +371,8 @@ namespace imperative.render
                 ? render_expression(expression.reference) + "."
                 : "";
 
-            ref_full = render_this() + "." + ref_full;
+            if (!config.implicit_this)
+                ref_full = render_this() + "." + ref_full;
 
             var args = expression.args.Select(e => render_expression(e)).join(", ");
             var portal = expression.portal;
@@ -374,9 +380,25 @@ namespace imperative.render
             if (setter != null)
                 return ref_full + setter.name + "(" + args + ")";
 
-            return expression.portal.is_list
-                ? ref_full + portal.name + "." + "push(" + args + ")"
-                : ref_full + portal.name + " = " + args;
+            if (expression.portal.is_list)
+            {
+                Expression reference;
+
+                if (expression.reference != null)
+                {
+                    reference = expression.reference.clone();
+                    reference.next = new Portal_Expression(expression.portal);
+                }
+                else
+                {
+                    reference = new Portal_Expression(expression.portal);
+                }
+
+                var add = new Platform_Function("add", reference, expression.args);
+                return render_expression(add);
+            }
+            
+            return ref_full + portal.name + " = " + args;
         }
 
         protected abstract string render_platform_function_call(Platform_Function expression, Expression parent);
@@ -448,26 +470,21 @@ namespace imperative.render
 
         virtual protected string render_realm(Realm realm, String_Delegate action)
         {
-            if (realm.name == "")
-                return action();
-
-            var result = line("var " + realm.name + " = {}") + newline();
-
+            var space = Generator.get_namespace_path(realm);
             current_realm = realm;
-            var body = action();
+            var result = render_scope(config.namespace_keyword + " " + space.join(config.namespace_separator), action);
+
             current_realm = null;
-
-            if (body == "")
-                return "";
-
-            result += body;
             return result;
         }
 
         virtual protected string render_scope(string intro, String_Delegate action)
         {
             push_scope();
-            var result = line(intro + " {");
+            var result = config.block_brace_same_line
+                ? line(intro + " {")
+                : line(intro) + line("{");
+
             indent();
             result += action();
             unindent();
@@ -479,7 +496,10 @@ namespace imperative.render
         virtual protected string render_scope2(String_Delegate action)
         {
             push_scope();
-            var result = " {" + newline();
+            var result = config.block_brace_same_line
+                ? " {" + newline()
+                : newline() + line("{");
+
             indent();
             result += action();
             unindent();
@@ -541,9 +561,10 @@ namespace imperative.render
             if (definition.is_abstract)
                 return "";
 
-            var intro = (definition.return_type != null ? render_profession(definition.return_type) + " " : "")
-                        + definition.name
-                        + "(" + definition.parameters.Select(render_definition_parameter).join(", ") + ")";
+            var intro = (config.explicit_public_members ? "public " : "")
+                + (definition.return_type != null ? render_profession(definition.return_type) + " " : "")
+                + definition.name
+                + "(" + definition.parameters.Select(render_definition_parameter).join(", ") + ")";
 
             return render_scope(intro, () =>
             {

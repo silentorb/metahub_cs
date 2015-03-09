@@ -25,18 +25,18 @@ namespace metahub.render
             return indentation;
         }
 
-        public Renderer indent()
+        public Renderer indent(string text)
         {
             ++depth;
-            indentation += "\t";
+            indentation += text;
             return this;
         }
 
-        public Renderer unindent()
+        public Renderer unindent(int offset)
         {
             --depth;
             indentation = indentation.Length > 1
-                ? indentation.Substring(0, indentation.Length - 1)
+                ? indentation.Substring(0, indentation.Length - offset)
                 : "";
 
             return this;

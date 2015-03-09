@@ -313,7 +313,7 @@ namespace metahub.render.targets
             return result;
         }
 
-        override protected string class_definition(Dungeon dungeon, IEnumerable<Expression> statements)
+        override protected string render_dungeon(Dungeon dungeon, IEnumerable<Expression> statements)
         {
             var result = "";
 
@@ -330,8 +330,7 @@ namespace metahub.render.targets
             var result = line("namespace " + space.join("::") + " {");
             current_realm = realm;
             indent();
-            result += action()
-                      + unindent().line("}");
+            result += action() + unindent().line("}");
 
             current_realm = null;
             return result;

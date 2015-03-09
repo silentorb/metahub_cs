@@ -18,7 +18,8 @@ namespace metahub.render.targets
         {
             config = new Target_Configuration
                 {
-                    supports_namespaces = false
+                    supports_namespaces = false,
+                    implicit_this = false
                 };
         }
 
@@ -101,7 +102,7 @@ namespace metahub.render.targets
 //            }
 //        }
 
-        override protected string class_definition(Dungeon dungeon, IEnumerable<Expression> statements)
+        override protected string render_dungeon(Dungeon dungeon, IEnumerable<Expression> statements)
         {
             if (dungeon.is_abstract)
                 return "";
@@ -485,5 +486,22 @@ namespace metahub.render.targets
 //            return "new " + full_dungeon_name(expression.dungeon) + "(" + args + ")";
 //        }
 
+        override protected string render_realm(Realm realm, String_Delegate action)
+        {
+            if (realm.name == "")
+                return action();
+
+            var result = line("var " + realm.name + " = {}") + newline();
+
+            current_realm = realm;
+            var body = action();
+            current_realm = null;
+
+            if (body == "")
+                return "";
+
+            result += body;
+            return result;
+        }
     }
 }

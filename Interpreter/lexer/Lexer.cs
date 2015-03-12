@@ -6,7 +6,7 @@ using System.Reflection;
 using System.Text;
 using parser;
 
-namespace interpreter.lexer
+namespace interpreter.runic
 {
     public class Lexer
     {
@@ -19,9 +19,12 @@ namespace interpreter.lexer
             Bootstrap context = new Bootstrap(boot_definition);
 
             var result = context.parse(load_resource("lexer.grammar"), boot_definition.patterns[0], false);
-            //Debug_Info.output(result);
+
             if (!result.success)
+            {
+                Debug_Info.output(result);
                 throw new Exception("Could not load grammar.");
+            }
 
             var match = (Match)result;
 
@@ -31,7 +34,7 @@ namespace interpreter.lexer
 
         public static string load_resource(string filename)
         {
-            var path = "interpreter.resources." + filename;
+            var path = "runic.resources." + filename;
             var assembly = Assembly.GetExecutingAssembly();
 
             var stream = assembly.GetManifestResourceStream(path);

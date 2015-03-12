@@ -1,14 +1,2 @@
-﻿start = trim @(rule, newlines, 1, 0) final_trim
-
-final_trim = /\s*$/
-newlines = /(\s*\n)+\s*/
-id = /[\$a-zA-Z0-9_]+/
-trim = /\s*/
-option_separator = trim "|" trim
-string = ('"' /[^"]*/ '"') | ("'" /[^']*/ "'")
-regex = /\/.*?\/
-group = "(" trim @(option, option_separator, 0, 0) trim ")"
-
-rule = id trim "=" trim @(option, option_separator, 0, 0)
-
-option = id | string | regex | group
+﻿regex = "/" /.*?\\//
+debug = "*"

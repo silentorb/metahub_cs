@@ -124,10 +124,9 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="resources\cpp\list.h" />
-  </ItemGroup>
-  <ItemGroup>
     <None Include="packages.config" />
+    <None Include="resources\imp2.grammar" />
+    <None Include="resources\imp2.lexer" />
     <None Include="resources\imp.grammar" />
   </ItemGroup>
   <ItemGroup>

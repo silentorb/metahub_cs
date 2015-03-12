@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using System.Text.RegularExpressions;
 
 namespace parser
@@ -9,7 +10,7 @@ namespace parser
         string text;
 
         public Regex_Pattern(string text)
-        {
+        {Debug.WriteLine("regex: " + text);
             text = "\\G" + text;
 
             regex = new Regex(text, RegexOptions.Singleline);

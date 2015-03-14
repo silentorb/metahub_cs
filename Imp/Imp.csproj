@@ -83,6 +83,7 @@
     <Compile Include="summoner\expressions\Snippet.cs" />
     <Compile Include="expressions\Block.cs" />
     <Compile Include="summoner\Pre_Summoner.cs" />
+    <Compile Include="summoner\Rune_Summoner.cs" />
     <Compile Include="summoner\Summoner.cs" />
     <Compile Include="summoner\Template.cs" />
     <Compile Include="expressions\Anonymous_Function.cs" />
@@ -114,6 +115,10 @@
     <Compile Include="expressions\Variable.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Interpreter\Runic.csproj">
+      <Project>{B29C3F78-B6F4-462F-88E6-5965513D345E}</Project>
+      <Name>Runic</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Kind\Kind.csproj">
       <Project>{777BFC47-2DF6-4E8E-8545-A2DE56A8620D}</Project>
       <Name>Kind</Name>
@@ -126,7 +131,7 @@
   <ItemGroup>
     <None Include="packages.config" />
     <None Include="resources\imp2.grammar" />
-    <None Include="resources\imp2.lexer" />
+    <None Include="resources\imp.lexer" />
     <None Include="resources\imp.grammar" />
   </ItemGroup>
   <ItemGroup>

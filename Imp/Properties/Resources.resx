@@ -121,4 +121,7 @@
   <data name="imp_grammar" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\resources\imp.grammar;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
   </data>
+  <data name="imp_lexer" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\imp.lexer;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
+  </data>
 </root>

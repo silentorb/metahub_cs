@@ -41,6 +41,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="lexer\Lexer.cs" />
+    <Compile Include="lexer\Regex_Whisper.cs" />
+    <Compile Include="lexer\String_Whisper.cs" />
+    <Compile Include="lexer\Whisper.cs" />
+    <Compile Include="lexer\Rune.cs" />
+    <Compile Include="lexer\Whisper_Group.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

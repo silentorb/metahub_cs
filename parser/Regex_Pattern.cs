@@ -41,5 +41,10 @@ namespace parser
                 };
             //return regex.matched(0);
         }
+
+        public override string get_text()
+        {
+            return text;
+        }
     }
 }

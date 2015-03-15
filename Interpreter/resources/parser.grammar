@@ -8,5 +8,5 @@ spaces = /[ \t]+/
 comma = /\s*,\s*/
 repetition = "@(" trim @(id, comma, 3, 4) trim ")"
 option = id | repetition
-group = @(option, or, 0, 0) | @(option, spaces, 0, 0)
+group = @(option, or, 2, 0) | @(option, spaces, 0, 0)
 rule = id trim "=" trim group

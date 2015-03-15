@@ -52,7 +52,7 @@ namespace runic.lexer
         void load_lexicon(string lexicon)
         {
             var definition = bootstrap();
-            Bootstrap_Legacy context = new Bootstrap_Legacy(definition);
+            Lexer_Bootstrap context = new Lexer_Bootstrap(definition);
 
             var result = context.parse(lexicon, definition.patterns[0], false);
             if (!result.success)
@@ -78,7 +78,12 @@ namespace runic.lexer
             {
                 var name = pattern.patterns[0].text;
                 var whisper = (Whisper_Group)whispers[name];
-                whisper.whispers = pattern.patterns[5].patterns.Select(p => create_sub_whisper(null, p)).ToArray();
+                whisper.whispers = pattern.patterns[5].patterns.Select(p =>
+                    {
+                        var child = create_sub_whisper(p.text, p);
+                        whispers[child.name] = child;
+                        return child;
+                    }).ToArray();
             }
         }
 
@@ -110,7 +115,6 @@ namespace runic.lexer
 
         Whisper create_sub_whisper(string name, Pattern_Source source)
         {
-
             switch (source.type)
             {
                 case "regex":

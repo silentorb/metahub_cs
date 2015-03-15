@@ -5,19 +5,19 @@ using System.Text;
 using parser;
 using runic.Properties;
 using runic.lexer;
+using runic.parser.rhymes;
 
 namespace runic.parser
 {
     public class Parser
     {
-        
-        public Parser()
-        {
-        }
+        public Dictionary<string, Rhyme> rhymes = new Dictionary<string, Rhyme>();
+        public Lexer lexer;
 
-        public Parser(string lexicon)
+        public Parser(Lexer lexer, string grammar)
         {
-            load_grammar(lexicon);
+            this.lexer = lexer;
+            load_grammar(grammar);
         }
 
         static Definition bootstrap()
@@ -42,7 +42,7 @@ namespace runic.parser
         void load_grammar(string lexicon)
         {
             var definition = bootstrap();
-            Bootstrap_Legacy context = new Bootstrap_Legacy(definition);
+            var context = new Parser_Bootstrap(definition);
 
             var result = context.parse(lexicon, definition.patterns[0], false);
             if (!result.success)
@@ -53,11 +53,57 @@ namespace runic.parser
 
             var match = (Match)result;
             var data = match.get_data();
-//            process_lexicon(data.patterns[1].patterns);
+            process_grammar(data.patterns[1].patterns);
         }
+
+        void process_grammar(Pattern_Source[] patterns)
+        {
+            foreach (var pattern in patterns)
+            {
+                var name = pattern.patterns[0].text;
+                rhymes[name] = create_rhyme(pattern);
+            }
+
+            foreach (var pattern in patterns)
+            {
+                var name = pattern.patterns[0].text;
+                var rhyme = rhymes[name];
+                rhyme.initialize(pattern.patterns[4], this);
+            }
+        }
+
+        Rhyme create_rhyme(Pattern_Source pattern)
+        {
+            var name = pattern.patterns[0].text;
+            var group = pattern.patterns[4];
+            var patterns = group.patterns;
+            switch (group.type)
+            {
+                case "and":
+                    if (patterns.Length > 1)
+                        return new And_Rhyme(name);
+
+                    if (patterns[0].type == "repetition")
+                        return new Repetition_Rhyme(name);
+
+                    return new Single_Rhyme(name);
+
+                case "or":
+                    return new Or_Rhyme(name);
+
+            }
+
+            return null;
+        }
+
+        public Rhyme create_child(Pattern_Source pattern)
+        {
+            return null;
+        }
+
         public void read(List<Rune> runes)
         {
-            
+
         }
     }
 }

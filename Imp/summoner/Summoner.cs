@@ -736,7 +736,7 @@ namespace imperative.summoner
         public static void translate_runes(List<Rune> runes)
         {
             if (parser == null)
-                parser = new Parser(Resources.imp2_grammar);
+                parser = new Parser(lexer, Resources.imp2_grammar);
 
             parser.read(runes);
         }

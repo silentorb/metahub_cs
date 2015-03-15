@@ -39,7 +39,9 @@ namespace parser
 
             text = info.success ? color(text, ConsoleColor.White) : color(text, ConsoleColor.Red);
 
-            text = tab + prefix + text;
+            text = tab + prefix + text + " | " + info.pattern.get_text();
+            if (additional.Length > 0)
+                text += " | " + additional;
 
             //if (additional != null)
             //text += " " + additional.replace(/\r?\n/g, color("\\n", ConsoleColor.Magenta))

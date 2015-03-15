@@ -46,6 +46,10 @@ public class Pattern {
 		return match;
   }
 
+    public virtual string get_text()
+    {
+        return "";
+    }
 
 //  Position rewind (Match match, List<string> messages) {
 //    messages.Add("rewind " + type + " " + name + " " + match.start.get_coordinate_string());

@@ -2,7 +2,6 @@ namespace parser
 {
     public class Literal_Pattern : Pattern
     {
-        string value;
         string text;
 
         public Literal_Pattern(string text)
@@ -25,6 +24,11 @@ namespace parser
         override public Pattern_Source get_data(Match match)
         {
             return new Pattern_Source { text = text };
+        }
+
+        public override string get_text()
+        {
+            return text;
         }
     }
 }

@@ -1,6 +1,6 @@
 ﻿start = @(namespace_class, newlines, 1, 0)
 
-namespace_class = namespace | class
+namespace_class = namespace_statement | class_statement
 snippet_entry = @(snippet_function, semicolon_or_newline, 1, 0)
 comma_or_newline = comma | newlines
 
@@ -26,10 +26,10 @@ optional_list_suffix = array_start array_end
 
 statement =
 	declare_variable
-	| if
-	| while
-	| return
-	| for
+	| if_statement
+	| while_statement
+	| return_statement
+	| for_statement
 	| assignment
 	| expression
 
@@ -41,32 +41,29 @@ expression_part =
 	| reference	
 	| closed_expression
 
-
 closed_expression = group_start expression group_end
 
 expression = @(expression_part, operation_separator, 1, 0)
 
-namespace = "namespace" id "{" @(class, newlines, 0, 0) "}"
+namespace_statement = namespace id block_start @(class, newlines, 0, 0) block_end
 
-function_definition = @(function_attribute, 0, 1) id group_start @(declare_symbol, comma, 0, 0) group_end @(type_info, 0, 1) @(optional_long_block, 0, 1)
+function_definition = @(function_attribute, 0, 1) id group_start @(declare_symbol, comma, 0, 0) group_end @(type_info, 0, 1) @(long_block, 0, 1)
 
 snippet_function = @(function_attribute, 0, 1) id group_start @(declare_symbol, comma, 0, 0) group_end @(type_info, 0, 1) long_block_any
 
-function_attribute =  "private"
+function_attribute = private
 
 class_statements = function_definition | property_declaration
 
 property_declaration = id type_info
 
-class = @(class_attribute, 0, 0) "class" id @(optional_parent_classes, 0, 1) "{" @(class_statements, newlines, 0, 0) "}"
+class_statement = @(class_attribute, 0, 0) class id @(optional_parent_classes, 0, 1) block_start @(class_statements, newlines, 0, 0) block_end
 
-class_attribute = "abstract"
+class_attribute = abstract
 
 optional_parent_classes = colon @(id, comma_or_newline, 1, 0) trim
 
 block = long_block | short_block
-
-optional_long_block = long_block
 
 short_block = one_or_no_newline statement
 
@@ -78,22 +75,22 @@ any_statement = class | statements
 
 statements = @(statement, semicolon_or_newline, 0, 0)
 
-if = "if" group_start expression group_end block
+if_statement = if group_start expression group_end block
 
-while = "while" group_start expression group_end block
+while_statement = while group_start expression group_end block
 
 optional_expression = spaces expression
 
-return = "return" @(optional_expression, 0, 1)
+return_statement = return @(optional_expression, 0, 1)
 
 optional_assignment = equals expression
 
-declare_variable = "var" id @(type_info, 0, 1) @(optional_assignment, 0, 1)
+declare_variable = var id @(type_info, 0, 1) @(optional_assignment, 0, 1)
 
 assignment = reference set_operator expression
 
-for = "for" group_start "var" id "in" reference group_end long_block
+for_statement = for group_start var id in reference group_end long_block
 
-instantiate = "new" type arguments
+instantiate = new type arguments
 
 lambda = group_start @(declare_symbol, comma, 0, 0) group_end arrow block

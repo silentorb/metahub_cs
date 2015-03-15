@@ -4,13 +4,12 @@ using System.Linq;
 using System.Text;
 using parser;
 
-namespace runic.lexer
+namespace runic.parser
 {
 
-
-    public class Bootstrap_Legacy : Parser_Context
+    public class Parser_Bootstrap : Parser_Context
     {
-        public Bootstrap_Legacy(Definition definition)
+        public Parser_Bootstrap(Definition definition)
             : base(definition)
         {
         }
@@ -21,13 +20,24 @@ namespace runic.lexer
                 data.name = name;
 
             var type = match.pattern.name;
+            if (data.type == null)
+                data.type = type;
+
             switch (type)
             {
-                case "string":
-                case "regex":
-                    data = data.patterns[1];
-                    data.type = type;
+                case "group":
+                    var repetition = (Repetition) match.matches[0].pattern;
+                    data.type = repetition.divider.name == "spaces"
+                        ? "and"
+                        : "or";
                     return data;
+
+                case "option":
+                    return data;
+//                case "regex":
+//                    data = data.patterns[1];
+//                    data.type = type;
+//                    return data;
                     //                default:
                     //                    throw new Exception("Invalid parser method: " + name + ".");
             }

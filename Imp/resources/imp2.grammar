@@ -1,50 +1,28 @@
-﻿start = trim @(namespace_class, newlines, 1, 0) final_trim
+﻿start = @(namespace_class, newlines, 1, 0)
 
 namespace_class = namespace | class
-snippet_entry = trim @(snippet_function, semicolon_or_newline, 1, 0) final_trim
+snippet_entry = @(snippet_function, semicolon_or_newline, 1, 0)
+comma_or_newline = comma | newlines
 
-none = /&*/
-ws = /\s+/
-trim = /\s*/
-final_trim = /\s*$/
-newlines = /(\s*\n)+\s*/
-one_or_no_newline = /[ \t]*(\r\n)?[ \t]*/
-comma = trim "," trim
-spaces = /[ \t]+/
-dot = "."
-path_separator = "."
-id = /[\$a-zA-Z0-9_]+/
-comma_or_newline = /\s*((\s*\n)+|,)\s*/
-semicolon_or_newline = /\s*((\s*\n)+|;)\s*/
-
-string = ('"' /[^"]*/ '"') | ("'" /[^']*/ "'")
-bool = "true" | "false"
-int = /-?[0-9]+/
-float = /-?([0-9]*\.)?[0-9]+f?/
-operator = '+' | '-' | '/' | '*' | '<=' | '>=' | '<' | '>' | '==' | '!=' | '&&' | '||' | /\$\w+/
-set_operator = '=' | '+=' | '-=' | '*=' | '/=' | '@='
 value = string | bool | int | float
-operation_separator = trim operator trim
 
-arguments = "(" trim @(expression, comma_or_newline, 0, 0) trim ")"
+arguments = group_start @(expression, comma_or_newline, 0, 0) group_end
 
-optional_arguments = trim arguments
+reference_token = id @(arguments, 0, 1)
 
-reference_token = id @(arguments, none, 0, 1)
+index = array_start expression array_end
 
-optional_array = "[" trim expression trim "]"
+id_with_optional_index = id @(index, 0, 1)
 
-id_with_optional_array = id @(optional_array, none, 0, 1)
+reference = @(id_with_optional_index, path_separator, 1, 0) @(arguments, 0, 1)
 
-reference = @(id_with_optional_array, path_separator, 1, 0) @(optional_arguments, none, 0, 1)
+declare_symbol = id @(type_info, 0, 1)
 
-declare_symbol = id @(type_info, none, 0, 1)
+type_info = colon type
 
-type_info = trim ":" trim type
+type = @(id, path_separator, 1, 0) @(optional_list_suffix, 0, 1)
 
-type = @(id, path_separator, 1, 0) @(optional_list_suffix, none, 0, 1)
-
-optional_list_suffix = trim "[" trim "]"
+optional_list_suffix = array_start array_end
 
 statement =
 	declare_variable
@@ -64,58 +42,58 @@ expression_part =
 	| closed_expression
 
 
-closed_expression = "(" trim expression ")"
+closed_expression = group_start expression group_end
 
 expression = @(expression_part, operation_separator, 1, 0)
 
-namespace = "namespace" ws id trim "{" trim @(class, newlines, 0, 0) trim "}"
+namespace = "namespace" id "{" @(class, newlines, 0, 0) "}"
 
-function_definition = @(function_attribute, none, 0, 1) id trim "(" @(declare_symbol, comma, 0, 0) ")" @(type_info, none, 0, 1) @(optional_long_block, none, 0, 1)
+function_definition = @(function_attribute, 0, 1) id group_start @(declare_symbol, comma, 0, 0) group_end @(type_info, 0, 1) @(optional_long_block, 0, 1)
 
-snippet_function = @(function_attribute, none, 0, 1) id trim "(" @(declare_symbol, comma, 0, 0) ")" @(type_info, none, 0, 1) trim long_block_any
+snippet_function = @(function_attribute, 0, 1) id group_start @(declare_symbol, comma, 0, 0) group_end @(type_info, 0, 1) long_block_any
 
-function_attribute =  "private" ws
+function_attribute =  "private"
 
 class_statements = function_definition | property_declaration
 
 property_declaration = id type_info
 
-class = @(class_attribute, ws, 0, 0) trim "class" ws id trim @(optional_parent_classes, none, 0, 1) "{" trim @(class_statements, newlines, 0, 0) trim "}"
+class = @(class_attribute, 0, 0) "class" id @(optional_parent_classes, 0, 1) "{" @(class_statements, newlines, 0, 0) "}"
 
 class_attribute = "abstract"
 
-optional_parent_classes = ":" trim @(id, comma_or_newline, 1, 0) trim
+optional_parent_classes = colon @(id, comma_or_newline, 1, 0) trim
 
 block = long_block | short_block
 
-optional_long_block = trim long_block
+optional_long_block = long_block
 
 short_block = one_or_no_newline statement
 
-long_block = "{" trim @(statement, semicolon_or_newline, 0, 0) trim "}"
+long_block = block_start @(statement, semicolon_or_newline, 0, 0) block_end
 
-long_block_any = "{" trim any_statement trim "}"
+long_block_any = block_start any_statement block_end
 
 any_statement = class | statements
 
 statements = @(statement, semicolon_or_newline, 0, 0)
 
-if = "if" trim "(" trim expression trim ")" trim block
+if = "if" group_start expression group_end block
 
-while = "while" trim "(" trim expression trim ")" trim block
+while = "while" group_start expression group_end block
 
 optional_expression = spaces expression
 
-return = "return" @(optional_expression, none, 0, 1)
+return = "return" @(optional_expression, 0, 1)
 
-optional_assignment = trim "=" trim expression
+optional_assignment = equals expression
 
-declare_variable = "var" ws id @(type_info, none, 0, 1) @(optional_assignment, none, 0, 1)
+declare_variable = "var" id @(type_info, 0, 1) @(optional_assignment, 0, 1)
 
-assignment = reference trim set_operator trim expression
+assignment = reference set_operator expression
 
-for = "for" trim "(" trim "var" ws id ws "in" ws reference trim ")" trim long_block
+for = "for" group_start "var" id "in" reference group_end long_block
 
-instantiate = "new" ws type trim arguments
+instantiate = "new" type arguments
 
-lambda = "(" trim @(declare_symbol, comma, 0, 0) trim ")" trim "=>" trim block
+lambda = group_start @(declare_symbol, comma, 0, 0) group_end arrow block

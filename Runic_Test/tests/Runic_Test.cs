@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using NUnit.Framework;
-using interpreter.runic;
+using runic.lexer;
 
 namespace runic_test.tests
 {

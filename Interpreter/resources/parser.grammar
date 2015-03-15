@@ -1,0 +1,12 @@
+﻿start = trim @(rule, newlines, 1, 0) final_trim
+final_trim = /\s*$/
+newlines = /(\s*\n)+\s*/
+id = /[\$a-zA-Z0-9_]+/
+trim = /\s*/
+or = trim "|" trim
+spaces = /[ \t]+/
+comma = /\s*,\s*/
+repetition = "@(" trim @(id, comma, 3, 4) trim ")"
+option = id | repetition
+group = @(option, or, 0, 0) | @(option, spaces, 0, 0)
+rule = id trim "=" trim group

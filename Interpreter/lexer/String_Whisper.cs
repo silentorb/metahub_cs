@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using interpreter.runic;
 
 namespace runic.lexer
 {

@@ -69,17 +69,37 @@ namespace runic.Properties {
         ///trim = /\s*/
         ///option_separator = trim &quot;|&quot; trim
         ///string = (&apos;&quot;&apos; /[^&quot;]*/ &apos;&quot;&apos;) | (&quot;&apos;&quot; /[^&apos;]*/ &quot;&apos;&quot;)
-        ///regex = &quot;/&quot; /.*?\\//
+        ///regex = &quot;/&quot; /[^\/]+/ &quot;/&quot;
         ///group = &quot;(&quot; trim @(option, option_separator, 2, 0) trim &quot;)&quot;
         ///option = id | string | regex | group
         ///comma = /\s*,\s*/
         ///attribute = /\w+/
         ///attributes = &quot;(&quot; @(attribute, comma, 0, 0) &quot;)&quot;
-        ///rule = id @(attributes, none, 0, 1) trim &quot;=&quot; trim @(option, option_separator [rest of string was truncated]&quot;;.
+        ///rule = id @(attributes, none, 0, 1) trim &quot;=&quot; trim @(option, option_separ [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string lexer_grammar {
             get {
                 return ResourceManager.GetString("lexer_grammar", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to start = trim @(rule, newlines, 1, 0) final_trim
+        ///final_trim = /\s*$/
+        ///newlines = /(\s*\n)+\s*/
+        ///id = /[\$a-zA-Z0-9_]+/
+        ///trim = /\s*/
+        ///or = trim &quot;|&quot; trim
+        ///spaces = /[ \t]+/
+        ///comma = /\s*,\s*/
+        ///repetition = &quot;@(&quot; trim @(id, comma, 3, 4) trim &quot;)&quot;
+        ///option = id | repetition
+        ///group = @(option, or, 0, 0) | @(option, spaces, 0, 0)
+        ///rule = id trim &quot;=&quot; trim group.
+        /// </summary>
+        internal static string parser_grammar {
+            get {
+                return ResourceManager.GetString("parser_grammar", resourceCulture);
             }
         }
     }

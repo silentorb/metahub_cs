@@ -50,7 +50,7 @@
     <Compile Include="tests\Cpp_Test.cs" />
     <Compile Include="tests\Expression_Test.cs" />
     <Compile Include="tests\JavaScript_Test.cs" />
-    <Compile Include="tests\Lexer_Test.cs" />
+    <Compile Include="tests\Runic_Test.cs" />
     <Compile Include="Utility.cs" />
   </ItemGroup>
   <ItemGroup>

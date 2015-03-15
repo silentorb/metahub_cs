@@ -89,28 +89,55 @@ namespace imperative.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to none = /&amp;*/
+        ///   Looks up a localized string similar to spaces(ignore) = /[ \t]+/
+        ///newlines(optional) = /(\s*\n)+\s*/
+        ///comma = &quot;,&quot;
+        ///path_separator = &quot;.&quot;
+        ///id = /[\$a-zA-Z0-9_]+/
+        ///comma_or_newline = newlines | comma
+        ///semicolon_or_newline = newlines | &quot;;&quot;
+        ///line_comment = &quot;//[^\r\n]*&quot;
+        ///string = /&quot;[^&quot;]*&quot;/ | /&apos;[^&apos;]*&apos;/
+        ///bool = &quot;true&quot; | &quot;false&quot;
+        ///int = /-?[0-9]+/
+        ///float = /-?([0-9]*\.)?[0-9]+f?/
+        ///operator = &apos;+&apos; | &apos;-&apos; | &apos;/&apos; | &apos;*&apos; | &apos;&lt;=&apos; | &apos;&gt;=&apos; | &apos;&lt;&apos; | &apos;&gt;&apos; | &apos;==&apos; | &apos;!=&apos; | &apos;&amp;&amp;&apos; | &apos;||&apos; | /\$\w+/
+        ///set_operator = &apos;=&apos; | &apos;+=&apos; | &apos;-=&apos; | &apos;*=&apos; | &apos;/=&apos; | &apos;@=&apos;
+        ///
+        ///block_start = &quot;{&quot;
+        ///blo [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string imp_lexer {
+            get {
+                return ResourceManager.GetString("imp_lexer", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to start = trim @(namespace_class, newlines, 1, 0) final_trim
+        ///
+        ///namespace_class = namespace | class
+        ///snippet_entry = trim @(snippet_function, semicolon_or_newline, 1, 0) final_trim
+        ///
+        ///none = /&amp;*/
         ///ws = /\s+/
         ///trim = /\s*/
         ///final_trim = /\s*$/
         ///newlines = /(\s*\n)+\s*/
         ///one_or_no_newline = /[ \t]*(\r\n)?[ \t]*/
-        ///comma = &quot;,&quot;
+        ///comma = trim &quot;,&quot; trim
         ///spaces = /[ \t]+/
+        ///dot = &quot;.&quot;
         ///path_separator = &quot;.&quot;
         ///id = /[\$a-zA-Z0-9_]+/
         ///comma_or_newline = /\s*((\s*\n)+|,)\s*/
         ///semicolon_or_newline = /\s*((\s*\n)+|;)\s*/
-        ///line_comment = &quot;//[^\r\n]*&quot;
-        ///string = (&apos;&quot;&apos; /[^&quot;]*/ &apos;&quot;&apos;) | (&quot;&apos;&quot; /[^&apos;]*/ &quot;&apos;&quot;)
-        ///bool = &quot;true&quot; | &quot;false&quot;
-        ///int = /-?[0-9]+/
-        ///float = /-?([0-9]*\.)?[0-9]+f?/
-        ///operator = &apos;+&apos; | &apos;-&apos; | &apos;/&apos; | &apos;*&apos; | &apos;&lt;=&apos; | &apos;&gt;=&apos; | &apos;&lt;&apos; | &apos;&gt;&apos; | &apos;==&apos;  [rest of string was truncated]&quot;;.
+        ///
+        ///string = (&apos;&quot;&apos;  [rest of string was truncated]&quot;;.
         /// </summary>
-        internal static string imp_lexer {
+        internal static string imp2_grammar {
             get {
-                return ResourceManager.GetString("imp_lexer", resourceCulture);
+                return ResourceManager.GetString("imp2_grammar", resourceCulture);
             }
         }
     }

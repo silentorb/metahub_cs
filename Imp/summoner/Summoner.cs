@@ -5,12 +5,12 @@ using System.Text;
 using imperative.Properties;
 using imperative.schema;
 using imperative.expressions;
-using interpreter.runic;
 using metahub.jackolantern.expressions;
 
-using parser;
 using metahub.schema;
 using runic.lexer;
+using Parser = runic.parser.Parser;
+using Pattern_Source = parser.Pattern_Source;
 
 namespace imperative.summoner
 {
@@ -18,13 +18,14 @@ namespace imperative.summoner
     {
         private Overlord overlord;
         private static Lexer lexer;
+        private static Parser parser;
 
         public Summoner(Overlord overlord)
         {
             this.overlord = overlord;
         }
 
-        public void summon(Pattern_Source source)
+        public void summon(parser.Pattern_Source source)
         {
             ack(source, process_dungeon1);
             ack(source, process_dungeon2);
@@ -730,6 +731,14 @@ namespace imperative.summoner
                  lexer = new Lexer(Resources.imp_lexer);
 
             return lexer.read(input);
+        }
+
+        public static void translate_runes(List<Rune> runes)
+        {
+            if (parser == null)
+                parser = new Parser(Resources.imp2_grammar);
+
+            parser.read(runes);
         }
     }
 }

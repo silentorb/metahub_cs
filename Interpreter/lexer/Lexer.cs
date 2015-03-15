@@ -7,10 +7,9 @@ using System.Text;
 using System.Text.RegularExpressions;
 using parser;
 using runic.Properties;
-using runic.lexer;
 using Match = parser.Match;
 
-namespace interpreter.runic
+namespace runic.lexer
 {
     public class Lexer
     {
@@ -64,15 +63,6 @@ namespace interpreter.runic
 
             var match = (Match)result;
             var data = match.get_data();
-            //            var patterns = data.patterns[1].patterns.Select(source =>
-            //                {
-            //                    var pattern = new Pattern_Source()
-            //                        {
-            //                            name = source.patterns[0].text
-            //                        };
-            //
-            //                    return pattern;
-            //                });
             process_lexicon(data.patterns[1].patterns);
         }
 

@@ -43,7 +43,7 @@ expression_part =
 
 closed_expression = group_start expression group_end
 
-expression = @(expression_part, operation_separator, 1, 0)
+expression = @(expression_part, comma, 1, 0)
 
 namespace_statement = namespace id block_start @(class, newlines, 0, 0) block_end
 
@@ -61,11 +61,11 @@ class_statement = @(class_attribute, 0, 0) class id @(optional_parent_classes, 0
 
 class_attribute = abstract
 
-optional_parent_classes = colon @(id, comma_or_newline, 1, 0) trim
+optional_parent_classes = colon @(id, comma_or_newline, 1, 0)
 
 block = long_block | short_block
 
-short_block = one_or_no_newline statement
+short_block = newlines statement
 
 long_block = block_start @(statement, semicolon_or_newline, 0, 0) block_end
 

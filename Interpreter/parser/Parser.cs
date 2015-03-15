@@ -96,9 +96,27 @@ namespace runic.parser
             return null;
         }
 
+        public Rhyme get_whisper_rhyme(string name)
+        {
+            return rhymes.ContainsKey(name) 
+                ? rhymes[name] 
+                : new Single_Rhyme(name, lexer.whispers[name]);
+        }
+
         public Rhyme create_child(Pattern_Source pattern)
         {
-            return null;
+            var text = pattern.text;
+            if (pattern.type == "id")
+                return get_whisper_rhyme(text);
+
+            if (pattern.type == "repetition")
+            {
+                var repetition = new Repetition_Rhyme(text);
+                repetition.initialize(pattern, this);
+                return repetition;
+            }
+
+            throw new Exception("Not supported.");
         }
 
         public void read(List<Rune> runes)

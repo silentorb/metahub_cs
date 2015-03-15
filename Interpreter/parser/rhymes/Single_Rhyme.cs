@@ -16,6 +16,12 @@ namespace runic.parser.rhymes
 
         }
 
+        public Single_Rhyme(string name, Whisper whisper)
+            : base(name)
+        {
+            this.whisper = whisper;
+        }
+
         public override void initialize(global::parser.Pattern_Source pattern, Parser parser)
         {
             var id = pattern.patterns[0].text;

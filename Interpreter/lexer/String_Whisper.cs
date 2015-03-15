@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using interpreter.runic;
 
 namespace runic.lexer
 {
@@ -17,7 +18,8 @@ namespace runic.lexer
 
         public override Rune match(string input, int position)
         {
-            return input.Substring(0, text.Length) == text
+            var slice = Lexer.get_safe_substring(input, position, text.Length);
+            return slice == text
                 ? new Rune(this, text)
                 : null;
         }

@@ -2,18 +2,22 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using imperative.Properties;
 using imperative.schema;
 using imperative.expressions;
+using interpreter.runic;
 using metahub.jackolantern.expressions;
 
 using parser;
 using metahub.schema;
+using runic.lexer;
 
 namespace imperative.summoner
 {
     public partial class Summoner
     {
         private Overlord overlord;
+        private static Lexer lexer;
 
         public Summoner(Overlord overlord)
         {
@@ -718,6 +722,14 @@ namespace imperative.summoner
             minion.return_type = new Profession(Kind.none);
 
             return new Anonymous_Function(minion);
+        }
+
+        public static List<Rune> read_runes(string input)
+        {
+             if (lexer == null)
+                 lexer = new Lexer(Resources.imp_lexer);
+
+            return lexer.read(input);
         }
     }
 }

@@ -14,8 +14,9 @@ namespace imp_test.tests
         [Test]
         public void test()
         {
-            var summoner = new Rune_Summoner();
-            Assert.Greater(summoner.lexer.whispers.Length, 5);
+            var code = Utility.load_resource("imp.pizza.imp");
+            var runes = Summoner.read_runes(code);
+            Assert.Greater(runes.Count, 5);
         }
     }
 }

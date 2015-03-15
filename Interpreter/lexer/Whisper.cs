@@ -8,7 +8,14 @@ namespace runic.lexer
 {
     public abstract class Whisper
     {
+        public enum Attribute
+        {
+            ignore,
+            optional
+        }
+
         public string name;
+        public Attribute[] attributes;
 
         protected Whisper(string name)
         {
@@ -16,22 +23,10 @@ namespace runic.lexer
         }
 
         public abstract Rune match(string input, int position);
-        
-        public static Whisper create(string name, Pattern_Source source)
+
+        public bool has_attribute(Attribute attribute)
         {
-            switch (source.type)
-            {
-                case "regex":
-                    return new Regex_Whisper(name, source.text);
-
-                case "literal":
-                    return new String_Whisper(name, source.text);
-
-                case "or":
-                    return new Whisper_Group(name, source.patterns.Select(s => create(s.text, s)));
-            }
-
-            throw new Exception("Unknown whisper type: " + source.type + ".");
+            return attributes != null && attributes.Contains(attribute);
         }
     }
 }

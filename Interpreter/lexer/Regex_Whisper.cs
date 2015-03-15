@@ -13,7 +13,7 @@ namespace runic.lexer
         public Regex_Whisper(string name, string pattern)
             : base(name)
         {
-            regex = new Regex(pattern);
+            regex = new Regex("\\G" + pattern);
         }
 
         public override Rune match(string input, int position)

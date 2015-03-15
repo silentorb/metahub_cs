@@ -9,6 +9,11 @@ namespace runic.lexer
     {
         public Whisper[] whispers;
 
+        public Whisper_Group(string name)
+            : base(name)
+        {
+        }
+
         public Whisper_Group(string name, IEnumerable<Whisper> whispers)
             : base(name)
         {

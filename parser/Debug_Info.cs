@@ -79,7 +79,7 @@ namespace parser
                 }
                 else
                 {
-                    Console.Write(text[i]);
+                    Debug.Write(text[i]);
                 }
             }
         }

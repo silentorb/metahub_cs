@@ -119,9 +119,11 @@ namespace runic.parser
             throw new Exception("Not supported.");
         }
 
-        public void read(List<Rune> runes)
+        public Legend read(List<Rune> runes)
         {
-
+            var start = rhymes["start"];
+            var result = start.match(new Runestone(runes));
+            return result.legend;
         }
     }
 }

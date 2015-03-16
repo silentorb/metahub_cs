@@ -19,5 +19,10 @@ namespace runic.parser.rhymes
         {
             rhymes = pattern.patterns.Select(p => parser.create_child(p)).ToList();
         }
+
+        public override Legend_Result match(lexer.Runestone stone)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

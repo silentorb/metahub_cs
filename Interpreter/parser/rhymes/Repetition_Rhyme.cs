@@ -38,5 +38,10 @@ namespace runic.parser.rhymes
                 max = int.Parse(patterns[3].text);   
             }
         }
+
+        public override Legend_Result match(Runestone stone)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

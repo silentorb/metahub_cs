@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using runic.lexer;
 
 namespace runic.parser.rhymes
 {
@@ -18,6 +19,11 @@ namespace runic.parser.rhymes
         public override void initialize(global::parser.Pattern_Source pattern, Parser parser)
         {
             rhymes = pattern.patterns.Select(p => parser.create_child(p)).ToList();
+        }
+
+        public override Legend_Result match(Runestone stone)
+        {
+            throw new Exception("");
         }
     }
 }

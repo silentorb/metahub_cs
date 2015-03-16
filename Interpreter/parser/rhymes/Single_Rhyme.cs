@@ -27,5 +27,12 @@ namespace runic.parser.rhymes
             var id = pattern.patterns[0].text;
             whisper = parser.lexer.whispers[id];
         }
+
+        public override Legend_Result match(Runestone stone)
+        {
+            return whisper.name == stone.current.text
+                ? stone.success(new Legend(this, stone.current.text))
+                : null;
+        }
     }
 }

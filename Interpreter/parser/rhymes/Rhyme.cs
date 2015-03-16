@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using parser;
+using runic.lexer;
 
 namespace runic.parser
 {
@@ -16,5 +17,6 @@ namespace runic.parser
         }
 
         public abstract void initialize(Pattern_Source pattern, Parser parser);
+        public abstract Legend_Result match(Runestone stone);
     }
 }

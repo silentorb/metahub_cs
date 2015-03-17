@@ -30,9 +30,14 @@ namespace runic.parser.rhymes
 
         public override Legend_Result match(Runestone stone)
         {
-            return whisper.name == stone.current.text
-                ? stone.success(new Legend(this, stone.current.text))
+            return whisper == stone.current.whisper
+                ? new Legend_Result(new String_Legend(this, stone.current.text), stone.next())
                 : null;
+        }
+
+        override public IEnumerable<Rhyme> aggregate()
+        {
+            return new List<Rhyme>();
         }
     }
 }

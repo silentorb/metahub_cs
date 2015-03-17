@@ -6,28 +6,33 @@ using runic.lexer;
 
 namespace runic.parser
 {
-    public class Legend_Result
-    {
-        public Legend legend;
-        public Runestone stone;
 
-        public Legend_Result(Legend legend, Runestone stone)
-        {
-            this.legend = legend;
-            this.stone = stone;
-        }
+    public abstract class Legend
+    {
+        public Rhyme rhyme;
     }
 
-    public class Legend
+    public class String_Legend : Legend
     {
-        public List<Legend> children = new List<Legend>();
         public string text;
-        public Rhyme rhyme;
 
-        public Legend(Rhyme rhyme, string text)
+        public String_Legend(Rhyme rhyme, string text)
         {
             this.rhyme = rhyme;
             this.text = text;
+        }
+    }
+
+    public class Group_Legend : Legend
+    {
+        public List<Legend> children;
+        public List<Legend> dividers;
+
+        public Group_Legend(Rhyme rhyme, List<Legend> children, List<Legend> dividers = null)
+        {
+            this.rhyme = rhyme;
+            this.children = children;
+            this.dividers = dividers;
         }
     }
 }

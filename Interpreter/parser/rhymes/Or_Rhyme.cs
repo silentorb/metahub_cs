@@ -22,7 +22,19 @@ namespace runic.parser.rhymes
 
         public override Legend_Result match(lexer.Runestone stone)
         {
-            throw new NotImplementedException();
+            foreach (var rhyme in rhymes)
+            {
+                var result = rhyme.match(stone);
+                if (result != null)
+                    return result;
+            }
+
+            return null;
+        }
+
+        override public IEnumerable<Rhyme> aggregate()
+        {
+            return rhymes;
         }
     }
 }

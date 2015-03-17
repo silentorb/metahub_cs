@@ -122,7 +122,14 @@ namespace runic.parser
         public Legend read(List<Rune> runes)
         {
             var start = rhymes["start"];
-            var result = start.match(new Runestone(runes));
+            var stone = new Runestone(runes);
+            var result = start.match(stone);
+
+            if (result == null)
+            {
+                var furthest = runes[stone.tracker.furthest];
+                throw new Exception("Could not find match at token " + stone.tracker.furthest + ", " + furthest.whisper.name + ".");
+            }
             return result.legend;
         }
     }

@@ -11,11 +11,13 @@ namespace runic.lexer
     {
         public Whisper whisper;
         public string text;
+        public Range range;
 
-        public Rune(Whisper whisper, string text)
+        public Rune(Whisper whisper, string text, Position position)
         {
             this.whisper = whisper;
             this.text = text;
+            range = new Range(position, new Position() { position + text.Length)};
         }
 
         public int length

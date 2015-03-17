@@ -19,7 +19,7 @@ namespace runic.lexer
         {
             var slice = Lexer.get_safe_substring(input, position, text.Length);
             return slice == text
-                ? new Rune(this, text)
+                ? new Rune(this, text, position)
                 : null;
         }
     }

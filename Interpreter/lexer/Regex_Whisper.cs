@@ -20,7 +20,7 @@ namespace runic.lexer
         {
             var match = regex.Match(input, position);
             return match.Success 
-                ? new Rune(this, match.Value) 
+                ? new Rune(this, match.Value, position) 
                 : null;
         }
     }

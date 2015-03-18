@@ -96,8 +96,14 @@ namespace runic.parser.rhymes
                 matches.Add(main_result.legend);
                 stone = main_result.stone;
 
-                if (divider != null && divider.match(stone) == null)
-                    break;
+                if (divider != null)
+                {
+                    var divider_result = divider.match(stone);
+                    if (divider_result == null)
+                        break;
+
+                    stone = divider_result.stone;
+                }
             }
             while (max == 0 || matches.Count < max);
 

@@ -47,6 +47,7 @@
     <Compile Include="lexer\Runestone.cs" />
     <Compile Include="lexer\String_Whisper.cs" />
     <Compile Include="lexer\Range.cs" />
+    <Compile Include="lexer\Tracker.cs" />
     <Compile Include="lexer\Whisper.cs" />
     <Compile Include="lexer\Rune.cs" />
     <Compile Include="lexer\Whisper_Group.cs" />

@@ -77,6 +77,9 @@ namespace runic.parser.rhymes
             if (matches.Count < min)
                 return null;
 
+            if (matches.Count == 0)
+                return new Legend_Result(null, stone);
+
             return new Legend_Result(new Group_Legend(this, matches, dividers), stone);
         }
 
@@ -91,7 +94,7 @@ namespace runic.parser.rhymes
                     break;
 
                 matches.Add(main_result.legend);
-                stone = main_result.stone.next();
+                stone = main_result.stone;
 
                 if (divider != null && divider.match(stone) == null)
                     break;
@@ -100,6 +103,9 @@ namespace runic.parser.rhymes
 
             if (matches.Count < min)
                 return null;
+
+            if (matches.Count == 0)
+                return new Legend_Result(null, stone);
 
             return new Legend_Result(new Group_Legend(this, matches), stone);
         }

@@ -98,8 +98,8 @@ namespace runic.parser
 
         public Rhyme get_whisper_rhyme(string name)
         {
-            return rhymes.ContainsKey(name) 
-                ? rhymes[name] 
+            return rhymes.ContainsKey(name)
+                ? rhymes[name]
                 : new Single_Rhyme(name, lexer.whispers[name]);
         }
 
@@ -128,7 +128,11 @@ namespace runic.parser
             if (result == null)
             {
                 var furthest = runes[stone.tracker.furthest];
-                throw new Exception("Could not find match at token " + stone.tracker.furthest + ", " + furthest.whisper.name + ".");
+                throw new Exception("Could not find match at "
+                    + furthest.range.end.y + ":" + furthest.range.end.x
+                    + ", " + furthest.whisper.name + "."
+                    + "  Last match was " + stone.tracker.last.name + "."
+                    );
             }
             return result.legend;
         }

@@ -30,7 +30,9 @@ namespace runic.parser.rhymes
                 if (result == null)
                     return null;
 
-                results.Add(result.legend);
+                if (result.legend != null)
+                    results.Add(result.legend);
+
                 stone = result.stone;
             }
 

@@ -20,7 +20,7 @@ namespace runic.lexer
             this.whispers = whispers.ToArray();
         }
 
-        public override Rune match(string input, int position)
+        public override Rune match(string input, Position position)
         {
             foreach (var whisper in whispers)
             {

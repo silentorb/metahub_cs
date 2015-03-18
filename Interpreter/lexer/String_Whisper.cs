@@ -15,11 +15,11 @@ namespace runic.lexer
             this.text = text;
         }
 
-        public override Rune match(string input, int position)
+        public override Rune match(string input, Position position)
         {
-            var slice = Lexer.get_safe_substring(input, position, text.Length);
+            var slice = Lexer.get_safe_substring(input, position.index, text.Length);
             return slice == text
-                ? new Rune(this, text, position)
+                ? new Rune(this, text, position.clone(), position.forward(text.Length).clone())
                 : null;
         }
     }

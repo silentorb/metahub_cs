@@ -16,12 +16,13 @@ namespace runic.lexer
             regex = new Regex("\\G" + pattern);
         }
 
-        public override Rune match(string input, int position)
+        public override Rune match(string input, Position position)
         {
-            var match = regex.Match(input, position);
-            return match.Success 
-                ? new Rune(this, match.Value, position) 
-                : null;
+            var match = regex.Match(input, position.index);
+            if (!match.Success)
+                return null;
+
+            return new Rune(this, match.Value, position.clone(), position.forward(match.Length).clone());
         }
     }
 }

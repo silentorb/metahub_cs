@@ -4,7 +4,7 @@ namespace_class = namespace_statement | class_statement
 snippet_entry = @(snippet_function, semicolon_or_newline, 1, 0)
 comma_or_newline = comma | newlines
 
-value = string | bool | int | float
+value_type = string | bool | int | float
 
 arguments = group_start @(expression, comma_or_newline, 0, 0) group_end
 
@@ -18,9 +18,9 @@ reference = @(id_with_optional_index, path_separator, 1, 0) @(arguments, 0, 1)
 
 declare_symbol = id @(type_info, 0, 1)
 
-type_info = colon type
+type_info = colon signature
 
-type = @(id, path_separator, 1, 0) @(optional_list_suffix, 0, 1)
+signature = @(value_type, path_separator, 1, 0) @(optional_list_suffix, 0, 1)
 
 optional_list_suffix = array_start array_end
 
@@ -36,16 +36,17 @@ statement =
 
 expression_part =
 	  instantiate
-	| value
+	| value_type
 	| lambda
 	| reference	
 	| closed_expression
+	| null
 
 closed_expression = group_start expression group_end
 
-expression = @(expression_part, comma, 1, 0)
+expression = @(expression_part, operator, 1, 0)
 
-namespace_statement = namespace id block_start @(class, newlines, 0, 0) block_end
+namespace_statement = namespace id block_start @(class_statement, newlines, 0, 0) block_end
 
 function_definition = @(function_attribute, 0, 1) id group_start @(declare_symbol, comma, 0, 0) group_end @(type_info, 0, 1) @(long_block, 0, 1)
 
@@ -71,7 +72,7 @@ long_block = block_start @(statement, semicolon_or_newline, 0, 0) block_end
 
 long_block_any = block_start any_statement block_end
 
-any_statement = class | statements
+any_statement = class_statement | statements
 
 statements = @(statement, semicolon_or_newline, 0, 0)
 
@@ -91,6 +92,6 @@ assignment = reference set_operator expression
 
 for_statement = for group_start var id in reference group_end long_block
 
-instantiate = new type arguments
+instantiate = new signature arguments
 
 lambda = group_start @(declare_symbol, comma, 0, 0) group_end arrow block

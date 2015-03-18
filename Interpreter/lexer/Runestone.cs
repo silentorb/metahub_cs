@@ -10,11 +10,6 @@ namespace runic.lexer
     [DebuggerDisplay("Runestone {position} {current.text}")]
     public class Runestone
     {
-        public class Tracker
-        {
-            public int furthest;
-        }
-
         List<Rune> runes; 
         int position;
         public Tracker tracker;

@@ -9,9 +9,11 @@ string = /"[^"]*"/ | /'[^']*'/
 bool = "true" | "false"
 int = /-?[0-9]+/
 float = /-?([0-9]*\.)?[0-9]+f?/
-equals = "="
 operator = '+' | '-' | '/' | '*' | '<=' | '>=' | '<' | '>' | '==' | '!=' | '&&' | '||' | /\$\w+/
+equals = "="
 set_operator = equals | '+=' | '-=' | '*=' | '/=' | '@='
+
+null = "null"
 
 keyword =
 	  "abstract"

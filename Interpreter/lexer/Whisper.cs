@@ -22,7 +22,7 @@ namespace runic.lexer
             this.name = name;
         }
 
-        public abstract Rune match(string input, int position);
+        public abstract Rune match(string input, Position position);
 
         public bool has_attribute(Attribute attribute)
         {

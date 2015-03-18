@@ -139,12 +139,14 @@ namespace runic.lexer
         {
             var result = new List<Rune>();
 
-            int position = 0;
-            while (position < input.Length)
+            int index = 0;
+            var position = new Position(input);
+
+            while (index < input.Length)
             {
                 var rune = next(input, position);
                 if (rune == null)
-                    throw new Exception("Could not find match at " + position + " " + get_safe_substring(input, position, 10));
+                    throw new Exception("Could not find match at " + index + " " + get_safe_substring(input, index, 10));
 
                 if (rune.length == 0)
                     throw new Exception("Invalid Whisper:" + rune.whisper.name);
@@ -152,13 +154,13 @@ namespace runic.lexer
                 if (!rune.whisper.has_attribute(Whisper.Attribute.ignore))
                     result.Add(rune);
 
-                position += rune.length;
+                index += rune.length;
             }
 
             return result;
         }
 
-        Rune next(string input, int position)
+        Rune next(string input, Position position)
         {
             foreach (var whisper in whispers.Values)
             {

@@ -53,7 +53,7 @@ namespace metahub.jackolantern.carvers
         private void add_initialize(Endpoint endpoint, Expression property_expression, Expression range)
         {
             var initialize = jack.get_initialize(endpoint.portal.dungeon);
-            var context = new Summoner.Context(initialize);
+            var context = new Summoner_Context(initialize);
 
             context.set_pattern("list", property_expression);
             context.set_pattern("size", range);

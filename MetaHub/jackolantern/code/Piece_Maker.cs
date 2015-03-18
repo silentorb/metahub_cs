@@ -49,7 +49,7 @@ namespace imperative.code
 
         public static Dungeon create_conflict_class(Dungeon dungeon, JackOLantern jack)
         {
-            var context = new Summoner.Context(dungeon);
+            var context = new Summoner_Context(dungeon);
             context.set_pattern("Node_Type", new Profession(Kind.reference, dungeon));
             context.set_pattern("Class_Name", "Distance_Conflict");
 

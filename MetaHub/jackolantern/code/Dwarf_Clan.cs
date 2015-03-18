@@ -159,7 +159,7 @@ namespace metahub.jackolantern.code
 
             var pre = block.divide("pre");
 
-            var context = new Summoner.Context(minion);
+            var context = new Summoner_Context(minion);
             context.set_pattern("portal", new Portal_Expression(portal));
             context.set_pattern("value", new Variable(value));
             block.divide("mid", jack.summon_snippet_block("reference_setter", context));
@@ -196,7 +196,7 @@ namespace metahub.jackolantern.code
                 {
                     var origin = minion.scope.find_or_exception("origin");
                     var value = minion.scope.find_or_exception("value");
-                    var context = new Summoner.Context(minion);
+                    var context = new Summoner_Context(minion);
 
                     context.set_pattern("portal", new Portal_Expression(portal));
                     context.set_pattern("other_portal", new Portal_Expression(portal.other_portal));

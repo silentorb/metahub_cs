@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using imperative.expressions;
+using imperative.summoner;
 
 namespace imperative.schema
 {
@@ -97,7 +98,7 @@ namespace imperative.schema
             //return null;
         }
 
-        public Expression resolve(string name, summoner.Summoner.Context context)
+        public Expression resolve(string name, Summoner_Context context)
         {
             if (map.ContainsKey(name))
             return map[name](context);

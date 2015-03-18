@@ -41,7 +41,7 @@ namespace metahub.jackolantern.carvers
             var first_list_portal = jack.get_portal(((Property_Node)list).property);
 
             var setter = jack.get_setter(first_list_portal);
-            var context = new Summoner.Context(setter);
+            var context = new Summoner_Context(setter);
             var swamp = new Swamp(jack, null, context);
             var chain = swamp.get_exclusive_chain(list.inputs[0], list, Dir.In);
             var ref_expression = swamp.render_chain(chain.Take(chain.Count - 1).ToList());

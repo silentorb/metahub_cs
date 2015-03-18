@@ -26,11 +26,11 @@ namespace metahub.jackolantern.schema
 
         public JackOLantern jack;
         public Node end;
-        public Summoner.Context context;
+        public Summoner_Context context;
         public Node previous_node;
         public Node last_node;
 
-        public Swamp(JackOLantern jack, Node end, Summoner.Context context)
+        public Swamp(JackOLantern jack, Node end, Summoner_Context context)
         {
             this.jack = jack;
             this.end = end;

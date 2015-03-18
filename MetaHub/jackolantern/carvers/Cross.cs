@@ -70,7 +70,7 @@ namespace metahub.jackolantern.carvers
             return minion;
         }
 
-        Expression render_inverse_constraint(Function_Node constraint, Summoner.Context context)
+        Expression render_inverse_constraint(Function_Node constraint, Summoner_Context context)
         {
             var swamp = new Swamp(jack, null, context);
             var first = swamp.translate_backwards(constraint.inputs[0], constraint);
@@ -83,7 +83,7 @@ namespace metahub.jackolantern.carvers
             var minion = create_check_function(portal, endpoint);
 
             // Iterator
-            var context = new Summoner.Context(minion);
+            var context = new Summoner_Context(minion);
             //context.scope.add_map("this", c => new Self(portal.other_dungeon));
             context.set_pattern("list", new Portal_Expression(portal.other_portal, new Portal_Expression(portal)));
             context.set_pattern("condition", c => render_inverse_constraint(constraint, c));
@@ -97,7 +97,7 @@ namespace metahub.jackolantern.carvers
             return minion;
         }
 
-        Expression generate_response(Summoner.Context context, Portal portal, Function_Node constraint, Dungeon conflict_class)
+        Expression generate_response(Summoner_Context context, Portal portal, Function_Node constraint, Dungeon conflict_class)
         {
             context.set_pattern("T", portal.profession);
             context.set_pattern("T2", new Profession(Kind.reference, conflict_class));

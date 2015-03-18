@@ -14,13 +14,13 @@ using Pattern_Source = parser.Pattern_Source;
 
 namespace imperative.summoner
 {
-    public class Summoner
+    public class Summoner2
     {
         private Overlord overlord;
         private static Lexer lexer;
         private static Parser parser;
 
-        public Summoner(Overlord overlord)
+        public Summoner2(Overlord overlord)
         {
             this.overlord = overlord;
         }

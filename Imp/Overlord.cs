@@ -98,14 +98,14 @@ namespace imperative
             summoner.summon_many(pre_summoners);
         }
 
-        public Dungeon summon_dungeon(Snippet template, Summoner.Context context)
+        public Dungeon summon_dungeon(Snippet template, Summoner_Context context)
         {
             var summoner = new Summoner(this);
             summoner.process_dungeon1(template.source, context);
             return summoner.process_dungeon2(template.source, context);
         }
 
-        public Expression summon_snippet(Snippet template, Summoner.Context context)
+        public Expression summon_snippet(Snippet template, Summoner_Context context)
         {
             var summoner = new Summoner(this);
             return summoner.process_statement(template.source, context);
@@ -131,7 +131,7 @@ namespace imperative
             var pre_summoner = pre_summon(code, Pre_Summoner.Mode.snippet);
             var summoner = new Summoner(this);
 
-            var context = new Summoner.Context();
+            var context = new Summoner_Context();
             var statements = (Block)summoner.process_statement(pre_summoner.output, context);
             foreach (Snippet snippet in statements.body)
             {

@@ -10,10 +10,10 @@ namespace metahub.jackolantern.code
 {
     static class Lantern
     {
-        public static Summoner.Context prepare_add_to_list(Expression list_expression, Portal portal, Profession profession, JackOLantern jack)
+        public static Summoner_Context prepare_add_to_list(Expression list_expression, Portal portal, Profession profession, JackOLantern jack)
         {
             var setter = jack.get_setter(portal);
-            var context = new Summoner.Context(setter);
+            var context = new Summoner_Context(setter);
             context.set_pattern("T", profession);
             context.set_pattern("list", list_expression);
             context.set_pattern("origin", new Self(setter.dungeon));

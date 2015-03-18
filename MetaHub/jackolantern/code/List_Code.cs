@@ -91,7 +91,7 @@ namespace metahub.jackolantern.code
             Function_Definition definition = new Function_Definition(minion);
 
             var block = dungeon.create_block(function_name, scope, definition.expressions);
-            var context = new Summoner.Context(minion);
+            var context = new Summoner_Context(minion);
             context.set_pattern("list", new Portal_Expression(portal));
             context.set_pattern("item", new Variable(item));
             var mid = block.divide(null, jack.summon_snippet_block("list_remove", context));

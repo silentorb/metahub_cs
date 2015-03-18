@@ -28,7 +28,7 @@ namespace metahub.jackolantern.carvers
             {
                 var dungeon = endpoint.dungeon;
                 var initialize = jack.get_initialize(endpoint.dungeon);
-                var context = new Summoner.Context(initialize);
+                var context = new Summoner_Context(initialize);
                 var swamp = new Swamp(jack, pumpkin, context);
                 context.set_pattern("list", c => swamp.translate_inclusive(list, null, Dir.Out));
                 context.set_pattern("item", c => swamp.translate_inclusive(item, null, Dir.Out));

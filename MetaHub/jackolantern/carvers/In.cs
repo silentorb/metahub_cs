@@ -51,7 +51,7 @@ namespace metahub.jackolantern.carvers
         private void add_initialize(Endpoint endpoint, Expression property_expression, Expression[] range)
         {
             var initialize = jack.get_initialize(endpoint.portal.dungeon);
-            var context = new Summoner.Context(initialize);
+            var context = new Summoner_Context(initialize);
             context.set_pattern("prop", property_expression);
             context.set_pattern("min", range[0]);
             context.set_pattern("max", range[1]);
@@ -63,7 +63,7 @@ namespace metahub.jackolantern.carvers
         private void add_constraint(Endpoint endpoint, Expression additional_path, Expression[] range)
         {
             var setter = jack.get_setter(endpoint.portal);
-            var context = new Summoner.Context(setter);
+            var context = new Summoner_Context(setter);
             var value_expression = new Variable(setter.scope.find_or_exception("value"), additional_path);
 
             var template = jack.templates["value_constraint_check"];

@@ -18,7 +18,7 @@ namespace metahub_test.fixtures
         {
             var logician = Vineyard_Fixture.load_script("test2");
             var jack = create_jack(logician);
-            var context = new Summoner.Context();
+            var context = new Summoner_Context();
             var swamp = new Swamp(jack, logician.functions[0], context);
             return swamp;
         }

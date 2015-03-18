@@ -39,7 +39,7 @@ namespace metahub.jackolantern.carvers
 
                     var portal = endpoint.portal;
                     var setter = jack.get_setter(portal);
-                    var context = new Summoner.Context(setter);
+                    var context = new Summoner_Context(setter);
                     var swamp = new Swamp(jack, pumpkin, context);
                     var context_node =
                         pumpkin.aggregate(Dir.In)

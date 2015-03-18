@@ -269,7 +269,7 @@ namespace metahub.jackolantern
             return dungeon.all_portals[tie.name];
         }
 
-        public Dungeon summon_dungeon(Snippet template, Summoner.Context context)
+        public Dungeon summon_dungeon(Snippet template, Summoner_Context context)
         {
             var dungeon = overlord.summon_dungeon(template, context);
             var clan = add_clan(dungeon);
@@ -308,12 +308,12 @@ namespace metahub.jackolantern
             return portal.setter ?? clans[portal.dungeon].generate_setter(portal);
         }
 
-        public Expression summon_snippet(string name, Summoner.Context context)
+        public Expression summon_snippet(string name, Summoner_Context context)
         {
             return overlord.summon_snippet(templates[name], context);
         }
 
-        public List<Expression> summon_snippet_block(string name, Summoner.Context context)
+        public List<Expression> summon_snippet_block(string name, Summoner_Context context)
         {
             var statements = (Block) overlord.summon_snippet(templates[name], context);
             return statements.body;

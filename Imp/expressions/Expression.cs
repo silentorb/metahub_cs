@@ -10,7 +10,7 @@ using imperative.summoner;
 namespace imperative.expressions
 {
 
-    public delegate Expression Expression_Generator(Summoner.Context context);
+    public delegate Expression Expression_Generator(Summoner_Context context);
     public delegate bool Expression_Check(Expression expression);
 
     [DebuggerDisplay("{debug_string}")]

@@ -25,6 +25,11 @@ namespace imperative.summoner
             this.overlord = overlord;
         }
 
+        public void summon(Legend source)
+        {
+            summon((Group_Legend)source);
+        }
+
         public void summon(Group_Legend source)
         {
             ack(source, process_dungeon1);
@@ -258,7 +263,7 @@ namespace imperative.summoner
                 case "assignment":
                     return process_assignment(parts, context);
 
-                case "expression":
+                case "expression_part":
                     return process_expression(source, context);
 
                 case "if_statement":
@@ -306,15 +311,18 @@ namespace imperative.summoner
             throw new Exception("Unsupported statement type: " + source.type + ".");
         }
 
-        private Expression process_expression(Legend source, Summoner_Context context)
+        private Expression process_expression(Legend legend, Summoner_Context context)
         {
-            if (source.children.Count == 1)
-                return process_expression_part(source.children[0], context);
+            var group = (Group_Legend) legend;
+            var children = group.children;
 
-            if (source.children.Count == 2)
+            if (children.Count == 1)
+                return process_expression_part(children[0], context);
+
+            if (children.Count == 2)
             {
-                var op = context.get_string_pattern(source.text) ?? source.text;
-                return new Operation(op, source.children.Select(p => process_expression_part(p, context)));
+                var op = group.dividers[0].text;
+                return new Operation(op, children.Select(p => process_expression_part(p, context)));
             }
 
             throw new Exception("Not supported.");
@@ -361,6 +369,9 @@ namespace imperative.summoner
                 case "string":
                     return new Literal(source.text);
 
+                case "null":
+                    return new Null_Value();
+
                 case "reference":
                     return process_reference(source, context);
 
@@ -400,9 +411,9 @@ namespace imperative.summoner
             foreach (var pattern in patterns)
             {
                 ++index;
-                var token = pattern.text;
-                Expression array_access = pattern.children.Count > 0
-                                              ? process_expression(pattern.children[0], context)
+                var token = pattern.children[0].text;
+                Expression array_access = pattern.children[1].children.Count > 0
+                                              ? process_expression(pattern.children[1].children[0], context)
                                               : null;
 
                 Portal portal = null;

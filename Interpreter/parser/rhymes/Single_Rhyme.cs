@@ -56,7 +56,11 @@ namespace runic.parser.rhymes
             if (wisp == stone.current.whisper)
             {
                 stone.tracker.add_entry(true, this, stone.current);
-                return new Legend_Result(new String_Legend(this, stone.current.text), stone.next());
+                var legend = whisper.has_attribute(Whisper.Attribute.optional)
+                    ? null
+                    : new String_Legend(this, stone.current.text);
+
+                return new Legend_Result(legend, stone.next());
             }
 
             if (wisp.GetType() == typeof(Whisper_Group))

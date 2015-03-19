@@ -37,7 +37,8 @@ namespace runic.parser.rhymes
                 divider = parser.get_whisper_rhyme(patterns[1].text);
                 min = int.Parse(patterns[2].text);
                 max = int.Parse(patterns[3].text);
-                has_variable_dividers = divider.aggregate().OfType<Or_Rhyme>().Any();
+//                has_variable_dividers = divider.aggregate().OfType<Or_Rhyme>().Any();
+                has_variable_dividers = !divider.is_ghost;
             }
         }
 
@@ -61,7 +62,7 @@ namespace runic.parser.rhymes
                     break;
 
                 matches.Add(main_result.legend);
-                stone = main_result.stone.next();
+                stone = main_result.stone;
                 if (last_divider != null)
                     dividers.Add(last_divider);
 
@@ -71,14 +72,15 @@ namespace runic.parser.rhymes
                     break;
 
                 last_divider = divider_result.legend;
+                stone = divider_result.stone;
             }
             while (max == 0 || matches.Count < max);
 
-//            if (matches.Count < min)
-//                return null;
+            if (matches.Count < min)
+                return null;
 
-            if (matches.Count == 0)
-                return new Legend_Result(null, stone);
+//            if (matches.Count == 0)
+//                return new Legend_Result(null, stone);
 
             return new Legend_Result(new Group_Legend(this, matches, dividers), stone);
         }
@@ -125,7 +127,7 @@ namespace runic.parser.rhymes
 
         public override string debug_info
         {
-            get { return "rep " + rhyme.name; }
+            get { return rhyme.name; }
         }
 
     }

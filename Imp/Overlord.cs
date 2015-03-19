@@ -91,6 +91,14 @@ namespace imperative
             summon(pre_summoner);
         }
 
+        public void summon2(string code)
+        {
+            var runes = Summoner2.read_runes(code);
+            var legend = Summoner2.translate_runes(runes);
+            var summoner = new Summoner2(this);
+            summoner.summon(legend);
+        }
+
         public void summon_many(IEnumerable<string> codes)
         {
             var pre_summoners = codes.Select(code => pre_summon(code).output);

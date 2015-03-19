@@ -6,6 +6,13 @@ using parser;
 
 namespace runic.lexer
 {
+    public enum Whisper_Type
+    {
+        regex,
+        text,
+        group
+    }
+
     public abstract class Whisper
     {
         public enum Attribute
@@ -16,9 +23,11 @@ namespace runic.lexer
 
         public string name;
         public Attribute[] attributes;
+        public Whisper_Type type;
 
-        protected Whisper(string name)
+        protected Whisper(Whisper_Type type, string name)
         {
+            this.type = type;
             this.name = name;
         }
 

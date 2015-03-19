@@ -10,7 +10,7 @@ namespace runic.lexer
         public string text;
 
         public String_Whisper(string name, string text)
-            : base(name)
+            : base(Whisper_Type.text, name)
         {
             this.text = text;
         }

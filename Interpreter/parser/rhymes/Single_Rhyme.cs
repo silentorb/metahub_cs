@@ -11,15 +11,19 @@ namespace runic.parser.rhymes
         public Whisper whisper;
 
         public Single_Rhyme(string name)
-            : base(name)
+            : base(Rhyme_Type.single, name)
         {
-
         }
 
         public Single_Rhyme(string name, Whisper whisper)
-            : base(name)
+            : base(Rhyme_Type.single, name)
         {
             this.whisper = whisper;
+        }
+
+        public override bool is_ghost
+        {
+            get { return whisper.type == Whisper_Type.text; }
         }
 
         public override void initialize(global::parser.Pattern_Source pattern, Parser parser)

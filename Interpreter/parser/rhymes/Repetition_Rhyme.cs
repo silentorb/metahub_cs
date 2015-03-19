@@ -15,7 +15,7 @@ namespace runic.parser.rhymes
         private bool has_variable_dividers = false;
 
         public Repetition_Rhyme(string name)
-            : base(name)
+            : base(Rhyme_Type.repetition, name)
         {
 
         }
@@ -74,8 +74,8 @@ namespace runic.parser.rhymes
             }
             while (max == 0 || matches.Count < max);
 
-            if (matches.Count < min)
-                return null;
+//            if (matches.Count < min)
+//                return null;
 
             if (matches.Count == 0)
                 return new Legend_Result(null, stone);
@@ -110,8 +110,8 @@ namespace runic.parser.rhymes
             if (matches.Count < min)
                 return null;
 
-            if (matches.Count == 0)
-                return new Legend_Result(null, stone);
+//            if (matches.Count == 0)
+//                return new Legend_Result(null, stone);
 
             return new Legend_Result(new Group_Legend(this, matches), stone);
         }
@@ -121,6 +121,11 @@ namespace runic.parser.rhymes
             return divider != null
                 ? new[] { rhyme, divider }
                 : new[] { rhyme };
+        }
+
+        public override string debug_info
+        {
+            get { return "rep " + rhyme.name; }
         }
 
     }

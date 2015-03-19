@@ -13,12 +13,6 @@ namespace runic.lexer
 {
     public class Lexer
     {
-        //        public enum Load_Pass
-        //        {
-        //            first,
-        //            second
-        //        }
-
         public Dictionary<string, Whisper> whispers = new Dictionary<string, Whisper>();
 
         public Lexer()

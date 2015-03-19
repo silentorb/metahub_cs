@@ -11,7 +11,7 @@ namespace runic.lexer
         public Regex regex;
 
         public Regex_Whisper(string name, string pattern)
-            : base(name)
+            : base(Whisper_Type.regex, name)
         {
             regex = new Regex("\\G" + pattern);
         }

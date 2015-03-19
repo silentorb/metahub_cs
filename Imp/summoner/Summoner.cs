@@ -699,12 +699,6 @@ namespace imperative.summoner
             return new Instantiate(type.dungeon, args);
         }
 
-        //private Expression process_snippet_functions(Pattern_Source source, Context context)
-        //{
-        //    var functions = source.patterns.Select(p => process_function_snippet(p, context));
-        //    return new Statements(functions.ToList());
-        //}
-
         private Expression process_function_snippet(Pattern_Source source, Summoner_Context context)
         {
             var name = source.patterns[1].text;
@@ -725,20 +719,5 @@ namespace imperative.summoner
             return new Anonymous_Function(minion);
         }
 
-        public static List<Rune> read_runes(string input)
-        {
-             if (lexer == null)
-                 lexer = new Lexer(Resources.imp_lexer);
-
-            return lexer.read(input);
-        }
-
-        public static void translate_runes(List<Rune> runes)
-        {
-            if (parser == null)
-                parser = new Parser(lexer, Resources.imp2_grammar);
-
-            parser.read(runes);
-        }
     }
 }

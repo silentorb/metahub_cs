@@ -8,14 +8,30 @@ using runic.lexer;
 
 namespace runic.parser
 {
+    public enum Rhyme_Type
+    {
+        and,
+        or,
+        repetition,
+        single
+    }
+
     [DebuggerDisplay("Rhyme {name}")]
     public abstract class Rhyme
     {
         public string name;
+        public Rhyme_Type type;
+        public virtual bool is_ghost { get { return false; } }
 
-        protected Rhyme(string name)
+        public virtual string debug_info
+        {
+            get { return name; }
+        }
+
+        protected Rhyme(Rhyme_Type type, string name)
         {
             this.name = name;
+            this.type = type;
         }
 
         public abstract void initialize(Pattern_Source pattern, Parser parser);

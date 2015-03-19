@@ -10,12 +10,12 @@ namespace runic.lexer
         public Whisper[] whispers;
 
         public Whisper_Group(string name)
-            : base(name)
+            : base(Whisper_Type.group, name)
         {
         }
 
         public Whisper_Group(string name, IEnumerable<Whisper> whispers)
-            : base(name)
+            : base(Whisper_Type.group, name)
         {
             this.whispers = whispers.ToArray();
         }

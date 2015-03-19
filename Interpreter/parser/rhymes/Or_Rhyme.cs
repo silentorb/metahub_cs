@@ -10,7 +10,7 @@ namespace runic.parser.rhymes
         public List<Rhyme> rhymes;
 
         public Or_Rhyme(string name)
-            : base(name)
+            : base(Rhyme_Type.or, name)
         {
 
         }

@@ -9,8 +9,8 @@ using metahub.jackolantern.expressions;
 
 using metahub.schema;
 using runic.lexer;
+using runic.parser;
 using Parser = runic.parser.Parser;
-using Pattern_Source = parser.Pattern_Source;
 
 namespace imperative.summoner
 {
@@ -25,43 +25,43 @@ namespace imperative.summoner
             this.overlord = overlord;
         }
 
-        public void summon(parser.Pattern_Source source)
+        public void summon(Group_Legend source)
         {
             ack(source, process_dungeon1);
             ack(source, process_dungeon2);
             ack(source, process_dungeon3);
         }
 
-        public void summon_many(IEnumerable<Pattern_Source> sources)
+        public void summon_many(IEnumerable<Legend> sources)
         {
-            foreach (var source in sources)
+            foreach (Group_Legend source in sources)
             {
                 ack(source, process_dungeon1);
             }
 
-            foreach (var source in sources)
+            foreach (Group_Legend source in sources)
             {
                 ack(source, process_dungeon2);
             }
 
-            foreach (var source in sources)
+            foreach (Group_Legend source in sources)
             {
                 ack(source, process_dungeon3);
             }
         }
 
-        void ack(Pattern_Source source,
-            Func<Pattern_Source, Summoner_Context, Dungeon> second)
+        void ack(Group_Legend source,
+            Func<Legend, Summoner_Context, Dungeon> second)
         {
-            foreach (var pattern in source.patterns)
+            foreach (var pattern in source.children)
             {
-                if (pattern.type == "namespace")
+                if (pattern.type == "namespace_statement")
                 {
                     var context = create_realm_context(pattern);
-                    var statements = pattern.patterns[6].patterns;
+                    var statements = pattern.children[1].children;
                     process_namespace(statements, context, second);
                 }
-                else if (pattern.type == "class")
+                else if (pattern.type == "class_statement")
                 {
                     var context = new Summoner_Context(overlord.realms[""]);
                     second(pattern, context);
@@ -73,9 +73,9 @@ namespace imperative.summoner
             }
         }
 
-        private Summoner_Context create_realm_context(Pattern_Source source)
+        private Summoner_Context create_realm_context(Legend source)
         {
-            var name = source.patterns[2].text;
+            var name = source.children[0].text;
             if (!overlord.realms.ContainsKey(name))
             {
                 overlord.realms[name] = new Realm(name, overlord);
@@ -86,8 +86,8 @@ namespace imperative.summoner
             return context;
         }
 
-        private void process_namespace(IEnumerable<Pattern_Source> statements, Summoner_Context context,
-            Func<Pattern_Source, Summoner_Context, Dungeon> dungeon_step)
+        private void process_namespace(IEnumerable<Legend> statements, Summoner_Context context,
+            Func<Legend, Summoner_Context, Dungeon> dungeon_step)
         {
             foreach (var statement in statements)
             {
@@ -95,9 +95,9 @@ namespace imperative.summoner
             }
         }
 
-        public Dungeon process_dungeon1(Pattern_Source source, Summoner_Context context)
+        public Dungeon process_dungeon1(Legend source, Summoner_Context context)
         {
-            var name = source.patterns[4].text;
+            var name = source.children[1].text;
             var replacement_name = context.get_string_pattern(name);
             if (replacement_name != null)
                 name = replacement_name;
@@ -105,12 +105,12 @@ namespace imperative.summoner
             if (!context.realm.dungeons.ContainsKey(name))
             {
                 var dungeon = context.realm.create_dungeon(name);
-                if (source.patterns[0].patterns.Length > 0)
-                    dungeon.is_abstract = source.patterns[0].patterns.Any(p => p.text == "abstract");
+                if (source.children[0].children.Count > 0)
+                    dungeon.is_abstract = source.children[0].children.Any(p => p.text == "abstract");
 
-                var parent_dungeons = source.patterns[6].patterns;
-                if (parent_dungeons.Length > 0)
-                    dungeon.parent = overlord.get_dungeon(parent_dungeons[0].patterns[0].text);
+                var parent_dungeons = source.children[2].children;
+                if (parent_dungeons.Count > 0)
+                    dungeon.parent = overlord.get_dungeon(parent_dungeons[0].children[0].text);
 
                 dungeon.generate_code();
                 return dungeon;
@@ -119,15 +119,15 @@ namespace imperative.summoner
             return null;
         }
 
-        public Dungeon process_dungeon2(Pattern_Source source, Summoner_Context context)
+        public Dungeon process_dungeon2(Legend source, Summoner_Context context)
         {
-            var name = source.patterns[4].text;
+            var name = source.children[1].text;
 
             var replacement_name = context.get_string_pattern(name);
             if (replacement_name != null)
                 name = replacement_name;
 
-            var statements = source.patterns[9].patterns;
+            var statements = source.children[3].children;
             var dungeon = context.realm.dungeons[name];
             var dungeon_context = new Summoner_Context(context) { dungeon = dungeon };
             foreach (var statement in statements)
@@ -138,15 +138,15 @@ namespace imperative.summoner
             return dungeon;
         }
 
-        public Dungeon process_dungeon3(Pattern_Source source, Summoner_Context context)
+        public Dungeon process_dungeon3(Legend source, Summoner_Context context)
         {
-            var name = source.patterns[4].text;
+            var name = source.children[1].text;
 
             var replacement_name = context.get_string_pattern(name);
             if (replacement_name != null)
                 name = replacement_name;
 
-            var statements = source.patterns[9].patterns;
+            var statements = source.children[3].children;
             var dungeon = context.realm.dungeons[name];
             var dungeon_context = new Summoner_Context(context) { dungeon = dungeon };
             foreach (var statement in statements)
@@ -157,7 +157,7 @@ namespace imperative.summoner
             return dungeon;
         }
 
-        private void process_dungeon_statement(Pattern_Source source, Summoner_Context context, bool as_stub = false)
+        private void process_dungeon_statement(Legend source, Summoner_Context context, bool as_stub = false)
         {
             switch (source.type)
             {
@@ -176,62 +176,63 @@ namespace imperative.summoner
             }
         }
 
-        //        private void process_abstract_function(Pattern_Source source, Context context)
+        //        private void process_abstract_function(Legend source, Context context)
         //        {
         //            var minion = context.dungeon.spawn_minion(
-        //                source.patterns[0].text,
-        //                source.patterns[3].patterns.Select(p => process_parameter(p, context)).ToList()
+        //                source.children[0].text,
+        //                source.children[3].children.Select(p => process_parameter(p, context)).ToList()
         //                );
         //
         //            minion.is_abstract = true;
         //
-        //            var return_type = source.patterns[6];
-        //            if (return_type.patterns.Length > 0)
-        //                minion.return_type = parse_type(return_type.patterns[0], context);
+        //            var return_type = source.children[6];
+        //            if (return_type.children.Length > 0)
+        //                minion.return_type = parse_type(return_type.children[0], context);
         //        }
 
-        private void process_function_definition(Pattern_Source source, Summoner_Context context, bool as_stub = false)
+        private void process_function_definition(Legend source, Summoner_Context context, bool as_stub = false)
         {
-            var name = source.patterns[1].text;
+            var parts = source.children;
+            var name = parts[1].text;
             var minion = context.dungeon.has_minion(name)
                          ? context.dungeon.summon_minion(name)
                          : context.dungeon.spawn_minion(
                              name,
-                             source.patterns[4].patterns.Select(p => process_parameter(p, context)).ToList()
+                             parts[2].children.Select(p => process_parameter(p, context)).ToList()
                                );
 
             var new_context = new Summoner_Context(context) { scope = minion.scope };
 
             if (as_stub)
             {
-                var return_type = source.patterns[6];
-                if (return_type.patterns.Length > 0)
-                    minion.return_type = parse_type(return_type.patterns[0], context);
+                var return_type = parts[3];
+                if (return_type.children.Count > 0)
+                    minion.return_type = parse_type(return_type.children[0], context);
             }
             else
             {
-                if (source.patterns[7].patterns.Length == 0)
+                if (parts[4].children.Count == 0)
                     minion.is_abstract = true;
                 else
-                    minion.add_to_block(process_block(source.patterns[7].patterns[0], new_context));
+                    minion.add_to_block(process_block(parts[4].children[0], new_context));
             }
         }
 
-        private void process_property_declaration(Pattern_Source source, Summoner_Context context, bool as_stub = false)
+        private void process_property_declaration(Legend source, Summoner_Context context, bool as_stub = false)
         {
             if (!as_stub)
                 return;
 
-            var type_info = parse_type2(source.patterns[1].patterns[3], context);
-            var portal_name = source.patterns[0].text;
+            var type_info = parse_type2(source.children[1].children[0], context);
+            var portal_name = source.children[0].text;
             if (!context.dungeon.has_portal(portal_name))
                 context.dungeon.add_portal(new Portal(portal_name, type_info));
         }
 
-        private List<Expression> process_block(Pattern_Source source, Summoner_Context context)
+        private List<Expression> process_block(Legend source, Summoner_Context context)
         {
             var result = new List<Expression>();
-            foreach (var pattern in source.patterns)
+            foreach (var pattern in source.children)
             {
                 var expression = process_statement(pattern, context);
                 if (expression.type == Expression_Type.statements)
@@ -248,47 +249,49 @@ namespace imperative.summoner
             return result;
         }
 
-        public Expression process_statement(Pattern_Source source, Summoner_Context context)
+        public Expression process_statement(Legend source, Summoner_Context context)
         {
+            var parts = source.children;
+
             switch (source.type)
             {
                 case "assignment":
-                    return process_assignment(source, context);
+                    return process_assignment(parts, context);
 
                 case "expression":
                     return process_expression(source, context);
 
-                case "if":
+                case "if_statement":
                     return new Flow_Control(Flow_Control_Type.If,
-                        process_expression(source.patterns[4], context),
-                        process_block(source.patterns[8], context)
+                        process_expression(parts[0], context),
+                        process_block(parts[1], context)
                     );
 
-                case "while":
+                case "while_statement":
                     return new Flow_Control(Flow_Control_Type.While,
-                        process_expression(source.patterns[4], context),
-                        process_block(source.patterns[8], context)
+                        process_expression(parts[0], context),
+                        process_block(parts[1], context)
                     );
 
-                case "for":
-                    return process_iterator(source, context);
+                case "for_statement":
+                    return process_iterator(parts, context);
 
-                case "return":
-                    return new Statement("return", source.patterns[1].patterns.Length == 0
+                case "return_statement":
+                    return new Statement("return", parts[0].children.Count == 0
                         ? null
-                        : process_expression(source.patterns[1].patterns[0], context)
+                        : process_expression(parts[0].children[0], context)
                     );
 
                 case "declare_variable":
-                    return process_declare_variable(source, context);
+                    return process_declare_variable(parts, context);
 
                 case "snippet_function":
                     {
-                        return process_function_snippet(source, context);
+                        return process_function_snippet(parts, context);
                     }
 
                 case "snippets":
-                    var snippets = source.patterns.Select(p => process_statement(p, context)).ToList();
+                    var snippets = parts.Select(p => process_statement(p, context)).ToList();
                     return new Block(snippets);
 
                 case "statements":
@@ -303,30 +306,30 @@ namespace imperative.summoner
             throw new Exception("Unsupported statement type: " + source.type + ".");
         }
 
-        private Expression process_expression(Pattern_Source source, Summoner_Context context)
+        private Expression process_expression(Legend source, Summoner_Context context)
         {
-            if (source.patterns.Length == 1)
-                return process_expression_part(source.patterns[0], context);
+            if (source.children.Count == 1)
+                return process_expression_part(source.children[0], context);
 
-            if (source.patterns.Length == 2)
+            if (source.children.Count == 2)
             {
                 var op = context.get_string_pattern(source.text) ?? source.text;
-                return new Operation(op, source.patterns.Select(p => process_expression_part(p, context)));
+                return new Operation(op, source.children.Select(p => process_expression_part(p, context)));
             }
 
             throw new Exception("Not supported.");
         }
 
-        Expression process_declare_variable(Pattern_Source source, Summoner_Context context)
+        Expression process_declare_variable(List<Legend> parts, Summoner_Context context)
         {
             Profession profession;
-            var expression_pattern = source.patterns[4].patterns.Length == 0
+            var expression_pattern = parts[2].children.Count == 0
                 ? null
-                : process_expression(source.patterns[4].patterns[0], context);
+                : process_expression(parts[2].children[0], context);
 
-            if (source.patterns[3].patterns.Length > 0)
+            if (parts[1].children.Count > 0)
             {
-                profession = parse_type2(source.patterns[3], context);
+                profession = parse_type2(parts[1], context);
             }
             else
             {
@@ -336,12 +339,14 @@ namespace imperative.summoner
                 profession = expression_pattern.get_profession();
             }
 
-            var symbol = context.scope.create_symbol(source.patterns[2].text, profession);
+            var symbol = context.scope.create_symbol(parts[0].text, profession);
             return new Declare_Variable(symbol, expression_pattern);
         }
 
-        private Expression process_expression_part(Pattern_Source source, Summoner_Context context)
+        private Expression process_expression_part(Legend source, Summoner_Context context)
         {
+            var parts = source.children;
+
             switch (source.type)
             {
                 case "bool":
@@ -363,30 +368,30 @@ namespace imperative.summoner
                     return process_expression(source, context);
 
                 case "instantiate":
-                    return process_instantiate(source, context);
+                    return process_instantiate(parts, context);
 
                 case "lambda":
-                    return process_lambda(source, context);
+                    return process_lambda(parts, context);
             }
 
             throw new Exception("Unsupported statement type: " + source.type + ".");
         }
 
-        private Expression process_reference(Pattern_Source source, Summoner_Context context)
+        private Expression process_reference(Legend source, Summoner_Context context)
         {
             var dungeon = context.dungeon;
             Expression result = null;
             Expression last = null;
-            var patterns = source.patterns[0].patterns;
-            if (patterns.Length == 1)
+            var patterns = source.children[0].children;
+            if (patterns.Count == 1)
             {
                 if (patterns[0].text == "null")
                     return new Null_Value();
             }
             List<Expression> args = null;
-            if (source.patterns[1].patterns.Length > 0)
+            if (source.children[1].children.Count > 0)
             {
-                args = source.patterns[1].patterns[0].patterns
+                args = source.children[1].children[0].children
                                                      .Select(p => process_expression(p, context))
                                                      .ToList();
             }
@@ -396,8 +401,8 @@ namespace imperative.summoner
             {
                 ++index;
                 var token = pattern.text;
-                Expression array_access = pattern.patterns.Length > 0
-                                              ? process_expression(pattern.patterns[0], context)
+                Expression array_access = pattern.children.Count > 0
+                                              ? process_expression(pattern.children[0], context)
                                               : null;
 
                 Portal portal = null;
@@ -418,7 +423,7 @@ namespace imperative.summoner
                     var symbol = context.scope.find_or_null(token);
                     if (symbol != null)
                     {
-                        if (index == patterns.Length - 1 && symbol.profession.type == Kind.function)
+                        if (index == patterns.Count - 1 && symbol.profession.type == Kind.function)
                         {
                             next = new Dynamic_Function_Call(symbol.name, null, args);
                         }
@@ -517,21 +522,21 @@ namespace imperative.summoner
             return null;
         }
 
-        private Parameter process_parameter(Pattern_Source source, Summoner_Context context)
+        private Parameter process_parameter(Legend source, Summoner_Context context)
         {
-            var type = source.patterns[1].patterns.Length > 0
-                ? parse_type2(source.patterns[1].patterns[0].patterns[3], context)
+            var type = source.children[1].children.Count > 0
+                ? parse_type2(source.children[1].children[0].children[0], context)
                 : new Profession(Kind.unknown);
 
-            return new Parameter(new Symbol(source.patterns[0].text, type, null));
+            return new Parameter(new Symbol(source.children[0].text, type, null));
         }
 
-        private Profession parse_type(Pattern_Source source, Summoner_Context context)
+        private Profession parse_type(Legend source, Summoner_Context context)
         {
-            source = source.patterns[2];
-            var text = source.patterns.Last().text;
+            source = source.children[2];
+            var text = source.children.Last().text;
 
-            if (source.patterns.Length == 1)
+            if (source.children.Count == 1)
             {
                 switch (text)
                 {
@@ -547,10 +552,10 @@ namespace imperative.summoner
             }
 
             Realm realm = null;
-            for (var i = 0; i < source.patterns.Length - 1; ++i)
+            for (var i = 0; i < source.children.Count - 1; ++i)
             {
                 if (realm == null)
-                    realm = overlord.realms[source.patterns[i].text];
+                    realm = overlord.realms[source.children[i].text];
                 else
                     throw new Exception("embedded namespaces are not supported yet.");
             }
@@ -568,10 +573,10 @@ namespace imperative.summoner
             throw new Exception("Invalid type: " + text + ".");
         }
 
-        private Profession parse_type2(Pattern_Source source, Summoner_Context context)
+        private Profession parse_type2(Legend source, Summoner_Context context)
         {
-            var path = source.patterns[0].patterns.Select(p => p.text).ToArray();
-            var is_list = source.patterns.Length > 1 && source.patterns[1].patterns.Length > 0;
+            var path = source.children.Select(p => p.text).ToArray();
+            var is_list = source.children.Count > 1 && source.children[1].children.Count > 0;
             return parse_type2(path, context, is_list);
         }
 
@@ -629,11 +634,11 @@ namespace imperative.summoner
             throw new Exception("Invalid type: " + text + ".");
         }
 
-        private Expression process_assignment(Pattern_Source source, Summoner_Context context)
+        private Expression process_assignment(List<Legend> parts, Summoner_Context context)
         {
-            var reference = process_reference(source.patterns[0], context);
-            var expression = process_expression(source.patterns[4], context);
-            var op = source.patterns[2].text;
+            var reference = process_reference(parts[0], context);
+            var expression = process_expression(parts[2], context);
+            var op = parts[1].text;
             var last = reference.get_end();
             if (reference != null && reference.type == Expression_Type.operation)
                 throw new Exception("Cannot call function on operation.");
@@ -681,44 +686,38 @@ namespace imperative.summoner
                 );
         }
 
-        public Expression process_iterator(Pattern_Source source, Summoner_Context context)
+        public Expression process_iterator(List<Legend> parts, Summoner_Context context)
         {
-            var reference = process_expression_part(source.patterns[10], context);
+            var reference = process_expression_part(parts[1], context);
             var profession = reference.get_end().get_profession().get_reference();
-            var symbol = context.scope.create_symbol(source.patterns[6].text, profession);
+            var symbol = context.scope.create_symbol(parts[0].text, profession);
             context.scope.add_map(symbol.name, c => new Variable(symbol));
             return new Iterator(symbol,
-                                reference, process_block(source.patterns[14], context)
+                                reference, process_block(parts[2], context)
                 );
         }
 
-        private Expression process_instantiate(Pattern_Source source, Summoner_Context context)
+        private Expression process_instantiate(List<Legend> parts, Summoner_Context context)
         {
-            var type = parse_type2(source.patterns[2], context);
-            var args = source.patterns[4].patterns.Select(p => process_expression(p, context));
+            var type = parse_type2(parts[0], context);
+            var args = parts[1].children.Select(p => process_expression(p, context));
             return new Instantiate(type.dungeon, args);
         }
 
-        //private Expression process_snippet_functions(Pattern_Source source, Context context)
-        //{
-        //    var functions = source.patterns.Select(p => process_function_snippet(p, context));
-        //    return new Statements(functions.ToList());
-        //}
-
-        private Expression process_function_snippet(Pattern_Source source, Summoner_Context context)
+        private Expression process_function_snippet(List<Legend> parts, Summoner_Context context)
         {
-            var name = source.patterns[1].text;
-            var body = source.patterns[9];
-            var parameters = source.patterns[4].patterns.Select(p => p.text).ToArray();
-            return new Snippet(name, body, parameters);
+            var name = parts[0].text;
+            var body = parts[2];
+            var parameters = parts[1].children.Select(p => p.text).ToArray();
+            return new Snippet2(name, body, parameters);
         }
 
-        private Expression process_lambda(Pattern_Source source, Summoner_Context context)
+        private Expression process_lambda(List<Legend> parts, Summoner_Context context)
         {
-            var parameters = source.patterns[2].patterns.Select(p => process_parameter(p, context));
+            var parameters = parts[0].children.Select(p => process_parameter(p, context));
             var minion = new Ethereal_Minion(parameters, context.scope);
             var new_context = new Summoner_Context(context) { scope = minion.scope };
-            var block = process_block(source.patterns[8], new_context);
+            var block = process_block(parts[1], new_context);
             minion.expressions.AddRange(block);
             minion.return_type = new Profession(Kind.none);
 
@@ -727,18 +726,18 @@ namespace imperative.summoner
 
         public static List<Rune> read_runes(string input)
         {
-             if (lexer == null)
-                 lexer = new Lexer(Resources.imp_lexer);
+            if (lexer == null)
+                lexer = new Lexer(Resources.imp_lexer);
 
             return lexer.read(input);
         }
 
-        public static void translate_runes(List<Rune> runes)
+        public static Legend translate_runes(List<Rune> runes)
         {
             if (parser == null)
                 parser = new Parser(lexer, Resources.imp2_grammar);
 
-            parser.read(runes);
+            return parser.read(runes);
         }
     }
 }

@@ -119,13 +119,17 @@ namespace runic.parser
             throw new Exception("Not supported.");
         }
 
-        public Legend read(List<Rune> runes)
+        public Legend read(List<Rune> runes, string start_name = null)
         {
-            var start = rhymes["start"];
-            var stone = new Runestone(runes);
-            var result = start.match(stone);
+            if (start_name == null)
+                start_name = "start";
 
-            if (result == null)
+            var start = rhymes[start_name];
+
+            var stone = new Runestone(runes);
+            var result = start.match(stone, null);
+
+            if (result == null || !result.stone.is_at_end)
             {
                 var furthest = runes[stone.tracker.furthest];
                 throw new Exception("Could not find match at "

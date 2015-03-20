@@ -20,9 +20,9 @@ declare_symbol = id @(type_info, 0, 1)
 
 type_info = colon signature
 
-signature = @(value_type, path_separator, 1, 0) @(optional_list_suffix, 0, 1)
+signature = @(value_type, path_separator, 1, 0) @(empty_array, 0, 1)
 
-optional_list_suffix = array_start array_end
+empty_array = array_start array_end
 
 statement =
 	declare_variable
@@ -41,6 +41,7 @@ expression_part =
 	| reference	
 	| closed_expression
 	| null
+	| empty_array
 
 closed_expression = group_start expression group_end
 

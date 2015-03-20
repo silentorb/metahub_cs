@@ -32,14 +32,14 @@ namespace runic.parser.rhymes
             whisper = parser.lexer.whispers[id];
         }
 
-        public override Legend_Result match(Runestone stone)
+        public override Legend_Result match(Runestone stone, Rhyme parent)
         {
             var result = check(whisper, stone);
             if (result != null)
                 return result;
 
             if (stone.current.whisper.has_attribute(Whisper.Attribute.optional))
-                return match(stone.next());
+                return match(stone.next(), parent);
 
             stone.tracker.add_entry(false, this, stone.current);
             return null;

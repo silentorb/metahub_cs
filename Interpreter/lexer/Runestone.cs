@@ -18,10 +18,15 @@ namespace runic.lexer
         {
             get
             {
-                return position <= runes.Count
+                return position < runes.Count
                     ? runes[position]
                     : null;
             }
+        }
+
+        public bool is_at_end
+        {
+            get { return position == runes.Count; }
         }
 
         public Runestone(List<Rune> runes)
@@ -35,9 +40,9 @@ namespace runic.lexer
         {
             this.runes = runes;
             this.tracker = tracker;
-            if (position >= runes.Count)
+            if (position > runes.Count)
             {
-                position = runes.Count - 1;
+                position = runes.Count;
             }
             else if (position > tracker.furthest)
             {

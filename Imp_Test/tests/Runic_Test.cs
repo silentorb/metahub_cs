@@ -24,5 +24,23 @@ namespace imp_test.tests
             var summoner = new Summoner2(overlord);
             summoner.summon((Group_Legend)legend);
         }
+
+        [Test]
+        public void test_if()
+        {
+            var code = Utility.load_resource("imp.if.imp");
+            var runes = Summoner2.read_runes(code);
+            var legend = Summoner2.translate_runes(runes, "if_statement");
+            Assert.AreEqual("return_statement", legend.children[1].children[0].rhyme.name);
+        }
+
+        [Test]
+        public void test_empty_array()
+        {
+            var code = Utility.load_resource("imp.empty_array.imp");
+            var runes = Summoner2.read_runes(code);
+            var legend = Summoner2.translate_runes(runes, "statement");
+            Assert.AreEqual("return_statement", legend.children[1].children[0].rhyme.name);
+        }
     }
 }

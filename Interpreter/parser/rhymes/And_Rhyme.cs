@@ -25,12 +25,12 @@ namespace runic.parser.rhymes
                 single_non_ghost = rhymes.First(r => !r.is_ghost);
         }
 
-        public override Legend_Result match(Runestone stone)
+        public override Legend_Result match(Runestone stone, Rhyme parent)
         {
             var results = new List<Legend>();
             foreach (var rhyme in rhymes)
             {
-                var result = rhyme.match(stone);
+                var result = rhyme.match(stone, this);
                 if (result == null)
                     return null;
 
@@ -40,8 +40,7 @@ namespace runic.parser.rhymes
                 stone = result.stone;
             }
 
-//            var returned_rhyme = single_non_ghost ?? this;
-            var legend = results.Count == 1
+            var legend = results.Count == 1 && (parent == null || parent.type != Rhyme_Type.or)
                 ? results[0]
                 : new Group_Legend(this, results);
 

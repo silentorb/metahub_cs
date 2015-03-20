@@ -239,7 +239,7 @@ namespace imperative.summoner
             var result = new List<Expression>();
             foreach (var pattern in source.children)
             {
-                var expression = process_statement(pattern, context);
+                var expression = summon_statement(pattern, context);
                 if (expression.type == Expression_Type.statements)
                 {
                     var statements = (Block)expression;
@@ -254,7 +254,7 @@ namespace imperative.summoner
             return result;
         }
 
-        public Expression process_statement(Legend source, Summoner_Context context)
+        public Expression summon_statement(Legend source, Summoner_Context context)
         {
             var parts = source.children;
 
@@ -296,7 +296,7 @@ namespace imperative.summoner
                     }
 
                 case "snippets":
-                    var snippets = parts.Select(p => process_statement(p, context)).ToList();
+                    var snippets = parts.Select(p => summon_statement(p, context)).ToList();
                     return new Block(snippets);
 
                 case "statements":
@@ -743,12 +743,12 @@ namespace imperative.summoner
             return lexer.read(input);
         }
 
-        public static Legend translate_runes(List<Rune> runes)
+        public static Legend translate_runes(List<Rune> runes, string start = null)
         {
             if (parser == null)
                 parser = new Parser(lexer, Resources.imp2_grammar);
 
-            return parser.read(runes);
+            return parser.read(runes, start);
         }
     }
 }

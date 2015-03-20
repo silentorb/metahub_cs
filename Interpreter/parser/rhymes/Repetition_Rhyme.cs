@@ -42,7 +42,7 @@ namespace runic.parser.rhymes
             }
         }
 
-        public override Legend_Result match(Runestone stone)
+        public override Legend_Result match(Runestone stone, Rhyme parent)
         {
             return divider != null && has_variable_dividers
                 ? match_tracking_dividers(stone)
@@ -57,7 +57,7 @@ namespace runic.parser.rhymes
 
             do
             {
-                var main_result = rhyme.match(stone);
+                var main_result = rhyme.match(stone, this);
                 if (main_result == null)
                     break;
 
@@ -66,7 +66,7 @@ namespace runic.parser.rhymes
                 if (last_divider != null)
                     dividers.Add(last_divider);
 
-                var divider_result = divider.match(stone);
+                var divider_result = divider.match(stone, this);
 
                 if (divider_result == null)
                     break;
@@ -91,7 +91,7 @@ namespace runic.parser.rhymes
 
             do
             {
-                var main_result = rhyme.match(stone);
+                var main_result = rhyme.match(stone, this);
                 if (main_result == null)
                     break;
 
@@ -100,7 +100,7 @@ namespace runic.parser.rhymes
 
                 if (divider != null)
                 {
-                    var divider_result = divider.match(stone);
+                    var divider_result = divider.match(stone, this);
                     if (divider_result == null)
                         break;
 

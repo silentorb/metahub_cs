@@ -1,0 +1,7 @@
+﻿if (topping == null)
+		return
+else if (frog == 0) {
+
+}
+else
+	die()

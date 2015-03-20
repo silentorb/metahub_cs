@@ -56,8 +56,8 @@ namespace imperative.summoner
             }
         }
 
-        void ack(Group_Legend source,
-            Func<Legend, Summoner_Context, Dungeon> second)
+        private void ack(Group_Legend source,
+                         Func<Legend, Summoner_Context, Dungeon> second)
         {
             foreach (var pattern in source.children)
             {
@@ -93,7 +93,7 @@ namespace imperative.summoner
         }
 
         private void process_namespace(IEnumerable<Legend> statements, Summoner_Context context,
-            Func<Legend, Summoner_Context, Dungeon> dungeon_step)
+                                       Func<Legend, Summoner_Context, Dungeon> dungeon_step)
         {
             foreach (var statement in statements)
             {
@@ -201,11 +201,11 @@ namespace imperative.summoner
             var parts = source.children;
             var name = parts[1].text;
             var minion = context.dungeon.has_minion(name)
-                         ? context.dungeon.summon_minion(name)
-                         : context.dungeon.spawn_minion(
-                             name,
-                             parts[2].children.Select(p => process_parameter(p, context)).ToList()
-                               );
+                             ? context.dungeon.summon_minion(name)
+                             : context.dungeon.spawn_minion(
+                                 name,
+                                 parts[2].children.Select(p => process_parameter(p, context)).ToList()
+                                   );
 
             var new_context = new Summoner_Context(context) { scope = minion.scope };
 
@@ -240,8 +240,13 @@ namespace imperative.summoner
             if (source.type != "statement")
                 return new List<Expression> { summon_statement(source, context) };
 
+            return summon_statements(source.children, context);
+        }
+
+        public List<Expression> summon_statements(List<Legend> legends, Summoner_Context context )
+        {
             var result = new List<Expression>();
-            foreach (var pattern in source.children)
+            foreach (var pattern in legends)
             {
                 var expression = summon_statement(pattern, context);
                 if (expression.type == Expression_Type.statements)
@@ -256,7 +261,7 @@ namespace imperative.summoner
             }
 
             return result;
-        }
+        } 
 
         public Expression summon_statement(Legend source, Summoner_Context context)
         {
@@ -270,26 +275,29 @@ namespace imperative.summoner
                 case "expression_part":
                     return process_expression(source, context);
 
+                case "if_chain":
+                    return summon_if_chain(parts, context);
+
                 case "if_statement":
                     return new Flow_Control(Flow_Control_Type.If,
-                        process_expression(parts[0], context),
-                        process_block(parts[1], context)
-                    );
+                                            process_expression(parts[0], context),
+                                            process_block(parts[1], context)
+                        );
 
                 case "while_statement":
                     return new Flow_Control(Flow_Control_Type.While,
-                        process_expression(parts[0], context),
-                        process_block(parts[1], context)
-                    );
+                                            process_expression(parts[0], context),
+                                            process_block(parts[1], context)
+                        );
 
                 case "for_statement":
                     return process_iterator(parts, context);
 
                 case "return_statement":
                     return new Statement("return", parts[0].children.Count == 0
-                        ? null
-                        : process_expression(parts[0].children[0], context)
-                    );
+                                                       ? null
+                                                       : process_expression(parts[0].children[0], context)
+                        );
 
                 case "declare_variable":
                     return process_declare_variable(parts, context);
@@ -307,8 +315,8 @@ namespace imperative.summoner
                     {
                         var expressions = process_block(source, context);
                         return expressions.Count == 1
-                            ? expressions[0]
-                            : new Block(expressions);
+                                   ? expressions[0]
+                                   : new Block(expressions);
                     }
             }
 
@@ -317,7 +325,7 @@ namespace imperative.summoner
 
         private Expression process_expression(Legend legend, Summoner_Context context)
         {
-            var group = (Group_Legend) legend;
+            var group = (Group_Legend)legend;
             var children = group.children;
 
             if (children.Count == 1)
@@ -332,12 +340,12 @@ namespace imperative.summoner
             throw new Exception("Not supported.");
         }
 
-        Expression process_declare_variable(List<Legend> parts, Summoner_Context context)
+        private Expression process_declare_variable(List<Legend> parts, Summoner_Context context)
         {
             Profession profession;
             var expression_pattern = parts[2].children.Count == 0
-                ? null
-                : process_expression(parts[2].children[0], context);
+                                         ? null
+                                         : process_expression(parts[2].children[0], context);
 
             if (parts[1].children.Count > 0)
             {
@@ -450,8 +458,8 @@ namespace imperative.summoner
                             next = new Variable(symbol) { index = array_access };
                             var profession = next.get_profession();
                             dungeon = profession != null
-                                ? profession.dungeon
-                                : next.get_profession().dungeon;
+                                          ? profession.dungeon
+                                          : next.get_profession().dungeon;
                         }
                     }
                     else
@@ -522,8 +530,8 @@ namespace imperative.summoner
                                                  List<Expression> args)
         {
             var minion = dungeon != null
-                          ? dungeon.summon_minion(token, true)
-                          : null;
+                             ? dungeon.summon_minion(token, true)
+                             : null;
 
             if (minion != null)
                 return new Method_Call(minion, result, args);
@@ -543,8 +551,8 @@ namespace imperative.summoner
         private Parameter process_parameter(Legend source, Summoner_Context context)
         {
             var type = source.children[1].children.Count > 0
-                ? parse_type2(source.children[1].children[0], context)
-                : new Profession(Kind.unknown);
+                           ? parse_type2(source.children[1].children[0], context)
+                           : new Profession(Kind.unknown);
 
             return new Parameter(new Symbol(source.children[0].text, type, null));
         }
@@ -713,6 +721,13 @@ namespace imperative.summoner
             return new Iterator(symbol,
                                 reference, process_block(parts[2], context)
                 );
+        }
+
+        public Expression summon_if_chain(List<Legend> parts, Summoner_Context context)
+        {
+            var legends = parts[0].children.Concat(parts[1].children).ToList();
+            var expressions = summon_statements(legends, context);
+            return new Block(expressions);
         }
 
         private Expression process_instantiate(List<Legend> parts, Summoner_Context context)

@@ -26,7 +26,7 @@ empty_array = array_start array_end
 
 statement =
 	declare_variable
-	| if_statement
+	| if_chain
 	| while_statement
 	| return_statement
 	| for_statement
@@ -75,7 +75,11 @@ any_statement = class_statement | statements
 
 statements = @(statement, semicolon_or_newline, 0, 0)
 
-if_statement = if group_start expression group_end block
+if_chain = @(if_statement, else, 1, 0) @(else_statement, 0, 1)
+
+if_statement = if group_start expression group_end block 
+
+else_statement = else block
 
 while_statement = while group_start expression group_end block
 

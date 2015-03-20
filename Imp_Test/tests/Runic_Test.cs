@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using NUnit.Framework;
 using imperative;
+using imperative.schema;
 using imperative.summoner;
 using runic.parser;
 
@@ -31,7 +32,7 @@ namespace imp_test.tests
             var code = Utility.load_resource("imp.if.imp");
             var runes = Summoner2.read_runes(code);
             var legend = Summoner2.translate_runes(runes, "if_statement");
-            Assert.AreEqual("return_statement", legend.children[1].children[0].rhyme.name);
+            Assert.AreEqual("return_statement", legend.children[1].rhyme.name);
         }
 
         [Test]
@@ -40,7 +41,22 @@ namespace imp_test.tests
             var code = Utility.load_resource("imp.empty_array.imp");
             var runes = Summoner2.read_runes(code);
             var legend = Summoner2.translate_runes(runes, "statement");
-            Assert.AreEqual("return_statement", legend.children[1].children[0].rhyme.name);
+            Assert.AreEqual("empty_array", legend.children[2].children[0].children[0].rhyme.name);
+
+            var overlord = new Overlord();
+            var summoner = new Summoner2(overlord);
+            var context = new Summoner_Context();
+            context.scope = new Scope();
+            summoner.summon_statement(legend, context);
+        }
+
+        [Test]
+        public void test_anonymous_function()
+        {
+            var code = Utility.load_resource("imp.anonymous_function.imp");
+            var runes = Summoner2.read_runes(code);
+            var legend = Summoner2.translate_runes(runes, "statement");
+            Assert.AreEqual("lambda", legend.children[2].children[0].children[0].rhyme.name);
         }
     }
 }

@@ -433,7 +433,7 @@ namespace imperative.render
         virtual protected string render_instantiation(Instantiate expression)
         {
             var args = expression.args.Select(a => render_expression(a)).join(", ");
-            return "new " + render_dungeon_path(expression.dungeon) + "(" + args + ")";
+            return "new " + render_profession(expression.profession) + "(" + args + ")";
         }
 
         //        protected abstract string render_function_definition(Function_Definition definition);

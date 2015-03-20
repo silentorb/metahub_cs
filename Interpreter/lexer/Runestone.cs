@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using runic.parser;
+using runic.parser.rhymes;
 
 namespace runic.lexer
 {
@@ -13,6 +14,8 @@ namespace runic.lexer
         List<Rune> runes; 
         int position;
         public Tracker tracker;
+        static Rune end_of_input = new Rune(
+            new String_Whisper("end of line", "end of line"), "end of line", null, null);
 
         public Rune current
         {
@@ -20,7 +23,7 @@ namespace runic.lexer
             {
                 return position < runes.Count
                     ? runes[position]
-                    : null;
+                    : end_of_input;
             }
         }
 
@@ -56,10 +59,5 @@ namespace runic.lexer
         {
             return new Runestone(runes, tracker, position + 1);
         }
-
-//        public Runestone clone()
-//        {
-//            return new Runestone(runes, tracker, position);
-//        }
     }
 }

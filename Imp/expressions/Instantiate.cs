@@ -10,19 +10,26 @@ namespace imperative.expressions
 {
     public class Instantiate : Expression
     {
-        public Dungeon dungeon;
+        public Profession profession;
         public List<Expression> args;
+
+        public Instantiate(Profession profession, IEnumerable<Expression> args = null)
+            : base(Expression_Type.instantiate)
+        {
+            this.profession = profession;
+            this.args = args != null ? args.ToList() : new List<Expression>();
+        }
 
         public Instantiate(Dungeon dungeon, IEnumerable<Expression> args = null)
             : base(Expression_Type.instantiate)
         {
-            this.dungeon = dungeon;
+            this.profession = new Profession(Kind.reference, dungeon);
             this.args = args != null ? args.ToList() : new List<Expression>();
         }
 
         public override Profession get_profession()
         {
-            return new Profession(Kind.reference, dungeon);
+            return profession;
         }
 
         public override IEnumerable<Expression> children

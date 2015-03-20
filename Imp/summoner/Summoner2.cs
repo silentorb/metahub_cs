@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using imperative.Properties;
@@ -228,7 +229,7 @@ namespace imperative.summoner
             if (!as_stub)
                 return;
 
-            var type_info = parse_type2(source.children[1].children[0], context);
+            var type_info = parse_type2(source.children[1], context);
             var portal_name = source.children[0].text;
             if (!context.dungeon.has_portal(portal_name))
                 context.dungeon.add_portal(new Portal(portal_name, type_info));
@@ -236,6 +237,9 @@ namespace imperative.summoner
 
         private List<Expression> process_block(Legend source, Summoner_Context context)
         {
+            if (source.type != "statement")
+                return new List<Expression> { summon_statement(source, context) };
+
             var result = new List<Expression>();
             foreach (var pattern in source.children)
             {
@@ -371,6 +375,9 @@ namespace imperative.summoner
 
                 case "null":
                     return new Null_Value();
+
+                case "empty_array":
+                    return new Instantiate(new Profession(Kind.reference, null));
 
                 case "reference":
                     return process_reference(source, context);
@@ -536,7 +543,7 @@ namespace imperative.summoner
         private Parameter process_parameter(Legend source, Summoner_Context context)
         {
             var type = source.children[1].children.Count > 0
-                ? parse_type2(source.children[1].children[0].children[0], context)
+                ? parse_type2(source.children[1].children[0], context)
                 : new Profession(Kind.unknown);
 
             return new Parameter(new Symbol(source.children[0].text, type, null));
@@ -586,7 +593,7 @@ namespace imperative.summoner
 
         private Profession parse_type2(Legend source, Summoner_Context context)
         {
-            var path = source.children.Select(p => p.text).ToArray();
+            var path = source.children[0].children.Select(p => p.text).ToArray();
             var is_list = source.children.Count > 1 && source.children[1].children.Count > 0;
             return parse_type2(path, context, is_list);
         }

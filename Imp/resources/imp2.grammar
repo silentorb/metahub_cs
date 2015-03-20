@@ -65,9 +65,7 @@ class_attribute = abstract
 
 optional_parent_classes = colon @(id, comma_or_newline, 1, 0)
 
-block = long_block | short_block
-
-short_block = newlines statement
+block = long_block | statement
 
 long_block = block_start @(statement, semicolon_or_newline, 0, 0) block_end
 

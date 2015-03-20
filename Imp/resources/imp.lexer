@@ -9,6 +9,7 @@ string = /"[^"]*"/ | /'[^']*'/
 bool = "true" | "false"
 int = /-?[0-9]+/
 float = /-?([0-9]*\.)?[0-9]+f?/
+arrow = "=>"
 operator = '+' | '-' | '/' | '*' | '<=' | '>=' | '<' | '>' | '==' | '!=' | '&&' | '||' | /\$\w+/
 equals = "="
 set_operator = equals | '+=' | '-=' | '*=' | '/=' | '@='
@@ -49,7 +50,5 @@ array_start = "["
 array_end = "]"
 
 colon = ":"
-
-arrow = "=>"
 
 id = /[\$a-zA-Z0-9_]+/

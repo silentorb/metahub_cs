@@ -25,7 +25,7 @@ namespace imp_test.tests
         public void anonymous_function_test()
         {
             var target = new JavaScript();
-            Imp_Fixture.create_overlord(target, "imp.anonymous_minion.imp");
+            Imp_Fixture.create_overlord(target, "imp.anonymous_pizza.imp");
             var output = target.generate();
             var goal = Utility.load_resource("js.anonymous_minion.js");
             Utility.diff(goal, output);

@@ -44,7 +44,12 @@ namespace imp_test
                 + cwd + @"\first.txt "
                 + cwd + @"\second.txt ";
 
-            System.Diagnostics.Process.Start(@"E:\Programs\WinMerge\WinMergeU.exe", arguments);
+            var a = @"C:\Program Files (x86)\WinMerge\WinMergeU.exe";
+            var b = @"E:\Programs\WinMerge\WinMergeU.exe";
+            var path = File.Exists(a)
+                ? a
+                : b;
+            System.Diagnostics.Process.Start(path, arguments);
             Assert.AreEqual(first, second);
         }
     }

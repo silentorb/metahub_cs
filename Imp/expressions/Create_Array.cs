@@ -7,10 +7,16 @@ namespace imperative.expressions
     {
         public List<Expression> items;
 
+        public Create_Array()
+            : base(Expression_Type.create_array)
+        {
+            items = new List<Expression>();
+        }
+
         public Create_Array(IEnumerable<Expression> children)
             : base(Expression_Type.create_array)
         {
-            this.items = children.ToList();
+            items = children.ToList();
         }
 
         public override IEnumerable<Expression> children

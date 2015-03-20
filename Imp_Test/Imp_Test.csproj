@@ -70,9 +70,10 @@
   <ItemGroup>
     <None Include="packages.config" />
     <EmbeddedResource Include="resources\imp\pizza.imp" />
-    <EmbeddedResource Include="resources\imp\anonymous_minion.imp" />
+    <EmbeddedResource Include="resources\imp\anonymous_function.imp" />
     <EmbeddedResource Include="resources\imp\if.imp" />
     <EmbeddedResource Include="resources\imp\empty_array.imp" />
+    <EmbeddedResource Include="resources\imp\anonymous_pizza.imp" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="resources\js\pizza.js" />

@@ -726,7 +726,7 @@ namespace metahub.render.targets
 
         string render_instantiation(Instantiate expression)
         {
-            return "new " + render_dungeon_path(expression.dungeon) + "()";
+            return "new " + render_profession(expression.profession) + "()";
         }
 
         override protected string render_property_function_call(Property_Function_Call expression, Expression parent)

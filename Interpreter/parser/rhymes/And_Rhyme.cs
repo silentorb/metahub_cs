@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using parser;
 using runic.lexer;
 
 namespace runic.parser.rhymes
@@ -17,9 +18,9 @@ namespace runic.parser.rhymes
 
         }
 
-        public override void initialize(global::parser.Pattern_Source pattern, Parser parser)
+        public override void initialize(Pattern_Source pattern, Parser parser)
         {
-            rhymes = pattern.patterns.Select(p => parser.create_child(p)).ToList();
+            rhymes = pattern.patterns.Select(parser.create_child).ToList();
 
             if (rhymes.Count(r => !r.is_ghost) == 1)
                 single_non_ghost = rhymes.First(r => !r.is_ghost);
@@ -40,7 +41,7 @@ namespace runic.parser.rhymes
                 stone = result.stone;
             }
 
-            var legend = results.Count == 1 && (parent == null || parent.type != Rhyme_Type.or)
+            var legend = results.Count == 1 && (parent == null || parent.returns(results[0].rhyme))
                 ? results[0]
                 : new Group_Legend(this, results);
 
@@ -52,12 +53,18 @@ namespace runic.parser.rhymes
             return rhymes;
         }
 
-        public override Rhyme get_single_type()
+        protected override List<Rhyme> get_single_type()
         {
-            var types = rhymes.Select(r => r.get_single_type()).Where(t => t != null).ToArray();
-            return types.Count() == 1
-                ? types.First()
-                : null;
+            var types = rhymes
+                .Where(r => r != this)
+                .Select(r => r.vertical_return_types)
+                .Where(t => t != null).ToArray();
+
+            var result = new List<Rhyme> { this };
+            if (types.Count() == 1)
+                result.AddRange(types.First());
+
+            return result;
         }
     }
 }

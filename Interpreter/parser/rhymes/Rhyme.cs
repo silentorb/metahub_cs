@@ -28,6 +28,23 @@ namespace runic.parser
             get { return name; }
         }
 
+        private bool initializing = false;
+        protected List<Rhyme> _vertical_return_types;
+        public List<Rhyme> vertical_return_types
+        {
+            get
+            {
+                if (_vertical_return_types == null)
+                {
+                    if (initializing)
+                        throw new Exception("Loop");
+                    initializing = true;
+                    _vertical_return_types = get_single_type();
+                }
+                return _vertical_return_types;
+            }
+        }
+
         protected Rhyme(Rhyme_Type type, string name)
         {
             this.name = name;
@@ -38,7 +55,26 @@ namespace runic.parser
         public abstract Legend_Result match(Runestone stone, Rhyme parent);
         public abstract IEnumerable<Rhyme> aggregate();
 
-        public abstract Rhyme get_single_type();
+        protected abstract List<Rhyme> get_single_type();
+
+        public static bool compare_lists(List<Rhyme> a, List<Rhyme> b)
+        {
+            if (a.Count != b.Count)
+                return false;
+
+            for (var i = 0; i < a.Count; ++i)
+            {
+                if (a[i] != b[i])
+                    return false;
+            }
+
+            return true;
+        }
+
+        public bool returns(Rhyme rhyme)
+        {
+            return vertical_return_types.Contains(rhyme);
+        }
     }
 
 }

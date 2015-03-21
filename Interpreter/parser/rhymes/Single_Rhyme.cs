@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using parser;
 using runic.lexer;
 
 namespace runic.parser.rhymes
@@ -26,7 +27,7 @@ namespace runic.parser.rhymes
             get { return whisper.type == Whisper_Type.text; }
         }
 
-        public override void initialize(global::parser.Pattern_Source pattern, Parser parser)
+        public override void initialize(Pattern_Source pattern, Parser parser)
         {
             var id = pattern.patterns[0].text;
             whisper = parser.lexer.whispers[id];
@@ -77,11 +78,11 @@ namespace runic.parser.rhymes
             return null;
         }
 
-        public override Rhyme get_single_type()
+        protected override List<Rhyme> get_single_type()
         {
             return whisper.GetType() == typeof(Whisper_Group)
-                ? this
-                : null;
+                ? new List<Rhyme> { this }
+                : new List<Rhyme>();
         }
     }
 }

@@ -6,7 +6,8 @@ namespace imperative.expressions
     public enum Flow_Control_Type
     {
         If,
-        While
+        While,
+        Else
     }
 
     public class Flow_Control : Block

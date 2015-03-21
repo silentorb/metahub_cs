@@ -41,7 +41,7 @@ namespace runic.parser.rhymes
                 stone = result.stone;
             }
 
-            var legend = results.Count == 1 && (parent == null || parent.returns(results[0].rhyme))
+            var legend = results.Count == 1 && (parent == null || parent.returns(results[0].rhyme.type_rhyme))
                 ? results[0]
                 : new Group_Legend(this, results);
 
@@ -55,14 +55,18 @@ namespace runic.parser.rhymes
 
         protected override List<Rhyme> get_single_type()
         {
-            var types = rhymes
-                .Where(r => r != this)
-                .Select(r => r.vertical_return_types)
-                .Where(t => t != null).ToArray();
-
             var result = new List<Rhyme> { this };
-            if (types.Count() == 1)
-                result.AddRange(types.First());
+            var considered = rhymes.Where(r => !r.is_ghost).ToArray();
+            if (considered.Count() != 1)
+                return result;
+
+            var types = considered.First().vertical_return_types;
+
+            foreach (var rhyme in types)
+            {
+                if (!result.Contains(rhyme))
+                    result.Add(rhyme);
+            }
 
             return result;
         }

@@ -37,7 +37,8 @@ namespace runic.parser
                 if (_vertical_return_types == null)
                 {
                     if (initializing)
-                        throw new Exception("Loop");
+                        return new List<Rhyme>();
+//                        throw new Exception("Loop");
                     initializing = true;
                     _vertical_return_types = get_single_type();
                 }
@@ -74,6 +75,11 @@ namespace runic.parser
         public bool returns(Rhyme rhyme)
         {
             return vertical_return_types.Contains(rhyme);
+        }
+
+        public virtual Rhyme type_rhyme
+        {
+            get { return this; }
         }
     }
 

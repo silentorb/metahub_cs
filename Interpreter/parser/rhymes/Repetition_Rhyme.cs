@@ -45,18 +45,12 @@ namespace runic.parser.rhymes
 
         public override Legend_Result match(Runestone stone, Rhyme parent)
         {
-            return divider != null && has_variable_dividers
-                ? match_tracking_dividers(stone)
-                : match_not_tracking_dividers(stone);
-        }
-
-        public Legend_Result match_tracking_dividers(Runestone stone)
-        {
             var matches = new List<Legend>();
             var dividers = new List<Legend>();
             Legend last_divider = null;
 
             var final_stone = stone;
+            var track_dividers = divider != null && has_variable_dividers;
 
             do
             {
@@ -66,49 +60,17 @@ namespace runic.parser.rhymes
 
                 matches.Add(main_result.legend);
                 stone = final_stone = main_result.stone;
-                if (last_divider != null)
+                if (track_dividers && last_divider != null)
                     dividers.Add(last_divider);
-
-                var divider_result = divider.match(stone, this);
-
-                if (divider_result == null)
-                    break;
-
-                last_divider = divider_result.legend;
-                stone = divider_result.stone;
-            }
-            while (max == 0 || matches.Count < max);
-
-            if (matches.Count < min)
-                return null;
-
-//            if (matches.Count == 0)
-//                return new Legend_Result(null, stone);
-            if (max == 1)
-                return new Legend_Result(matches[0], final_stone);
-
-            return new Legend_Result(new Group_Legend(this, matches, dividers), final_stone);
-        }
-
-        public Legend_Result match_not_tracking_dividers(Runestone stone)
-        {
-            var matches = new List<Legend>();
-            var final_stone = stone;
-            do
-            {
-                var main_result = rhyme.match(stone, this);
-                if (main_result == null)
-                    break;
-
-                matches.Add(main_result.legend);
-                stone = final_stone = main_result.stone;
 
                 if (divider != null)
                 {
                     var divider_result = divider.match(stone, this);
+
                     if (divider_result == null)
                         break;
 
+                    last_divider = divider_result.legend;
                     stone = divider_result.stone;
                 }
             }
@@ -117,13 +79,93 @@ namespace runic.parser.rhymes
             if (matches.Count < min)
                 return null;
 
-//            if (matches.Count == 0)
-//                return new Legend_Result(null, stone);
-            if (matches.Count == 1 && max == 1)
-                return new Legend_Result(matches[0], final_stone);
 
-            return new Legend_Result(new Group_Legend(this, matches), final_stone);
+            if (matches.Count == 1 && max == 1 && min != 1)
+            {
+                return new Legend_Result(matches[0], final_stone);
+            }
+
+            return new Legend_Result(new Group_Legend(this, matches, dividers), final_stone);
+
+//            return divider != null && has_variable_dividers
+//                ? match_tracking_dividers(stone)
+//                : match_not_tracking_dividers(stone);
         }
+//
+//        public Legend_Result match_tracking_dividers(Runestone stone)
+//        {
+//            var matches = new List<Legend>();
+//            var dividers = new List<Legend>();
+//            Legend last_divider = null;
+//
+//            var final_stone = stone;
+//
+//            do
+//            {
+//                var main_result = rhyme.match(stone, this);
+//                if (main_result == null)
+//                    break;
+//
+//                matches.Add(main_result.legend);
+//                stone = final_stone = main_result.stone;
+//                if (last_divider != null)
+//                    dividers.Add(last_divider);
+//
+//                var divider_result = divider.match(stone, this);
+//
+//                if (divider_result == null)
+//                    break;
+//
+//                last_divider = divider_result.legend;
+//                stone = divider_result.stone;
+//            }
+//            while (max == 0 || matches.Count < max);
+//
+//            if (matches.Count < min)
+//                return null;
+//
+////            if (matches.Count == 0)
+////                return new Legend_Result(null, stone);
+//            if (max == 1)
+//                return new Legend_Result(matches[0], final_stone);
+//
+//            return new Legend_Result(new Group_Legend(this, matches, dividers), final_stone);
+//        }
+
+//        public Legend_Result match_not_tracking_dividers(Runestone stone)
+//        {
+//            var matches = new List<Legend>();
+//            var final_stone = stone;
+//            do
+//            {
+//                var main_result = rhyme.match(stone, this);
+//                if (main_result == null)
+//                    break;
+//
+//                matches.Add(main_result.legend);
+//                stone = final_stone = main_result.stone;
+//
+//                if (divider != null)
+//                {
+//                    var divider_result = divider.match(stone, this);
+//                    if (divider_result == null)
+//                        break;
+//
+//                    stone = divider_result.stone;
+//                }
+//            }
+//            while (max == 0 || matches.Count < max);
+//
+//            if (matches.Count < min)
+//                return null;
+//
+////            if (matches.Count == 0)
+////                return new Legend_Result(null, stone);
+//            if (matches.Count == 1 && max == 1)
+//                return new Legend_Result(matches[0], final_stone);
+//
+//            return new Legend_Result(new Group_Legend(this, matches), final_stone);
+//        }
 
         override public IEnumerable<Rhyme> aggregate()
         {
@@ -140,6 +182,11 @@ namespace runic.parser.rhymes
         protected override List<Rhyme> get_single_type()
         {
             return rhyme.vertical_return_types;
+        }
+
+        public override Rhyme type_rhyme
+        {
+            get { return rhyme; }
         }
     }
 }

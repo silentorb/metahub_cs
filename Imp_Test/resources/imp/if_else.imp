@@ -7,4 +7,4 @@ else if (frog == 0) {
 
 }
 else
-	die()
+	frog = 2

@@ -237,13 +237,13 @@ namespace imperative.summoner
 
         private List<Expression> process_block(Legend source, Summoner_Context context)
         {
-            if (source.type != "statement" && source.type != "statement" && source.type != "long_block")
-                return new List<Expression> { summon_statement(source, context) };
+            //            if (source.rhyme.type_rhyme.type != "statement" && source.type != "statement" && source.type != "long_block")
+            //                return new List<Expression> { summon_statement(source, context) };
 
             return summon_statements(source.children, context);
         }
 
-        public List<Expression> summon_statements(List<Legend> legends, Summoner_Context context )
+        public List<Expression> summon_statements(List<Legend> legends, Summoner_Context context)
         {
             var result = new List<Expression>();
             foreach (var pattern in legends)
@@ -261,7 +261,7 @@ namespace imperative.summoner
             }
 
             return result;
-        } 
+        }
 
         public Expression summon_statement(Legend source, Summoner_Context context)
         {
@@ -313,6 +313,9 @@ namespace imperative.summoner
 
                 case "statement":
                     return summon_statement(source.children[0], context);
+
+                case "expression":
+                    return process_expression(source, context);
 
                 case "statements":
                     {
@@ -728,8 +731,8 @@ namespace imperative.summoner
 
         public Expression summon_if_chain(List<Legend> parts, Summoner_Context context)
         {
-            var legends = parts[0].children.Concat(parts[1].children).ToList();
-            var expressions = summon_statements(legends, context);
+            var expressions = summon_statements(parts[0].children, context).ToList();
+            expressions.Add(new Flow_Control(Flow_Control_Type.Else, null, summon_statements(parts[1].children, context)));
             return new Block(expressions);
         }
 

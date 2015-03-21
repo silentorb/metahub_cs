@@ -42,10 +42,8 @@ namespace runic.parser.rhymes
         protected override List<Rhyme> get_single_type()
         {
             var result = rhymes[0].vertical_return_types;
-            foreach (var rhyme in rhymes.Skip(1))
-            {
-                result = result.Except(rhyme.vertical_return_types).ToList();
-            }
+            result = rhymes.Skip(1).Aggregate(result, 
+                (current, rhyme) => rhyme.vertical_return_types.Where(current.Contains).ToList());
 
             if (!result.Contains(this))
                 result.Add(this);

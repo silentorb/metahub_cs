@@ -76,5 +76,12 @@ namespace runic.parser.rhymes
 
             return null;
         }
+
+        public override Rhyme get_single_type()
+        {
+            return whisper.GetType() == typeof(Whisper_Group)
+                ? this
+                : null;
+        }
     }
 }

@@ -55,6 +55,8 @@ namespace runic.parser.rhymes
             var dividers = new List<Legend>();
             Legend last_divider = null;
 
+            var final_stone = stone;
+
             do
             {
                 var main_result = rhyme.match(stone, this);
@@ -62,7 +64,7 @@ namespace runic.parser.rhymes
                     break;
 
                 matches.Add(main_result.legend);
-                stone = main_result.stone;
+                stone = final_stone = main_result.stone;
                 if (last_divider != null)
                     dividers.Add(last_divider);
 
@@ -81,14 +83,16 @@ namespace runic.parser.rhymes
 
 //            if (matches.Count == 0)
 //                return new Legend_Result(null, stone);
+            if (max == 1)
+                return new Legend_Result(matches[0], final_stone);
 
-            return new Legend_Result(new Group_Legend(this, matches, dividers), stone);
+            return new Legend_Result(new Group_Legend(this, matches, dividers), final_stone);
         }
 
         public Legend_Result match_not_tracking_dividers(Runestone stone)
         {
             var matches = new List<Legend>();
-
+            var final_stone = stone;
             do
             {
                 var main_result = rhyme.match(stone, this);
@@ -96,7 +100,7 @@ namespace runic.parser.rhymes
                     break;
 
                 matches.Add(main_result.legend);
-                stone = main_result.stone;
+                stone = final_stone = main_result.stone;
 
                 if (divider != null)
                 {
@@ -114,8 +118,10 @@ namespace runic.parser.rhymes
 
 //            if (matches.Count == 0)
 //                return new Legend_Result(null, stone);
+            if (matches.Count == 1 && max == 1)
+                return new Legend_Result(matches[0], final_stone);
 
-            return new Legend_Result(new Group_Legend(this, matches), stone);
+            return new Legend_Result(new Group_Legend(this, matches), final_stone);
         }
 
         override public IEnumerable<Rhyme> aggregate()
@@ -127,8 +133,13 @@ namespace runic.parser.rhymes
 
         public override string debug_info
         {
-            get { return rhyme.name; }
+            get { return "rep " + (name ?? rhyme.name); }
         }
 
+
+        public override Rhyme get_single_type()
+        {
+            return rhyme;
+        }
     }
 }

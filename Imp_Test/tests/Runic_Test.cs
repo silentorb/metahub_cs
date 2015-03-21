@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using NUnit.Framework;
+using imp_test.fixtures;
 using imperative;
 using imperative.schema;
 using imperative.summoner;
@@ -40,8 +41,10 @@ namespace imp_test.tests
         {
             var code = Utility.load_resource("imp.if_else.imp");
             var runes = Summoner2.read_runes(code);
-            var legend = Summoner2.translate_runes(runes, "if_chain");
-            Assert.AreEqual("return_statement", legend.children[1].rhyme.name);
+            var legend = Summoner2.translate_runes(runes, "statements");
+//            Assert.AreEqual("else_statement", legend.children[1].type);
+
+            Imp_Fixture.summon_statements(legend.children);
         }
 
         [Test]
@@ -52,11 +55,7 @@ namespace imp_test.tests
             var legend = Summoner2.translate_runes(runes, "statement");
             Assert.AreEqual("empty_array", legend.children[2].children[0].children[0].rhyme.name);
 
-            var overlord = new Overlord();
-            var summoner = new Summoner2(overlord);
-            var context = new Summoner_Context();
-            context.scope = new Scope();
-            summoner.summon_statement(legend, context);
+            Imp_Fixture.summon_statement(legend);
         }
 
         [Test]

@@ -37,5 +37,8 @@ namespace runic.parser
         public abstract void initialize(Pattern_Source pattern, Parser parser);
         public abstract Legend_Result match(Runestone stone, Rhyme parent);
         public abstract IEnumerable<Rhyme> aggregate();
+
+        public abstract Rhyme get_single_type();
     }
+
 }

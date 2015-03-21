@@ -5,10 +5,10 @@ path_separator = "."
 comma_or_newline = newlines | comma
 semicolon_or_newline = newlines | ";"
 line_comment(ignore) = "//[^\r\n]*"
-string = /"[^"]*"/ | /'[^']*'/
-bool = "true" | "false"
-int = /-?[0-9]+/
-float = /-?([0-9]*\.)?[0-9]+f?/
+string_value = /"[^"]*"|'[^']*'/
+bool_value = "true" | "false"
+int_value = /-?[0-9]+/
+float_value = /-?([0-9]*\.)?[0-9]+f?/
 arrow = "=>"
 operator = '+' | '-' | '/' | '*' | '<=' | '>=' | '<' | '>' | '==' | '!=' | '&&' | '||' | /\$\w+/
 equals = "="

@@ -22,7 +22,7 @@ namespace runic.parser
 
         public virtual string type
         {
-            get { return rhyme.debug_info; }
+            get { return rhyme.name; }
         }
     }
 
@@ -48,7 +48,7 @@ namespace runic.parser
         }
     }
 
-    [DebuggerDisplay("Legend {type} [{children.Count}]")]
+    [DebuggerDisplay("Legend {rhyme.debug_info} [{children.Count}]")]
     public class Group_Legend : Legend
     {
         private List<Legend> _children;

@@ -37,5 +37,13 @@ namespace runic.parser.rhymes
         {
             return rhymes;
         }
+
+        public override Rhyme get_single_type()
+        {
+            var single_type = rhymes[0].get_single_type();
+            return rhymes.All(r => r.get_single_type() == single_type)
+                ? single_type
+                : null;
+        }
     }
 }

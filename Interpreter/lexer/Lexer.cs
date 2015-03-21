@@ -60,12 +60,21 @@ namespace runic.lexer
             process_lexicon(data.patterns[1].patterns);
         }
 
+        Whisper add_whisper(string name, Whisper whisper)
+        {
+            if (whispers.ContainsKey(name))
+                throw new Exception("Lexer already contains a whisper named " + name + ".");
+
+            whispers[name] = whisper;
+            return whisper;
+        }
+
         void process_lexicon(Pattern_Source[] patterns)
         {
             foreach (var pattern in patterns)
             {
                 var name = pattern.patterns[0].text;
-                whispers[name] = create_whisper(pattern);
+                add_whisper(name, create_whisper(pattern));
             }
 
             foreach (var pattern in patterns.Where(p => p.patterns[5].patterns.Length > 1))
@@ -75,7 +84,9 @@ namespace runic.lexer
                 whisper.whispers = pattern.patterns[5].patterns.Select(p =>
                     {
                         var child = create_sub_whisper(p.text, p);
-                        whispers[child.name] = child;
+                        if (p.type == "string" || p.type == "regex")
+                            add_whisper(child.name, child);
+
                         return child;
                     }).ToArray();
             }

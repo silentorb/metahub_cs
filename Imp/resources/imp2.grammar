@@ -4,7 +4,7 @@ namespace_class = namespace_statement | class_statement
 snippet_entry = @(snippet_function, semicolon_or_newline, 1, 0)
 comma_or_newline = comma | newlines
 
-value_type = string | bool | int | float
+value_type = string_value | bool_value | int_value | float_value
 
 arguments = group_start @(expression, comma_or_newline, 0, 0) group_end
 
@@ -83,9 +83,7 @@ else_statement = else block
 
 while_statement = while group_start expression group_end block
 
-optional_expression = spaces expression
-
-return_statement = return @(optional_expression, 0, 1)
+return_statement = return @(expression, 0, 1)
 
 optional_assignment = equals expression
 

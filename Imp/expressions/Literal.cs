@@ -73,4 +73,9 @@ public class Literal : Expression {
     {
         get { return new List<Expression>(); }
     }
+
+    public override Profession get_profession()
+    {
+        return profession;
+    }
 }}

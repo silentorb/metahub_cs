@@ -51,5 +51,13 @@ namespace runic.parser.rhymes
         {
             return rhymes;
         }
+
+        public override Rhyme get_single_type()
+        {
+            var types = rhymes.Select(r => r.get_single_type()).Where(t => t != null).ToArray();
+            return types.Count() == 1
+                ? types.First()
+                : null;
+        }
     }
 }

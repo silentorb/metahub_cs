@@ -237,7 +237,7 @@ namespace imperative.summoner
 
         private List<Expression> process_block(Legend source, Summoner_Context context)
         {
-            if (source.type != "statement")
+            if (source.type != "statement" && source.type != "statement" && source.type != "long_block")
                 return new List<Expression> { summon_statement(source, context) };
 
             return summon_statements(source.children, context);
@@ -311,6 +311,9 @@ namespace imperative.summoner
                     var snippets = parts.Select(p => summon_statement(p, context)).ToList();
                     return new Block(snippets);
 
+                case "statement":
+                    return summon_statement(source.children[0], context);
+
                 case "statements":
                     {
                         var expressions = process_block(source, context);
@@ -345,7 +348,7 @@ namespace imperative.summoner
             Profession profession;
             var expression_pattern = parts[2].children.Count == 0
                                          ? null
-                                         : process_expression(parts[2].children[0], context);
+                                         : process_expression(parts[2], context);
 
             if (parts[1].children.Count > 0)
             {
@@ -369,16 +372,16 @@ namespace imperative.summoner
 
             switch (source.type)
             {
-                case "bool":
+                case "bool_value":
                     return new Literal(source.text == "true");
 
-                case "int":
+                case "int_value":
                     return new Literal(int.Parse(source.text));
 
-                case "float":
+                case "float_value":
                     return new Literal(float.Parse(source.text));
 
-                case "string":
+                case "string_value":
                     return new Literal(source.text);
 
                 case "null":
@@ -504,7 +507,7 @@ namespace imperative.summoner
                                 }
                                 else
                                 {
-                                    throw new Exception("Invalid path token: " + token);
+                                    throw new Exception("Unknown symbol: " + token);
                                 }
                             }
                         }

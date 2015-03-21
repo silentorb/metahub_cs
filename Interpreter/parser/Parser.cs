@@ -132,10 +132,11 @@ namespace runic.parser
             if (result == null || !result.stone.is_at_end)
             {
                 var furthest = runes[stone.tracker.furthest];
+                var last = stone.tracker.history.Last(h => h.success);
                 throw new Exception("Could not find match at "
                     + furthest.range.end.y + ":" + furthest.range.end.x
                     + ", " + furthest.whisper.name + "."
-                    + "  Last match was " + stone.tracker.last.name + "."
+                    + "  Last match was " + last.rhyme.name + "."
                     );
             }
             return result.legend;

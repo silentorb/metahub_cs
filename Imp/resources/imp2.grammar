@@ -4,8 +4,10 @@ namespace_class = namespace_statement | class_statement
 snippet_entry = @(snippet_function, semicolon_or_newline, 1, 0)
 comma_or_newline = comma | newlines
 
-value_type = string_value | bool_value | int_value | float_value
+value_type = string | bool | int | float | id
 
+value = string_value | bool_value | int_value | float_value
+ 
 arguments = group_start @(expression, comma_or_newline, 0, 0) group_end
 
 reference_token = id @(arguments, 0, 1)
@@ -36,7 +38,7 @@ statement =
 
 expression_part =
 	  instantiate
-	| value_type
+	| value
 	| lambda
 	| reference	
 	| closed_expression

@@ -30,12 +30,10 @@ namespace runic.lexer
         }
 
         public int furthest;
-        public Rhyme last;
         public List<Entry> history = new List<Entry>();
         public void add_entry(bool success, Rhyme rhyme, Rune rune)
         {
             history.Add(new Entry(rhyme, rune, success));
-            last = rhyme;
         }
 
     }

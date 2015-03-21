@@ -220,7 +220,7 @@ namespace imperative.summoner
                 if (parts[4].children.Count == 0)
                     minion.is_abstract = true;
                 else
-                    minion.add_to_block(process_block(parts[4].children[0], new_context));
+                    minion.add_to_block(process_block(parts[4], new_context));
             }
         }
 
@@ -423,9 +423,9 @@ namespace imperative.summoner
             List<Expression> args = null;
             if (source.children[1].children.Count > 0)
             {
-                args = source.children[1].children[0].children
-                                                     .Select(p => process_expression(p, context))
-                                                     .ToList();
+                args = source.children[1].children
+                                            .Select(p => process_expression(p, context))
+                                            .ToList();
             }
 
             var index = -1;
@@ -557,7 +557,7 @@ namespace imperative.summoner
         private Parameter process_parameter(Legend source, Summoner_Context context)
         {
             var type = source.children[1].children.Count > 0
-                           ? parse_type2(source.children[1].children[0], context)
+                           ? parse_type2(source.children[1], context)
                            : new Profession(Kind.unknown);
 
             return new Parameter(new Symbol(source.children[0].text, type, null));
@@ -731,9 +731,13 @@ namespace imperative.summoner
 
         public Expression summon_if_chain(List<Legend> parts, Summoner_Context context)
         {
-            var expressions = summon_statements(parts[0].children, context).ToList();
-            expressions.Add(new Flow_Control(Flow_Control_Type.Else, null, summon_statements(parts[1].children, context)));
-            return new Block(expressions);
+            var ifs = parts[0].children.Select(e => (Flow_Control)summon_statement(e, context)).ToList();
+//            var expressions = summon_statements(parts[0].children, context).ToList();
+            var result = new If(ifs);
+            if (parts[1].children.Count > 0)
+                result.else_block = summon_statements(parts[1].children, context);
+
+            return result;
         }
 
         private Expression process_instantiate(List<Legend> parts, Summoner_Context context)

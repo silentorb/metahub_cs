@@ -4,8 +4,12 @@
 		toppings:string[]
 
 		add(topping:string) {
+			var x = 0
 			if (topping == null)
 				return
+			else
+				x = 1
+				
 
 			toppings.add(topping)
 		}

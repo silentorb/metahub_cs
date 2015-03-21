@@ -41,11 +41,22 @@ namespace runic.parser.rhymes
                 stone = result.stone;
             }
 
-            var legend = results.Count == 1 && (parent == null || parent.returns(results[0].rhyme.type_rhyme))
+            var legend = should_return_single(results, parent)
                 ? results[0]
                 : new Group_Legend(this, results);
 
             return new Legend_Result(legend, stone);
+        }
+
+        private static bool should_return_single(List<Legend> results, Rhyme parent)
+        {
+            if (results.Count != 1)
+                return false;
+
+            if (parent == null)
+                return true;
+
+            return  parent.type != Rhyme_Type.or || parent.returns(results[0].rhyme.type_rhyme);
         }
 
         override public IEnumerable<Rhyme> aggregate()

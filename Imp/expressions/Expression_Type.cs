@@ -20,6 +20,7 @@ namespace imperative.expressions
         comment,
         profession,
         anonymous_function,
+        if_statement,
 
         // Statements
         statement,

@@ -163,8 +163,11 @@ namespace imperative.render
                     return render_function_definition((Function_Definition)statement);
 
                 case Expression_Type.flow_control:
-                    return render_flow_control((Flow_Control)statement);
+                    var flow_control = (Flow_Control)statement;
+                    return render_flow_control(flow_control, flow_control.flow_type == Flow_Control_Type.If);
 
+                case Expression_Type.if_statement:
+                    return render_if((If)statement);
                 case Expression_Type.iterator:
                     return render_iterator_block((Iterator)statement);
 
@@ -397,7 +400,7 @@ namespace imperative.render
                 var add = new Platform_Function("add", reference, expression.args);
                 return render_expression(add);
             }
-            
+
             return ref_full + portal.name + " = " + args;
         }
 
@@ -508,13 +511,26 @@ namespace imperative.render
             return result;
         }
 
-        virtual protected string render_flow_control(Flow_Control statement)
+        virtual protected string render_flow_control(Flow_Control statement, bool minimal)
         {
             var expression = render_expression(statement.condition);
 
             return render_scope2(
                 statement.flow_type.ToString().ToLower() + " (" + expression + ")"
-            , statement.body, statement.flow_type == Flow_Control_Type.If);
+            , statement.body, minimal);
+        }
+
+        virtual protected string render_if(If statement)
+        {
+            var minimal = statement.if_statements.All(e => e.body.Count == 1);
+            if (statement.else_block.Count > 1)
+                minimal = false;
+
+            var result = statement.if_statements.Select(e => render_flow_control(e, minimal)).join("");
+            if (statement.else_block.Count > 0)
+                result += render_scope2("else", statement.else_block, minimal);
+
+            return result;
         }
 
         virtual protected string render_dungeon_path(Dungeon dungeon)

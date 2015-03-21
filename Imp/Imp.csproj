@@ -43,6 +43,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="expressions\Else.cs" />
     <Compile Include="expressions\Dynamic_Function_Call.cs" />
     <Compile Include="expressions\Profession_Expression.cs" />
     <Compile Include="Overlord.cs" />

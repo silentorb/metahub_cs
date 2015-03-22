@@ -315,6 +315,25 @@ namespace imperative.render
             return path.join(".");
         }
 
+        virtual protected string render_scope(List<Expression> statements, bool minimal = false)
+        {
+            indent();
+            push_scope();
+            var lines = line_count;
+            var block = render_statements(statements);
+            pop_scope();
+            unindent();
+
+            if (minimal)
+            {
+                minimal = line_count == lines + 1;
+            }
+            var result = line(minimal ? "" : " {");
+            result += block;
+            result += line((minimal ? "" : "}"));
+            return result;
+        }
+
         virtual protected string render_scope2(string intro, List<Expression> statements, bool minimal = false)
         {
             indent();
@@ -528,7 +547,7 @@ namespace imperative.render
 
             var result = statement.if_statements.Select(e => render_flow_control(e, minimal)).join("");
             if (statement.else_block.Count > 0)
-                result += render_scope2("else", statement.else_block, minimal);
+                result += "else" + render_scope(statement.else_block, minimal);
 
             return result;
         }

@@ -212,7 +212,7 @@ namespace imperative.summoner
             if (as_stub)
             {
                 var return_type = parts[3];
-                if (return_type.children.Count > 0)
+                if (return_type != null)
                     minion.return_type = parse_type(return_type.children[0], context);
             }
             else
@@ -294,7 +294,7 @@ namespace imperative.summoner
                     return process_iterator(parts, context);
 
                 case "return_statement":
-                    return new Statement("return", parts[0].children.Count == 0
+                    return new Statement("return", parts[0] == null
                                                        ? null
                                                        : process_expression(parts[0].children[0], context)
                         );
@@ -353,7 +353,7 @@ namespace imperative.summoner
                                          ? null
                                          : process_expression(parts[2], context);
 
-            if (parts[1].children.Count > 0)
+            if (parts[1] != null)
             {
                 profession = parse_type2(parts[1], context);
             }
@@ -421,7 +421,7 @@ namespace imperative.summoner
                     return new Null_Value();
             }
             List<Expression> args = null;
-            if (source.children[1].children.Count > 0)
+            if (source.children[1] != null)
             {
                 args = source.children[1].children
                                             .Select(p => process_expression(p, context))
@@ -433,7 +433,7 @@ namespace imperative.summoner
             {
                 ++index;
                 var token = pattern.children[0].text;
-                Expression array_access = pattern.children[1].children.Count > 0
+                Expression array_access = pattern.children[1] != null
                                               ? process_expression(pattern.children[1].children[0], context)
                                               : null;
 
@@ -608,7 +608,7 @@ namespace imperative.summoner
         private Profession parse_type2(Legend source, Summoner_Context context)
         {
             var path = source.children[0].children.Select(p => p.text).ToArray();
-            var is_list = source.children.Count > 1 && source.children[1].children.Count > 0;
+            var is_list = source.children.Count > 1 && source.children[1] != null;
             return parse_type2(path, context, is_list);
         }
 
@@ -732,7 +732,7 @@ namespace imperative.summoner
         public Expression summon_if_chain(List<Legend> parts, Summoner_Context context)
         {
             var ifs = parts[0].children.Select(e => (Flow_Control)summon_statement(e, context)).ToList();
-//            var expressions = summon_statements(parts[0].children, context).ToList();
+            //            var expressions = summon_statements(parts[0].children, context).ToList();
             var result = new If(ifs);
             if (parts[1].children.Count > 0)
                 result.else_block = summon_statements(parts[1].children, context);

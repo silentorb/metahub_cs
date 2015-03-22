@@ -35,7 +35,7 @@ namespace runic.parser.rhymes
                 if (result == null)
                     return null;
 
-                if (result.legend != null && !rhyme.is_ghost)
+                if (result.store_legend && !rhyme.is_ghost)
                     results.Add(result.legend);
 
                 stone = result.stone;
@@ -56,7 +56,10 @@ namespace runic.parser.rhymes
             if (parent == null)
                 return true;
 
-            return  parent.type != Rhyme_Type.or || parent.returns(results[0].rhyme.type_rhyme);
+            if (parent.type != Rhyme_Type.or)
+                return true;
+
+            return results[0] != null && parent.returns(results[0].rhyme.type_rhyme);
         }
 
         override public IEnumerable<Rhyme> aggregate()

@@ -3,7 +3,7 @@
 test.Pizza = function() {}
 test.Pizza.prototype = {
 	toppings: [],
-	add: function (topping) {
+	add: function(topping) {
 		var x = 0
 		if (topping == null)
 			return

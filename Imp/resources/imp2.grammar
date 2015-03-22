@@ -61,7 +61,7 @@ class_statements = function_definition | property_declaration
 
 property_declaration = id type_info
 
-class_statement = @(class_attribute, 0, 0) class id @(optional_parent_classes, 0, 1) block_start @(class_statements, newlines, 0, 0) block_end
+class_statement = @(class_attribute, 0, 0) class id @(optional_parent_classes, 0, 0) block_start @(class_statements, newlines, 0, 0) block_end
 
 class_attribute = abstract
 

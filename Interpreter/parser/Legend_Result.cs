@@ -10,11 +10,13 @@ namespace runic.parser
     {
         public Legend legend;
         public Runestone stone;
+        public bool store_legend;
 
         public Legend_Result(Legend legend, Runestone stone)
         {
             this.legend = legend;
             this.stone = stone;
+            store_legend = legend != null;
         }
 
         public Runestone next()

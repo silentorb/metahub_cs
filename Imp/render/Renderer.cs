@@ -8,7 +8,7 @@ namespace metahub.render
 
         int depth = 0;
         //string content = "";
-        string indentation = "";
+        public string indentation = "";
 
         public Renderer()
         {

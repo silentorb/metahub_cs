@@ -212,7 +212,7 @@ namespace imperative.render
             current_dungeon = dungeon;
 
             var intro = "public class " + render_dungeon_path(dungeon);
-            var result = render_scope(intro, () =>
+            var result = add(intro) + render_scope(() =>
                 render_properties(dungeon) + newline()
                 + render_statements(statements, newline())
             );
@@ -315,10 +315,11 @@ namespace imperative.render
             return path.join(".");
         }
 
-        virtual protected string render_scope(List<Expression> statements, bool minimal = false)
+        virtual protected string render_scope(List<Expression> statements, bool minimal = false, bool is_succeeded = false)
         {
             indent();
             push_scope();
+            var first = add(minimal ? "" : " {") + newline();
             var lines = line_count;
             var block = render_statements(statements);
             pop_scope();
@@ -328,29 +329,10 @@ namespace imperative.render
             {
                 minimal = line_count == lines + 1;
             }
-            var result = line(minimal ? "" : " {");
-            result += block;
-            result += line((minimal ? "" : "}"));
-            return result;
-        }
 
-        virtual protected string render_scope2(string intro, List<Expression> statements, bool minimal = false)
-        {
-            indent();
-            push_scope();
-            var lines = line_count;
-            var block = render_statements(statements);
-            pop_scope();
-            unindent();
-
-            if (minimal)
-            {
-                minimal = line_count == lines + 1;
-            }
-            var result = line(intro + (minimal ? "" : " {"));
-            result += block;
-            result += line((minimal ? "" : "}"));
-            return result;
+            return first + block + (minimal
+                ? is_succeeded ? "" : newline()
+                : "}" + newline());
         }
 
         virtual protected string render_iterator_block(Iterator statement)
@@ -359,9 +341,7 @@ namespace imperative.render
             var it = parameter.scope.create_symbol("it", parameter.profession);
             var expression = render_iterator(it, statement.expression);
 
-            var result = render_scope2(
-                "for (" + expression + ")"
-            , new List<Expression> { 
+            var result = add("for (" + expression + ")") + render_scope(new List<Expression> { 
                     new Declare_Variable(parameter, new Insert("*" + it.name))
                 }.Concat(statement.body).ToList()
             );
@@ -476,7 +456,7 @@ namespace imperative.render
         virtual protected string render_minion_scope(Minion_Base minion)
         {
             current_minion = minion;
-            var result = render_scope2(() =>
+            var result = render_scope(() =>
                {
                    foreach (var parameter in minion.parameters)
                    {
@@ -494,28 +474,13 @@ namespace imperative.render
         {
             var space = Generator.get_namespace_path(realm);
             current_realm = realm;
-            var result = render_scope(config.namespace_keyword + " " + space.join(config.namespace_separator), action);
+            var result = add(config.namespace_keyword + " " + space.join(config.namespace_separator)) + render_scope(action);
 
             current_realm = null;
             return result;
         }
 
-        virtual protected string render_scope(string intro, String_Delegate action)
-        {
-            push_scope();
-            var result = config.block_brace_same_line
-                ? line(intro + " {")
-                : line(intro) + line("{");
-
-            indent();
-            result += action();
-            unindent();
-            result += line("}");
-            pop_scope();
-            return result;
-        }
-
-        virtual protected string render_scope2(String_Delegate action)
+        virtual protected string render_scope(String_Delegate action)
         {
             push_scope();
             var result = config.block_brace_same_line
@@ -530,24 +495,27 @@ namespace imperative.render
             return result;
         }
 
-        virtual protected string render_flow_control(Flow_Control statement, bool minimal)
+        virtual protected string render_flow_control(Flow_Control statement, bool minimal, bool is_succeeded = false)
         {
             var expression = render_expression(statement.condition);
 
-            return render_scope2(
-                statement.flow_type.ToString().ToLower() + " (" + expression + ")"
-            , statement.body, minimal);
+            return add(statement.flow_type.ToString().ToLower() + " (" + expression + ")")
+                + render_scope(statement.body, minimal, is_succeeded);
         }
 
         virtual protected string render_if(If statement)
         {
             var minimal = statement.if_statements.All(e => e.body.Count == 1);
-            if (statement.else_block.Count > 1)
-                minimal = false;
+            var block_count = statement.if_statements.Count;
+            if (statement.else_block != null)
+                ++block_count;
 
-            var result = statement.if_statements.Select(e => render_flow_control(e, minimal)).join("");
-            if (statement.else_block.Count > 0)
-                result += "else" + render_scope(statement.else_block, minimal);
+            //            if (statement.else_block != null)
+            //                minimal = false;
+            var i = 0;
+            var result = statement.if_statements.Select(e => render_flow_control(e, minimal, i++ < block_count)).join("");
+            if (statement.else_block != null)
+                result += add("else") + render_scope(statement.else_block, minimal);
 
             return result;
         }
@@ -601,7 +569,7 @@ namespace imperative.render
                 + definition.name
                 + "(" + definition.parameters.Select(render_definition_parameter).join(", ") + ")";
 
-            return render_scope(intro, () =>
+            return add(intro) + render_scope(() =>
             {
                 foreach (var parameter in definition.parameters)
                 {

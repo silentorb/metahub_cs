@@ -17,14 +17,16 @@ namespace imperative.expressions
 
         public override IEnumerable<Expression> children
         {
-            get { 
+            get
+            {
                 var result = new List<Expression>();
                 foreach (var if_statement in if_statements)
                 {
                     result.AddRange(if_statement.children);
                 }
 
-                result.AddRange(else_block);
+                if (else_block != null)
+                    result.AddRange(else_block);
 
                 return result;
             }

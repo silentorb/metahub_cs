@@ -556,7 +556,7 @@ namespace imperative.summoner
 
         private Parameter process_parameter(Legend source, Summoner_Context context)
         {
-            var type = source.children[1].children.Count > 0
+            var type = source.children[1] != null
                            ? parse_type2(source.children[1], context)
                            : new Profession(Kind.unknown);
 
@@ -734,7 +734,7 @@ namespace imperative.summoner
             var ifs = parts[0].children.Select(e => (Flow_Control)summon_statement(e, context)).ToList();
             //            var expressions = summon_statements(parts[0].children, context).ToList();
             var result = new If(ifs);
-            if (parts[1].children.Count > 0)
+            if (parts[1] != null)
                 result.else_block = summon_statements(parts[1].children, context);
 
             return result;

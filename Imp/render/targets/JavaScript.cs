@@ -111,7 +111,7 @@ namespace metahub.render.targets
 
             var result = line(render_dungeon_path(dungeon) + " = function() {}");
             var intro = render_dungeon_path(dungeon) + ".prototype =";
-            result += render_scope(intro, () =>
+            result += add(intro) + render_scope(() =>
                 render_properties(dungeon)
                 + render_statements(statements, newline())
             );
@@ -343,9 +343,7 @@ namespace metahub.render.targets
             var it = parameter.scope.create_symbol("it", parameter.profession);
             var expression = render_iterator(it, statement.expression);
 
-            var result = render_scope2(
-                "for (" + expression + ")"
-            , new List<Expression> { 
+            var result = add("for (" + expression + ")") + render_scope(new List<Expression> { 
                     new Declare_Variable(parameter, new Insert("*" + it.name))
                 }.Concat(statement.body).ToList()
             );

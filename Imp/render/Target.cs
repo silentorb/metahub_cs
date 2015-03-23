@@ -12,6 +12,7 @@ namespace metahub.render
         public Overlord overlord;
         public Transmuter transmuter;
         public Target_Configuration config;
+        public bool needs_indent = false;
 
         public Target(Overlord overlord)
         {
@@ -37,8 +38,7 @@ namespace metahub.render
 
         public string line(string text)
         {
-            ++line_count;
-            return render.line(text);
+            return add(text) + newline();
         }
 
         public Renderer indent()
@@ -53,7 +53,7 @@ namespace metahub.render
                     tab += " ";
                 }
             }
-            
+
             return render.indent(tab);
         }
 
@@ -69,6 +69,7 @@ namespace metahub.render
         public string newline(int amount = 1)
         {
             ++line_count;
+            needs_indent = true;
             return render.newline(amount);
         }
 
@@ -77,6 +78,17 @@ namespace metahub.render
             return content == ""
             ? content
             : newline() + content;
+        }
+
+        public string add(string text)
+        {
+            if (needs_indent)
+            {
+                needs_indent = false;
+                return render.indentation + text;
+            }
+
+            return text;
         }
 
         public virtual void analyze_expression(Expression expression)

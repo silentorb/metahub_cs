@@ -33,7 +33,7 @@ namespace imp_test.tests
             var code = Utility.load_resource("imp.if.imp");
             var runes = Summoner2.read_runes(code);
             var legend = Summoner2.translate_runes(runes, "if_statement");
-            Assert.AreEqual("return_statement", legend.children[1].rhyme.name);
+            Assert.AreEqual("return_statement", legend.children[1].children[0].rhyme.name);
         }
 
         [Test]
@@ -53,7 +53,7 @@ namespace imp_test.tests
             var code = Utility.load_resource("imp.empty_array.imp");
             var runes = Summoner2.read_runes(code);
             var legend = Summoner2.translate_runes(runes, "statement");
-            Assert.AreEqual("empty_array", legend.children[2].children[0].children[0].rhyme.name);
+            Assert.AreEqual("empty_array", legend.children[2].children[0].rhyme.name);
 
             Imp_Fixture.summon_statement(legend);
         }

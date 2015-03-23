@@ -168,6 +168,7 @@ namespace imperative.render
 
                 case Expression_Type.if_statement:
                     return render_if((If)statement);
+
                 case Expression_Type.iterator:
                     return render_iterator_block((Iterator)statement);
 
@@ -257,12 +258,13 @@ namespace imperative.render
         virtual protected string render_variable_declaration(Declare_Variable declaration)
         {
             var profession = declaration.symbol.get_profession(overlord);
-            var first = "var " + declaration.symbol.name;
-            if (declaration.expression != null)
-                first += " = " + render_expression(declaration.expression);
-
             current_scope[declaration.symbol.name] = profession;
-            return line(first);
+
+            return add("var " + declaration.symbol.name)
+                + (declaration.expression != null
+                    ? " = " + render_expression(declaration.expression)
+                    : "")
+                + terminate_statement() + newline();
         }
 
         virtual protected string render_literal(Object value, Profession profession)
@@ -422,7 +424,8 @@ namespace imperative.render
 
         virtual protected string render_assignment(Assignment statement)
         {
-            return line(render_expression(statement.target) + " " + statement.op + " " + render_expression(statement.expression));
+            return add(render_expression(statement.target) + " " + statement.op + " " + render_expression(statement.expression))
+                + terminate_statement() + newline();
         }
 
         virtual protected string render_comment(Comment comment)
@@ -513,7 +516,7 @@ namespace imperative.render
             //            if (statement.else_block != null)
             //                minimal = false;
             var i = 0;
-            var result = statement.if_statements.Select(e => render_flow_control(e, minimal, i++ < block_count)).join("");
+            var result = statement.if_statements.Select(e => render_flow_control(e, minimal, ++i < block_count)).join("");
             if (statement.else_block != null)
                 result += add("else") + render_scope(statement.else_block, minimal);
 

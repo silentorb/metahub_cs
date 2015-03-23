@@ -11,8 +11,11 @@ namespace test
 
         public void add(string topping)
         {
+            var x = 0;
             if (topping == null)
                 return;
+            else
+                x = 1;
 
             toppings.Add(topping);
         }

@@ -1,7 +1,9 @@
 ﻿start = @(namespace_class, newlines, 1, 0)
 
-namespace_class = namespace_statement | class_statement
+namespace_class = namespace_statement | class_definition | enum_definition
+
 snippet_entry = @(snippet_function, semicolon_or_newline, 1, 0)
+
 comma_or_newline = comma | newlines
 
 value_type = string | bool | int | float | id
@@ -32,7 +34,6 @@ statement =
 	| while_statement
 	| return_statement
 	| for_statement
-	| enum_definition
 	| assignment
 	| expression
 
@@ -50,7 +51,9 @@ closed_expression = group_start expression group_end
 
 expression = @(expression_part, operator, 1, 0)
 
-namespace_statement = namespace id block_start @(class_statement, newlines, 0, 0) block_end
+namespace_statement = namespace id block_start @(class_or_enum, newlines, 0, 0) block_end
+
+class_or_enum = class_definition | enum_definition
 
 function_definition = @(function_attribute, 0, 1) id group_start @(declare_symbol, comma, 0, 0) group_end @(type_info, 0, 1) @(long_block, 0, 1)
 
@@ -62,7 +65,7 @@ class_statements = function_definition | property_declaration
 
 property_declaration = id type_info
 
-class_statement = @(class_attribute, 0, 0) class id @(optional_parent_classes, 0, 0) block_start @(class_statements, newlines, 0, 0) block_end
+class_definition = @(class_attribute, 0, 0) class id @(optional_parent_classes, 0, 0) block_start @(class_statements, newlines, 0, 0) block_end
 
 class_attribute = abstract
 
@@ -74,7 +77,7 @@ long_block = block_start @(statement, semicolon_or_newline, 0, 0) block_end
 
 long_block_any = block_start any_statement block_end
 
-any_statement = class_statement | statements
+any_statement = class_definition | statements
 
 statements = @(statement, semicolon_or_newline, 0, 0)
 
@@ -100,5 +103,8 @@ instantiate = new signature arguments
 
 lambda = group_start @(declare_symbol, comma, 0, 0) group_end arrow block
 
-enum_definition = enum block_start @(enum_entry, comma_or_newline, 1, 0) block_end
-enum_entry = id @(optional_assignment, 0, 1)
+enum_definition = enum id block_start @(enum_entry, comma_or_newline, 1, 0) block_end
+
+enum_entry = id @(optional_enum_assignment, 0, 1)
+
+optional_enum_assignment = equals int_value

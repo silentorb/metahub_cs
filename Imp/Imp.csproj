@@ -71,6 +71,7 @@
     <Compile Include="schema\Division.cs" />
     <Compile Include="schema\Dungeon.cs" />
     <Compile Include="schema\Ethereal_Minion.cs" />
+    <Compile Include="schema\IDungeon.cs" />
     <Compile Include="schema\Minion.cs" />
     <Compile Include="schema\Minion_Base.cs" />
     <Compile Include="schema\Platform_Function_Info.cs" />

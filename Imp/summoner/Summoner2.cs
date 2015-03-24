@@ -67,7 +67,7 @@ namespace imperative.summoner
                     var statements = pattern.children[1].children;
                     process_namespace(statements, context, second);
                 }
-                else if (pattern.type == "class_statement")
+                else if (pattern.type == "class_definition")
                 {
                     var context = new Summoner_Context(overlord.realms[""]);
                     second(pattern, context);
@@ -97,7 +97,10 @@ namespace imperative.summoner
         {
             foreach (var statement in statements)
             {
-                dungeon_step(statement, context);
+                if (statement.type == "class_definition")
+                    dungeon_step(statement, context);
+                else if (!context.realm.treasuries.ContainsKey(statement.children[0].text))
+                    summon_enum(statement.children, context);
             }
         }
 
@@ -324,6 +327,9 @@ namespace imperative.summoner
                                    ? expressions[0]
                                    : new Block(expressions);
                     }
+
+                case "enum_definition":
+                    return summon_enum(parts, context);
             }
 
             throw new Exception("Unsupported statement type: " + source.type + ".");
@@ -745,6 +751,21 @@ namespace imperative.summoner
             var type = parse_type2(parts[0], context);
             var args = parts[1].children.Select(p => process_expression(p, context));
             return new Instantiate(type.dungeon, args);
+        }
+
+        private Expression summon_enum(List<Legend> parts, Summoner_Context context)
+        {
+            var items = new Dictionary<string, int?>();
+            foreach (var item in parts[1].children)
+            {
+                int? value = null;
+                if (item.children[1] != null)
+                    value = int.Parse(item.children[1].text);
+
+                items[item.children[0].text] = value;
+            }
+            var treasury = context.realm.create_treasury(parts[0].text, items);
+            return new Treasury_Definition(treasury);
         }
 
         private Expression process_function_snippet(List<Legend> parts, Summoner_Context context)

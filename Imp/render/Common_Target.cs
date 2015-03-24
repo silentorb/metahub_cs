@@ -498,6 +498,16 @@ namespace imperative.render
             return result;
         }
 
+        virtual protected string render_treasury(Treasury treasury)
+        {
+            var i = treasury.jewels.Count;
+            return add("enum " + treasury.name) + render_scope(() =>
+                treasury.jewels.Select(j => 
+                    add(j.Key + (j.Value.HasValue ? " = " + j.Value.Value : "") 
+                        + (--i > 0 ? "," : "")) + newline()).join("")
+                );
+        }
+
         virtual protected string render_flow_control(Flow_Control statement, bool minimal, bool is_succeeded = false)
         {
             var expression = render_expression(statement.condition);

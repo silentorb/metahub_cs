@@ -46,6 +46,7 @@
     <Compile Include="fixtures\Imp_Fixture.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="resources\cs\pizza.cs" />
+    <EmbeddedResource Include="resources\cs\crust.cs" />
     <Compile Include="tests\Csharp_Test.cs" />
     <Compile Include="tests\Cpp_Test.cs" />
     <Compile Include="tests\Expression_Test.cs" />

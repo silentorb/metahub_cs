@@ -11,11 +11,11 @@ using Variable = imperative.expressions.Variable;
 
 namespace imperative.schema
 {
- 
+
     public delegate void Dungeon_Minion_Event(Dungeon dungeon, Minion minion);
 
     [DebuggerDisplay("dungeon ({name})")]
-    public class Dungeon
+    public class Dungeon : IDungeon
     {
         public string name;
         public Realm realm;
@@ -85,8 +85,8 @@ namespace imperative.schema
             if (map.is_external.HasValue)
                 is_external = map.is_external.Value;
 
-//            if (map.name != null)
-//                rail_name = map.name;
+            //            if (map.name != null)
+            //                rail_name = map.name;
 
             if (map.source_file != null)
                 source_file = map.source_file;
@@ -117,7 +117,7 @@ namespace imperative.schema
             {
                 foreach (var item in map.properties)
                 {
-//                    property_additional[item.Key] = item.Value;
+                    //                    property_additional[item.Key] = item.Value;
                 }
             }
         }

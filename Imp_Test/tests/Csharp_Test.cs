@@ -18,9 +18,18 @@ namespace imp_test.tests
             var target = new Csharp();
             var overlord = Imp_Fixture.create_overlord(target, "imp.pizza.imp");
             var dungeon = overlord.get_dungeon("Pizza");
-            var output = target.generate_dungeon_file_contents(dungeon);
-            var goal = Utility.load_resource("cs.pizza.cs");
-            Utility.diff(goal, output);
+            {
+                var output = target.generate_dungeon_file_contents(dungeon);
+                var goal = Utility.load_resource("cs.pizza.cs");
+                Utility.diff(goal, output);
+            }
+
+            {
+                var treasury = overlord.realms["test"].treasuries["Crust"];
+                var output = target.generate_enum_file_contents(treasury);
+                var goal = Utility.load_resource("cs.crust.cs");
+                Utility.diff(goal, output);
+            }
         }
     }
 }

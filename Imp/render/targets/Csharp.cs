@@ -31,6 +31,11 @@ namespace imperative.render.targets
                    + render_statements(dungeon.code);
         }
 
+        public string generate_enum_file_contents(Treasury treasury)
+        {
+            return render_realm(treasury.realm, ()=> render_treasury(treasury));
+        }
+
         virtual protected string render_dependencies(Dungeon dungeon)
         {
             var dependencies = new[]

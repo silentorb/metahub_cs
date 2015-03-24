@@ -43,6 +43,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="expressions\Treasury_Definition.cs" />
     <Compile Include="expressions\If.cs" />
     <Compile Include="expressions\Dynamic_Function_Call.cs" />
     <Compile Include="expressions\Profession_Expression.cs" />
@@ -79,6 +80,7 @@
     <Compile Include="schema\Realm.cs" />
     <Compile Include="schema\Scope.cs" />
     <Compile Include="schema\Symbol.cs" />
+    <Compile Include="schema\Treasury.cs" />
     <Compile Include="schema\Used_Function.cs" />
     <Compile Include="summoner\Context.cs" />
     <Compile Include="summoner\Summoner2.cs" />

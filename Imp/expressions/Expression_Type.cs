@@ -23,6 +23,7 @@ namespace imperative.expressions
         if_statement,
 
         // Statements
+        treasury_definition,
         statement,
         space,
         class_definition,

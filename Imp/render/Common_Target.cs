@@ -117,6 +117,9 @@ namespace imperative.render
                     result = ((Insert)expression).code;
                     break;
 
+                case Expression_Type.jewel:
+                    return ((Jewel) expression).name;
+
                 default:
                     throw new Exception("Unsupported Expression type: " + expression.type + ".");
             }
@@ -296,14 +299,14 @@ namespace imperative.render
                     if (value != null)
                         return value.ToString();
 
-                    return render_trellis_name(profession.dungeon) + "()";
+                    return render_dungeon_name(profession.dungeon) + "()";
 
                 default:
                     throw new Exception("Invalid literal " + value + " type " + profession.type + ".");
             }
         }
 
-        virtual protected string render_trellis_name(Dungeon dungeon)
+        virtual protected string render_dungeon_name(IDungeon dungeon)
         {
             if (dungeon.realm != current_realm)
                 return render_realm_name(dungeon.realm) + "." + dungeon.name;
@@ -533,14 +536,15 @@ namespace imperative.render
             return result;
         }
 
-        virtual protected string render_dungeon_path(Dungeon dungeon)
+        virtual protected string render_dungeon_path(IDungeon dungeon)
         {
             var name = dungeon.name;
-            if (dungeon.realm.external_name != null)
-            {
-                name = dungeon.realm.external_name + config.namespace_separator + name;
-            }
-            else if (dungeon.realm != current_realm || !config.supports_namespaces)
+//            if (dungeon.realm.external_name != null)
+//            {
+//                name = dungeon.realm.external_name + config.namespace_separator + name;
+//            }
+//            else 
+                if (dungeon.realm != current_realm || !config.supports_namespaces)
             {
                 name = dungeon.realm.name + config.namespace_separator + name;
             }

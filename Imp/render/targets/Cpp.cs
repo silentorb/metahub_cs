@@ -207,7 +207,7 @@ namespace metahub.render.targets
         private class Temp
         {
             public Realm realm;
-            public List<Dungeon> dependencies;
+            public List<IDungeon> dependencies;
         }
 
         string render_outer_dependencies(Dungeon dungeon)
@@ -226,7 +226,7 @@ namespace metahub.render.targets
                         realms[dependency.realm.name] = new Temp
                             {
                                 realm = dependency.realm,
-                                dependencies = new List<Dungeon>()
+                                dependencies = new List<IDungeon>()
                             };
                     }
                     realms[dependency.realm.name].dependencies.Add(dependency);
@@ -336,7 +336,7 @@ namespace metahub.render.targets
             return result;
         }
 
-        string render_trellis_name(Dungeon dungeon)
+        string render_trellis_name(IDungeon dungeon)
         {
             if (dungeon.realm != current_realm)
                 return render_realm_name(dungeon.realm) + "::" + dungeon.name;
@@ -433,26 +433,32 @@ namespace metahub.render.targets
                     ? "std::vector<" + name + ">"
                     : name;
             }
-            else
+            else if (signature.dungeon.GetType() == typeof (Dungeon))
             {
-                var name = signature.dungeon.is_abstract
-                               ? "void"
-                               : render_dungeon_path(signature.dungeon);
+                var dungeon = (Dungeon) signature.dungeon;
+                var name = dungeon.is_abstract
+                    ? "void"
+                    : render_dungeon_path(signature.dungeon);
 
                 if (!signature.is_list)
                 {
                     return
-                        signature.dungeon.is_value
+                        dungeon.is_value
                             ? is_parameter ? name + "&" : name
                             : name + "*";
                 }
                 else
                 {
-                    return "std::vector<" + (signature.dungeon.is_value
-                                ? name
-                                : name + "*")
+                    return "std::vector<" + (dungeon.is_value
+                        ? name
+                        : name + "*")
                            + ">";
                 }
+            }
+            else
+            {
+//                var treasury = (Treasury) signature.dungeon;
+                return render_dungeon_path(signature.dungeon);
             }
         }
 
@@ -681,8 +687,8 @@ namespace metahub.render.targets
                     return (bool)expression.value ? "true" : "false";
 
                 case Kind.reference:
-                    if (!signature.dungeon.is_value)
-                        throw new Exception("Literal expressions must be scalar values.");
+//                    if (!signature.dungeon.is_value)
+//                        throw new Exception("Literal expressions must be scalar values.");
 
                     if (expression.value != null)
                         return expression.value.ToString();

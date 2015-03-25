@@ -116,8 +116,8 @@ namespace metahub.jackolantern.code
 
             block.add_many("pre", new List<Expression>
                 {
-                  new Assignment(new Portal_Expression(portal), "=", new Instantiate(other_dungeon)),
-                  Minion.call_initialize(dungeon, other_dungeon, new Portal_Expression(portal))
+                  new Assignment(new Portal_Expression(portal), "=", new Instantiate((Dungeon)other_dungeon)),
+                  Minion.call_initialize(dungeon, (Dungeon)other_dungeon, new Portal_Expression(portal))
                 });
         }
 

@@ -7,15 +7,24 @@ namespace imperative.schema
 {
    public class Treasury :IDungeon
     {
-       public Dictionary<string, int?> jewels = new Dictionary<string, int?>();
-       public Realm realm;
-       public string name;
+       public Dictionary<string, int?> jewels;
+       public Realm realm { get; set; }
+       public string name { get; set; }
+       public string source_file { get; set; }
+       public object default_value { get; set; }
 
        public Treasury(string name, Dictionary<string, int?> jewels, Realm realm)
        {
            this.name = name;
            this.jewels = jewels;
            this.realm = realm;
+           default_value = 0;
        }
+
+       public bool is_value
+       {
+           get { return true; }
+       }
+
     }
 }

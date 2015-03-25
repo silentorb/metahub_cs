@@ -21,6 +21,7 @@ namespace imperative.expressions
         profession,
         anonymous_function,
         if_statement,
+        jewel,
 
         // Statements
         treasury_definition,

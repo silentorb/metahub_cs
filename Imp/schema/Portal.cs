@@ -27,7 +27,7 @@ namespace imperative.schema
             set { profession.type = value; }
         }
 
-        public Dungeon other_dungeon
+        public IDungeon other_dungeon
         {
             get { return profession.dungeon; }
             set { profession.dungeon = value; }

@@ -43,6 +43,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="expressions\Jewel.cs" />
     <Compile Include="expressions\Treasury_Definition.cs" />
     <Compile Include="expressions\If.cs" />
     <Compile Include="expressions\Dynamic_Function_Call.cs" />

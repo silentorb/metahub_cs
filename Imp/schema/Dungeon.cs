@@ -17,8 +17,8 @@ namespace imperative.schema
     [DebuggerDisplay("dungeon ({name})")]
     public class Dungeon : IDungeon
     {
-        public string name;
-        public Realm realm;
+        public string name { get; set; }
+        public Realm realm { get; set; }
         public Dungeon parent;
         public List<Expression> code;
         public Dictionary<string, string[]> inserts;
@@ -31,21 +31,27 @@ namespace imperative.schema
         public Dictionary<string, Dependency> dependencies = new Dictionary<string, Dependency>();
         public bool is_external = false;
         public bool is_abstract = false;
-        public bool is_value = false;
-        public string source_file;
+        public string source_file { get; set; }
         public List<string> stubs = new List<string>();
         public Dictionary<string, object> hooks = new Dictionary<string, object>();
         public List<Dungeon> interfaces = new List<Dungeon>();
         public string class_export = "";
-        public object default_value;
         public event Dungeon_Minion_Event on_add_minion;
+
+        public object default_value { get; set; }
+
+        bool _is_value = false;
+        public bool is_value
+        {
+            get { return _is_value; }
+        }
 
 #if DEBUG
         private int id;
         private static int next_id = 1;
 #endif
 
-        public Dungeon(string name, Overlord overlord, Realm realm, Dungeon parent = null)
+        public Dungeon(string name, Overlord overlord, Realm realm, Dungeon parent = null, bool is_value = false)
         {
 #if DEBUG
             id = next_id++;
@@ -55,6 +61,7 @@ namespace imperative.schema
             this.overlord = overlord;
             this.realm = realm;
             this.parent = parent;
+            _is_value = is_value;
             realm.dungeons[name] = this;
             overlord.dungeons.Add(this);
             code = new List<Expression>();
@@ -122,7 +129,7 @@ namespace imperative.schema
             }
         }
 
-        public Dependency add_dependency(Dungeon dungeon)
+        public Dependency add_dependency(IDungeon dungeon)
         {
             if (dungeon == null || dungeon == this)
                 return null;
@@ -236,8 +243,8 @@ namespace imperative.schema
 
             foreach (var portal in all_portals.Values)
             {
-                if (portal.other_dungeon != null && !portal.other_dungeon.is_abstract)
-                //if (tie.other_tie != null && !tie.other_rail.trellis.is_abstract)
+                var other_dungeon = portal.other_dungeon;
+                if (other_dungeon != null && (other_dungeon.GetType() != typeof(Dungeon) || !((Dungeon)other_dungeon).is_abstract))
                 {
                     add_dependency(portal.other_dungeon);
                 }

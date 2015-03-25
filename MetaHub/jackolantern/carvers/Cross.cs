@@ -38,7 +38,7 @@ namespace metahub.jackolantern.carvers
                     : "other";
             }
 
-            var conflict_class = Piece_Maker.create_conflict_class(portal.other_dungeon, jack);
+            var conflict_class = Piece_Maker.create_conflict_class((Dungeon)portal.other_dungeon, jack);
             var setter = portal.setter;
             foreach (Function_Node constraint in constraints)
             {
@@ -61,7 +61,7 @@ namespace metahub.jackolantern.carvers
 
         Minion create_check_function(Portal portal, Endpoint endpoint)
         {
-            var dungeon = portal.other_dungeon;
+            var dungeon = (Dungeon)portal.other_dungeon;
             var minion_name = dungeon.get_available_name("check_cross_" + endpoint.portal.name, 1);
             var minion = dungeon.spawn_minion(minion_name);
             minion.return_type = new Profession(Kind.Bool);

@@ -10,9 +10,9 @@ namespace imperative.schema
     {
         public Kind type;
         public bool is_list = false;
-        public Dungeon dungeon;
+        public IDungeon dungeon;
 
-        public Profession(Kind type, Dungeon dungeon = null)
+        public Profession(Kind type, IDungeon dungeon = null)
         {
             this.type = type;
             this.dungeon = dungeon;

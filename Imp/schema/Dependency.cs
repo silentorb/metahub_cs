@@ -8,10 +8,10 @@ namespace imperative.schema
  */
 public class Dependency
 {
-	public Dungeon dungeon;
+	public IDungeon dungeon;
 	public bool allow_partial = true;
 
-    public Dependency(Dungeon dungeon)
+    public Dependency(IDungeon dungeon)
 	{
 		this.dungeon = dungeon;
 	}

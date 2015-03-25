@@ -151,9 +151,8 @@ namespace metahub.jackolantern
 
         public Dungeon create_dungeon_from_rail(Trellis rail, Realm realm)
         {
-            var dungeon = new Dungeon(rail.name, overlord, realm);
+            var dungeon = new Dungeon(rail.name, overlord, realm, null, rail.is_value);
             dungeon.is_abstract = rail.is_abstract;
-            dungeon.is_value = rail.is_value;
             dungeon.default_value = rail.default_value;
 
             if (realm.trellis_additional.ContainsKey(rail.name))

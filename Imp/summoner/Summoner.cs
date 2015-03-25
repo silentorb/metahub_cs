@@ -374,7 +374,7 @@ namespace imperative.summoner
 
         private Expression process_reference(Pattern_Source source, Summoner_Context context)
         {
-            var dungeon = context.dungeon;
+            var dungeon = (IDungeon)context.dungeon;
             Expression result = null;
             Expression last = null;
             var patterns = source.patterns[0].patterns;
@@ -412,7 +412,7 @@ namespace imperative.summoner
                 {
                     if (token == "this")
                     {
-                        return new Self(dungeon);
+                        return new Self((Dungeon)dungeon);
                     }
 
                     var symbol = context.scope.find_or_null(token);
@@ -433,8 +433,8 @@ namespace imperative.summoner
                     }
                     else
                     {
-                        if (dungeon != null)
-                            portal = dungeon.get_portal_or_null(token);
+                        if (dungeon != null && dungeon.GetType() == typeof(Dungeon))
+                            portal = ((Dungeon)dungeon).get_portal_or_null(token);
 
                         if (portal != null)
                         {
@@ -443,7 +443,10 @@ namespace imperative.summoner
                         }
                         else
                         {
-                            var func = process_function_call(dungeon, token, result, last, args);
+                            var func = dungeon.GetType() == typeof(Dungeon)
+                                ? process_function_call((Dungeon)dungeon, token, result, last, args)
+                                : null;
+
                             if (func != null)
                             {
                                 if (func.type == Expression_Type.property_function_call)
@@ -466,7 +469,7 @@ namespace imperative.summoner
                             }
                             else
                             {
-                                dungeon = overlord.get_dungeon(token);
+                                dungeon = context.realm.get_child(token);
                                 if (dungeon != null)
                                 {
                                     next = new Profession_Expression(new Profession(Kind.reference, dungeon));
@@ -696,7 +699,7 @@ namespace imperative.summoner
         {
             var type = parse_type2(source.patterns[2], context);
             var args = source.patterns[4].patterns.Select(p => process_expression(p, context));
-            return new Instantiate(type.dungeon, args);
+            return new Instantiate((Dungeon)type.dungeon, args);
         }
 
         private Expression process_function_snippet(Pattern_Source source, Summoner_Context context)

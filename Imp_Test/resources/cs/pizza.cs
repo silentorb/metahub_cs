@@ -8,6 +8,7 @@ namespace test
     public class Pizza
     {
         public List<string> toppings = new List<string>();
+        public Crust crust;
 
         public void add(string topping)
         {
@@ -18,6 +19,7 @@ namespace test
                 x = 1;
 
             toppings.Add(topping);
+            crust = Crust.burnt;
         }
     }
 }

@@ -415,11 +415,21 @@ namespace imperative.summoner
             throw new Exception("Unsupported statement type: " + source.type + ".");
         }
 
+        class Path_Context
+        {
+            public IDungeon dungeon;
+            public int index = -1;
+            public Expression result = null;
+            public Expression last = null;
+        }
+
         private Expression process_reference(Legend source, Summoner_Context context)
         {
-            var dungeon = context.dungeon;
-            Expression result = null;
-            Expression last = null;
+
+            var path_context = new Path_Context()
+            {
+                dungeon = (IDungeon)context.dungeon
+            };
             var patterns = source.children[0].children;
             if (patterns.Count == 1)
             {
@@ -427,6 +437,7 @@ namespace imperative.summoner
                     return new Null_Value();
             }
             List<Expression> args = null;
+
             if (source.children[1] != null)
             {
                 args = source.children[1].children
@@ -434,108 +445,108 @@ namespace imperative.summoner
                                             .ToList();
             }
 
-            var index = -1;
             foreach (var pattern in patterns)
             {
-                ++index;
+                ++path_context.index;
                 var token = pattern.children[0].text;
-                Expression array_access = pattern.children[1] != null
-                                              ? process_expression(pattern.children[1].children[0], context)
-                                              : null;
 
-                Portal portal = null;
-                Expression next = null;
-
-                var insert = context.get_expression_pattern(token);
-                if (insert != null)
-                {
-                    next = insert;
-                }
+                var next = process_token(token, pattern, patterns, args, path_context, context);
+                if (path_context.result == null)
+                    path_context.result = next;
                 else
                 {
-                    if (token == "this")
-                    {
-                        return new Self(dungeon);
-                    }
-
-                    var symbol = context.scope.find_or_null(token);
-                    if (symbol != null)
-                    {
-                        if (index == patterns.Count - 1 && symbol.profession.type == Kind.function)
-                        {
-                            next = new Dynamic_Function_Call(symbol.name, null, args);
-                        }
-                        else
-                        {
-                            next = new Variable(symbol) { index = array_access };
-                            var profession = next.get_profession();
-                            dungeon = profession != null
-                                          ? profession.dungeon
-                                          : next.get_profession().dungeon;
-                        }
-                    }
+                    if (path_context.last.type == Expression_Type.property_function_call)
+                        ((Property_Function_Call)path_context.last).args.Add(next);
                     else
-                    {
-                        if (dungeon != null)
-                            portal = dungeon.get_portal_or_null(token);
-
-                        if (portal != null)
-                        {
-                            next = new Portal_Expression(portal) { index = array_access };
-                            dungeon = portal.other_dungeon;
-                        }
-                        else
-                        {
-                            var func = process_function_call(dungeon, token, result, last, args);
-                            if (func != null)
-                            {
-                                if (func.type == Expression_Type.property_function_call)
-                                {
-                                    if (last.parent != null)
-                                    {
-                                        //last.parent.child = null;
-                                        var last2 = last.parent;
-                                        last = last.parent;
-                                        last2.next = null;
-                                    }
-                                    else
-                                    {
-                                        return func;
-                                    }
-                                    next = func;
-                                }
-                                else
-                                    return func;
-                            }
-                            else
-                            {
-                                dungeon = overlord.get_dungeon(token);
-                                if (dungeon != null)
-                                {
-                                    next = new Profession_Expression(new Profession(Kind.reference, dungeon));
-                                }
-                                else
-                                {
-                                    throw new Exception("Unknown symbol: " + token);
-                                }
-                            }
-                        }
-                    }
+                        path_context.last.next = next;
                 }
-
-                if (result == null)
-                    result = next;
-                else
-                {
-                    if (last.type == Expression_Type.property_function_call)
-                        ((Property_Function_Call)last).args.Add(next);
-                    else
-                        last.next = next;
-                }
-                last = next.get_end();
+                path_context.last = next.get_end();
             }
 
-            return result;
+            return path_context.result;
+        }
+
+        Expression process_token(string token, Legend pattern, List<Legend> patterns, List<Expression> args,
+            Path_Context path_context, Summoner_Context context)
+        {
+            Portal portal = null;
+            Expression array_access = pattern.children[1] != null
+                     ? process_expression(pattern.children[1].children[0], context)
+                     : null;
+
+            var insert = context.get_expression_pattern(token);
+            if (insert != null)
+                return insert;
+
+            if (token == "this")
+            {
+                return new Self((Dungeon)path_context.dungeon);
+            }
+
+            var symbol = context.scope.find_or_null(token);
+            if (symbol != null)
+            {
+                if (path_context.index == patterns.Count - 1 && symbol.profession.type == Kind.function)
+                    return new Dynamic_Function_Call(symbol.name, null, args);
+
+                var next = new Variable(symbol) { index = array_access };
+                var profession = next.get_profession();
+                path_context.dungeon = profession != null
+                              ? profession.dungeon
+                              : next.get_profession().dungeon;
+
+                return next;
+            }
+
+            if (path_context.dungeon != null)
+            {
+                if (path_context.dungeon.GetType() == typeof(Dungeon))
+                {
+                    portal = ((Dungeon)path_context.dungeon).get_portal_or_null(token);
+                    if (portal != null)
+                    {
+                        path_context.dungeon = portal.other_dungeon;
+                        return new Portal_Expression(portal) { index = array_access };
+                    }
+                }
+                else
+                {
+                    var treasury = (Treasury)path_context.dungeon;
+                    if (!treasury.jewels.ContainsKey(token))
+                        throw new Exception("Enum " + treasury.name + " does not contain member: " + token + ".");
+
+                    return new Jewel(treasury, token);
+                }
+            }
+
+            var func = path_context.dungeon == null || path_context.dungeon.GetType() == typeof(Dungeon)
+                ? process_function_call((Dungeon)path_context.dungeon, token, path_context.result, path_context.last, args)
+                : null;
+
+            if (func != null)
+            {
+                if (func.type == Expression_Type.property_function_call)
+                {
+                    if (path_context.last.parent != null)
+                    {
+                        //last.parent.child = null;
+                        var last2 = path_context.last.parent;
+                        path_context.last = path_context.last.parent;
+                        last2.next = null;
+                    }
+                }
+
+                return func;
+            }
+
+            var dungeon = context.realm.get_child(token);
+            if (dungeon != null)
+            {
+                path_context.dungeon = dungeon;
+                return new Profession_Expression(new Profession(Kind.reference, path_context.dungeon));
+            }
+
+            throw new Exception("Unknown symbol: " + token);
         }
 
         private Expression process_function_call(Dungeon dungeon, string token, Expression result, Expression last,
@@ -665,6 +676,10 @@ namespace imperative.summoner
             if (realm.dungeons.ContainsKey(text))
                 return new Profession(Kind.reference, realm.dungeons[text]) { is_list = is_list };
 
+            if (realm.treasuries.ContainsKey(text))
+                return new Profession(Kind.reference, realm.treasuries[text]) { is_list = is_list };
+
+
             var dungeon = overlord.get_dungeon(text);
             if (dungeon != null)
                 return new Profession(Kind.reference, dungeon);
@@ -750,7 +765,7 @@ namespace imperative.summoner
         {
             var type = parse_type2(parts[0], context);
             var args = parts[1].children.Select(p => process_expression(p, context));
-            return new Instantiate(type.dungeon, args);
+            return new Instantiate((Dungeon)type.dungeon, args);
         }
 
         private Expression summon_enum(List<Legend> parts, Summoner_Context context)

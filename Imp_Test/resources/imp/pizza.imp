@@ -9,6 +9,7 @@
 
 	class Pizza {
 		toppings:string[]
+		crust:Crust
 
 		add(topping:string) {
 			var x = 0
@@ -19,6 +20,7 @@
 				
 
 			toppings.add(topping)
+			crust = Crust.burnt
 		}
 	}
 }

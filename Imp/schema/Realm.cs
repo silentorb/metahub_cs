@@ -29,7 +29,7 @@ namespace imperative.schema
             return dungeon;
         }
 
-        public Treasury create_treasury(string treasury_name, Dictionary<string, int?> jewels)
+        public Treasury create_treasury(string treasury_name, List<string> jewels)
         {
             if (get_child(treasury_name) != null)
                 throw new Exception("Realm " + name + " already contains a type named " + treasury_name + ".");

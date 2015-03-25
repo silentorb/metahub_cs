@@ -8,7 +8,7 @@ namespace test
     public class Pizza
     {
         public List<string> toppings = new List<string>();
-        public Crust crust;
+        public Crust crust = Crust.crispy;
 
         public void add(string topping)
         {

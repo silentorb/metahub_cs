@@ -23,6 +23,7 @@ namespace imperative.render
         public string namespace_keyword = "namespace";  // Usually either namespace or module.
         public string namespace_separator = ".";        // Some languages use ::
         public string path_separator = ".";             // Some languages use ->
+        public bool supports_enums = true;              // Whether to resolve enums to integers or leave them as object members.
         public bool supports_namespaces = true;         // True for most of Imp's targets.
         public bool space_tabs = false;                 // Use spaces instead of tabs.
         public string statement_terminator = "";        // In most cases this will be "" or ";"

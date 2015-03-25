@@ -9,13 +9,13 @@ namespace imperative.expressions
     public class Jewel : Expression
     {
         public Treasury treasury;
-        public string name;
+        public int value;
 
-        public Jewel(Treasury treasury, string name)
+        public Jewel(Treasury treasury, int value)
             :base(Expression_Type.jewel)
         {
             this.treasury = treasury;
-            this.name = name;
+            this.value = value;
         }
 
         public override IEnumerable<Expression> children

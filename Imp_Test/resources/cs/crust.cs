@@ -4,7 +4,7 @@
     {
         crispy,
         soft,
-        burnt = 3,
+        burnt,
         missing
     }
 }

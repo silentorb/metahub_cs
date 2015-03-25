@@ -421,6 +421,7 @@ namespace imperative.summoner
             public int index = -1;
             public Expression result = null;
             public Expression last = null;
+            public bool is_finished = false;
         }
 
         private Expression process_reference(Legend source, Summoner_Context context)
@@ -451,6 +452,9 @@ namespace imperative.summoner
                 var token = pattern.children[0].text;
 
                 var next = process_token(token, pattern, patterns, args, path_context, context);
+                if (path_context.is_finished)
+                    return next;
+
                 if (path_context.result == null)
                     path_context.result = next;
                 else
@@ -509,63 +513,69 @@ namespace imperative.summoner
                         return new Portal_Expression(portal) { index = array_access };
                     }
                 }
-                else
-                {
-                    var treasury = (Treasury)path_context.dungeon;
-                    if (!treasury.jewels.ContainsKey(token))
-                        throw new Exception("Enum " + treasury.name + " does not contain member: " + token + ".");
-
-                    return new Jewel(treasury, token);
-                }
             }
 
             var func = path_context.dungeon == null || path_context.dungeon.GetType() == typeof(Dungeon)
-                ? process_function_call((Dungeon)path_context.dungeon, token, path_context.result, path_context.last, args)
+                ? process_function_call(token, path_context, args)
                 : null;
 
             if (func != null)
             {
-                if (func.type == Expression_Type.property_function_call)
+                if (func.type == Expression_Type.property_function_call && path_context.last.parent != null)
                 {
-                    if (path_context.last.parent != null)
-                    {
-                        //last.parent.child = null;
-                        var last2 = path_context.last.parent;
-                        path_context.last = path_context.last.parent;
-                        last2.next = null;
-                    }
+                    //last.parent.child = null;
+                    var last2 = path_context.last.parent;
+                    path_context.last = path_context.last.parent;
+                    last2.next = null;
+                }
+                else
+                {
+                    path_context.is_finished = true;
                 }
 
                 return func;
             }
 
-            var dungeon = context.realm.get_child(token);
-            if (dungeon != null)
+            if (context.realm.dungeons.ContainsKey(token))
             {
+                var dungeon = context.realm.dungeons[token];
                 path_context.dungeon = dungeon;
-                return new Profession_Expression(new Profession(Kind.reference, path_context.dungeon));
+                return new Profession_Expression(new Profession(Kind.reference, dungeon));
             }
+            
+            if (context.realm.treasuries.ContainsKey(token))
+            {
+                if (path_context.index >= patterns.Count - 1)
+                    throw new Exception("Enum " + token + " is missing a member value.");
 
+                var treasury = context.realm.treasuries[token];
+                var jewel_name = patterns.Last().children[0].text;
+                if (!treasury.jewels.Contains(jewel_name))
+                    throw new Exception("Enum " + treasury.name + " does not contain member: " + jewel_name + ".");
+
+                path_context.is_finished = true;
+                return new Jewel(treasury, treasury.jewels.IndexOf(jewel_name));
+            }
             throw new Exception("Unknown symbol: " + token);
         }
 
-        private Expression process_function_call(Dungeon dungeon, string token, Expression result, Expression last,
-                                                 List<Expression> args)
+        private Expression process_function_call(string token, Path_Context path_context, List<Expression> args)
         {
-            var minion = dungeon != null
+            var dungeon = (Dungeon) path_context.dungeon;
+            var minion = path_context.dungeon != null
                              ? dungeon.summon_minion(token, true)
                              : null;
 
             if (minion != null)
-                return new Method_Call(minion, result, args);
+                return new Method_Call(minion, path_context.result, args);
 
             if (Minion.platform_specific_functions.Contains(token))
             {
                 if (token == "add" || token == "setter")
-                    return new Property_Function_Call(Property_Function_Type.set, ((Portal_Expression)last).portal,
-                                                      args);
+                    return new Property_Function_Call(Property_Function_Type.set, 
+                        ((Portal_Expression)path_context.last).portal, args);
 
-                return new Platform_Function(token, result, args);
+                return new Platform_Function(token, path_context.result, args);
             }
 
             return null;
@@ -770,14 +780,14 @@ namespace imperative.summoner
 
         private Expression summon_enum(List<Legend> parts, Summoner_Context context)
         {
-            var items = new Dictionary<string, int?>();
+            var items = new List<string>();
             foreach (var item in parts[1].children)
             {
                 int? value = null;
                 if (item.children[1] != null)
                     value = int.Parse(item.children[1].text);
 
-                items[item.children[0].text] = value;
+                items.Add(item.children[0].text);
             }
             var treasury = context.realm.create_treasury(parts[0].text, items);
             return new Treasury_Definition(treasury);

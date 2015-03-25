@@ -18,8 +18,9 @@ namespace metahub.render.targets
         {
             config = new Target_Configuration
                 {
-                    supports_namespaces = false,
-                    implicit_this = false
+                    implicit_this = false,
+                    supports_enums = false,
+                    supports_namespaces = false
                 };
         }
 

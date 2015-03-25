@@ -118,7 +118,8 @@ namespace imperative.render
                     break;
 
                 case Expression_Type.jewel:
-                    return ((Jewel) expression).name;
+                    var jewel = (Jewel) expression;
+                    return render_enum_value(jewel.treasury, jewel.value);
 
                 default:
                     throw new Exception("Unsupported Expression type: " + expression.type + ".");
@@ -296,6 +297,9 @@ namespace imperative.render
                     if (!profession.dungeon.is_value)
                         throw new Exception("Literal expressions must be scalar values.");
 
+                    if (profession.dungeon.GetType() == typeof (Treasury))
+                        return render_enum_value((Treasury)profession.dungeon, (int)value);
+
                     if (value != null)
                         return value.ToString();
 
@@ -304,6 +308,13 @@ namespace imperative.render
                 default:
                     throw new Exception("Invalid literal " + value + " type " + profession.type + ".");
             }
+        }
+
+        virtual protected string render_enum_value(Treasury treasury, int value)
+        {
+            return config.supports_enums
+                ? treasury.name + get_connector(new Profession(Kind.reference, treasury)) + treasury.jewels[value]
+                : value.ToString();
         }
 
         virtual protected string render_dungeon_name(IDungeon dungeon)
@@ -506,8 +517,7 @@ namespace imperative.render
             var i = treasury.jewels.Count;
             return add("enum " + treasury.name) + render_scope(() =>
                 treasury.jewels.Select(j => 
-                    add(j.Key + (j.Value.HasValue ? " = " + j.Value.Value : "") 
-                        + (--i > 0 ? "," : "")) + newline()).join("")
+                    add(j + (--i > 0 ? "," : "")) + newline()).join("")
                 );
         }
 

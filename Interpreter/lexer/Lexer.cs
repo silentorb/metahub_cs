@@ -3,10 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Text.RegularExpressions;
 using runic.parser;
-using runic.Properties;
 
 namespace runic.lexer
 {
@@ -29,18 +26,6 @@ namespace runic.lexer
         {
             var runes = lexer_lexicon.read(lexicon);
             var legend = Parser.read(runes, Parser.lexer_grammar.start);
-
-            //            Lexer_Bootstrap_Old context = new Lexer_Bootstrap_Old(definition);
-            //
-            //            var result = context.parse(lexicon, definition.children[0], false);
-            //            if (!result.success)
-            //            {
-            //                Debug_Info.output(result);
-            //                throw new Exception("Error loading parser.");
-            //            }
-            //
-            //            var match = (Match)result;
-            //            var data = match.get_data();
             process_lexicon(legend.children);
         }
 
@@ -116,7 +101,6 @@ namespace runic.lexer
 
                 case "string":
                     return new String_Whisper(name, source.text);
-
             }
 
             var text = source.text;

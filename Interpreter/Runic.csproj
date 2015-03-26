@@ -72,12 +72,6 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Parser\Parser.csproj">
-      <Project>{80BEAC71-8BE8-48C5-B109-BAB3F38F6D9F}</Project>
-      <Name>Parser</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>

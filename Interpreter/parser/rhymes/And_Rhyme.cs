@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using parser;
 using runic.lexer;
 
 namespace runic.parser.rhymes
@@ -26,9 +25,9 @@ namespace runic.parser.rhymes
                 single_non_ghost = rhymes.First(r => !r.is_ghost);
         }
 
-        public override void initialize(Pattern_Source pattern, Parser parser)
+        public override void initialize(Legend pattern, Parser parser)
         {
-            rhymes = pattern.patterns.Select(parser.create_child).ToList();
+            rhymes = pattern.children.Select(parser.create_child).ToList();
 
             if (rhymes.Count(r => !r.is_ghost) == 1)
                 single_non_ghost = rhymes.First(r => !r.is_ghost);

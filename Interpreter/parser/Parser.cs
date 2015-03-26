@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using parser;
 using runic.Properties;
 using runic.lexer;
 using runic.parser.rhymes;
@@ -13,12 +12,12 @@ namespace runic.parser
     {
         public Dictionary<string, Rhyme> rhymes = new Dictionary<string, Rhyme>();
         public Lexer lexer;
-        internal static Parser_Grammar parser_grammar = new Parser_Grammar();
         internal static Lexer_Grammar lexer_grammar = new Lexer_Grammar();
+        internal static Parser_Grammar parser_grammar = new Parser_Grammar();
 
         public Parser()
         {
-            
+
         }
 
         public Parser(Lexer lexer, string grammar)
@@ -27,80 +26,52 @@ namespace runic.parser
             load_grammar(grammar);
         }
 
-        static Definition bootstrap()
-        {
-            Definition boot_definition = new Definition();
-            boot_definition.load_parser_schema();
-            Bootstrap context = new Bootstrap(boot_definition);
-
-            var result = context.parse(Resources.parser_grammar, boot_definition.patterns[0], false);
-            if (!result.success)
-            {
-                Debug_Info.output(result);
-                throw new Exception("Error loading parser.");
-            }
-
-            var match = (Match)result;
-            var definition = new Definition();
-            definition.load(match.get_data().dictionary);
-            return definition;
-        }
-
         void load_grammar(string lexicon)
         {
-            var definition = bootstrap();
-            var context = new Parser_Bootstrap(definition);
-
-            var result = context.parse(lexicon, definition.patterns[0], false);
-            if (!result.success)
-            {
-                Debug_Info.output(result);
-                throw new Exception("Error loading parser.");
-            }
-
-            var match = (Match)result;
-            var data = match.get_data();
-            process_grammar(data.patterns[1].patterns);
+            var runes = Lexer.parser_lexicon.read(lexicon);
+            var legend = read(runes, parser_grammar.start);
+            process_grammar(legend.children);
         }
 
-        void process_grammar(Pattern_Source[] patterns)
+        void process_grammar(List<Legend> children)
         {
-            foreach (var pattern in patterns)
+            foreach (var pattern in children)
             {
-                var name = pattern.patterns[0].text;
+                var name = pattern.children[0].text;
                 rhymes[name] = create_rhyme(pattern);
             }
 
-            foreach (var pattern in patterns)
+            foreach (var pattern in children)
             {
-                var name = pattern.patterns[0].text;
+                var name = pattern.children[0].text;
                 var rhyme = rhymes[name];
-                rhyme.initialize(pattern.patterns[4], this);
+                rhyme.initialize(pattern.children[1], this);
             }
         }
 
-        Rhyme create_rhyme(Pattern_Source pattern)
+        Rhyme create_rhyme(Legend pattern)
         {
-            var name = pattern.patterns[0].text;
-            var group = pattern.patterns[4];
-            var patterns = group.patterns;
+            var name = pattern.children[0].text;
+            var group = pattern.children[1];
+            var children = group.children;
             switch (group.type)
             {
                 case "and":
-                    if (patterns.Length > 1)
-                        return new And_Rhyme(name);
+                    //                    if (children.Count > 1)
+                    return new And_Rhyme(name);
 
-                    if (patterns[0].type == "repetition")
-                        return new Repetition_Rhyme(name);
+                //                    if (group.type == "repetition")
+                case "repetition":
+                    return new Repetition_Rhyme(name);
 
-                    return new Single_Rhyme(name);
 
                 case "or":
                     return new Or_Rhyme(name);
 
             }
+            return new Single_Rhyme(name);
 
-            return null;
+            //            return null;
         }
 
         public Rhyme get_whisper_rhyme(string name)
@@ -110,7 +81,7 @@ namespace runic.parser
                 : new Single_Rhyme(name, lexer.whispers[name]);
         }
 
-        public Rhyme create_child(Pattern_Source pattern)
+        public Rhyme create_child(Legend pattern)
         {
             var text = pattern.text;
             if (pattern.type == "id")
@@ -140,18 +111,24 @@ namespace runic.parser
             var stone = new Runestone(runes);
             var result = start.match(stone, null);
 
-            if (result == null || !result.stone.is_at_end)
+            if (result != null)
             {
-                var furthest = runes[stone.tracker.furthest];
-                var last = stone.tracker.history.Last(h => h.success);
-                throw new Exception("Could not find match at "
-                    + furthest.range.end.y + ":" + furthest.range.end.x
-                    + ", " + furthest.whisper.name + "."
-                    + "  Last match was " + last.rhyme.name + "."
-                    );
+                if (result.stone.is_at_end)
+                    return result.legend;
+
+                if (runes.Skip(result.stone.get_position())
+                    .All(r => r.whisper.has_attribute(Whisper.Attribute.optional)))
+                    return result.legend;
             }
 
-            return result.legend;
+            var furthest = runes[stone.tracker.furthest];
+            var last = stone.tracker.history.Last(h => h.success);
+            throw new Exception("Could not find match at "
+                + furthest.range.end.y + ":" + furthest.range.end.x
+                + ", " + furthest.whisper.name + "."
+                + "  Last match was " + last.rhyme.name + "."
+                );
+
         }
     }
 }

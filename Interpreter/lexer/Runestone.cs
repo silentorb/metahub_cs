@@ -59,5 +59,10 @@ namespace runic.lexer
         {
             return new Runestone(runes, tracker, position + 1);
         }
+
+        public int get_position()
+        {
+            return position;
+        }
     }
 }

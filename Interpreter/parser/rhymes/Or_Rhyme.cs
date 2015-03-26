@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using parser;
 using runic.lexer;
 
 namespace runic.parser.rhymes
@@ -23,9 +22,9 @@ namespace runic.parser.rhymes
             this.rhymes = rhymes;
         }
 
-        public override void initialize(Pattern_Source pattern, Parser parser)
+        public override void initialize(Legend pattern, Parser parser)
         {
-            rhymes = pattern.patterns.Select(p => parser.create_child(p)).ToList();
+            rhymes = pattern.children.Select(p => parser.create_child(p)).ToList();
         }
 
         public override Legend_Result match(Runestone stone, Rhyme parent)

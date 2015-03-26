@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using parser;
 using runic.lexer;
 
 namespace runic.parser.rhymes
@@ -39,14 +38,14 @@ namespace runic.parser.rhymes
             this.max = max;
         }
 
-        public override void initialize(Pattern_Source pattern, Parser parser)
+        public override void initialize(Legend pattern, Parser parser)
         {
             if (pattern.type != "repetition")
-                pattern = pattern.patterns[0];
+                pattern = pattern.children[0];
 
-            var patterns = pattern.patterns[2].patterns;
+            var patterns = pattern.children[0].children;
             rhyme = parser.get_whisper_rhyme(patterns[0].text);
-            if (patterns.Length == 3)
+            if (patterns.Count == 3)
             {
                 min = int.Parse(patterns[1].text);
                 max = int.Parse(patterns[2].text);

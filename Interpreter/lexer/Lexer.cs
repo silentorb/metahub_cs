@@ -5,16 +5,16 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
-using parser;
+using runic.parser;
 using runic.Properties;
-using Match = parser.Match;
 
 namespace runic.lexer
 {
     public class Lexer
     {
         public Dictionary<string, Whisper> whispers = new Dictionary<string, Whisper>();
-        public static Lexer_Bootstrap boot = new Lexer_Bootstrap();
+        public static Lexer_Lexicon lexer_lexicon = new Lexer_Lexicon();
+        public static Parser_Lexicon parser_lexicon = new Parser_Lexicon();
 
         public Lexer()
         {
@@ -27,19 +27,21 @@ namespace runic.lexer
 
         void load_lexicon(string lexicon)
         {
-            var runes = boot.read(lexicon);
-//            Lexer_Bootstrap_Old context = new Lexer_Bootstrap_Old(definition);
-//
-//            var result = context.parse(lexicon, definition.patterns[0], false);
-//            if (!result.success)
-//            {
-//                Debug_Info.output(result);
-//                throw new Exception("Error loading parser.");
-//            }
-//
-//            var match = (Match)result;
-//            var data = match.get_data();
-//            process_lexicon(data.patterns[1].patterns);
+            var runes = lexer_lexicon.read(lexicon);
+            var legend = Parser.read(runes, Parser.lexer_grammar.start);
+
+            //            Lexer_Bootstrap_Old context = new Lexer_Bootstrap_Old(definition);
+            //
+            //            var result = context.parse(lexicon, definition.children[0], false);
+            //            if (!result.success)
+            //            {
+            //                Debug_Info.output(result);
+            //                throw new Exception("Error loading parser.");
+            //            }
+            //
+            //            var match = (Match)result;
+            //            var data = match.get_data();
+            process_lexicon(legend.children);
         }
 
         Whisper add_whisper(string name, Whisper whisper)
@@ -60,19 +62,19 @@ namespace runic.lexer
             return whisper;
         }
 
-        void process_lexicon(Pattern_Source[] patterns)
+        void process_lexicon(List<Legend> children)
         {
-            foreach (var pattern in patterns)
+            foreach (var pattern in children)
             {
-                var name = pattern.patterns[0].text;
+                var name = pattern.children[0].text;
                 add_whisper(name, create_whisper(pattern));
             }
 
-            foreach (var pattern in patterns.Where(p => p.patterns[5].patterns.Length > 1))
+            foreach (var pattern in children.Where(p => p.children[2].children.Count > 1))
             {
-                var name = pattern.patterns[0].text;
+                var name = pattern.children[0].text;
                 var whisper = (Whisper_Group)whispers[name];
-                whisper.whispers = pattern.patterns[5].patterns.Select(p =>
+                whisper.whispers = pattern.children[2].children.Select(p =>
                     {
                         var child = create_sub_whisper(p.text, p);
                         if (p.type == "string" || p.type == "regex")
@@ -83,23 +85,19 @@ namespace runic.lexer
             }
         }
 
-        Whisper create_whisper(Pattern_Source source)
+        Whisper create_whisper(Legend source)
         {
-            var name = source.patterns[0].text;
-            if (source.patterns.Length < 6)
-            {
+            var name = source.children[0].text;
+            var children = source.children[2].children;
 
-            }
-            var patterns = source.patterns[5].patterns;
-
-            var whisper = patterns.Length > 1
+            var whisper = children.Count > 1
                 ? new Whisper_Group(name)
-                : create_sub_whisper(name, patterns[0]);
+                : create_sub_whisper(name, children[0]);
 
-            var attributes = source.patterns[1].patterns;
-            if (attributes.Length > 0)
+            var attributes = source.children[1];
+            if (attributes != null)
             {
-                whisper.attributes = attributes[0].patterns[1].patterns.Select(p =>
+                whisper.attributes = attributes.children.Select(p =>
                     {
                         Whisper.Attribute result;
                         Enum.TryParse(p.text, out result);
@@ -109,7 +107,7 @@ namespace runic.lexer
             return whisper;
         }
 
-        Whisper create_sub_whisper(string name, Pattern_Source source)
+        Whisper create_sub_whisper(string name, Legend source)
         {
             switch (source.type)
             {
@@ -135,22 +133,20 @@ namespace runic.lexer
         {
             var result = new List<Rune>();
 
-            int index = 0;
+//            int index = 0;
             var position = new Position(input);
 
-            while (index < input.Length)
+            while (position.index < input.Length)
             {
                 var rune = next(input, position);
                 if (rune == null)
-                    throw new Exception("Could not find match at " + index + " " + get_safe_substring(input, index, 10));
+                    throw new Exception("Could not find match at " + position.index + " " + get_safe_substring(input, position.index, 10));
 
                 if (rune.length == 0)
                     throw new Exception("Invalid Whisper:" + rune.whisper.name);
 
                 if (!rune.whisper.has_attribute(Whisper.Attribute.ignore))
                     result.Add(rune);
-
-                index += rune.length;
             }
 
             return result;

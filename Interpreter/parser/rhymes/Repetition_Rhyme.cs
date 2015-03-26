@@ -21,6 +21,24 @@ namespace runic.parser.rhymes
 
         }
 
+        public Repetition_Rhyme(Rhyme rhyme, Rhyme divider, int min, int max)
+            : base(Rhyme_Type.repetition, null)
+        {
+            this.rhyme = rhyme;
+            this.divider = divider;
+            this.min = min;
+            this.max = max;
+            has_variable_dividers = !divider.is_ghost;
+        }
+
+        public Repetition_Rhyme(Rhyme rhyme, int min, int max)
+            : base(Rhyme_Type.repetition, null)
+        {
+            this.rhyme = rhyme;
+            this.min = min;
+            this.max = max;
+        }
+
         public override void initialize(Pattern_Source pattern, Parser parser)
         {
             if (pattern.type != "repetition")

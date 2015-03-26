@@ -6,7 +6,7 @@ using System.Text.RegularExpressions;
 
 namespace runic.lexer
 {
-    class Regex_Whisper : Whisper
+    public class Regex_Whisper : Whisper
     {
         public Regex regex;
 
@@ -22,7 +22,15 @@ namespace runic.lexer
             if (!match.Success)
                 return null;
 
-            return new Rune(this, match.Value, position.clone(), position.forward(match.Length).clone());
+            var value = match.Groups[match.Groups.Count - 1].Value;
+            if (value == "")
+            {
+                if (match.Groups.Count == 2)
+                    throw new Exception("Invalid regex");
+
+                value = match.Groups[match.Groups.Count - 2].Value;
+            }
+            return new Rune(this, value, position.clone(), position.forward(match.Length).clone());
         }
     }
 }

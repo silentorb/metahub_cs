@@ -22,6 +22,12 @@ namespace runic.parser.rhymes
             this.whisper = whisper;
         }
 
+        public Single_Rhyme(Whisper whisper)
+            : base(Rhyme_Type.single, whisper.name)
+        {
+            this.whisper = whisper;
+        }
+
         public override bool is_ghost
         {
             get { return whisper.type == Whisper_Type.text; }

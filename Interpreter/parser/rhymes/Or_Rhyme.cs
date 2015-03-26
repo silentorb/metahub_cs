@@ -17,6 +17,12 @@ namespace runic.parser.rhymes
 
         }
 
+        public Or_Rhyme(string name, List<Rhyme> rhymes)
+            : base(Rhyme_Type.or, name)
+        {
+            this.rhymes = rhymes;
+        }
+
         public override void initialize(Pattern_Source pattern, Parser parser)
         {
             rhymes = pattern.patterns.Select(p => parser.create_child(p)).ToList();

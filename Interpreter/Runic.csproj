@@ -40,9 +40,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="lexer\Lexer_Bootstrap.cs" />
+    <Compile Include="lexer\Lexer_Lexicon.cs" />
     <Compile Include="lexer\Lexer_Bootstrap_Old.cs" />
     <Compile Include="lexer\Lexer.cs" />
+    <Compile Include="lexer\Parser_Lexicon.cs" />
     <Compile Include="lexer\Position.cs" />
     <Compile Include="lexer\whispers\Regex_Whisper.cs" />
     <Compile Include="lexer\Runestone.cs" />
@@ -54,8 +55,10 @@
     <Compile Include="lexer\whispers\Whisper_Group.cs" />
     <Compile Include="parser\Legend.cs" />
     <Compile Include="parser\Legend_Result.cs" />
+    <Compile Include="parser\Lexer_Grammar.cs" />
     <Compile Include="parser\Parser.cs" />
     <Compile Include="parser\Parser_Bootstrap.cs" />
+    <Compile Include="parser\Parser_Grammar.cs" />
     <Compile Include="parser\rhymes\And_Rhyme.cs" />
     <Compile Include="parser\rhymes\Or_Rhyme.cs" />
     <Compile Include="parser\rhymes\Repetition_Rhyme.cs" />

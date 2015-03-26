@@ -13,6 +13,13 @@ namespace runic.parser
     {
         public Dictionary<string, Rhyme> rhymes = new Dictionary<string, Rhyme>();
         public Lexer lexer;
+        internal static Parser_Grammar parser_grammar = new Parser_Grammar();
+        internal static Lexer_Grammar lexer_grammar = new Lexer_Grammar();
+
+        public Parser()
+        {
+            
+        }
 
         public Parser(Lexer lexer, string grammar)
         {
@@ -125,7 +132,11 @@ namespace runic.parser
                 start_name = "start";
 
             var start = rhymes[start_name];
+            return read(runes, start);
+        }
 
+        public static Legend read(List<Rune> runes, Rhyme start)
+        {
             var stone = new Runestone(runes);
             var result = start.match(stone, null);
 
@@ -139,6 +150,7 @@ namespace runic.parser
                     + "  Last match was " + last.rhyme.name + "."
                     );
             }
+
             return result.legend;
         }
     }

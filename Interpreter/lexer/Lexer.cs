@@ -14,6 +14,7 @@ namespace runic.lexer
     public class Lexer
     {
         public Dictionary<string, Whisper> whispers = new Dictionary<string, Whisper>();
+        public static Lexer_Bootstrap boot = new Lexer_Bootstrap();
 
         public Lexer()
         {
@@ -24,40 +25,21 @@ namespace runic.lexer
             load_lexicon(lexicon);
         }
 
-        static Definition bootstrap()
-        {
-            Definition boot_definition = new Definition();
-            boot_definition.load_parser_schema();
-            Bootstrap context = new Bootstrap(boot_definition);
-
-            var result = context.parse(Resources.lexer_grammar, boot_definition.patterns[0], false);
-            if (!result.success)
-            {
-                Debug_Info.output(result);
-                throw new Exception("Error loading parser.");
-            }
-
-            var match = (Match)result;
-            var definition = new Definition();
-            definition.load(match.get_data().dictionary);
-            return definition;
-        }
-
         void load_lexicon(string lexicon)
         {
-            var definition = bootstrap();
-            Lexer_Bootstrap context = new Lexer_Bootstrap(definition);
-
-            var result = context.parse(lexicon, definition.patterns[0], false);
-            if (!result.success)
-            {
-                Debug_Info.output(result);
-                throw new Exception("Error loading parser.");
-            }
-
-            var match = (Match)result;
-            var data = match.get_data();
-            process_lexicon(data.patterns[1].patterns);
+            var runes = boot.read(lexicon);
+//            Lexer_Bootstrap_Old context = new Lexer_Bootstrap_Old(definition);
+//
+//            var result = context.parse(lexicon, definition.patterns[0], false);
+//            if (!result.success)
+//            {
+//                Debug_Info.output(result);
+//                throw new Exception("Error loading parser.");
+//            }
+//
+//            var match = (Match)result;
+//            var data = match.get_data();
+//            process_lexicon(data.patterns[1].patterns);
         }
 
         Whisper add_whisper(string name, Whisper whisper)
@@ -66,6 +48,15 @@ namespace runic.lexer
                 throw new Exception("Lexer already contains a whisper named " + name + ".");
 
             whispers[name] = whisper;
+            return whisper;
+        }
+
+        protected Whisper add_whisper(Whisper whisper)
+        {
+            if (whispers.ContainsKey(whisper.name))
+                throw new Exception("Lexer already contains a whisper named " + whisper.name + ".");
+
+            whispers[whisper.name] = whisper;
             return whisper;
         }
 

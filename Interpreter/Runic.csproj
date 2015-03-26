@@ -41,6 +41,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="lexer\Lexer_Bootstrap.cs" />
+    <Compile Include="lexer\Lexer_Bootstrap_Old.cs" />
     <Compile Include="lexer\Lexer.cs" />
     <Compile Include="lexer\Position.cs" />
     <Compile Include="lexer\whispers\Regex_Whisper.cs" />

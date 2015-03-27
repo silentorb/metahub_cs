@@ -95,7 +95,7 @@
     <None Include="resources\metahub.grammar" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Kind\Kind.csproj">
+    <ProjectReference Include="..\..\imp\Kind\Kind.csproj">
       <Project>{777BFC47-2DF6-4E8E-8545-A2DE56A8620D}</Project>
       <Name>Kind</Name>
     </ProjectReference>

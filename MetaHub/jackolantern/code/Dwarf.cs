@@ -37,20 +37,20 @@ namespace metahub.jackolantern.code
 //            }
 //        }
 
-        void add_ration(Portal_Expression expression)
-        {
-            var chain = Ration.get_portal_path(expression);
-            var key = chain.join(".");
-            if (!rations.ContainsKey(key))
-                rations[key] = new Ration(this, render_chain(chain));
-
-            var ration = rations[key];
-            ration.expressions.AddRange(chain);
-            //if (null_check != null)
-            //{
-            //    null_check.add(ration.create_null_check());
-            //}
-        }
+//        void add_ration(Portal_Expression expression)
+//        {
+//            var chain = Ration.get_portal_path(expression);
+//            var key = chain.join(".");
+//            if (!rations.ContainsKey(key))
+//                rations[key] = new Ration(this, render_chain(chain));
+//
+//            var ration = rations[key];
+//            ration.expressions.AddRange(chain);
+//            //if (null_check != null)
+//            //{
+//            //    null_check.add(ration.create_null_check());
+//            //}
+//        }
 
         static Expression render_chain(List<Expression> chain)
         {

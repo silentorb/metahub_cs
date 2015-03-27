@@ -59,9 +59,13 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Imp\Imp.csproj">
+    <ProjectReference Include="..\..\imp\Imp\Imp.csproj">
       <Project>{72BB0D03-764D-4799-9380-BBA1A8BE7243}</Project>
       <Name>Imp</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\imp\Kind\Kind.csproj">
+      <Project>{777BFC47-2DF6-4E8E-8545-A2DE56A8620D}</Project>
+      <Name>Kind</Name>
     </ProjectReference>
     <ProjectReference Include="..\MetaHub\MetaHub.csproj">
       <Project>{2A71DED0-DCAD-476B-B7EB-F832C352BFB5}</Project>

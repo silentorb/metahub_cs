@@ -23,6 +23,12 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kind", "..\imp\Kind\Kind.cs
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Runic", "..\runic\Runic\Runic.csproj", "{B29C3F78-B6F4-462F-88E6-5965513D345E}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Imp_VS", "..\imp-vs\Imp_VS\Imp_VS.csproj", "{3D5CB660-5B0F-44BB-841C-39B4D5C8965D}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tooling", "tooling", "{A6AF2C27-13F9-416F-89F1-53AF3A0D1BF8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Imp_VS_Test", "..\imp-vs\Imp_VS_Test\Imp_VS_Test.csproj", "{9F5A3DB0-A1C8-426C-8E52-125BB6191350}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug Vineyard|Any CPU = Debug Vineyard|Any CPU
@@ -163,6 +169,36 @@ Global
 		{B29C3F78-B6F4-462F-88E6-5965513D345E}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{B29C3F78-B6F4-462F-88E6-5965513D345E}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{B29C3F78-B6F4-462F-88E6-5965513D345E}.Release|x86.ActiveCfg = Release|Any CPU
+		{3D5CB660-5B0F-44BB-841C-39B4D5C8965D}.Debug Vineyard|Any CPU.ActiveCfg = Debug|Any CPU
+		{3D5CB660-5B0F-44BB-841C-39B4D5C8965D}.Debug Vineyard|Any CPU.Build.0 = Debug|Any CPU
+		{3D5CB660-5B0F-44BB-841C-39B4D5C8965D}.Debug Vineyard|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{3D5CB660-5B0F-44BB-841C-39B4D5C8965D}.Debug Vineyard|Mixed Platforms.Build.0 = Debug|Any CPU
+		{3D5CB660-5B0F-44BB-841C-39B4D5C8965D}.Debug Vineyard|x86.ActiveCfg = Debug|Any CPU
+		{3D5CB660-5B0F-44BB-841C-39B4D5C8965D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3D5CB660-5B0F-44BB-841C-39B4D5C8965D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3D5CB660-5B0F-44BB-841C-39B4D5C8965D}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{3D5CB660-5B0F-44BB-841C-39B4D5C8965D}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{3D5CB660-5B0F-44BB-841C-39B4D5C8965D}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{3D5CB660-5B0F-44BB-841C-39B4D5C8965D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3D5CB660-5B0F-44BB-841C-39B4D5C8965D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3D5CB660-5B0F-44BB-841C-39B4D5C8965D}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{3D5CB660-5B0F-44BB-841C-39B4D5C8965D}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{3D5CB660-5B0F-44BB-841C-39B4D5C8965D}.Release|x86.ActiveCfg = Release|Any CPU
+		{9F5A3DB0-A1C8-426C-8E52-125BB6191350}.Debug Vineyard|Any CPU.ActiveCfg = Debug|Any CPU
+		{9F5A3DB0-A1C8-426C-8E52-125BB6191350}.Debug Vineyard|Any CPU.Build.0 = Debug|Any CPU
+		{9F5A3DB0-A1C8-426C-8E52-125BB6191350}.Debug Vineyard|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{9F5A3DB0-A1C8-426C-8E52-125BB6191350}.Debug Vineyard|Mixed Platforms.Build.0 = Debug|Any CPU
+		{9F5A3DB0-A1C8-426C-8E52-125BB6191350}.Debug Vineyard|x86.ActiveCfg = Debug|Any CPU
+		{9F5A3DB0-A1C8-426C-8E52-125BB6191350}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9F5A3DB0-A1C8-426C-8E52-125BB6191350}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9F5A3DB0-A1C8-426C-8E52-125BB6191350}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{9F5A3DB0-A1C8-426C-8E52-125BB6191350}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{9F5A3DB0-A1C8-426C-8E52-125BB6191350}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{9F5A3DB0-A1C8-426C-8E52-125BB6191350}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9F5A3DB0-A1C8-426C-8E52-125BB6191350}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9F5A3DB0-A1C8-426C-8E52-125BB6191350}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{9F5A3DB0-A1C8-426C-8E52-125BB6191350}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{9F5A3DB0-A1C8-426C-8E52-125BB6191350}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -175,6 +211,8 @@ Global
 		{B29C3F78-B6F4-462F-88E6-5965513D345E} = {3CC11289-9FF0-4ADB-8738-A2A019332B53}
 		{08181763-EBB9-41CE-9BE1-C585C840B0B0} = {F5936A1F-3D9F-4876-B6D8-494BA380898C}
 		{FD7B7BE5-DBB8-441E-9540-408600B4D75C} = {F5936A1F-3D9F-4876-B6D8-494BA380898C}
+		{9F5A3DB0-A1C8-426C-8E52-125BB6191350} = {F5936A1F-3D9F-4876-B6D8-494BA380898C}
 		{777BFC47-2DF6-4E8E-8545-A2DE56A8620D} = {21384A42-1E64-4B94-A879-1454E80395D2}
+		{3D5CB660-5B0F-44BB-841C-39B4D5C8965D} = {A6AF2C27-13F9-416F-89F1-53AF3A0D1BF8}
 	EndGlobalSection
 EndGlobal

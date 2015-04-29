@@ -21,12 +21,12 @@ namespace imperative.code
 
         public static void initialize(Overlord overlord)
         {
-            templates = overlord.summon_snippets(Resources.piecemaker_snippets);
+            templates = overlord.summon_snippets(Resources.piecemaker_snippets, "");
         }
 
         public static void add_functions(JackOLantern jack, metahub.schema.Schema region)
         {
-            jack.overlord.summon(Resources.piecemaker_imp);
+            jack.overlord.summon(Resources.piecemaker_imp, "");
             //conflict_functions(overlord, region);
             //distance_functions(overlord, region);
             //piece_maker_functions(overlord, region);

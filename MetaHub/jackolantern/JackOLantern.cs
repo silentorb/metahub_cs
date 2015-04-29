@@ -48,7 +48,7 @@ namespace metahub.jackolantern
             if (Piece_Maker.templates == null)
                 Piece_Maker.initialize(overlord);
 
-            templates = overlord.summon_snippets(Resources.jackolantern_snippets);
+            templates = overlord.summon_snippets(Resources.jackolantern_snippets, "");
         }
 
         public void initialize_functions()
@@ -185,7 +185,7 @@ namespace metahub.jackolantern
         {
             var realm = new Realm(vineyard_schema.name, overlord);
 
-            overlord.realms[realm.name] = realm;
+            overlord.root.children[realm.name] = realm;
 
             foreach (var rail in vineyard_schema.trellises.Values)
             {
@@ -226,7 +226,7 @@ namespace metahub.jackolantern
                 clans[dungeon].generate_code2();
             }
 
-            overlord.summon(Resources.metahub_imp);
+            overlord.summon(Resources.metahub_imp, "");
 
             if (logician.schema.children.ContainsKey("piecemaker"))
             {

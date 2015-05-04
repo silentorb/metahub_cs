@@ -57,7 +57,6 @@ namespace metahub.jackolantern.carvers
             context.set_pattern("max", range[1]);
             var template = jack.templates["initialize_random_range"];
             initialize.accordian.add("pre", jack.overlord.summon_snippet(template, context));
-
         }
 
         private void add_constraint(Endpoint endpoint, Expression additional_path, Expression[] range)

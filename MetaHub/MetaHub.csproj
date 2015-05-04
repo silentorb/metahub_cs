@@ -131,8 +131,8 @@
     <Compile Include="jackolantern\code\List_Code.cs" />
     <Compile Include="jackolantern\code\Parse.cs" />
     <Compile Include="jackolantern\code\Reference.cs" />
-    <Compile Include="main\Main.cs" />
     <Compile Include="jackolantern\JackOLantern.cs" />
+    <Compile Include="main\MetaHub_Configuration.cs" />
     <Compile Include="main\Utility.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>

@@ -3,7 +3,7 @@ namespace metahub {
 
   class Tick_Target {
 	hub:Hub
-    abstract tick()
+    @[abstract] tick()
   }
 
   class Hub {

@@ -63,7 +63,7 @@ namespace metahub.jackolantern
 
         public void run()
         {
-            load_schema_from_vineyard();
+            //            load_schema_from_vineyard();
             generate_code(target);
 
             foreach (var pumpkin in logician.functions)
@@ -76,9 +76,6 @@ namespace metahub.jackolantern
             {
                 target.generate_code2(dungeon);
             }
-
-            overlord.flatten();
-            overlord.post_analyze();
         }
 
         public void carve_pumpkin(Function_Node pumpkin)
@@ -86,17 +83,17 @@ namespace metahub.jackolantern
             if (pumpkin.name[0] == '@')
                 pumpkin.name = pumpkin.name.Substring(1);
 
-            if (carvers.ContainsKey(pumpkin.name))
-            {
-                var carver = carvers[pumpkin.name];
-                carver.carve(pumpkin);
+            if (!carvers.ContainsKey(pumpkin.name))
+                throw new Exception("Invalid operation: " + pumpkin.name);
 
-                // The main purpose of tracking scoping of functions is 
-                // to enforce a parent -> child carving order
-                foreach (var child in pumpkin.children)
-                {
-                    carve_pumpkin(child);
-                }
+            var carver = carvers[pumpkin.name];
+            carver.carve(pumpkin);
+
+            // The main purpose of tracking scoping of functions is 
+            // to enforce a parent -> child carving order
+            foreach (var child in pumpkin.children)
+            {
+                carve_pumpkin(child);
             }
         }
 
@@ -226,7 +223,7 @@ namespace metahub.jackolantern
                 clans[dungeon].generate_code2();
             }
 
-            overlord.summon(Resources.metahub_imp, "");
+            overlord.summon(Resources.metahub_imp, "interal.metahub.imp");
 
             if (logician.schema.children.ContainsKey("piecemaker"))
             {
@@ -297,7 +294,7 @@ namespace metahub.jackolantern
             }
 
             portal.is_value = tie.is_value;
-                portal.default_value = tie.default_value;
+            portal.default_value = tie.default_value;
 
             return portal;
         }
@@ -314,7 +311,7 @@ namespace metahub.jackolantern
 
         public List<Expression> summon_snippet_block(string name, Summoner_Context context)
         {
-            var statements = (Block) overlord.summon_snippet(templates[name], context);
+            var statements = (Block)overlord.summon_snippet(templates[name], context);
             return statements.body;
         }
 

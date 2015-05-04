@@ -50,6 +50,10 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\imp\Imp\Imp.csproj">
+      <Project>{72BB0D03-764D-4799-9380-BBA1A8BE7243}</Project>
+      <Name>Imp</Name>
+    </ProjectReference>
     <ProjectReference Include="..\MetaHub\MetaHub.csproj">
       <Project>{2A71DED0-DCAD-476B-B7EB-F832C352BFB5}</Project>
       <Name>MetaHub</Name>

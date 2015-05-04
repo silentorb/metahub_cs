@@ -211,7 +211,9 @@ namespace metahub.jackolantern.code
         public Minion generate_initialize(Scope scope)
         {
             var expressions = new List<Expression>();
-            var block = dungeon.create_block("initialize", scope, expressions);
+            var minion = dungeon.spawn_minion("initialize", new List<Parameter>(), expressions);
+//            var block = dungeon.create_block("initialize", scope, expressions);
+            var block = minion.accordian;
             block.divide("pre");
             block.divide("post");
             if (dungeon.parent != null)
@@ -223,9 +225,6 @@ namespace metahub.jackolantern.code
             {
                 Portal_Carver.customize_initialize(jack, portal, block);
             }
-
-            var minion = dungeon.spawn_minion("initialize", new List<Parameter>(), expressions);
-            minion.accordian = block;
 
             if (jack.logician.needs_hub && (dungeon.name != "Hub" || dungeon.realm.name != "metahub"))
             {

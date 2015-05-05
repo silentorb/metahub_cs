@@ -19,13 +19,13 @@ namespace metahub.jackolantern.code
             context.set_pattern("origin", new Self(setter.dungeon));
             context.set_pattern("additional", new Block());
 
-            if (setter.parameters.Count > 0)
+            if (setter.parameters.Count > 2)
             {
                 context.set_pattern("hub", new Portal_Expression(setter.dungeon.all_portals["hub"]));
             }
             else
             {
-                context.set_pattern("hub", "");
+                context.set_pattern("hub", new Null_Value());
             }
 
             return context;

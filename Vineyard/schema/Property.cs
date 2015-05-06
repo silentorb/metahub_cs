@@ -37,7 +37,17 @@ namespace metahub.schema
 
         public Property(string name, IProperty_Source source, Trellis trellis)
         {
-            type = (Kind)Enum.Parse(typeof(Kind), source.type, true);
+            signature = new Signature();
+
+            if (source.type == "list")
+            {
+                type = signature.type = Kind.reference;
+                
+            }
+            else
+            {
+                type = signature.type = (Kind)Enum.Parse(typeof(Kind), source.type, true);
+            }
             if (source.default_value != null)
                 default_value = source.default_value;
 

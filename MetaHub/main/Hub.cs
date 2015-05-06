@@ -203,12 +203,9 @@ namespace metahub.main
                 ? jack.clans[(Dungeon)portal.other_dungeon].trellis
                 : null;
 
-            var type = portal.is_list
-                ? Kind.list
-                : portal.type;
-
             var trellis = clan.trellis;
-            var property = new Property(portal.name, type, trellis, other_trellis);
+            var property = new Property(portal.name, portal.type, trellis, other_trellis);
+            property.signature.is_list = portal.is_list;
 
             if (other_trellis != null)
             {

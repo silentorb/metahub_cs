@@ -34,7 +34,7 @@ public class Function_Info
 	}
 	
 	public static bool match_signatures (Signature first, Signature second) {
-	    if (first.type == Kind.reference || first.type == Kind.list)
+	    if (first.type == Kind.reference || first.is_list)
 	    {
 	        return first.type == second.type && 
                 (first.trellis == null || second.trellis == null || first.trellis == second.trellis);

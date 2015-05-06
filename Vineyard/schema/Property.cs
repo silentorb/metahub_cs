@@ -33,6 +33,7 @@ namespace metahub.schema
         public Trellis other_trellis;
         public Property other_property;
         public bool is_value = false;
+        public Signature signature;
 
         public Property(string name, IProperty_Source source, Trellis trellis)
         {
@@ -53,6 +54,12 @@ namespace metahub.schema
             this.type = type;
             this.name = name;
             this.other_trellis = other_trellis;
+            signature = new Signature
+            {
+                type = type,
+                trellis = other_trellis,
+                is_value = is_value
+            };
         }
 
         public Property clone()
@@ -101,12 +108,7 @@ namespace metahub.schema
 
         public Signature get_signature()
         {
-            return new Signature
-            {
-                type = type,
-                trellis = other_trellis,
-                is_value = is_value
-            };
+            return signature;
         }
 
         public Signature get_other_signature()
@@ -114,16 +116,21 @@ namespace metahub.schema
             if (other_trellis == null)
                 throw new Exception("get_other_signature() can only be called on lists or references.");
 
-            var other_type = other_property != null
-            ? other_property.type
-            : type == Kind.list ? Kind.reference : Kind.list;
+            if (other_property == null)
+                throw new Exception("Property is missing other_property.");
 
-            return new Signature
-            {
-                type = type == Kind.list && other_type == Kind.list ? Kind.reference : other_type,
-                trellis = other_trellis,
-                is_value = is_value
-            };
+            return other_property.signature;
+
+//            var other_type = other_property != null
+//            ? other_property.type
+//            : type == Kind.list ? Kind.reference : Kind.list;
+//
+//            return new Signature
+//            {
+//                type = type == Kind.list && other_type == Kind.list ? Kind.reference : other_type,
+//                trellis = other_trellis,
+//                is_value = is_value
+//            };
         }
         public void initialize_link1(IProperty_Source source)
         {

@@ -418,7 +418,7 @@ namespace metahub.logic
                                 ++i;
 
                             var previous_property = (Property_Node)args[i];
-                            if (parameter2.type == Kind.reference || parameter2.type == Kind.list)
+                            if (parameter2.type == Kind.reference || parameter2.is_list)
                                 parameter2.trellis = previous_property.property.other_trellis;
                         }
                     }

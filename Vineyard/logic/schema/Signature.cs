@@ -14,6 +14,7 @@ namespace metahub.logic.schema
         public Trellis trellis;
         public bool is_value;
         public int is_numeric;
+        public bool is_list;
         public Signature[] parameters;
 
         public Signature()

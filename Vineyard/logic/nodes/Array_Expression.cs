@@ -17,6 +17,6 @@ public class Array_Expression : Node{
 	
 	override public Signature get_signature ()
 	{
-		return new Signature { type = Kind.list, trellis = null };
+		return new Signature { type = Kind.reference, trellis = null, is_list = true };
 	}
 }}

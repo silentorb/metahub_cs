@@ -137,19 +137,19 @@ namespace metahub.logic
 			new Function_Info("contains", new List<Signature> {
 				new Signature(Kind.Bool, new []
 				    {
-				        new Signature(Kind.list),
+				        new Signature(Kind.reference) { is_list = true },
 				        new Signature(Kind.reference)
 				    })
 			}),
 
 			new Function_Info("count", new List<Signature> {
-				new Signature(Kind.Int, new [] { new Signature(Kind.list)})
+				new Signature(Kind.Int, new [] { new Signature(Kind.reference) { is_list = true }})
 			}),
 			
 			new Function_Info("cross", new List<Signature> {
                 new Signature(Kind.none, new []
                     {
-                        new Signature(Kind.list),
+                        new Signature(Kind.reference) { is_list = true },
                         new Signature(Kind.none, new []
                             {
                                 new Signature(Kind.reference),
@@ -171,13 +171,13 @@ namespace metahub.logic
 			}),
 
             new Function_Info("first", new List<Signature> {
-				new Signature(Kind.reference, new [] { new Signature(Kind.list)})
+				new Signature(Kind.reference, new [] { new Signature(Kind.reference) { is_list = true }})
 			}),
 
             new Function_Info("map", new List<Signature> {
                 new Signature(Kind.none, new []
                     {
-                        new Signature(Kind.list),
+                        new Signature(Kind.reference) { is_list = true },
                         new Signature(Kind.none, new []
                             {
                                 new Signature(Kind.reference),

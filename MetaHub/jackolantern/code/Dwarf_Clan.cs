@@ -43,7 +43,7 @@ namespace metahub.jackolantern.code
 
             foreach (var tie in trellis.all_properties.Values)
             {
-                if (tie.type == Kind.list)
+                if (tie.signature.is_list)
                 {
                     List_Code.common_functions_stub(tie, jack, class_definition.scope);
                 }
@@ -69,7 +69,7 @@ namespace metahub.jackolantern.code
             foreach (var tie in trellis.all_properties.Values)
             {
                 var portal = jack.get_portal(tie);
-                if (tie.type == Kind.list)
+                if (tie.signature.is_list)
                 {
                     List_Code.common_functions(portal, jack, statements.scope);
                 }

@@ -144,6 +144,7 @@
   <ItemGroup>
     <None Include="main\app.config" />
     <None Include="packages.config" />
+    <EmbeddedResource Include="resources\metahub_cs.imp" />
     <None Include="resources\jackolantern_snippets.imp" />
     <None Include="resources\metahub.imp" />
     <None Include="resources\metahub.json" />

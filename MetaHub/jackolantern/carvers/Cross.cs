@@ -107,6 +107,7 @@ namespace metahub.jackolantern.carvers
             var distance = constraint.inputs[0];
             context.set_pattern("other", swamp.translate_backwards(distance.inputs[1].inputs[0], distance));
             context.set_pattern("other_path", swamp.translate_backwards(distance.inputs[1], distance));
+            context.imported_realms.Add(jack.overlord.root.get_realm(new[] { "Microsoft", "Xna", "Framework" }));
 
             return jack.overlord.summon_snippet(
                 Piece_Maker.templates["create_distance_conflict"], context);

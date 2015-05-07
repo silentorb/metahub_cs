@@ -150,7 +150,7 @@ namespace metahub.jackolantern.code
             var minion = dungeon.spawn_minion(minion_name);
             portal.setter = minion;
             var function_scope = minion.scope;
-            var value = function_scope.create_symbol("value", portal.get_profession());
+            var value = function_scope.create_symbol("value", portal.get_target_profession());
             minion.parameters.Add(new Parameter(value));
 
             Function_Definition result = new Function_Definition(minion);

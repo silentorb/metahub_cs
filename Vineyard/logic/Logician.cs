@@ -36,7 +36,7 @@ namespace metahub.logic
         public List<Constraint> constraints = new List<Constraint>();
         public List<Function_Node> functions = new List<Function_Node>(); 
         public Dictionary<string, Constraint_Group> groups = new Dictionary<string, Constraint_Group>();
-        public bool needs_hub = false;
+        public bool needs_hub = true;
         public Schema schema;
 
         public Logician(Schema schema)

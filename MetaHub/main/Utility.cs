@@ -1,3 +1,4 @@
+using System;
 using System.IO;
 using System.Reflection;
 
@@ -16,6 +17,19 @@ namespace metahub
                 result = reader.ReadToEnd();
             }
             return result;
+        }
+
+        public static string load_resource(string filename)
+        {
+            var path = "metahub.resources." + filename;
+            var assembly = Assembly.GetExecutingAssembly();
+
+            var stream = assembly.GetManifestResourceStream(path);
+            if (stream == null)
+                throw new Exception("Could not find file " + path + ".");
+
+            var reader = new StreamReader(stream);
+            return reader.ReadToEnd().Replace("\r\n", "\n");
         }
 
         public static void clear_folder(string url)

@@ -1,4 +1,33 @@
-﻿
+﻿namespace System {
+	@[external] class Random {
+
+	}
+}
+
+import System
+
+namespace metahub {
+
+  class Tick_Target {
+	hub:Hub
+    @[abstract] tick()
+  }
+
+  class Hub {
+	tick_targets:Tick_Target[]
+	@[static] random:Random
+	piece_maker:piecemaker.Piece_Maker
+		
+    tick() {
+		for (var target in tick_targets) {
+			target.tick()
+		}
+    }
+  }
+
+}
+
+
 namespace piecemaker {
 
 	class Conflict {

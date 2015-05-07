@@ -29,7 +29,7 @@ namespace metahub.jackolantern.code
             var minion = dungeon.spawn_minion(function_name, null, new List<Expression>());
             portal.setter = minion;
             var signature = tie.get_other_signature();
-            var profession = jack.get_profession(signature);
+            var profession = portal.get_target_profession();
             var item = minion.add_parameter("item", profession).symbol;
             var origin = minion.add_parameter("origin", new Profession(Kind.reference), new Null_Value()).symbol;
             

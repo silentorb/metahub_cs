@@ -8,6 +8,7 @@ using imperative.code;
 using imperative.schema;
 using imperative.summoner;
 using imperative.expressions;
+using imperative.render.targets;
 using metahub.jackolantern.carvers;
 using metahub.jackolantern.code;
 using metahub.jackolantern.expressions;
@@ -84,7 +85,8 @@ namespace metahub.jackolantern
                 pumpkin.name = pumpkin.name.Substring(1);
 
             if (!carvers.ContainsKey(pumpkin.name))
-                throw new Exception("Invalid operation: " + pumpkin.name);
+                return;
+//                throw new Exception("Invalid operation: " + pumpkin.name);
 
             var carver = carvers[pumpkin.name];
             carver.carve(pumpkin);
@@ -209,27 +211,33 @@ namespace metahub.jackolantern
 
         public void generate_code(Target target)
         {
-            var not_external = overlord.dungeons.Where(d => !d.is_external).ToArray();
+            if (target.GetType() == typeof(Csharp))
+                overlord.summon(Utility.load_resource("metahub_cs.imp"), "internal.metahub_cs.imp");
+            else
+                overlord.summon(Resources.metahub_imp, "internal.metahub.imp");
 
+//            overlord.summon(Resources.piecemaker_imp, "piecemaker");
+
+//            if (logician.schema.children.ContainsKey("piecemaker"))
+//            {
+//                var piece_region = logician.schema.children["piecemaker"];
+//                Piece_Maker.add_functions(this, piece_region);
+//            }
+            var not_external = overlord.dungeons.Where(d => !d.is_external).ToArray();
             foreach (var dungeon in not_external)
             {
                 dungeon.generate_code();
-                clans[dungeon].generate_code1();
+                if (clans.ContainsKey(dungeon))
+                    clans[dungeon].generate_code1();
             }
 
             foreach (var dungeon in not_external)
             {
                 target.generate_dungeon_code(dungeon);
-                clans[dungeon].generate_code2();
+                if (clans.ContainsKey(dungeon))
+                    clans[dungeon].generate_code2();
             }
 
-            overlord.summon(Resources.metahub_imp, "interal.metahub.imp");
-
-            if (logician.schema.children.ContainsKey("piecemaker"))
-            {
-                var piece_region = logician.schema.children["piecemaker"];
-                Piece_Maker.add_functions(this, piece_region);
-            }
         }
 
         public Property get_tie(Portal portal)

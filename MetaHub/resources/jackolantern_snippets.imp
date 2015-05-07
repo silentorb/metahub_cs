@@ -23,9 +23,9 @@ map_add_to_list(T, list_add, hub, origin, main_item, $link) {
 	list.setter(item, origin)
 }
 
-add_to_list(T, list_add, hub, origin) {
+add_to_list(T, list_add, origin) {
 	var item:T = new T()
-	item.initialize(hub)
+	item.initialize()
 	list.setter(item, origin)
 }
 

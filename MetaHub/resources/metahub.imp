@@ -8,6 +8,7 @@ namespace metahub {
 
   class Hub {
 	tick_targets:Tick_Target[]
+	piece_maker:piecemaker.Piece_Maker
 
     tick() {
 		for (var target in tick_targets) {
@@ -16,4 +17,39 @@ namespace metahub {
     }
   }
 
+}
+
+
+namespace piecemaker {
+
+	class Conflict {
+		@[abstract] is_resolved():bool
+		@[abstract] resolve()
+	}
+
+	class Conflict_Group {
+
+	}
+
+	class Piece_Maker {
+
+		hub:metahub.Hub
+		is_active:bool
+		conflicts:Conflict[]
+
+		tick() {
+			if (is_active)
+				return
+
+			if (conflicts.count() > 0) {
+				var conflict:Conflict = conflicts.last()
+				conflicts.pop()
+				if (conflict.is_resolved)
+					return
+
+				conflict.resolve
+			}
+		}
+
+	}
 }

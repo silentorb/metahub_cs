@@ -65,10 +65,13 @@ namespace metahub.jackolantern.code
             return result;
         }
 
-        public Operation get_null_check()
+        public Expression get_null_check()
         {
             if (null_check == null)
             {
+                if (rations.Count == 0)
+                    return new Null_Value();
+
                 var expressions = rations.Values.Select(r => r.create_null_check());
                 null_check = new Operation("&&", expressions);
             }

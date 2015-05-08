@@ -123,14 +123,12 @@
     <Compile Include="jackolantern\code\Lantern.cs" />
     <Compile Include="jackolantern\code\Dwarf.cs" />
     <Compile Include="jackolantern\code\Piece_Maker.cs" />
-    <Compile Include="jackolantern\code\Portal_Carver.cs" />
     <Compile Include="jackolantern\code\Ration.cs" />
     <Compile Include="jackolantern\schema\Endpoint.cs" />
     <Compile Include="jackolantern\schema\Swamp.cs" />
     <Compile Include="main\Hub.cs" />
     <Compile Include="jackolantern\code\List_Code.cs" />
     <Compile Include="jackolantern\code\Parse.cs" />
-    <Compile Include="jackolantern\code\Reference.cs" />
     <Compile Include="jackolantern\JackOLantern.cs" />
     <Compile Include="main\MetaHub_Configuration.cs" />
     <Compile Include="main\Utility.cs" />

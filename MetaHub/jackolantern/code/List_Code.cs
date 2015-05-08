@@ -40,8 +40,8 @@ namespace metahub.jackolantern.code
             var mid = block.divide("mid", new List<Expression> {
 				new Platform_Function("add", new Portal_Expression(portal), new Expression[]{ new Variable(item) })
 		});
+            
             var post = block.divide("post");
-
         }
         
         public static void remove_function_stub(Property tie, JackOLantern jack, Scope scope)

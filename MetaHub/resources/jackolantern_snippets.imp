@@ -46,8 +46,10 @@ initialize_count(list, size, $add) {
 }
 
 cross_iterator(list, null_check, condition, block) {
+	#if (null_check != null) {
 	if (null_check)
 		return true
+	}
 
 	for (var other in list) {
 		if (condition) {

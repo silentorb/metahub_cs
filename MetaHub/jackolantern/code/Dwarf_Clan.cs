@@ -29,6 +29,9 @@ namespace metahub.jackolantern.code
 
         void trellis_on_add_property(Trellis trellis, Property property)
         {
+            if (dungeon.has_portal(property.name))
+                return;
+
             jack.create_portal_from_property(property, dungeon);
         }
 
@@ -219,11 +222,6 @@ namespace metahub.jackolantern.code
             if (dungeon.parent != null)
             {
                 block.add(Minion.call_initialize(dungeon, dungeon.parent, new Parent_Class()));
-            }
-
-            foreach (var portal in dungeon.all_portals.Values)
-            {
-                Portal_Carver.customize_initialize(jack, portal, block);
             }
 
             if (jack.logician.needs_hub && (dungeon.name != "Hub" || dungeon.realm.name != "metahub"))

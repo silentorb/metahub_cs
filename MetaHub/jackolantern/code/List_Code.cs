@@ -31,7 +31,7 @@ namespace metahub.jackolantern.code
             var signature = tie.get_other_signature();
             var profession = portal.get_target_profession();
             var item = minion.add_parameter("item", profession).symbol;
-            var origin = minion.add_parameter("origin", new Profession(Kind.reference), new Null_Value()).symbol;
+            var origin = minion.add_parameter("origin", Professions.any, new Null_Value()).symbol;
             
             Function_Definition definition = new Function_Definition(minion);
 
@@ -82,7 +82,7 @@ namespace metahub.jackolantern.code
             var function_name = "remove_" + portal.name;
             var function_scope = new Scope(scope);
             var item = function_scope.create_symbol("item", portal.get_target_profession());
-            var origin = function_scope.create_symbol("origin", new Profession(Kind.reference));
+            var origin = function_scope.create_symbol("origin", Professions.any);
             var minion = dungeon.spawn_minion(function_name, new List<Parameter>
                 {
                     new Parameter(item),

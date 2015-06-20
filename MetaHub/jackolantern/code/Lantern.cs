@@ -25,7 +25,8 @@ namespace metahub.jackolantern.code
             }
             else
             {
-                context.set_pattern("hub", new Empty_Expression());
+//                context.set_pattern("hub", new Empty_Expression());
+                context.set_pattern("hub", "");
             }
 
             return context;

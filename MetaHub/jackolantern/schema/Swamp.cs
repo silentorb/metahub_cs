@@ -210,7 +210,7 @@ namespace metahub.jackolantern.schema
 
                 case Node_Type.literal:
                     var literal = (Literal_Value)node;
-                    return new Literal(literal.value, new Profession(literal.kind));
+                    return new Literal(literal.value, JackOLantern.kind_to_profession(literal.kind));
 
                 case Node_Type.function_call:
                     var operation = (Function_Node)node;
@@ -412,7 +412,7 @@ namespace metahub.jackolantern.schema
 
                 case Node_Type.literal:
                     var literal = (Literal_Value)node;
-                    return new Literal(literal.value, new Profession(literal.kind));
+                    return new Literal(literal.value, JackOLantern.kind_to_profession(literal.kind));
 
                 case Node_Type.function_call:
                     var operation = (Function_Node)node;

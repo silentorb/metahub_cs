@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using imperative.summoner;
 using imperative.expressions;
+using imperative.schema;
 using metahub.jackolantern.code;
 using metahub.jackolantern.schema;
 using metahub.logic.nodes;
@@ -13,7 +14,7 @@ namespace metahub.jackolantern.carvers
 {
     class Count : Carver
     {
-           public Count(JackOLantern jack)
+        public Count(JackOLantern jack)
             : base(jack)
         {
         }
@@ -57,8 +58,7 @@ namespace metahub.jackolantern.carvers
 
             context.set_pattern("list", property_expression);
             context.set_pattern("size", range);
-            var profession = endpoint.portal.profession.clone();
-            profession.is_list = false;
+            var profession = Profession.create(endpoint.portal.profession.dungeon);
             context.set_pattern("$add", Lantern.add_to_list(property_expression, endpoint.portal, profession, jack));
             var template = jack.templates["initialize_count"];
             initialize.accordian.add("pre", jack.overlord.summon_snippet(template, context));

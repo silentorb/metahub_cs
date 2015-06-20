@@ -11,6 +11,7 @@ using metahub.logic;
 using metahub.logic.schema;
 using metahub.render;
 using metahub.schema;
+using NUnit.Framework;
 
 namespace metahub_test
 {
@@ -29,20 +30,29 @@ namespace metahub_test
             return reader.ReadToEnd();
         }
 
-        //public static JackOLantern create_jack()
-        //{
-        //    var json = Utility.load_resource("test.meta.resources.schema.json");
-        //    var hub = new metahub.Hub();
-        //    hub.load_parser();
-        //    var space = new Namespace("test", "test");
-        //    hub.load_schema_from_string(json, space);
-        //    var overlord = new Overlord();
-        //    //            var railway = new Railway(hub, "cpp");
-        //    var target = new Mock_Target(overlord);
-        //    var logician = new Logician(hub.schema);
-        //    //            var jack = new JackOLantern(logician, overlord, railway, target);
-        //    //            return jack;
-        //    return null;
-        //}
+        public static Regex trim_lines = new Regex(@"[\t ]*\r?\n");
+        public static void diff(string first, string second)
+        {
+            first = trim_lines.Replace(first, "\n");
+            second = trim_lines.Replace(second, "\n");
+
+            if (first == second)
+                return;
+
+            File.WriteAllText("first.txt", first);
+            File.WriteAllText("second.txt", second);
+            var cwd = Directory.GetCurrentDirectory();
+            string arguments = "/x /s "
+                + cwd + @"\first.txt "
+                + cwd + @"\second.txt ";
+
+            var a = @"C:\Program Files (x86)\WinMerge\WinMergeU.exe";
+            var b = @"E:\Programs\WinMerge\WinMergeU.exe";
+            var path = File.Exists(a)
+                ? a
+                : b;
+            System.Diagnostics.Process.Start(path, arguments);
+            Assert.AreEqual(first, second);
+        }
     }
 }

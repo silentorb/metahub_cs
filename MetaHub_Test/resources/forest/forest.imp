@@ -1,0 +1,10 @@
+﻿forest {
+
+	Ground {
+		acorn_count:int
+	}
+
+	Tree {
+		acorn_count:int
+	}
+}

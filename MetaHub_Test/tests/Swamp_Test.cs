@@ -31,10 +31,10 @@ namespace metahub_test.tests
 
             // Should be:
             // race.strength = weapon.damage / 4
-            var race =(Portal_Expression) pair[0];
+            var race = (Portal_Expression)pair[0];
             var strength = (Portal_Expression)race.next;
-            var division = (Operation) pair[1];
-            var weapon = (Portal_Expression) division.expressions[0];
+            var division = (Operation)pair[1];
+            var weapon = (Portal_Expression)division.expressions[0];
             var damage = (Portal_Expression)weapon.next;
             var literal = (Literal)division.expressions[1];
 

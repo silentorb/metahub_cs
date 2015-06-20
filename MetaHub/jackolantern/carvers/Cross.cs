@@ -64,7 +64,7 @@ namespace metahub.jackolantern.carvers
             var dungeon = (Dungeon)portal.other_dungeon;
             var minion_name = dungeon.get_available_name("check_cross_" + endpoint.portal.name, 1);
             var minion = dungeon.spawn_minion(minion_name);
-            minion.return_type = new Profession(Kind.Bool);
+            minion.return_type = Professions.Bool;
             //var profession = new Profession(Kind.reference, endpoint.portal.other_dungeon);
             minion.add_parameter("value", endpoint.portal.get_target_profession());
             return minion;
@@ -100,7 +100,7 @@ namespace metahub.jackolantern.carvers
         Expression generate_response(Summoner_Context context, Portal portal, Function_Node constraint, Dungeon conflict_class)
         {
             context.set_pattern("T", portal.profession);
-            context.set_pattern("T2", new Profession(Kind.reference, conflict_class));
+            context.set_pattern("T2", Profession.create(conflict_class));
             //c.set_pattern("T2", new Profession(Kind.reference, conflict_class));
             //c.set_pattern("T2", new Profession(Kind.reference, conflict_class));
             var swamp = new Swamp(jack, null, context);

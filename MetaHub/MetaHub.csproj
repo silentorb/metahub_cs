@@ -166,6 +166,10 @@
       <Project>{777BFC47-2DF6-4E8E-8545-A2DE56A8620D}</Project>
       <Name>Kind</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\runic\Runic\Runic.csproj">
+      <Project>{B29C3F78-B6F4-462F-88E6-5965513D345E}</Project>
+      <Name>Runic</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Parser\Parser.csproj">
       <Project>{80BEAC71-8BE8-48C5-B109-BAB3F38F6D9F}</Project>
       <Name>Parser</Name>

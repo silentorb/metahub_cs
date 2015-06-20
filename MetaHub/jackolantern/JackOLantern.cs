@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Remoting.Messaging;
 using System.Text;
 using metahub.Properties;
 using imperative;
@@ -8,6 +9,7 @@ using imperative.code;
 using imperative.schema;
 using imperative.summoner;
 using imperative.expressions;
+using imperative.render.artisan;
 using imperative.render.targets;
 using metahub.jackolantern.carvers;
 using metahub.jackolantern.code;
@@ -35,9 +37,9 @@ namespace metahub.jackolantern
         public Dictionary<Trellis, Dwarf_Clan> rail_clans = new Dictionary<Trellis, Dwarf_Clan>();
 
         public Schema schema;
-        public Target target;
+        public Common_Target2 target;
 
-        public JackOLantern(Logician logician, Overlord overlord, Target target)
+        public JackOLantern(Logician logician, Overlord overlord, Common_Target2 target)
         {
             this.logician = logician;
             this.overlord = overlord;
@@ -72,11 +74,11 @@ namespace metahub.jackolantern
                 carve_pumpkin(pumpkin);
             }
 
-            var not_external = overlord.dungeons.Where(d => !d.is_external).ToArray();
-            foreach (var dungeon in not_external)
-            {
-                target.generate_code2(dungeon);
-            }
+//            var not_external = overlord.dungeons.Where(d => !d.is_external).ToArray();
+//            foreach (var dungeon in not_external)
+//            {
+//                target.generate_code2(dungeon);
+//            }
         }
 
         public void carve_pumpkin(Function_Node pumpkin)
@@ -139,7 +141,30 @@ namespace metahub.jackolantern
                 ? get_dungeon(signature.trellis)
                 : null;
 
-            return new Profession(signature.type, dungeon);
+            return Profession.create(dungeon);
+        }
+
+        public static Profession kind_to_profession(Kind kind)
+        {
+            switch (kind)
+            {
+                case Kind.Bool:
+                    return Professions.Bool;
+                    break;
+
+                case Kind.String:
+                    return Professions.String;
+                    break;
+
+                case Kind.Float:
+                    return Professions.Float;
+
+                case Kind.Int:
+                    return Professions.Int;
+
+            }
+
+            throw new Exception("profession_from_kind cannot convert kind: " + kind);
         }
 
         public Dwarf get_dwarf(Minion minion)
@@ -148,7 +173,7 @@ namespace metahub.jackolantern
             return clan.dwarves[minion];
         }
 
-        public Dungeon create_dungeon_from_rail(Trellis rail, Realm realm)
+        public Dungeon create_dungeon_from_rail(Trellis rail, Dungeon realm)
         {
             var dungeon = new Dungeon(rail.name, overlord, realm, null, rail.is_value);
             dungeon.is_abstract = rail.is_abstract;
@@ -182,9 +207,7 @@ namespace metahub.jackolantern
 
         private void load_schema(Schema vineyard_schema)
         {
-            var realm = new Realm(vineyard_schema.name, overlord);
-
-            overlord.root.children[realm.name] = realm;
+            var realm = overlord.root.create_dungeon(vineyard_schema.name);
 
             foreach (var rail in vineyard_schema.trellises.Values)
             {
@@ -209,7 +232,7 @@ namespace metahub.jackolantern
 
         }
 
-        public void generate_code(Target target)
+        public void generate_code(Common_Target2 target)
         {
             if (target.GetType() == typeof(Csharp))
                 overlord.summon(Utility.load_resource("metahub_cs.imp"), "internal.metahub_cs.imp");
@@ -226,14 +249,14 @@ namespace metahub.jackolantern
             var not_external = overlord.dungeons.Where(d => !d.is_external).ToArray();
             foreach (var dungeon in not_external)
             {
-                dungeon.generate_code();
+//                dungeon.generate_code();
                 if (clans.ContainsKey(dungeon))
                     clans[dungeon].generate_code1();
             }
 
             foreach (var dungeon in not_external)
             {
-                target.generate_dungeon_code(dungeon);
+//                target.generate_dungeon_code(dungeon);
                 if (clans.ContainsKey(dungeon))
                     clans[dungeon].generate_code2();
             }
@@ -277,7 +300,7 @@ namespace metahub.jackolantern
         {
             var dungeon = overlord.summon_dungeon(template, context);
             var clan = add_clan(dungeon);
-            target.generate_dungeon_code(dungeon);
+//            target.generate_dungeon_code(dungeon);
             return dungeon;
         }
 
@@ -302,7 +325,7 @@ namespace metahub.jackolantern
             }
 
             portal.is_value = tie.is_value;
-            portal.default_value = tie.default_value;
+//            portal.default_expression = new Literal(tie.default_value);
 
             return portal;
         }

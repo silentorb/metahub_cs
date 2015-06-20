@@ -96,11 +96,19 @@ namespace metahub.main
             var overlord = new Overlord();
             var logician = new Logician(root);
             run_data(source, root, logician);
-            var target = Generator.create_target(overlord, target_name);
+            var target = Generator.create_target2(overlord, target_name);
             logician.analyze();
             var jack = new JackOLantern(logician, overlord, target);
             jack.run();
-            Generator.run(target, destination);
+            var config = new Overlord_Configuration
+            {
+                output = destination
+            };
+
+            Generator.create_folder(config.output);
+            //Utility.clear_folder(output_folder);
+            target.run(config, new string[] {});
+//            Generator.run(target, config);
         }
 
         public void load_schema_files(MetaHub_Configuration config)
@@ -145,7 +153,7 @@ namespace metahub.main
             logician.analyze();
             jack.run();
 
-            overlord.generate(config);
+            overlord.generate(config, new string[] {});
         }
 
         void load_many(IEnumerable<string> paths, Logician logician)
@@ -169,14 +177,14 @@ namespace metahub.main
             run_data(match.get_data(), root, logician);
         }
 
-        static void dungeons_to_trellises(Realm realm, Schema schema, JackOLantern jack)
+        static void dungeons_to_trellises(Dungeon realm, Schema schema, JackOLantern jack)
         {
             foreach (var dungeon in realm.dungeons.Values)
             {
                 dungeon_to_trellis(dungeon, schema, jack);
             }
 
-            foreach (var child in realm.children.Values)
+            foreach (var child in realm.dungeons.Values)
             {
                 var child_schema = schema.get_namespace(new List<string> { child.name })
                     ?? schema.add_namespace(child.name);
@@ -197,6 +205,23 @@ namespace metahub.main
             jack.add_clan(dungeon, trellis);
         }
 
+        static Kind profession_to_kind(Profession profession)
+        {
+            if (profession == Professions.Bool)
+                return Kind.Bool;
+
+            if (profession == Professions.String)
+                return Kind.String;
+
+            if (profession == Professions.Float)
+                return Kind.Float;
+
+            if (profession == Professions.Int)
+                return Kind.Int;
+
+            return Kind.reference;
+        }
+
         static Property portal_to_property(Portal portal, Dwarf_Clan clan, JackOLantern jack)
         {
             var other_trellis = portal.other_dungeon != null
@@ -204,7 +229,7 @@ namespace metahub.main
                 : null;
 
             var trellis = clan.trellis;
-            var property = new Property(portal.name, portal.type, trellis, other_trellis);
+            var property = new Property(portal.name, profession_to_kind(portal.profession), trellis, other_trellis);
             property.signature.is_list = portal.is_list;
 
             if (other_trellis != null)

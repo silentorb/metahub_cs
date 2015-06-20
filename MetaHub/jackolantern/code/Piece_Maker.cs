@@ -12,6 +12,7 @@ using metahub.jackolantern.schema;
 using metahub.logic.schema;
 using parser;
 using metahub.schema;
+using runic.parser;
 
 namespace imperative.code
 {
@@ -49,8 +50,8 @@ namespace imperative.code
 
         public static Dungeon create_conflict_class(Dungeon dungeon, JackOLantern jack)
         {
-            var context = new Summoner_Context(dungeon);
-            context.set_pattern("Node_Type", new Profession(Kind.reference, dungeon));
+            var context = new Summoner_Context(null, dungeon);
+            context.set_pattern("Node_Type", Profession.create(dungeon));
             context.set_pattern("Class_Name", "Distance_Conflict");
 
             var result = jack.summon_dungeon(Piece_Maker.templates["Distance_Conflict"], context);

@@ -64,7 +64,7 @@ namespace metahub.jackolantern.code
             var statements = dungeon.get_block("class_definition");
             if (jack.logician.needs_hub && !dungeon.has_portal("hub"))
             {
-                var hub_dungeon = overlord.root.children["metahub"].dungeons["Hub"];
+                var hub_dungeon = overlord.root.dungeons["metahub"].dungeons["Hub"];
                 dungeon.add_portal(new Portal("hub", Kind.reference, dungeon, hub_dungeon));
             }
             generate_initialize(statements.scope);
@@ -107,7 +107,7 @@ namespace metahub.jackolantern.code
             if (trellis.needs_tick)
             {
                 dungeon.spawn_minion("tick");
-                dungeon.interfaces.Add(overlord.root.children["metahub"].dungeons["Tick_Target"]);
+                dungeon.interfaces.Add(overlord.root.dungeons["metahub"].dungeons["Tick_Target"]);
             }
         }
 
@@ -167,9 +167,9 @@ namespace metahub.jackolantern.code
             context.set_pattern("value", new Variable(value));
             block.divide("mid", jack.summon_snippet_block("reference_setter", context));
 
-            if (portal.type == Kind.reference && portal.other_portal != null)
+            if (!portal.is_value)
             {
-                var origin = minion.scope.create_symbol("origin", new Profession(Kind.reference));
+                var origin = minion.scope.create_symbol("origin", Professions.any);
                 minion.parameters.Add(new Parameter(origin, new Null_Value()));
             }
 
@@ -186,9 +186,9 @@ namespace metahub.jackolantern.code
 
             var block = minion.accordian;
 
-            if (portal.type == Kind.reference && portal.other_portal != null)
+            if (!portal.is_value)
             {
-                if (portal.other_portal.type == Kind.reference)
+                if (!portal.other_portal.is_list)
                 {
                     block.add("mid",
                         Minion.setter(portal.other_portal, new Self(portal.dungeon),
@@ -226,8 +226,8 @@ namespace metahub.jackolantern.code
 
             if (jack.logician.needs_hub && (dungeon.name != "Hub" || dungeon.realm.name != "metahub"))
             {
-                var hub_dungeon = dungeon.overlord.root.children["metahub"].dungeons["Hub"];
-                var symbol = minion.scope.create_symbol("hub", new Profession(Kind.reference, hub_dungeon));
+                var hub_dungeon = dungeon.overlord.root.dungeons["metahub"].dungeons["Hub"];
+                var symbol = minion.scope.create_symbol("hub", Profession.create(hub_dungeon));
                 minion.parameters.Add(new Parameter(symbol));
                 var hub_portal = dungeon.all_portals["hub"];
                 block.add("pre", new Assignment(new Self(dungeon, new Portal_Expression(hub_portal)),

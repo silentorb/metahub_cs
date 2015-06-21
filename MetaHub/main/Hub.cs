@@ -166,7 +166,12 @@ namespace metahub.main
 
         void load_file(string path, Logician logician)
         {
-            var result = logician.parse_code(File.ReadAllText(path));
+            parse_code(File.ReadAllText(path), logician);
+        }
+
+        public void parse_code(string code, Logician logician)
+        {
+            var result = logician.parse_code(code);
             if (!result.success)
             {
                 Debug_Info.output(result);
@@ -177,7 +182,7 @@ namespace metahub.main
             run_data(match.get_data(), root, logician);
         }
 
-        static void dungeons_to_trellises(Dungeon realm, Schema schema, JackOLantern jack)
+        static public void dungeons_to_trellises(Dungeon realm, Schema schema, JackOLantern jack)
         {
             foreach (var dungeon in realm.dungeons.Values)
             {
@@ -222,14 +227,21 @@ namespace metahub.main
             return Kind.reference;
         }
 
-        static Property portal_to_property(Portal portal, Dwarf_Clan clan, JackOLantern jack)
+        public static Property portal_to_property(Portal portal, Dwarf_Clan clan, JackOLantern jack)
         {
-            var other_trellis = portal.other_dungeon != null
-                ? jack.clans[(Dungeon)portal.other_dungeon].trellis
-                : null;
+            var kind = profession_to_kind(portal.profession);
+            Trellis other_trellis = null;
+            if (kind == Kind.reference)
+            {
+                var other_dungeon = portal.is_list
+                    ? portal.profession.children[0].dungeon
+                    : portal.other_dungeon;
+
+                other_trellis = jack.clans[(Dungeon)other_dungeon].trellis;
+            }
 
             var trellis = clan.trellis;
-            var property = new Property(portal.name, profession_to_kind(portal.profession), trellis, other_trellis);
+            var property = new Property(portal.name, kind, trellis, other_trellis);
             property.signature.is_list = portal.is_list;
 
             if (other_trellis != null)

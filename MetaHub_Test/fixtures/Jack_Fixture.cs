@@ -31,5 +31,32 @@ namespace metahub_test.fixtures
             jack.load_schema_from_vineyard();
             return jack;
         }
+
+        public static Overlord create_overlord(string target, string script_name)
+        {
+            return create_overlord(target, new[] { script_name });
+        }
+
+        public static Overlord create_overlord(string target_name, string[] script_names)
+        {
+            var overlord = new Overlord(target_name);
+            var summoner = new Summoner2(overlord);
+            summoner.summon_many(script_names.Select(s =>
+                overlord.summon_legend(Utility.load_resource(s), s)
+            ));
+            overlord.flatten();
+            overlord.post_analyze();
+            return overlord;
+        }
+
+        public static Overlord create_overlord_with_path(string target_name, string script_path)
+        {
+            var overlord = new Overlord(target_name);
+            overlord.summon_input(new[] { script_path });
+            overlord.flatten();
+            overlord.post_analyze();
+            return overlord;
+        }
+
     }
 }

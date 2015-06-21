@@ -42,6 +42,7 @@ namespace metahub.jackolantern.code
 
         public void generate_code1()
         {
+            return;
             var class_definition = dungeon.get_block("class_definition");
 
             foreach (var tie in trellis.all_properties.Values)

@@ -2,9 +2,11 @@
 
 	Ground {
 		acorn_count:int
+		trees:Tree[]
 	}
 
 	Tree {
+		ground:Ground
 		acorn_count:int
 	}
 }

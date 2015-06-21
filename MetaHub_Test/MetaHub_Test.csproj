@@ -55,11 +55,15 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="tests\Forest_Test.cs" />
     <Compile Include="tests\Swamp_Test.cs" />
     <Compile Include="Utility.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+    <EmbeddedResource Include="resources\forest\forest.js" />
+    <EmbeddedResource Include="resources\forest\forest.mh" />
+    <EmbeddedResource Include="resources\forest\forest.imp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\imp\Imp\Imp.csproj">
@@ -69,6 +73,10 @@
     <ProjectReference Include="..\..\imp\Kind\Kind.csproj">
       <Project>{777BFC47-2DF6-4E8E-8545-A2DE56A8620D}</Project>
       <Name>Kind</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\runic\Runic\Runic.csproj">
+      <Project>{B29C3F78-B6F4-462F-88E6-5965513D345E}</Project>
+      <Name>Runic</Name>
     </ProjectReference>
     <ProjectReference Include="..\MetaHub\MetaHub.csproj">
       <Project>{2A71DED0-DCAD-476B-B7EB-F832C352BFB5}</Project>
@@ -83,9 +91,7 @@
       <Name>Vineyard_Test</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="resources\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

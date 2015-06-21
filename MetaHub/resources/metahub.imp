@@ -1,12 +1,12 @@
 ﻿
-namespace metahub {
+metahub {
 
-  class Tick_Target {
+  Tick_Target {
 	hub:Hub
-    @[abstract] tick()
+    tick()
   }
 
-  class Hub {
+  Hub {
 	tick_targets:Tick_Target[]
 	piece_maker:piecemaker.Piece_Maker
 
@@ -20,18 +20,18 @@ namespace metahub {
 }
 
 
-namespace piecemaker {
+piecemaker {
 
-	class Conflict {
-		@[abstract] is_resolved():bool
-		@[abstract] resolve()
+	Conflict {
+		is_resolved():bool
+		resolve()
 	}
 
-	class Conflict_Group {
+	Conflict_Group {
 
 	}
 
-	class Piece_Maker {
+	Piece_Maker {
 
 		hub:metahub.Hub
 		is_active:bool

@@ -48,8 +48,8 @@ namespace metahub.jackolantern
 
             initialize_functions();
 
-            if (Piece_Maker.templates == null)
-                Piece_Maker.initialize(overlord);
+//            if (Piece_Maker.templates == null)
+//                Piece_Maker.initialize(overlord);
 
             templates = overlord.summon_snippets(Resources.jackolantern_snippets, "");
         }
@@ -257,8 +257,8 @@ namespace metahub.jackolantern
             foreach (var dungeon in not_external)
             {
 //                target.generate_dungeon_code(dungeon);
-                if (clans.ContainsKey(dungeon))
-                    clans[dungeon].generate_code2();
+//                if (clans.ContainsKey(dungeon))
+//                    clans[dungeon].generate_code2();
             }
 
         }
